@@ -1,24 +1,29 @@
 <?php
+use Mediawiki\Api\ApiUser;
+use Mediawiki\Api\MediawikiApi;
+use Mediawiki\Api\MediawikiFactory;
+use Symfony\Component\Dotenv\Dotenv;
 
-include './env.php';
 require_once( __DIR__ . '/vendor/autoload.php' );
+$dotEnv = new Dotenv();
+$dotEnv->load(__DIR__.'/.env');
 
 //set_time_limit(0);
 setlocale(LC_ALL, 'fr_FR.UTF-8');
-ini_set ("user_agent", "ZiziBot http://fr.wikipedia.org/wiki/user:ZiziBot");
+ini_set ("user_agent", $_ENV['USER_AGENT']);
 error_reporting(E_ALL ^ E_NOTICE);
 ini_set('xdebug.var_display_max_depth', '10');
 ini_set('xdebug.var_display_max_children', '256');
 ini_set('xdebug.var_display_max_data', '1024');
 
 // Log in to a wiki
-$api = new \Mediawiki\Api\MediawikiApi( getenv('API_URL') );
+$api = new MediawikiApi( $_ENV['API_URL']);
 try{
-    $api->login( new \Mediawiki\Api\ApiUser( getenv('API_USERNAME'), getenv('API_PASSWORD') ) );
+    $api->login( new ApiUser( $_ENV['API_USERNAME'], $_ENV['API_PASSWORD'] ) );
 }catch (\Throwable $e) {
     die('Exception '.$e);
 }
-$services = new \Mediawiki\Api\MediawikiFactory( $api );
+$services = new MediawikiFactory( $api );
 
 $page = $services->newPageGetter()->getFromTitle( 'Board_de_carving' );
 var_dump($page->getRevisions()->getLatest()->getContent()->getData());
@@ -48,7 +53,9 @@ var_dump($page->getRevisions()->getLatest()->getContent()->getData());
 //$services->newRevisionSaver()->save( $revision );
 
 // List all pages in a category
-$pages = $services->newPageListGetter()->getPageListFromCategoryName( 'Category:Type de skateboards' )->toArray();
+$pages = $services->newPageListGetter()
+    ->getPageListFromCategoryName( 'Category:Type de skateboards' )
+    ->toArray();
 foreach($pages as $page) {
     var_dump($page->getPageIdentifier()->getTitle()->getText());
 }

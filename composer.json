@@ -1,5 +1,6 @@
 {
     "require": {
-        "addwiki/mediawiki-api": "~0.7.0"
+        "addwiki/mediawiki-api": "~0.7.0",
+        "symfony/dotenv": "^4.3"
     }
 }

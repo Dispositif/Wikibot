@@ -3,7 +3,6 @@
 /build/coverage
 composer.phar
 .env
-env.php
 
 # Created by https://www.gitignore.io/api/osx,phpstorm
 # Edit at https://www.gitignore.io/?templates=osx,phpstorm
