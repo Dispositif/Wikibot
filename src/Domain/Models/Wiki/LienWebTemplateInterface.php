@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Domain\Model;
+namespace App\Domain\Models\Wiki;
 
 /**
- * Class LienWebModel
+ * Class LienWebTemplateInterface
  */
-class LienWebModel extends AbstractModel implements InterfaceModel
+class LienWebTemplateInterface extends AbstractWikiTemplate implements WikiTemplateInterface
 {
     const MODEL_NAME = 'lien web';
 

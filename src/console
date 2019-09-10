@@ -3,7 +3,7 @@
 
 namespace App;
 
-use App\Command\PageContentCommand;
+use App\Application\WikiPageContentCommand;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Dotenv\Dotenv;
 
@@ -20,7 +20,7 @@ ini_set("user_agent", $_ENV['USER_AGENT']);
 
 $application = new Application();
 
-$application->add(new PageContentCommand());
+$application->add(new WikiPageContentCommand());
 
 // Bug on command with arguments related to symfony/.../input/ArgvInput.php
 // Symfony\Component\Console\Exception\InvalidArgumentException: The "1"

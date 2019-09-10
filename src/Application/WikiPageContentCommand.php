@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Command;
+namespace App\Application;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class PageContentCommand extends Command
+class WikiPageContentCommand extends Command
 {
     protected static $defaultName = 'bot:page';
 
@@ -27,7 +27,7 @@ class PageContentCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $page = new PageAction($input->getArgument('title'));
+        $page = new WikiPageAction($input->getArgument('title'));
         $text = $page->getText();
 
         $output->writeln('*** TEXT ***');

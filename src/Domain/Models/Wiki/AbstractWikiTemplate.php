@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Domain\Model;
+namespace App\Domain\Models\Wiki;
 
-abstract class AbstractModel
+abstract class AbstractWikiTemplate
 {
     const MODEL_NAME = '';
     protected $parametersByOrder = [];
