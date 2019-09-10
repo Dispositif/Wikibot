@@ -5,30 +5,19 @@ namespace App;
 
 use App\Application\WikiPageContentCommand;
 use Symfony\Component\Console\Application;
-use Symfony\Component\Dotenv\Dotenv;
 
-error_reporting(E_ALL ^ E_NOTICE);
-require __DIR__.'/../vendor/autoload.php';
-$dotEnv = new Dotenv();
-$dotEnv->load(__DIR__.'/../.env');
+include __DIR__.'/Application/Bootstrap.php';
 
-ini_set("user_agent", $_ENV['USER_AGENT']);
-
-//ini_set('xdebug.var_display_max_depth', '10');
-//ini_set('xdebug.var_display_max_children', '256');
-//ini_set('xdebug.var_display_max_data', '1024');
-
-$application = new Application();
-
-$application->add(new WikiPageContentCommand());
+$console = new Application();
+$console->add(new WikiPageContentCommand());
 
 // Bug on command with arguments related to symfony/.../input/ArgvInput.php
 // Symfony\Component\Console\Exception\InvalidArgumentException: The "1"
-// argument does not exist. in /Applications/MAMP/htdocs/wikibot/vendor/symfony/console/Input/InputDefinition.php on line 135
+// argument does not exist. in wikibot/vendor/symfony/console/Input/InputDefinition.php on line 135
 // => Downgrading symfony/console (v4.3.4 => v4.2.0)
 
 try{
-    $application->run();
+    $console->run();
 }catch (\Throwable $e){
     die($e);
 }
