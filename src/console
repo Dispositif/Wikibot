@@ -6,7 +6,7 @@ namespace App;
 use App\Application\WikiPageContentCommand;
 use Symfony\Component\Console\Application;
 
-include __DIR__.'/Application/Bootstrap.php';
+include __DIR__.'/Application/bootstrap.php';
 
 $console = new Application();
 $console->add(new WikiPageContentCommand());
