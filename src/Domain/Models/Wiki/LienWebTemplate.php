@@ -3,9 +3,9 @@
 namespace App\Domain\Models\Wiki;
 
 /**
- * Class LienWebTemplateInterface
+ * Class LienWebTemplate
  */
-class LienWebTemplateInterface extends AbstractWikiTemplate implements WikiTemplateInterface
+class LienWebTemplate extends AbstractWikiTemplate implements WikiTemplateInterface
 {
     const MODEL_NAME = 'lien web';
 

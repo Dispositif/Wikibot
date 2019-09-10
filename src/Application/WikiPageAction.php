@@ -2,6 +2,7 @@
 
 namespace App\Application;
 
+use App\Infrastructure\HtmlTagParser;
 use Mediawiki\Api\ApiUser;
 use Mediawiki\Api\MediawikiApi;
 use Mediawiki\Api\MediawikiFactory;
@@ -49,4 +50,46 @@ class WikiPageAction
         return $this->page->getRevisions()->getLatest()->getContent()->getData(
         );
     }
+
+    /**
+     * Extract <ref> data from text
+     *
+     * @param $text string
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function extractRefFromText(string $text): ?array
+    {
+        $parser = new HtmlTagParser();
+        $refs = $parser->importHtml($text)->xpath('//ref'); // []
+
+        return (array)$refs;
+    }
+
+    /**
+     * TODO $url parameter
+     * check if any ref contains a targeted website/URL
+     *
+     * @param array $refs
+     *
+     * @return array
+     */
+    public function filterRefByURL(array $refs): array
+    {
+        $valid_ref = [];
+        foreach ($refs as $ref) {
+            if (preg_match(
+                    '#(?<url>https?:\/\/(?:www\.)?lemonde\.fr\/[^ \]]+)#i',
+                    $ref,
+                    $matches
+                ) > 0
+            ) {
+                $valid_ref[] = ['url' => $matches['url'], 'raw' => $ref];
+            }
+        }
+
+        return $valid_ref;
+    }
+
 }
