@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Command;
+namespace App\Application;
 
 use Mediawiki\Api\ApiUser;
 use Mediawiki\Api\MediawikiApi;
 use Mediawiki\Api\MediawikiFactory;
 use Mediawiki\DataModel\Page;
 
-class PageAction
+class WikiPageAction
 {
     /**
      * @var MediawikiFactory
