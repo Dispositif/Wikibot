@@ -3,17 +3,28 @@
 
 namespace App\Application;
 
+use Mediawiki\Api\ApiUser;
+use Mediawiki\Api\MediawikiApi;
+use Mediawiki\Api\MediawikiFactory;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 
-require_once 'myBootstrap.php'; // temp
+require_once 'myBootstrap.php'; // todo temp
 
+/**
+ * Class ServiceFactory
+ */
 class ServiceFactory
 {
     /**
-     * @var AMQPStreamConnection|null
+     * @var AMQPStreamConnection
      */
-    static $AMQPConnection;
+    private static $AMQPConnection;
+
+    /**
+     * @var MediawikiFactory
+     */
+    private static $WikiApi;
 
     private function __construct() { }
 
@@ -25,7 +36,7 @@ class ServiceFactory
      *
      * @return AMQPChannel
      */
-    public static function createQueueChannel(string $taskName): AMQPChannel
+    public static function QueueChannel(string $taskName): AMQPChannel
     {
         if (!isset(self::$AMQPConnection)) {
             self::$AMQPConnection = new AMQPStreamConnection(
@@ -60,4 +71,27 @@ class ServiceFactory
             self::$AMQPConnection = null;
         }
     }
+
+    /**
+     * todo? replace that singleton pattern ??? (multi-lang wiki?)
+     *
+     * @return MediawikiFactory
+     * @throws \Mediawiki\Api\UsageException
+     */
+    public static function WikiApi(): MediawikiFactory
+    {
+        if (isset(self::$WikiApi)) {
+            return self::$WikiApi;
+        }
+
+        $api = new MediawikiApi($_ENV['API_URL']);
+        $api->login(
+            new ApiUser($_ENV['API_USERNAME'], $_ENV['API_PASSWORD'])
+        );
+
+        self::$WikiApi = new MediawikiFactory($api);
+
+        return self::$WikiApi;
+    }
+
 }
