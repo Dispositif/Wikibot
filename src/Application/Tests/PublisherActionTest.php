@@ -9,7 +9,7 @@ class PublisherActionTest extends TestCase
 
     public function testGetHTMLSource()
     {
-        $this::markTestSkipped();
+        $this::markTestIncomplete();
     }
 
     public function testExtractLD_JSON()
