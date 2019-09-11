@@ -85,12 +85,8 @@ class LienWebTemplate extends AbstractWikiTemplate implements WikiTemplateInterf
             'consulté le' => '',
         ];
 
-    public function __construct()
-    {
-    }
 
-
-    public function setTitre(string $titre)
+    protected function setTitre(string $titre)
     {
         $this->parameters['titre'] = $titre;
     }
