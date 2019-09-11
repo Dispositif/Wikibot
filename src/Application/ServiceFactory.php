@@ -57,6 +57,7 @@ class ServiceFactory
     {
         if (isset(self::$AMQPConnection)) {
             self::$AMQPConnection->close();
+            self::$AMQPConnection = null;
         }
     }
 }
