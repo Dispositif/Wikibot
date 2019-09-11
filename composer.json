@@ -1,4 +1,8 @@
 {
+    "name": "dispositif/wikibot",
+    "version": "0.1",
+    "type": "project",
+    "license": "MIT",
     "require": {
         "addwiki/mediawiki-api": "~0.7.0",
         "symfony/dotenv": "^4.3",
@@ -12,6 +16,7 @@
         }
     },
     "require-dev": {
-        "symfony/var-dumper": "^4.3"
+        "symfony/var-dumper": "^4.3",
+        "phpunit/phpunit": "^8"
     }
 }
