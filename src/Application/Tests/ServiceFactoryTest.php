@@ -12,7 +12,7 @@ class ServiceFactoryTest extends TestCase
     public function testCreateQueueChannel()
     {
         $this::markTestSkipped();
-//        $channel = ServiceFactory::createQueueChannel('foo');
+//        $channel = ServiceFactory::queueChannel('foo');
 //        $this::assertInstanceOf(AMQPChannel::class, $channel);
     }
 
@@ -24,7 +24,7 @@ class ServiceFactoryTest extends TestCase
     public function testWikiApi()
     {
         $this::markTestSkipped();
-//        $wiki = ServiceFactory::WikiApi();
+//        $wiki = ServiceFactory::wikiApi();
 //        $this::assertInstanceOf(MediawikiFactory::CLASS, $wiki);
     }
 }

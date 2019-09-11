@@ -2,7 +2,6 @@
 
 namespace App\Application;
 
-use App\Infrastructure\HtmlTagParser;
 use GuzzleHttp\Client;
 
 class PublisherAction
@@ -47,7 +46,7 @@ class PublisherAction
      */
     public function extractLD_JSON(string $html)
     {
-        $parser = new HtmlTagParser();
+        $parser = new TagParser();
         $results = $parser->importHtml($html)->xpath(
             '//script[@type="application/ld+json"]'
         ); // array

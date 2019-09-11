@@ -24,7 +24,7 @@ class ServiceFactory
     /**
      * @var MediawikiFactory
      */
-    private static $WikiApi;
+    private static $wikiApi;
 
     private function __construct() { }
 
@@ -36,15 +36,15 @@ class ServiceFactory
      *
      * @return AMQPChannel
      */
-    public static function QueueChannel(string $taskName): AMQPChannel
+    public static function queueChannel(string $taskName): AMQPChannel
     {
         if (!isset(self::$AMQPConnection)) {
             self::$AMQPConnection = new AMQPStreamConnection(
-                $_ENV['AMQP_HOST'],
-                $_ENV['AMQP_PORT'],
-                $_ENV['AMQP_USER'],
-                $_ENV['AMQP_PASSWORD'],
-                $_ENV['AMQP_VHOST']
+                getenv('AMQP_HOST'),
+                getenv('AMQP_PORT'),
+                getenv('AMQP_USER'),
+                getenv('AMQP_PASSWORD'),
+                getenv('AMQP_VHOST')
             );
         }
 
@@ -78,20 +78,20 @@ class ServiceFactory
      * @return MediawikiFactory
      * @throws \Mediawiki\Api\UsageException
      */
-    public static function WikiApi(): MediawikiFactory
+    public static function wikiApi(): MediawikiFactory
     {
-        if (isset(self::$WikiApi)) {
-            return self::$WikiApi;
+        if (isset(self::$wikiApi)) {
+            return self::$wikiApi;
         }
 
-        $api = new MediawikiApi($_ENV['API_URL']);
+        $api = new MediawikiApi(getenv('API_URL'));
         $api->login(
-            new ApiUser($_ENV['API_USERNAME'], $_ENV['API_PASSWORD'])
+            new ApiUser(getenv('API_USERNAME'), getenv('API_PASSWORD'))
         );
 
-        self::$WikiApi = new MediawikiFactory($api);
+        self::$wikiApi = new MediawikiFactory($api);
 
-        return self::$WikiApi;
+        return self::$wikiApi;
     }
 
 }

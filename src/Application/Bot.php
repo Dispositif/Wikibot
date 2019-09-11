@@ -6,16 +6,12 @@ namespace App\Application;
 
 class Bot
 {
-    private $userAgent = '';
+    private $userAgent;
 
-    public function __construct($app=null) {
-        $this->setUserAgent();
-    }
-
-    protected function setUserAgent(): void
+    public function __construct()
     {
-        ini_set("user_agent", $_ENV['USER_AGENT']);
-        $this->userAgent = $_ENV['USER_AGENT'];
+        ini_set("user_agent", getenv('USER_AGENT'));
+        $this->userAgent = getenv('USER_AGENT');
     }
-
+    
 }

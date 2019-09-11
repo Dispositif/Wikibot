@@ -15,22 +15,33 @@ abstract class AbstractWikiTemplate
     public function hydrate(array $data)
     {
         foreach ($data as $name => $value) {
-            // that parameter exists in template ? if not : skip
-            if (!in_array($name, $this->parametersByOrder)) {
-                continue;
-            }
-
-            if (!is_string($value)) {
-                continue;
-            }
-
-            $method = $this->setterMethodName($name);
-            if (method_exists($this, $method)) {
-                $this->$method($value);
-            }else {
-                $this->parameters[$name] = $value;
-            }
+            $this->hydrateTemplateParameter($name, $value);
         }
+
+        return $this;
+    }
+
+    protected function hydrateTemplateParameter($name, string $value)
+    {
+        // that parameter exists in template ? if not : skip
+        if (!in_array($name, $this->parametersByOrder)) {
+            return;
+        }
+
+        // TODO : Si name == (int) 1,2,3,4 -> param[name]
+
+        if (!is_string($value)) {
+            return;
+        }
+
+        $method = $this->setterMethodName($name);
+        if (method_exists($this, $method)) {
+            $this->$method($value);
+
+            return;
+        }
+
+        $this->parameters[$name] = $value;
     }
 
     /**

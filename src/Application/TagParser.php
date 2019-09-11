@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Infrastructure;
+namespace App\Application;
 
 use DOMDocument;
 use SimpleXMLElement;
 
-class HtmlTagParser
+class TagParser
 {
     /*
      * @var SimpleXMLElement

@@ -2,7 +2,6 @@
 
 namespace App\Application;
 
-use App\Infrastructure\HtmlTagParser;
 use Mediawiki\DataModel\Page;
 
 class WikiPageAction
@@ -14,7 +13,7 @@ class WikiPageAction
 
     public function __construct(string $title)
     {
-        $wiki = ServiceFactory::WikiApi();
+        $wiki = ServiceFactory::wikiApi();
         $this->page = $wiki->newPageGetter()->getFromTitle($title);
     }
 
@@ -37,7 +36,7 @@ class WikiPageAction
      */
     public function extractRefFromText(string $text): ?array
     {
-        $parser = new HtmlTagParser(); // todo ParserFactory
+        $parser = new TagParser(); // todo ParserFactory
         $refs = $parser->importHtml($text)->xpath('//ref'); // []
 
         return (array)$refs;
@@ -53,7 +52,7 @@ class WikiPageAction
      */
     public function filterRefByURL(array $refs): array
     {
-        $valid_ref = [];
+        $validRef = [];
         foreach ($refs as $ref) {
             if (preg_match(
                     '#(?<url>https?:\/\/(?:www\.)?lemonde\.fr\/[^ \]]+)#i',
@@ -61,11 +60,11 @@ class WikiPageAction
                     $matches
                 ) > 0
             ) {
-                $valid_ref[] = ['url' => $matches['url'], 'raw' => $ref];
+                $validRef[] = ['url' => $matches['url'], 'raw' => $ref];
             }
         }
 
-        return $valid_ref;
+        return $validRef;
     }
 
 }
