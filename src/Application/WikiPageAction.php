@@ -2,6 +2,7 @@
 
 namespace App\Application;
 
+use Mediawiki\Api\MediawikiFactory;
 use Mediawiki\DataModel\Page;
 
 class WikiPageAction
@@ -11,9 +12,14 @@ class WikiPageAction
      */
     protected $page;
 
-    public function __construct(string $title)
+    /**
+     * WikiPageAction constructor.
+     *
+     * @param MediawikiFactory $wiki
+     * @param string           $title
+     */
+    public function __construct(MediawikiFactory $wiki, string $title)
     {
-        $wiki = ServiceFactory::wikiApi();
         $this->page = $wiki->newPageGetter()->getFromTitle($title);
     }
 
@@ -37,7 +43,7 @@ class WikiPageAction
     public function extractRefFromText(string $text): ?array
     {
         $parser = new TagParser(); // todo ParserFactory
-        $refs = $parser->importHtml($text)->xpath('//ref'); // []
+        $refs = $parser->importHtml($text)->getRefValues(); // []
 
         return (array)$refs;
     }

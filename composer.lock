@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fc8e3600918b12959f1e56cb79b5a696",
+    "content-hash": "1529538764045ad6786f2ea2710b115e",
     "packages": [
         {
             "name": "addwiki/mediawiki-api",
@@ -154,6 +154,36 @@
                 "mediawiki"
             ],
             "time": "2018-01-10T19:14:13+00:00"
+        },
+        {
+            "name": "camspiers/porter-stemmer",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/camspiers/porter-stemmer.git",
+                "reference": "588088e9aaa6d81d711098cf60af2ef18b1a5798"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/camspiers/porter-stemmer/zipball/588088e9aaa6d81d711098cf60af2ef18b1a5798",
+                "reference": "588088e9aaa6d81d711098cf60af2ef18b1a5798",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Richard Heyes",
+                    "email": "support@rgraph.net"
+                }
+            ],
+            "description": "Porter Stemmer created by Richard Heyes",
+            "time": "2013-02-06T21:39:08+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -909,6 +939,229 @@
                 "shim"
             ],
             "time": "2019-08-06T08:03:45+00:00"
+        },
+        {
+            "name": "vanderlee/php-sentence",
+            "version": "1.0.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/vanderlee/php-sentence.git",
+                "reference": "fb201102977b2bda93ec49896ff52f97d5fe92a5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vanderlee/php-sentence/zipball/fb201102977b2bda93ec49896ff52f97d5fe92a5",
+                "reference": "fb201102977b2bda93ec49896ff52f97d5fe92a5",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^3.6.12"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "classes/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Simple text sentence splitting and counting. Supports atleast english, german and dutch, possibly more.",
+            "homepage": "https://github.com/vanderlee/php-sentence.git",
+            "keywords": [
+                "boundary",
+                "count",
+                "disambiguation",
+                "segmentation",
+                "sentence",
+                "split"
+            ],
+            "time": "2017-10-14T07:14:42+00:00"
+        },
+        {
+            "name": "wamania/php-stemmer",
+            "version": "1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/wamania/php-stemmer.git",
+                "reference": "6cc76829bddd46f7ae7678e0bf87a0c872c8cf58"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/wamania/php-stemmer/zipball/6cc76829bddd46f7ae7678e0bf87a0c872c8cf58",
+                "reference": "6cc76829bddd46f7ae7678e0bf87a0c872c8cf58",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.8"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Wamania\\Snowball\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Wamania",
+                    "homepage": "http://wamania.com"
+                }
+            ],
+            "description": "Native PHP5 Stemmer",
+            "keywords": [
+                "php",
+                "porter",
+                "stemmer"
+            ],
+            "time": "2017-01-27T17:16:44+00:00"
+        },
+        {
+            "name": "yooper/nicknames",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yooper/nicknames.git",
+                "reference": "7daf7eab54e1c94baa4c1aa18a9158759dbd66fb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/yooper/nicknames/zipball/7daf7eab54e1c94baa4c1aa18a9158759dbd66fb",
+                "reference": "7daf7eab54e1c94baa4c1aa18a9158759dbd66fb",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/phpunit": "6.0.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Yooper\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dan Cardin",
+                    "email": "dcardin2007@gmail.com"
+                }
+            ],
+            "description": "Give a name and get back a list of nick names",
+            "time": "2017-11-09T18:48:35+00:00"
+        },
+        {
+            "name": "yooper/php-text-analysis",
+            "version": "1.5.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yooper/php-text-analysis.git",
+                "reference": "d217a9dd925e3986db569be9986f3a575586d1c5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/yooper/php-text-analysis/zipball/d217a9dd925e3986db569be9986f3a575586d1c5",
+                "reference": "d217a9dd925e3986db569be9986f3a575586d1c5",
+                "shasum": ""
+            },
+            "require": {
+                "camspiers/porter-stemmer": "~1",
+                "php": ">=7.1",
+                "symfony/console": "~4.0",
+                "vanderlee/php-sentence": "~1.0",
+                "wamania/php-stemmer": "~1",
+                "yooper/nicknames": "~1",
+                "yooper/stop-words": "~1"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1",
+                "phpunit/phpunit": "^8"
+            },
+            "bin": [
+                "textconsole"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "TextAnalysis\\": "src/"
+                },
+                "files": [
+                    "src/helpers/storage.php",
+                    "src/helpers/print.php",
+                    "src/helpers/simplified.php",
+                    "src/helpers/helpers.php",
+                    "src/helpers/interactive_help.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "yooper",
+                    "email": "dcardin2007@gmail.com"
+                }
+            ],
+            "description": "PHP Text Analysis is a library for performing Information Retrieval (IR) and Natural Language Processing (NLP) tasks using the PHP language",
+            "keywords": [
+                "ir",
+                "natural language processing",
+                "nlp",
+                "text analysis",
+                "text classification"
+            ],
+            "time": "2019-07-01T19:01:21+00:00"
+        },
+        {
+            "name": "yooper/stop-words",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yooper/stop-words.git",
+                "reference": "94cd72a477193171611e373b9c2b5744cd349155"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/yooper/stop-words/zipball/94cd72a477193171611e373b9c2b5744cd349155",
+                "reference": "94cd72a477193171611e373b9c2b5744cd349155",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/StopWordFactory.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache2"
+            ],
+            "authors": [
+                {
+                    "name": "yooper",
+                    "email": "dcardin2007@gmail.com"
+                }
+            ],
+            "description": "Stop words ",
+            "time": "2017-10-19T17:41:39+00:00"
         }
     ],
     "packages-dev": [

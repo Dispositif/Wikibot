@@ -24,10 +24,12 @@ class WikiPageContentCommand extends Command
      * @param OutputInterface $output
      *
      * @return int|void|null
+     * @throws \Mediawiki\Api\UsageException
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $page = new WikiPageAction($input->getArgument('title'));
+        $wiki = ServiceFactory::wikiApi();
+        $page = new WikiPageAction($wiki, $input->getArgument('title'));
         $text = $page->getText();
 
         $output->writeln('*** TEXT ***');

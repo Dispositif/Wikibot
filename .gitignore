@@ -9,6 +9,7 @@ composer.phar
 *.log
 *.bak
 *.cache
+tests/build/
 
 # Created by https://www.gitignore.io/api/osx,phpstorm
 # Edit at https://www.gitignore.io/?templates=osx,phpstorm

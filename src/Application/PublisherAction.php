@@ -47,19 +47,24 @@ class PublisherAction
     public function extractLD_JSON(string $html)
     {
         $parser = new TagParser();
-        $results = $parser->importHtml($html)->xpath(
+        $results = $parser->importHtml($html)->xpathResults(
             '//script[@type="application/ld+json"]'
-        ); // array
+        );
 
 
         foreach ($results as $result) {
             $json = trim($result);
+            // filtrage empty value (todo?)
+            if (strlen($json) === 0) {
+                continue;
+            }
             $data = json_decode($json, true);
 
             // filtrage : @type => BreadcrumbList (lemonde)
             if ($data['@type'] == 'BreadcrumbList') {
                 continue;
             }
+
 
             return $data;
         }

@@ -33,30 +33,45 @@ class TagParser
     }
 
     /**
-     * @param string $path
-     *
+     * Get the <ref> values
      * @return array
      * @throws \Exception
      */
-    public function xpath(string $path): array
+    public function getRefValues(): array
+    {
+        $nodes = $this->xpathResults('//ref');
+
+        $refs = [];
+        // filter the empty <ref name="bla" />
+        foreach ($nodes as $key => $node) {
+            $raw = trim((string)$node);
+            if (strlen($raw) > 1) {
+                $refs[] = $raw;
+            }
+        }
+        return $refs;
+    }
+
+    /**
+     * @param string $path
+     *
+     * @return array string[]
+     * @throws \Exception
+     */
+    public function xpathResults(string $path): array
     {
         if (!$this->xml instanceof SimpleXMLElement) {
             throw new \Exception('XML non défini');
         }
         $nodes = $this->xml->xpath($path); // SimpleXMLElement[]
 
-        $refs = [];
-
-        // todo? extract in function xml2String() ?
+        $results = [];
+        // Note : empty value included
         foreach ($nodes as $key => $node) {
-            $raw = trim((string)$node);
-            // filter the empty <ref name="bla" />
-            if (strlen($raw) > 1) {
-                $refs[] = $raw;
-            }
+            $results[] = trim((string)$node);
         }
 
-        return $refs;
+        return $results; // string[]
     }
 
 }

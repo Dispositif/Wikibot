@@ -8,7 +8,9 @@
         "symfony/dotenv": "^4.3",
         "symfony/console": "4.2",
         "guzzlehttp/guzzle": "^6.3",
-        "php-amqplib/php-amqplib": "^2.10"
+        "php-amqplib/php-amqplib": "^2.10",
+        "yooper/php-text-analysis": "^1.5",
+        "ext-json": "*",
     },
     "autoload": {
         "psr-4": {
