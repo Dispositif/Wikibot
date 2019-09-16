@@ -44,7 +44,7 @@ class PublisherAction
      * @return mixed
      * @throws \Exception
      */
-    public function extractLD_JSON(string $html)
+    public function extractLdJson(string $html)
     {
         $parser = new TagParser();
         $results = $parser->importHtml($html)->xpathResults(

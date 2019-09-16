@@ -12,12 +12,12 @@ class PublisherActionTest extends TestCase
         $this::markTestIncomplete();
     }
 
-    public function testExtractLD_JSON()
+    public function testExtractLdJson()
     {
         $publisher = new PublisherAction('foo');
 
         $source = file_get_contents(__DIR__.'/exampleWebpage.html');
-        $actualArray = $publisher->extractLD_JSON($source);
+        $actualArray = $publisher->extractLdJson($source);
         $this::assertArrayHasKey('@type', $actualArray);
         $this::assertArrayHasKey('headline', $actualArray);
     }
