@@ -7,6 +7,8 @@ namespace App\Domain\Enums;
 
 /**
  * Class LanguageEnum
+ * new LanguageEnum(LanguageEnum::FROM_LANG,'fr');
+ *
  * @method static self FROM_LANG()
  */
 class LanguageEnum extends Enum
@@ -42,7 +44,7 @@ class LanguageEnum extends Enum
 
             return;
         }
-        throw new \Exception('No origin constant');
+        throw new \Exception('No language origin constant');
     }
 
     public function getFrLang()
@@ -50,12 +52,16 @@ class LanguageEnum extends Enum
         return $this->frlang;
     }
 
-    public function getFrLangText()
+    /**
+     * @return string
+     * @throws \Exception
+     */
+    public function getFrLangText():string
     {
         // todo Refactor
         require_once 'languageData.php';
         if (!array_key_exists($this->frlang, $frlang_to_french)) {
-            return false;
+            throw new \Exception('unknow language '.$this->frlang);
         }
 
         return $frlang_to_french[$this->frlang];

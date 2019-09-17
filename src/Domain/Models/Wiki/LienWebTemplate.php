@@ -70,12 +70,8 @@ class LienWebTemplate extends AbstractWikiTemplate implements WikiTemplateInterf
             'archive-date',
             'dead-url',
         ];
-    /**
-     * Also define the required parameters
-     *
-     * @var array
-     */
-    protected $parameters
+
+    protected $requiredParameters
         = [
             'langue' => '',
             'titre' => '',
@@ -88,7 +84,7 @@ class LienWebTemplate extends AbstractWikiTemplate implements WikiTemplateInterf
 
     protected function setTitre(string $titre)
     {
-        $this->parameters['titre'] = $titre;
+        $this->parametersValues['titre'] = $titre;
     }
 
 }
