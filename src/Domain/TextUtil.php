@@ -32,8 +32,8 @@ abstract class TextUtil
      *
      * @return string
      */
-    public function strip_accents($string)
-    {  //
+    static public function stripAccents(string $string): string
+    {
         return strtr(
             utf8_decode($string),
             utf8_decode(
@@ -48,11 +48,12 @@ abstract class TextUtil
     /**
      * Strip punctuation
      * UTF-8 compatible ??
+     * See http://fr.wikipedia.org/wiki/Ponctuation
      *
      * @return string
      */
-    public function strip_punctuation($string)
-    { // http://fr.wikipedia.org/wiki/Ponctuation
+    static public function strip_punctuation($string)
+    {
         return str_replace(
             [
                 '!',
