@@ -13,6 +13,7 @@ abstract class AbstractWikiTemplate
      * @var array
      */
     protected $parametersByOrder = [];
+    protected $parametersByUser = [];
     protected $parametersValues;
 
     /**
@@ -33,6 +34,26 @@ abstract class AbstractWikiTemplate
     }
 
     /**
+     * @param $param
+     *
+     * @return string|null
+     */
+    public function __get($param): ?string
+    {
+        if(!empty($this->parametersValues[$param]))
+        {
+            return $this->parametersValues[$param];
+        }
+        return null;
+    }
+
+
+    public function __set($param, $value)
+    {
+        throw new \Exception('not yet');
+    }
+
+    /**
      * @param array $data
      *
      * @return AbstractWikiTemplate
@@ -47,6 +68,18 @@ abstract class AbstractWikiTemplate
         return $this;
     }
 
+    /**
+     * @param array $params
+     *
+     * @throws \Exception
+     */
+    public function setParametersByUser(array $params):void
+    {
+        foreach ($params as $name) {
+            $this->checkParamName($name);
+        }
+        $this->parametersByUser = $params;
+    }
     /**
      * @param        $name
      * @param string $value
@@ -72,16 +105,7 @@ abstract class AbstractWikiTemplate
             $name = $defaultKeys[$name - 1];
         }
 
-        // that parameter exists in template ?
-        if (!in_array($name, $this->parametersByOrder)) {
-            throw new \Exception(
-                printf(
-                    'no parameter "%s" in template "%s"',
-                    $name,
-                    static::MODEL_NAME
-                )
-            );
-        }
+        $this->checkParamName($name);
 
         if (empty($value)) {
             // optional parameter
@@ -133,27 +157,78 @@ abstract class AbstractWikiTemplate
         return $this->parametersValues;
     }
 
+    // todo useless ?
     final public function __toString()
     {
         return $this->serialize();
     }
 
-    final public function serialize(): string
+    final public function serialize(bool $inline=true): string
     {
-        $res = [];
-        foreach ($this->parametersByOrder as $order => $paramName) {
-            if (isset($this->parametersValues[$paramName])) {
-                $res[$paramName] = $this->parametersValues[$paramName];
-            }
-        }
+        $paramsByRenderOrder = $this->paramsByRenderOrder();
 
         $string = '{{'.static::MODEL_NAME;
-        foreach ($res AS $paramName => $paramValue) {
+        foreach ($paramsByRenderOrder AS $paramName => $paramValue) {
+            $string .= ($inline === true ) ? '' : "\n";
             $string .= '|'.$paramName.'='.$paramValue;
         }
         $string .= '}}';
 
         return $string;
+    }
+
+    /**
+     * @param $name
+     *
+     * @throws \Exception
+     */
+    protected function checkParamName($name): void
+    {
+        // that parameter exists in template ?
+        if (!in_array($name, $this->parametersByOrder)) {
+            throw new \Exception(
+                printf(
+                    'no parameter "%s" in template "%s"',
+                    $name,
+                    static::MODEL_NAME
+                )
+            );
+        }
+    }
+
+    /**
+     * @return array
+     */
+    protected function paramsByRenderOrder(): array
+    {
+        $renderParams = [];
+
+        // By user order TODO: extract?
+        if (!empty($this->parametersByUser)) {
+            // merge parameter orders (can't use the array operator +)
+            $newOrder = $this->parametersByUser;
+            foreach ($this->parametersByOrder as $paramName) {
+                if (!in_array($paramName, $newOrder)) {
+                    $newOrder = array_merge($newOrder, [$paramName]);
+                }
+            }
+            foreach ($newOrder as $paramName) {
+                if (isset($this->parametersValues[$paramName])) {
+                    $renderParams[$paramName] = $this->parametersValues[$paramName];
+                }
+            }
+        }
+
+        // default order
+        if (empty($this->parametersByUser)) {
+            foreach ($this->parametersByOrder as $order => $paramName) {
+                if (isset($this->parametersValues[$paramName])) {
+                    $renderParams[$paramName] = $this->parametersValues[$paramName];
+                }
+            }
+        }
+
+        return $renderParams;
     }
 
 }

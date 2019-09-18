@@ -2,10 +2,12 @@
 
 namespace App\Domain\Models\Wiki;
 
+use App\Domain\TextUtil;
+
 /**
  * Class LienWebTemplate
  */
-class LienWebTemplate extends AbstractWikiTemplate implements WikiTemplateInterface
+class LienWebTemplate extends AbstractWikiTemplate
 {
     const MODEL_NAME = 'lien web';
 
@@ -78,13 +80,13 @@ class LienWebTemplate extends AbstractWikiTemplate implements WikiTemplateInterf
             'url' => '',
             'date' => '',
             'site' => '',
-            'consulté le' => '',
+            'consulté le' => '', // required ?
         ];
 
 
     protected function setTitre(string $titre)
     {
-        $this->parametersValues['titre'] = $titre;
+        $this->parametersValues['titre'] = TextUtil::mb_ucfirst($titre);
     }
 
 }
