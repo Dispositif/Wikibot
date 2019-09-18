@@ -76,6 +76,20 @@ class AbstractWikiTemplateTest extends TestCase
         $lienWeb->hydrate($data);
     }
 
+    public function testMagicGetter()
+    {
+        $lienWeb = new LienWebTemplate();
+        $lienWeb->hydrate(
+            [
+                'url' => 'bla',
+            ]
+        );
+        $this::assertEquals(
+            'bla',
+            $lienWeb->url
+        );
+    }
+
     public function testEmptyValue()
     {
         $data = [

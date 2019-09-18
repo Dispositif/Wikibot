@@ -5,10 +5,14 @@ namespace App\Domain\Models\Wiki;
 abstract class AbstractWikiTemplate
 {
     const MODEL_NAME = '';
+    /**
+     * todo : modify to [a,b,c] ?
+     */
+    const REQUIRED_PARAMETERS = [];
 
-    protected $requiredParameters = [];
     /**
      * optional
+     * Not a constant so it can be modified in constructor
      *
      * @var array
      */
@@ -23,13 +27,18 @@ abstract class AbstractWikiTemplate
      */
     public function __construct()
     {
-        if (empty($this->requiredParameters)) {
-            throw new \Exception('Required parameters not configured');
+        if (empty(static::REQUIRED_PARAMETERS)) {
+            throw new \Exception(
+                sprintf(
+                    'REQUIRED_PARAMETERS not configured in "%s"',
+                    static::MODEL_NAME
+                )
+            );
         }
-        $this->parametersValues = $this->requiredParameters;
+        $this->parametersValues = static::REQUIRED_PARAMETERS;
 
         if (empty($this->parametersByOrder)) {
-            $this->parametersByOrder = $this->requiredParameters;
+            $this->parametersByOrder = static::REQUIRED_PARAMETERS;
         }
     }
 
@@ -37,20 +46,47 @@ abstract class AbstractWikiTemplate
      * @param $param
      *
      * @return string|null
+     * @throws \Exception
      */
     public function __get($param): ?string
     {
-        if(!empty($this->parametersValues[$param]))
-        {
+        if (!empty($this->parametersValues[$param])) {
             return $this->parametersValues[$param];
         }
+        $this->checkParamName($param);
+
         return null;
     }
 
-
+    /**
+     * @param $param
+     * @param $value
+     *
+     * @throws \Exception
+     */
     public function __set($param, $value)
     {
+        $this->checkParamName($param);
         throw new \Exception('not yet');
+    }
+
+    /**
+     * @param $name
+     *
+     * @throws \Exception
+     */
+    protected function checkParamName($name): void
+    {
+        // that parameter exists in template ?
+        if (!in_array($name, $this->parametersByOrder)) {
+            throw new \Exception(
+                sprintf(
+                    'no parameter "%s" in template "%s"',
+                    $name,
+                    static::MODEL_NAME
+                )
+            );
+        }
     }
 
     /**
@@ -69,18 +105,6 @@ abstract class AbstractWikiTemplate
     }
 
     /**
-     * @param array $params
-     *
-     * @throws \Exception
-     */
-    public function setParametersByUser(array $params):void
-    {
-        foreach ($params as $name) {
-            $this->checkParamName($name);
-        }
-        $this->parametersByUser = $params;
-    }
-    /**
      * @param        $name
      * @param string $value
      *
@@ -96,7 +120,7 @@ abstract class AbstractWikiTemplate
         // from the required parameters list
         // TODO : test
         if (is_int($name) && $name > 0) {
-            $defaultKeys = array_keys($this->requiredParameters);
+            $defaultKeys = array_keys(static::REQUIRED_PARAMETERS);
             if (!array_key_exists($name - 1, $defaultKeys)) {
                 throw new \Exception(
                     "parameter $name does not exist in ".static::MODEL_NAME
@@ -109,7 +133,7 @@ abstract class AbstractWikiTemplate
 
         if (empty($value)) {
             // optional parameter
-            if (!isset($this->requiredParameters[$name])) {
+            if (!isset(static::REQUIRED_PARAMETERS[$name])) {
                 unset($this->parametersValues[$name]);
 
                 return;
@@ -150,6 +174,21 @@ abstract class AbstractWikiTemplate
     }
 
     /**
+     * @param array $params
+     *
+     * @throws \Exception
+     */
+    public function setParametersByUser(array $params): void
+    {
+        foreach ($params as $name) {
+            $this->checkParamName($name);
+        }
+        $this->parametersByUser = $params;
+    }
+
+    // todo useless ?
+
+    /**
      * @return array
      */
     final public function toArray(): array
@@ -157,43 +196,23 @@ abstract class AbstractWikiTemplate
         return $this->parametersValues;
     }
 
-    // todo useless ?
     final public function __toString()
     {
         return $this->serialize();
     }
 
-    final public function serialize(bool $inline=true): string
+    final public function serialize(bool $inline = true): string
     {
         $paramsByRenderOrder = $this->paramsByRenderOrder();
 
         $string = '{{'.static::MODEL_NAME;
         foreach ($paramsByRenderOrder AS $paramName => $paramValue) {
-            $string .= ($inline === true ) ? '' : "\n";
+            $string .= ($inline === true) ? '' : "\n";
             $string .= '|'.$paramName.'='.$paramValue;
         }
         $string .= '}}';
 
         return $string;
-    }
-
-    /**
-     * @param $name
-     *
-     * @throws \Exception
-     */
-    protected function checkParamName($name): void
-    {
-        // that parameter exists in template ?
-        if (!in_array($name, $this->parametersByOrder)) {
-            throw new \Exception(
-                printf(
-                    'no parameter "%s" in template "%s"',
-                    $name,
-                    static::MODEL_NAME
-                )
-            );
-        }
     }
 
     /**
@@ -214,7 +233,8 @@ abstract class AbstractWikiTemplate
             }
             foreach ($newOrder as $paramName) {
                 if (isset($this->parametersValues[$paramName])) {
-                    $renderParams[$paramName] = $this->parametersValues[$paramName];
+                    $renderParams[$paramName]
+                        = $this->parametersValues[$paramName];
                 }
             }
         }
@@ -223,7 +243,8 @@ abstract class AbstractWikiTemplate
         if (empty($this->parametersByUser)) {
             foreach ($this->parametersByOrder as $order => $paramName) {
                 if (isset($this->parametersValues[$paramName])) {
-                    $renderParams[$paramName] = $this->parametersValues[$paramName];
+                    $renderParams[$paramName]
+                        = $this->parametersValues[$paramName];
                 }
             }
         }

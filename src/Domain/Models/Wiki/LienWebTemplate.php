@@ -10,6 +10,15 @@ use App\Domain\TextUtil;
 class LienWebTemplate extends AbstractWikiTemplate
 {
     const MODEL_NAME = 'lien web';
+    const REQUIRED_PARAMETERS
+                     = [
+            'langue' => '',
+            'titre' => '',
+            'url' => '',
+            'date' => '',
+            'site' => '',
+            'consulté le' => '', // required ?
+        ];
 
     protected $parametersByOrder
         = [
@@ -73,20 +82,16 @@ class LienWebTemplate extends AbstractWikiTemplate
             'dead-url',
         ];
 
-    protected $requiredParameters
-        = [
-            'langue' => '',
-            'titre' => '',
-            'url' => '',
-            'date' => '',
-            'site' => '',
-            'consulté le' => '', // required ?
-        ];
-
 
     protected function setTitre(string $titre)
     {
-        $this->parametersValues['titre'] = TextUtil::mb_ucfirst($titre);
+        // Typo : majuscule
+        $titre = TextUtil::mb_ucfirst($titre);
+        // Typo : sous-titre précédé de " : "
+        $titre = preg_replace('#[ ]*\:[ ]*#', ' : ', $titre);
+        // todo typo : déplacer sous-titre dans [sous-titre]
+
+        $this->parametersValues['titre'] = $titre;
     }
 
 }
