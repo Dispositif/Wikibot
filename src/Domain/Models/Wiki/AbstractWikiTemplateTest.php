@@ -76,6 +76,20 @@ class AbstractWikiTemplateTest extends TestCase
         $lienWeb->hydrate($data);
     }
 
+    public function testAliasParameter()
+    {
+        $lienWeb = new LienWebTemplate();
+        $lienWeb->hydrate(
+            [
+                'lang' => 'fr',
+            ]
+        );
+        $this::assertEquals(
+            '{{lien web|langue=fr|titre=|url=|site=|date=|consulté le=}}',
+            $lienWeb->serialize()
+        );
+    }
+
     public function testMagicGetter()
     {
         $lienWeb = new LienWebTemplate();
@@ -121,7 +135,7 @@ class AbstractWikiTemplateTest extends TestCase
 
         $lienWeb = new LienWebTemplate();
         $lienWeb->hydrate($data);
-        $lienWeb->setParametersByUser(['url', 'langue', 'titre']);
+        $lienWeb->setParamOrderByUser(['url', 'langue', 'titre']);
 
         $this::assertEquals(
             '{{lien web|url=http://google.com|langue=fr|titre=|site=|date=|consulté le=}}',

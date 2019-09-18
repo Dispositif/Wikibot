@@ -2,9 +2,13 @@
 
 namespace App\Domain\Models\Wiki;
 
+/**
+ * Class AbstractWikiTemplate
+ */
 abstract class AbstractWikiTemplate
 {
     const MODEL_NAME = '';
+    const PARAM_ALIAS = [];
     /**
      * todo : modify to [a,b,c] ?
      */
@@ -17,7 +21,8 @@ abstract class AbstractWikiTemplate
      * @var array
      */
     protected $parametersByOrder = [];
-    protected $parametersByUser = [];
+
+    protected $paramOrderByUser = [];
     protected $parametersValues;
 
     /**
@@ -50,11 +55,13 @@ abstract class AbstractWikiTemplate
      */
     public function __get($param): ?string
     {
+        $this->checkParamName($param);
+
         if (!empty($this->parametersValues[$param])) {
             return $this->parametersValues[$param];
         }
-        $this->checkParamName($param);
 
+        // todo param_alias ?
         return null;
     }
 
@@ -78,7 +85,9 @@ abstract class AbstractWikiTemplate
     protected function checkParamName($name): void
     {
         // that parameter exists in template ?
-        if (!in_array($name, $this->parametersByOrder)) {
+        if (!in_array($name, $this->parametersByOrder)
+            && !array_key_exists($name, static::PARAM_ALIAS)
+        ) {
             throw new \Exception(
                 sprintf(
                     'no parameter "%s" in template "%s"',
@@ -112,13 +121,8 @@ abstract class AbstractWikiTemplate
      */
     protected function hydrateTemplateParameter($name, string $value): void
     {
-        if (!is_string($value)) {
-            throw new \Exception("parameter's value is not a string");
-        }
-
         // if name = 1,2,3,4 -> replaced by the 1st, 2nd... parameter name
         // from the required parameters list
-        // TODO : test
         if (is_int($name) && $name > 0) {
             $defaultKeys = array_keys(static::REQUIRED_PARAMETERS);
             if (!array_key_exists($name - 1, $defaultKeys)) {
@@ -129,6 +133,8 @@ abstract class AbstractWikiTemplate
             $name = $defaultKeys[$name - 1];
         }
 
+        // Gestion alias
+        $name = $this->getAliasParam($name);
         $this->checkParamName($name);
 
         if (empty($value)) {
@@ -154,6 +160,20 @@ abstract class AbstractWikiTemplate
     }
 
     /**
+     * @param string $name
+     *
+     * @return string
+     */
+    protected function getAliasParam(string $name): string
+    {
+        if (key_exists($name, static::PARAM_ALIAS)) {
+            $name = static::PARAM_ALIAS[$name];
+        }
+
+        return $name;
+    }
+
+    /**
      * Magic param setter
      *
      * @param $name
@@ -174,16 +194,19 @@ abstract class AbstractWikiTemplate
     }
 
     /**
-     * @param array $params
+     * @param array $params [a,b,c]
      *
      * @throws \Exception
      */
-    public function setParametersByUser(array $params): void
+    public function setParamOrderByUser(array $params): void
     {
+        $validParams = [];
         foreach ($params as $name) {
             $this->checkParamName($name);
+            $name = $this->getAliasParam($name);
+            $validParams[] = $name;
         }
-        $this->parametersByUser = $params;
+        $this->paramOrderByUser = $validParams;
     }
 
     // todo useless ?
@@ -204,6 +227,9 @@ abstract class AbstractWikiTemplate
     final public function serialize(bool $inline = true): string
     {
         $paramsByRenderOrder = $this->paramsByRenderOrder();
+        $paramsByRenderOrder = $this->filterEmptyNotRequired(
+            $paramsByRenderOrder
+        );
 
         $string = '{{'.static::MODEL_NAME;
         foreach ($paramsByRenderOrder AS $paramName => $paramValue) {
@@ -223,9 +249,9 @@ abstract class AbstractWikiTemplate
         $renderParams = [];
 
         // By user order TODO: extract?
-        if (!empty($this->parametersByUser)) {
+        if (!empty($this->paramOrderByUser)) {
             // merge parameter orders (can't use the array operator +)
-            $newOrder = $this->parametersByUser;
+            $newOrder = $this->paramOrderByUser;
             foreach ($this->parametersByOrder as $paramName) {
                 if (!in_array($paramName, $newOrder)) {
                     $newOrder = array_merge($newOrder, [$paramName]);
@@ -240,7 +266,7 @@ abstract class AbstractWikiTemplate
         }
 
         // default order
-        if (empty($this->parametersByUser)) {
+        if (empty($this->paramOrderByUser)) {
             foreach ($this->parametersByOrder as $order => $paramName) {
                 if (isset($this->parametersValues[$paramName])) {
                     $renderParams[$paramName]
@@ -250,6 +276,26 @@ abstract class AbstractWikiTemplate
         }
 
         return $renderParams;
+    }
+
+    /**
+     * Delete key if empty value and the key not required
+     *
+     * @param array $params
+     *
+     * @return array
+     */
+    protected function filterEmptyNotRequired(array $params): array
+    {
+        $render = [];
+        foreach ($params as $name => $value) {
+            if (empty($value) && !isset(static::REQUIRED_PARAMETERS[$name])) {
+                continue;
+            }
+            $render[$name] = $params[$name];
+        }
+
+        return $render;
     }
 
 }

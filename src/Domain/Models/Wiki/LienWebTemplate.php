@@ -20,6 +20,8 @@ class LienWebTemplate extends AbstractWikiTemplate
             'consulté le' => '', // required ?
         ];
 
+    const PARAM_ALIAS = ['lang' => 'langue']; // test purpose
+
     protected $parametersByOrder
         = [
             'langue',
@@ -81,7 +83,6 @@ class LienWebTemplate extends AbstractWikiTemplate
             'archive-date',
             'dead-url',
         ];
-
 
     protected function setTitre(string $titre)
     {
