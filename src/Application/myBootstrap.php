@@ -6,6 +6,9 @@ $bootstrap = true;
 
 error_reporting(E_ALL);
 ini_set('display_errors', 'on');
+//set_time_limit(0);
+setlocale(LC_ALL, 'fr_FR.UTF-8');
+date_default_timezone_set('Europe/Paris');
 
 include __DIR__.'/../../vendor/autoload.php';
 
