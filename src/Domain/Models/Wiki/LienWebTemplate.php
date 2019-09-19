@@ -12,14 +12,16 @@ class LienWebTemplate extends AbstractWikiTemplate
     const MODEL_NAME = 'lien web';
     const REQUIRED_PARAMETERS
                      = [
-            'langue' => '',
-            'titre' => '',
-            'url' => '',
-            'date' => '',
-            'site' => '',
+//            'langue' => '', // suggéré
+//            'auteur1' => '', // suggéré
+            'titre' => '', // required
+            'url' => '', // required
+//            'date' => '', // suggéré
+//            'site' => '', // suggéré
             'consulté le' => '', // required ?
         ];
 
+    // TODO  https://fr.wikipedia.org/wiki/Mod%C3%A8le:Lien_web#TemplateData
     const PARAM_ALIAS = ['lang' => 'langue']; // test purpose
 
     protected $parametersByOrder

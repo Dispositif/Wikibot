@@ -87,6 +87,7 @@ abstract class AbstractWikiTemplate
         // that parameter exists in template ?
         if (!in_array($name, $this->parametersByOrder)
             && !array_key_exists($name, static::PARAM_ALIAS)
+            && !in_array($name,[1,2,3,4])
         ) {
             throw new \Exception(
                 sprintf(
@@ -107,6 +108,7 @@ abstract class AbstractWikiTemplate
     public function hydrate(array $data): AbstractWikiTemplate
     {
         foreach ($data as $name => $value) {
+            //$name = (string) $name; // keyNumber as paramName
             $this->hydrateTemplateParameter($name, $value);
         }
 
@@ -123,9 +125,10 @@ abstract class AbstractWikiTemplate
     {
         // if name = 1,2,3,4 -> replaced by the 1st, 2nd... parameter name
         // from the required parameters list
-        if (is_int($name) && $name > 0) {
+        if (is_int($name) || in_array($name, ['1','2','3','4','5'])) {
+            $keyNum = (int) $name;
             $defaultKeys = array_keys(static::REQUIRED_PARAMETERS);
-            if (!array_key_exists($name - 1, $defaultKeys)) {
+            if (!array_key_exists($keyNum - 1, $defaultKeys)) {
                 throw new \Exception(
                     "parameter $name does not exist in ".static::MODEL_NAME
                 );

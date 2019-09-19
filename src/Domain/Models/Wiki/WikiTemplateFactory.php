@@ -8,17 +8,22 @@ namespace App\Domain\Models\Wiki;
  */
 abstract class WikiTemplateFactory
 {
-
-    static public function create(string $templateName) //:AbstractWikiTemplate
+    /**
+     * @param string $templateName
+     *
+     * @return AbstractWikiTemplate|null
+     * @throws \Exception
+     */
+    static public function create(string $templateName): ?AbstractWikiTemplate
     {
-        switch ($templateName){
+        switch ($templateName) {
             case 'ouvrage':
                 return new OuvrageTemplate();
             case 'lien web':
                 return new LienWebTemplate();
             default:
-                throw new \Exception("template $templateName unknown");
-                break;
+                // throw new \LogicException('template "'.$templateName.'" unknown');
+                return null;
         }
     }
 }

@@ -48,7 +48,6 @@ class WikiRef
      *              ...
      *     ]
      *  ]
-     * todo logic : case of multiple occurrences of the same wikiTemplate
      *
      * @throws \Exception
      */
@@ -59,34 +58,45 @@ class WikiRef
         $this->findTemplateNames();
         $allTempNames = $this->getTemplateNames();
 
+
         foreach ($allTempNames as $templName) {
-            $raw = $this->wikiTextUtil::findAllTemplates(
-                $templName,
-                $this->refText
-            );
-            // todo Verif if matches findAllTemplates > 0
-            if (empty($raw) || empty($raw[0])) {
-                continue;
-            }
-            $this->templateParsed[$templName] = ['raw' => $raw[0]];
-
-            try{
-                $templObject = WikiTemplateFactory::create($templName);
-            }catch (\Throwable $e){
-                unset($e);
-                continue;
-            }
-
-            $data = $this->wikiTextUtil::parsingTemplate(
-                $templName,
-                $this->refText,
-                false,
-                false
-            );
-
-            $templObject->hydrate($data);
-            $this->templateParsed[$templName]['model'] = $templObject;
+            $this->parseOneTemplate($templName);
         }
+    }
+
+    /**
+     * todo logic : multiple occurrences of the same wikiTemplate
+     * @param string $templName
+     *
+     * @throws \Exception
+     */
+    private function parseOneTemplate(string $templName):void
+    {
+        // Extract wikitext from that template
+        $raw = $this->wikiTextUtil::findAllTemplates(
+            $templName,
+            $this->refText
+        );
+        // todo Verif if matches findAllTemplates > 0 and >= 2
+        if (empty($raw) || empty($raw[0])) {
+            return;
+        }
+        $this->templateParsed[$templName] = ['raw' => $raw[0]];
+
+        // create an object of the template
+        $templObject = WikiTemplateFactory::create($templName);
+        if( !is_object($templObject) || !is_subclass_of($templObject,
+                AbstractWikiTemplate::class) ) {
+            return;
+        }
+
+        $data = $this->wikiTextUtil::parsingTemplate(
+            $templName,
+            $this->refText
+        );
+
+        $templObject->hydrate($data);
+        $this->templateParsed[$templName]['model'] = $templObject;
     }
 
     /**

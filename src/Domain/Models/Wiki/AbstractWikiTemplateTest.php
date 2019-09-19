@@ -6,11 +6,13 @@ use PHPUnit\Framework\TestCase;
 
 class AbstractWikiTemplateTest extends TestCase
 {
-
+    /**
+     * @throws \Exception
+     */
     public function testSerialize()
     {
         $data = [
-            1 => 'fr',
+//            '1' => 'fr',
             'url' => 'http://google.com',
             'auteur1' => 'Bob',
             'date' => '2010-11-25',
@@ -23,17 +25,15 @@ class AbstractWikiTemplateTest extends TestCase
         $actual = $lienWeb->serialize();
 
         $this::assertEquals(
-            '{{lien web|langue=fr|auteur1=Bob|titre=Foo bar|url=http://google.com|site=|date=2010-11-25|consulté le=}}',
+            '{{lien web|auteur1=Bob|titre=Foo bar|url=http://google.com|date=2010-11-25|consulté le=}}',
             $actual
         );
 
         $this::assertEquals(
             '{{lien web
-|langue=fr
 |auteur1=Bob
 |titre=Foo bar
 |url=http://google.com
-|site=
 |date=2010-11-25
 |consulté le=}}',
             $lienWeb->serialize(false)
@@ -57,8 +57,6 @@ class AbstractWikiTemplateTest extends TestCase
                 'auteur1' => 'Bob',
                 'date' => '2010-11-25',
                 'titre' => 'Foo bar',
-                'langue' => '',
-                'site' => '',
                 'consulté le' => '',
             ],
             $lienWeb->toArray()
@@ -85,7 +83,7 @@ class AbstractWikiTemplateTest extends TestCase
             ]
         );
         $this::assertEquals(
-            '{{lien web|langue=fr|titre=|url=|site=|date=|consulté le=}}',
+            '{{lien web|langue=fr|titre=|url=|consulté le=}}',
             $lienWeb->serialize()
         );
     }
@@ -121,7 +119,7 @@ class AbstractWikiTemplateTest extends TestCase
         );
 
         $this::assertEquals(
-            '{{lien web|langue=|titre=|url=|site=|date=|consulté le=}}',
+            '{{lien web|titre=|url=|consulté le=}}',
             $lienWeb->serialize()
         );
     }
@@ -138,7 +136,7 @@ class AbstractWikiTemplateTest extends TestCase
         $lienWeb->setParamOrderByUser(['url', 'langue', 'titre']);
 
         $this::assertEquals(
-            '{{lien web|url=http://google.com|langue=fr|titre=|site=|date=|consulté le=}}',
+            '{{lien web|url=http://google.com|langue=fr|titre=|consulté le=}}',
             $lienWeb->serialize()
         );
     }

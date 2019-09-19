@@ -45,36 +45,37 @@ abstract class WikiTextUtil extends TextUtil
      *
      * @return mixed
      */
-//    static public function findAllTemplatesWithLang($nommodele, $text)
-//    {
-//        $this->lang_findallmodele = [];
-//        //OK : preg_match_all("#\{\{".preg_quote($nommodele, '#')."[ \t \n\r]*\|([^\{\}]*(\{\{[^\{\}]+\}\}[^\{\}]*)*)\}\}#i", $text, $matches);
-//        preg_match_all(
-//            "#\{\{".preg_quote($nommodele, '#')
-//            ."[ \t \n\r]*\|[^\{\}]*(?:\{\{[^\{\}]+\}\}[^\{\}]*)*\}\}#i",
-//            $text,
-//            $matches
-//        );
-//        foreach ($matches[0] AS $key => $template) {
-//            if (preg_match(
-//                    '#\{\{([a-zA-Z]{2})\}\}[  ]?'.preg_quote($template, '#')
-//                    .'#',
-//                    $text,
-//                    $mama
-//                ) == true
-//            ) {
-//                $this->lang_findallmodele[$key] = $mama[1];
-//                $matches[0][$key] = $mama[0];
-//            }
-//        }
-//
-//        return $matches[0];
-//    }
+    //    static public function findAllTemplatesWithLang($nommodele, $text)
+    //    {
+    //        $this->lang_findallmodele = [];
+    //        //OK : preg_match_all("#\{\{".preg_quote($nommodele, '#')."[ \t \n\r]*\|([^\{\}]*(\{\{[^\{\}]+\}\}[^\{\}]*)*)\}\}#i", $text, $matches);
+    //        preg_match_all(
+    //            "#\{\{".preg_quote($nommodele, '#')
+    //            ."[ \t \n\r]*\|[^\{\}]*(?:\{\{[^\{\}]+\}\}[^\{\}]*)*\}\}#i",
+    //            $text,
+    //            $matches
+    //        );
+    //        foreach ($matches[0] AS $key => $template) {
+    //            if (preg_match(
+    //                    '#\{\{([a-zA-Z]{2})\}\}[  ]?'.preg_quote($template, '#')
+    //                    .'#',
+    //                    $text,
+    //                    $mama
+    //                ) === true
+    //            ) {
+    //                $this->lang_findallmodele[$key] = $mama[1];
+    //                $matches[0][$key] = $mama[0];
+    //            }
+    //        }
+    //
+    //        return $matches[0];
+    //    }
 
 
     /**
      * Parsing of any wiki template from text and templateName
      * todo legacy
+     * todo multiple occurrence of the same template
      *
      * @param string $templateName
      * @param string $text
@@ -86,37 +87,27 @@ abstract class WikiTextUtil extends TextUtil
      */
     static public function parsingTemplate(
         string $templateName,
-        string $text,
-        $arrayAlias = false,
-        bool $stripComments = false
+        string $text
     ): array {
-        // Vérif présence modèle
+        $tableau = [];
         $text = str_replace("\n", '', $text);
 
-        if (!preg_match(
-            "~\{\{".preg_quote($templateName, '~')
-            ."[\ \t\ \n\r]*\|([^\{\}]*(?:\{\{[^\{\}]+\}\}[^\{\}]*)*)\}\}~i",
-            $text,
-            $matches
-        )
-        ) {
-            throw new \Exception("Template $templateName not found");
+        // Vérif présence modèle
+
+        $matches = self::findTemplateInText($templateName, $text);
+
+        // $matches[0] : {{lien web|...}}
+        if ($matches === false) {
+            throw new \LogicException(
+                "Template $templateName not found in text"
+            );
+        }
+        // $matches[1] : url=blabla|titre=Popo
+        if ($matches[1] === false) {
+            throw new \LogicException("No parameters found in $templateName");
         }
 
-
-        $param = ''; // aucune idée de l'utilité
-
-        // $matches[0][0] = {{modèle...}}
-        if ($stripComments == true) {
-            $matches[1] = preg_replace('#<\!--.*-->#', '', $matches[1][0]);
-        }
-        if ($matches[1] == false) {
-            echo "\nErreur : parsingTemplate() mais pas de paramètres -> $text \n";
-
-            return false;
-        }
-
-        preg_match_all(
+        $res = preg_match_all(
             "/
 			(
 	  			[^\|=]*=?                          # paramètre (ou valeur sans =)
@@ -134,40 +125,85 @@ abstract class WikiTextUtil extends TextUtil
             $mama
         );
 
+        if ($res === false || $res === 0 || empty($mama[1])) {
+            throw new \LogicException(
+                "Parameters from template '$templateName' can't be parsed"
+            );
+        }
+
         // todo preg_match_all > 0
+        // $mama[1]: ['url=blabla', 'titre=popo']
 
-        $i = 1;
+        $keyNum = 0;
         foreach ($mama[1] as $ligne) {
-            if ($ligne == true) {
-                $ligne = str_replace(
-                    ["\t", "\n", "\r", " "],
-                    ['', '', '', ' '],
-                    $ligne
-                ); // perte cosmétique : est-ce bien ? + espace insécable remplacé par espace sécable
-
-                if (($pos = strpos($ligne, '=')) == true AND $param
-                    != 'ISBN'
-                ) { // Bug encodage avec strtolower !
-                    $param = mb_strtolower(substr($ligne, 0, $pos), 'UTF-8');
-                    $value = substr(
-                        $ligne,
-                        $pos + 1
-                    ); // ok si plusieurs param=...=...
-                }else { // pas de nom paramètre => |1= valeur
-                    $param = $i;
-                    $value = $ligne;
-                    $i++;
-                }
-                if (trim($value) == true) {
-                    if ($arrayAlias[trim($param)] == true) { // alias
-                        $param = $arrayAlias[trim($param)];
-                    }
-                    $tableau[trim($param)] = trim($value);
-                }
+            if (empty($ligne)) {
+                continue;
             }
+            $ligne = str_replace(
+                ["\t", "\n", "\r", " "],
+                ['', '', '', ' '],
+                $ligne
+            ); // perte cosmétique : est-ce bien ? + espace insécable remplacé par espace sécable
+
+            unset($param);unset($value);
+
+            // $ligne : fu = bar
+            // ok with : fu = bar = coco
+            if (($pos = strpos($ligne, '=')) >= 0 ) {
+                $param = mb_strtolower(substr($ligne, 0, $pos), 'UTF-8');
+                $value = substr(
+                    $ligne,
+                    $pos + 1
+                );
+            }
+
+            // No param name => take $keyNum as param name
+            if( $pos === false ) {
+                $keyNum++;
+                $param = (string) $keyNum;
+                $value = $ligne;
+            }
+
+            if(!isset($param) || !isset($value)) {
+                throw new \LogicException('param/value variable not defined');
+            }
+
+            // TODO : accept empty value ?
+            if (strlen(trim($value)) === false ) {
+                continue;
+            }
+
+            $tableau[trim($param)] = trim($value);
         }
 
         return $tableau;
+    }
+
+    /**
+     * TODO : use preg_match_all to find multiple occurrence of a template
+     * @param string $templateName
+     * @param string $text
+     *
+     * @return array|null
+     */
+    static private function findTemplateInText(
+        string $templateName,
+        string $text
+    ): ?array
+    {
+        $text = str_replace("\n", '', $text);
+
+        if (preg_match(
+                "~\{\{".preg_quote($templateName, '~')
+                ."[\ \t\ \n\r]*\|([^\{\}]*(?:\{\{[^\{\}]+\}\}[^\{\}]*)*)\}\}~i",
+                $text,
+                $matches
+            ) > 0
+        ) {
+            return $matches;
+        }
+
+        return false;
     }
 
     /**
@@ -196,7 +232,7 @@ abstract class WikiTextUtil extends TextUtil
             )
         );
         $text = str_replace(['<small>', '</small>'], '', $text);
-        if ($stripcomment == true) {
+        if ($stripcomment === true) {
             $text = preg_replace("#<\!--([^>]*)-->#", '', $text);
         }
 
@@ -225,49 +261,49 @@ abstract class WikiTextUtil extends TextUtil
      *
      * @return bool|string
      */
-//    static public function mix_templateinfos(
-//        $nom,
-//        array $template,
-//        array $infos,
-//        $defaultvalue = true
-//    ) {
-//        if ($nom == false OR $template == false OR $infos == false) {
-//            die('erreur : mix_infobox() erreur');
-//
-//            return false;
-//        }
-//
-//        $botedit_utile = false;
-//        if ((array_diff_key($template, $infos) == true) OR (array_diff_key(
-//                    $template,
-//                    $infos
-//                ) == true)
-//        ) {
-//            $botedit_utile = true;
-//        }
-//
-//        $wikitext = "{{Infobox ".ucfirst(trim($nom));
-//        foreach ($template as $parametre => $value) {
-//            $wikitext .= "\n | ".$parametre.' ';
-//            if (strlen(utf8_decode($parametre)) <= 7) {
-//                $wikitext .= "\t\t";
-//            }elseif (strlen(utf8_decode($parametre)) <= 12) {
-//                $wikitext .= "\t";
-//            }
-//            $wikitext .= '= '.$infos[$parametre];
-//            if ($infos[$parametre] == false AND $defaultvalue == true) {
-//                $wikitext .= $value;
-//                $botedit_utile = true;
-//            }
-//        }
-//        $wikitext .= "\n}}";
-//
-//        if ($botedit_utile == true) {
-//            return $wikitext;
-//        }else {
-//            return false;
-//        }
-//    }
+    //    static public function mix_templateinfos(
+    //        $nom,
+    //        array $template,
+    //        array $infos,
+    //        $defaultvalue = true
+    //    ) {
+    //        if ($nom === false OR $template === false OR $infos === false) {
+    //            die('erreur : mix_infobox() erreur');
+    //
+    //            return false;
+    //        }
+    //
+    //        $botedit_utile = false;
+    //        if ((array_diff_key($template, $infos) === true) OR (array_diff_key(
+    //                    $template,
+    //                    $infos
+    //                ) === true)
+    //        ) {
+    //            $botedit_utile = true;
+    //        }
+    //
+    //        $wikitext = "{{Infobox ".ucfirst(trim($nom));
+    //        foreach ($template as $parametre => $value) {
+    //            $wikitext .= "\n | ".$parametre.' ';
+    //            if (strlen(utf8_decode($parametre)) <= 7) {
+    //                $wikitext .= "\t\t";
+    //            }elseif (strlen(utf8_decode($parametre)) <= 12) {
+    //                $wikitext .= "\t";
+    //            }
+    //            $wikitext .= '= '.$infos[$parametre];
+    //            if ($infos[$parametre] === false AND $defaultvalue === true) {
+    //                $wikitext .= $value;
+    //                $botedit_utile = true;
+    //            }
+    //        }
+    //        $wikitext .= "\n}}";
+    //
+    //        if ($botedit_utile === true) {
+    //            return $wikitext;
+    //        }else {
+    //            return false;
+    //        }
+    //    }
 
 
     /**
@@ -299,33 +335,33 @@ abstract class WikiTextUtil extends TextUtil
      *
      * @return array
      */
-    static public function findUsernames(string $text): array
-    {
-        $usernames = [];
-
-        if (preg_match_all(
-                '#\[\[(?:utilisateur|utilisatrice|user)\:([^\]\|]+)#i',
-                $text,
-                $matches
-            ) == true
-        ) {
-            foreach ($matches[1] as $id => $nom) {
-                $usernames[trim($nom)]++;
-            }
-        }
-        if (preg_match_all(
-                '#\{\{(?:u|u\'|user|utilisateur|utilisatrice|identité|IP)\|([^\}]+)\}\}#i',
-                $text,
-                $matches
-            ) == true
-        ) {
-            foreach ($matches[1] as $id => $nom) {
-                $usernames[trim($nom)]++;
-            }
-        }
-
-        return $usernames;
-    }
+    //    static public function findUsernames(string $text): array
+    //    {
+    //        $usernames = [];
+    //
+    //        if (preg_match_all(
+    //                '#\[\[(?:utilisateur|utilisatrice|user)\:([^\]\|]+)#i',
+    //                $text,
+    //                $matches
+    //            ) === true
+    //        ) {
+    //            foreach ($matches[1] as $id => $nom) {
+    //                $usernames[trim($nom)]++;
+    //            }
+    //        }
+    //        if (preg_match_all(
+    //                '#\{\{(?:u|u\'|user|utilisateur|utilisatrice|identité|IP)\|([^\}]+)\}\}#i',
+    //                $text,
+    //                $matches
+    //            ) === true
+    //        ) {
+    //            foreach ($matches[1] as $id => $nom) {
+    //                $usernames[trim($nom)]++;
+    //            }
+    //        }
+    //
+    //        return $usernames;
+    //    }
 
     /**
      * Retourne l'intro sans infobox
@@ -335,20 +371,20 @@ abstract class WikiTextUtil extends TextUtil
      *
      * @return string|string[]|null
      */
-    static public function get_intro_text($text)
-    {
-        $text = preg_replace('#==.*#s', '', $text); // texte après ==
-        $text = preg_replace("#^[^A-Za-z'].*$#", '', $text);
-        //$text = preg_replace('#\{\{[^\}]+\}\}#', '', $text); // {{...}}
-        //$text = preg_replace('#\{\{[^\}]+\}\}#s', '', $text);
-
-        $text = preg_replace(
-            '#\[\[(?:image|file)[^\]\r]+(?:\[\[[^\]]+\]\][^\]\[\r\n]*)*\]\]#i',
-            '',
-            $text
-        ); // images
-
-        return $text;
-    }
+    //    static public function get_intro_text($text)
+    //    {
+    //        $text = preg_replace('#==.*#s', '', $text); // texte après ==
+    //        $text = preg_replace("#^[^A-Za-z'].*$#", '', $text);
+    //        //$text = preg_replace('#\{\{[^\}]+\}\}#', '', $text); // {{...}}
+    //        //$text = preg_replace('#\{\{[^\}]+\}\}#s', '', $text);
+    //
+    //        $text = preg_replace(
+    //            '#\[\[(?:image|file)[^\]\r]+(?:\[\[[^\]]+\]\][^\]\[\r\n]*)*\]\]#i',
+    //            '',
+    //            $text
+    //        ); // images
+    //
+    //        return $text;
+    //    }
 
 }
