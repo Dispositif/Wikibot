@@ -13,6 +13,7 @@ abstract class WikiTextUtil extends TextUtil
     /**
      *  find all the recurrences of a wiki's template in a text
      * Compatible with inclusion of sub-templates.
+     *
      * Example :
      * {{Infobox |pays={{pays|France}} }}
      * retourne array {{modèle|...}}
@@ -22,21 +23,26 @@ abstract class WikiTextUtil extends TextUtil
      *
      * @return array
      */
-    static public function findAllTemplates(string $templateName, string $text)
+    static public function findAllTemplatesByName(string $templateName, string
+    $text):array
     {
-        preg_match_all(
+        $res = preg_match_all(
             "#\{\{[ ]*".preg_quote(trim($templateName), '#')
             ."[ \t \n\r]*\|[^\{\}]*(?:\{\{[^\{\}]+\}\}[^\{\}]*)*\}\}#i",
             $text,
             $matches
         );
 
+        if($res === false ) {
+            return [];
+        }
+
+        return $matches[0]; // array [ 0=>{{bla|...}}, 1=>{{bla|...}} ]
         //OK : preg_match_all("#\{\{".preg_quote(trim($nommodele), '#')."[ \t \n\r]*\|([^\{\}]*(\{\{[^\{\}]+\}\}[^\{\}]*)*)\}\}#i", $text, $matches);
-        return $matches[0];
     }
 
     /**
-     * Same as findAllTemplates but include the language detection on
+     * Same as findAllTemplatesByName but include the language detection on
      * language template placed before
      * Example {{fr}} {{ouvrage|...}}
      *
