@@ -98,7 +98,7 @@ class WikiRef
                 continue;
             }
 
-            $data = $this->wikiTextUtil::parsingTemplate($templName, $tmplText);
+            $data = $this->wikiTextUtil::parseDataFromTemplate($templName, $tmplText);
 
             $templObject->hydrate($data);
             $this->templateParsed[$templName][$inc] += ['model' => $templObject];

@@ -42,75 +42,63 @@ abstract class WikiTextUtil extends TextUtil
     }
 
     /**
-     * Same as findAllTemplatesByName but include the language detection on
-     * language template placed before
-     * Example {{fr}} {{ouvrage|...}}
+     * For multiple occurrences see findAllTemplatesByName()
      *
-     * @param $nommodele
-     * @param $text
+     * @param string $templateName
+     * @param string $text
      *
-     * @return mixed
+     * @return array|null
      */
-    //    static public function findAllTemplatesWithLang($nommodele, $text)
-    //    {
-    //        $this->lang_findallmodele = [];
-    //        //OK : preg_match_all("#\{\{".preg_quote($nommodele, '#')."[ \t \n\r]*\|([^\{\}]*(\{\{[^\{\}]+\}\}[^\{\}]*)*)\}\}#i", $text, $matches);
-    //        preg_match_all(
-    //            "#\{\{".preg_quote($nommodele, '#')
-    //            ."[ \t \n\r]*\|[^\{\}]*(?:\{\{[^\{\}]+\}\}[^\{\}]*)*\}\}#i",
-    //            $text,
-    //            $matches
-    //        );
-    //        foreach ($matches[0] AS $key => $template) {
-    //            if (preg_match(
-    //                    '#\{\{([a-zA-Z]{2})\}\}[  ]?'.preg_quote($template, '#')
-    //                    .'#',
-    //                    $text,
-    //                    $mama
-    //                ) === true
-    //            ) {
-    //                $this->lang_findallmodele[$key] = $mama[1];
-    //                $matches[0][$key] = $mama[0];
-    //            }
-    //        }
-    //
-    //        return $matches[0];
-    //    }
+    static private function findFirstTemplateInText(
+        string $templateName,
+        string $text
+    ): ?array
+    {
+        $text = str_replace("\n", '', $text);
+
+        if (preg_match(
+                "~\{\{".preg_quote($templateName, '~')
+                ."[\ \t\ \n\r]*\|([^\{\}]*(?:\{\{[^\{\}]+\}\}[^\{\}]*)*)\}\}~i",
+                $text,
+                $matches
+            ) > 0
+        ) {
+            return $matches;
+        }
+
+        return null;
+    }
 
 
     /**
      * Parsing of any wiki template from text and templateName
+     * Using the first {{template}} definition found in text
      * todo legacy
-     * todo multiple occurrence of the same template
      *
-     * @param string $templateName
+     * @param string $tplName
      * @param string $text
-     * @param bool   $arrayAlias
-     * @param bool   $stripComments
      *
      * @return array
-     * @throws \Exception
      */
-    static public function parsingTemplate(
-        string $templateName,
+    static public function parseDataFromTemplate(
+        string $tplName,
         string $text
     ): array {
-        $tableau = [];
+        $data = [];
         $text = str_replace("\n", '', $text);
 
-        // Vérif présence modèle
+        // check {{template}} in text
+        $tplFounded = self::findFirstTemplateInText($tplName, $text);
 
-        $matches = self::findTemplateInText($templateName, $text);
-
-        // $matches[0] : {{lien web|...}}
-        if ($matches === false) {
+        // $matches[0] : {{template|...}}
+        if ($tplFounded === null) {
             throw new \LogicException(
-                "Template $templateName not found in text"
+                "Template $tplName not found in text"
             );
         }
         // $matches[1] : url=blabla|titre=Popo
-        if ($matches[1] === false) {
-            throw new \LogicException("No parameters found in $templateName");
+        if ($tplFounded[1] === false) {
+            throw new \LogicException("No parameters found in $tplName");
         }
 
         $res = preg_match_all(
@@ -127,21 +115,19 @@ abstract class WikiTextUtil extends TextUtil
 		 		)*
 	 		)\|?
 		/x",
-            $matches[1],
-            $mama
+            $tplFounded[1],
+            $wikiParams
         );
 
-        if ($res === false || $res === 0 || empty($mama[1])) {
+        if ($res === false || $res === 0 || empty($wikiParams[1])) {
             throw new \LogicException(
-                "Parameters from template '$templateName' can't be parsed"
+                "Parameters from template '$tplName' can't be parsed"
             );
         }
 
-        // todo preg_match_all > 0
-        // $mama[1]: ['url=blabla', 'titre=popo']
-
+        // $wikiParams[1]: ['url=blabla', 'titre=popo']
         $keyNum = 0;
-        foreach ($mama[1] as $ligne) {
+        foreach ($wikiParams[1] as $ligne) {
             if (empty($ligne)) {
                 continue;
             }
@@ -179,38 +165,49 @@ abstract class WikiTextUtil extends TextUtil
                 continue;
             }
 
-            $tableau[trim($param)] = trim($value);
+            $data[trim($param)] = trim($value);
         }
 
-        return $tableau;
+        return $data;
     }
+
 
     /**
-     * TODO : use preg_match_all to find multiple occurrence of a template
-     * @param string $templateName
-     * @param string $text
+     * Same as findAllTemplatesByName but include the language detection on
+     * language template placed before
+     * Example {{fr}} {{ouvrage|...}}
      *
-     * @return array|null
+     * @param $nommodele
+     * @param $text
+     *
+     * @return mixed
      */
-    static private function findTemplateInText(
-        string $templateName,
-        string $text
-    ): ?array
-    {
-        $text = str_replace("\n", '', $text);
+    //    static public function findAllTemplatesWithLang($nommodele, $text)
+    //    {
+    //        $this->lang_findallmodele = [];
+    //        //OK : preg_match_all("#\{\{".preg_quote($nommodele, '#')."[ \t \n\r]*\|([^\{\}]*(\{\{[^\{\}]+\}\}[^\{\}]*)*)\}\}#i", $text, $matches);
+    //        preg_match_all(
+    //            "#\{\{".preg_quote($nommodele, '#')
+    //            ."[ \t \n\r]*\|[^\{\}]*(?:\{\{[^\{\}]+\}\}[^\{\}]*)*\}\}#i",
+    //            $text,
+    //            $matches
+    //        );
+    //        foreach ($matches[0] AS $key => $template) {
+    //            if (preg_match(
+    //                    '#\{\{([a-zA-Z]{2})\}\}[  ]?'.preg_quote($template, '#')
+    //                    .'#',
+    //                    $text,
+    //                    $mama
+    //                ) === true
+    //            ) {
+    //                $this->lang_findallmodele[$key] = $mama[1];
+    //                $matches[0][$key] = $mama[0];
+    //            }
+    //        }
+    //
+    //        return $matches[0];
+    //    }
 
-        if (preg_match(
-                "~\{\{".preg_quote($templateName, '~')
-                ."[\ \t\ \n\r]*\|([^\{\}]*(?:\{\{[^\{\}]+\}\}[^\{\}]*)*)\}\}~i",
-                $text,
-                $matches
-            ) > 0
-        ) {
-            return $matches;
-        }
-
-        return false;
-    }
 
     /**
      * remove wiki encoding : italic, bold, links [ ] and [[fu|bar]] => bar
