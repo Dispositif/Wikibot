@@ -156,17 +156,27 @@ $text)
             throw new \LogicException("No parameters found in $tplName");
         }
 
+
+        // replace sub-templates pipes | by @PIPE@
+        if( preg_match_all('#\{\{(?:[^\{\}]+)\}\}#m', $tplFounded[1], $subTmpl )
+            > 0 ) {
+            foreach ($subTmpl[0] as $sub){
+                $subSanit = str_replace('|', '@PIPE@', $sub);
+                $tplFounded[1] = str_replace($sub, $subSanit, $tplFounded[1]);
+            }
+        }
+
         $res = preg_match_all(
             "/
 			(
-	  			[^\|=]*=?                          # paramètre (ou valeur sans =)
+	  			[^\|=]*=?                          # parameter name (or nothing)
 		 		(
-					[^\|\{\}\[\]<>]*               # refuse <i>,<ref>
-					(?:\[[^\[\]]+\])?              # [url lien] ou [texte]
-					(?:\<\!\-\-[^\<\>]+\-\-\>)?    # commentaire <!-- -->
-					(?:\{\{[^\}\{]+\}\})?          # {{modèle}}
+					[^\|\{\}\[\]<>]*               # reject <i>,<ref>
+					(?:\[[^\[\]]+\])?              # [url text] or [text]
+					(?:\<\!\-\-[^\<\>]+\-\-\>)?    # commentary <!-- -->
+					(?:\{\{[^\}\{]+\}\})?          # {{template}} but KO with {{tmp|...}}
 					(?:\[\[[^\]]+\]\])?            # [[fu|bar]]
-					[^\|\{\}\[\]]*                 # accepte <i>,<ref>
+					[^\|\{\}\[\]]*                 # accept <i>,<ref>
 		 		)*
 	 		)\|?
 		/x",
@@ -220,6 +230,7 @@ $text)
                 continue;
             }
 
+            $value = str_replace('@PIPE@','|', $value); // sub-template
             $data[trim($param)] = trim($value);
         }
 
