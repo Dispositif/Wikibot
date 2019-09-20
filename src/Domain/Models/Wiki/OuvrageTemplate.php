@@ -70,6 +70,7 @@ class OuvrageTemplate extends AbstractWikiTemplate
             'année',
             'mois',
             'jour',
+            'date',
             "numéro d'édition",
             'année première édition',
             'réimpression',

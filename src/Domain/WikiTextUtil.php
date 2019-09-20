@@ -8,16 +8,68 @@ use App\Domain\Models\Wiki\WikiTemplateFactory;
 
 /**
  * todo legacy
+ * Utility for wikitext transformations.
+ *
  * Class WikiTextUtil
  */
 abstract class WikiTextUtil extends TextUtil
 {
 
     /**
-     * TODO refactor (extract)
-     *  find all the recurrences of a wiki's template in a text
-     * Compatible with inclusion of sub-templates.
+     * todo : simplify array if only one occurrence ?
+     * todo refac extract/logic
      *
+     * @param string $tplName
+     * @param string $text
+     *
+     * @return array
+     * @throws \Exception
+     */
+    static public function parseAllTemplateByName(
+        string $tplName,
+        string $text
+    ): array {
+
+        // Extract wikiText from that template
+        $templRes = self::findAllTemplatesByName($tplName, $text);
+
+        if (empty($templRes) || empty($templRes[0])) {
+            return [];
+        }
+
+        $result[$tplName] = [];
+        $inc = -1;
+        foreach ($templRes as $tmplText) {
+            $inc++;
+            // store the raw text of the template
+            $result[$tplName][$inc] = ['raw' => $tmplText];
+
+            // create an object of the template
+            /**
+             * @var $templObject AbstractWikiTemplate
+             */
+            $templObject = WikiTemplateFactory::create($tplName);
+            if (!is_object($templObject)
+                || !is_subclass_of(
+                    $templObject,
+                    AbstractWikiTemplate::class
+                )
+            ) {
+                continue;
+            }
+
+            $data = self::parseDataFromTemplate($tplName, $tmplText);
+
+            $templObject->hydrate($data);
+            $result[$tplName][$inc] += ['model' => $templObject];
+        }
+
+        return (array)$result;
+    }
+
+    /**
+     * Find all the recurrences of a wiki's template in a text.
+     * Compatible with inclusion of sub-templates.
      * Example :
      * {{Infobox |pays={{pays|France}} }}
      * retourne array {{modèle|...}}
@@ -27,9 +79,10 @@ abstract class WikiTextUtil extends TextUtil
      *
      * @return array
      */
-    static public function findAllTemplatesByName(string $templateName, string
-    $text):array
-    {
+    static public function findAllTemplatesByName(
+        string $templateName,
+        string $text
+    ): array {
         // TODO check {{fr}}
         $res = preg_match_all(
             "#\{\{[ ]*".preg_quote(trim($templateName), '#')
@@ -38,92 +91,13 @@ abstract class WikiTextUtil extends TextUtil
             $matches
         );
 
-        if($res === false ) {
+        if ($res === false) {
             return [];
         }
 
         return $matches[0]; // array [ 0=>{{bla|...}}, 1=>{{bla|...}} ]
         //OK : preg_match_all("#\{\{".preg_quote(trim($nommodele), '#')."[ \t \n\r]*\|([^\{\}]*(\{\{[^\{\}]+\}\}[^\{\}]*)*)\}\}#i", $text, $matches);
     }
-
-    /**
-     * For multiple occurrences see findAllTemplatesByName()
-     *
-     * @param string $templateName
-     * @param string $text
-     *
-     * @return array|null
-     */
-    static private function findFirstTemplateInText(
-        string $templateName,
-        string $text
-    ): ?array
-    {
-        $text = str_replace("\n", '', $text);
-
-        if (preg_match(
-                "~\{\{".preg_quote($templateName, '~')
-                ."[\ \t\ \n\r]*\|([^\{\}]*(?:\{\{[^\{\}]+\}\}[^\{\}]*)*)\}\}~i",
-                $text,
-                $matches
-            ) > 0
-        ) {
-            return $matches;
-        }
-
-        return null;
-    }
-
-
-    /**
-     * todo : simplify array if only one occurrence ?
-     * todo refac extract/logic
-     *
-     * @param string $templName
-     * @param string $text
-     *
-     * @return array
-     * @throws \Exception
-     */
-    static public function parseAllTemplateByName(string $templName, string
-$text)
-    :array
-    {
-        // Extract wikiText from that template
-        $templRes = self::findAllTemplatesByName(
-            $templName,
-            $text
-        );
-
-        if (empty($templRes) || empty($templRes[0])) {
-            return [];
-        }
-        $result[$templName] = [];
-        $inc = -1;
-        foreach ($templRes as $tmplText) {
-            $inc++;
-            // store the raw text of the template
-            $result[$templName][$inc] = ['raw' => $tmplText];
-
-            // create an object of the template
-            /**
-             * @var $templObject AbstractWikiTemplate
-             */
-            $templObject = WikiTemplateFactory::create($templName);
-            if( !is_object($templObject) || !is_subclass_of($templObject,
-                    AbstractWikiTemplate::class) ) {
-                continue;
-            }
-
-            $data = self::parseDataFromTemplate($templName, $tmplText);
-
-            $templObject->hydrate($data);
-            $result[$templName][$inc] += ['model' => $templObject];
-        }
-
-        return (array) $result;
-    }
-
 
     /**
      * Parsing of any wiki template from text and templateName
@@ -156,15 +130,8 @@ $text)
             throw new \LogicException("No parameters found in $tplName");
         }
 
-
-        // replace sub-templates pipes | by @PIPE@
-        if( preg_match_all('#\{\{(?:[^\{\}]+)\}\}#m', $tplFounded[1], $subTmpl )
-            > 0 ) {
-            foreach ($subTmpl[0] as $sub){
-                $subSanit = str_replace('|', '@PIPE@', $sub);
-                $tplFounded[1] = str_replace($sub, $subSanit, $tplFounded[1]);
-            }
-        }
+        // sub-template pipe | encoding
+        $tplFounded[1] = self::encodeTemplatePipes($tplFounded[1]);
 
         $res = preg_match_all(
             "/
@@ -190,54 +157,109 @@ $text)
             );
         }
 
-        // $wikiParams[1]: ['url=blabla', 'titre=popo']
+        $data = self::explodeParameterValue($wikiParams[1]);
+
+        return $data;
+    }
+
+    /**
+     * For multiple occurrences see findAllTemplatesByName()
+     *
+     * @param string $templateName
+     * @param string $text
+     *
+     * @return array|null
+     */
+    static private function findFirstTemplateInText(
+        string $templateName,
+        string $text
+    ): ?array {
+        $text = str_replace("\n", '', $text);
+
+        if (preg_match(
+                "~\{\{".preg_quote($templateName, '~')
+                ."[\ \t\ \n\r]*\|([^\{\}]*(?:\{\{[^\{\}]+\}\}[^\{\}]*)*)\}\}~i",
+                $text,
+                $matches
+            ) > 0
+        ) {
+            return $matches;
+        }
+
+        return null;
+    }
+
+    /**
+     * replace sub-templates pipes | by @PIPE@ in text
+     *
+     * @param string $text
+     *
+     * @return string
+     */
+    static protected function encodeTemplatePipes(string $text): string
+    {
+        if (preg_match_all('#\{\{(?:[^\{\}]+)\}\}#m', $text, $subTmpl) > 0) {
+            foreach ($subTmpl[0] as $sub) {
+                $subSanit = str_replace('|', '@PIPE@', $sub);
+                $text = str_replace($sub, $subSanit, $text);
+            }
+        }
+
+        return $text;
+    }
+
+    /**
+     * From ['fr', 'url=blabla', 'titre=popo']
+     * To [ '1'=> 'fr', url' => 'blabla', 'titre' => 'popo' ]
+     * @param array $wikiLines
+     *
+     * @return array
+     */
+    static protected function explodeParameterValue(array $wikiLines): array
+    {
+        $data = [];
+        // $wikiLines: ['url=blabla', 'titre=popo']
         $keyNum = 0;
-        foreach ($wikiParams[1] as $ligne) {
-            if (empty($ligne)) {
+        foreach ($wikiLines as $line) {
+            if (empty($line)) {
                 continue;
             }
-            $ligne = str_replace(
+            $line = str_replace(
                 ["\t", "\n", "\r", " "],
                 ['', '', '', ' '],
-                $ligne
+                $line
             ); // perte cosmétique : est-ce bien ? + espace insécable remplacé par espace sécable
 
-            unset($param);unset($value);
-
-            // $ligne : fu = bar
-            // ok with : fu = bar = coco
-            if (($pos = strpos($ligne, '=')) >= 0 ) {
-                $param = mb_strtolower(substr($ligne, 0, $pos), 'UTF-8');
+            // $line : fu = bar (OK : fu=bar=coco)
+            if (($pos = strpos($line, '=')) >= 0) {
+                $param = mb_strtolower(substr($line, 0, $pos), 'UTF-8');
                 $value = substr(
-                    $ligne,
+                    $line,
                     $pos + 1
                 );
             }
-
             // No param name => take $keyNum as param name
-            if( $pos === false ) {
+            if ($pos === false) {
                 $keyNum++;
-                $param = (string) $keyNum;
-                $value = $ligne;
+                $param = (string)$keyNum;
+                $value = $line;
             }
 
-            if(!isset($param) || !isset($value)) {
+            if (!isset($param) || !isset($value)) {
                 throw new \LogicException('param/value variable not defined');
             }
 
             // TODO : accept empty value ?
-            if (strlen(trim($value)) === false ) {
+            if (strlen(trim($value)) === false) {
                 continue;
             }
-
-            $value = str_replace('@PIPE@','|', $value); // sub-template
+            // reverse the sub-template pipe encoding
+            $value = str_replace('@PIPE@', '|', $value);
             $data[trim($param)] = trim($value);
         }
 
         return $data;
     }
-
-
     /**
      * Same as findAllTemplatesByName but include the language detection on
      * language template placed before
@@ -274,7 +296,6 @@ $text)
     //        return $matches[0];
     //    }
 
-
     /**
      * remove wiki encoding : italic, bold, links [ ] and [[fu|bar]] => bar
      * replace non-breaking spaces
@@ -285,7 +306,7 @@ $text)
      *
      * @return mixed|string|string[]|null
      */
-    static public function dewikify($text, $stripcomment = false)
+    static public function deWikify($text, $stripcomment = false)
     {
         $text = str_replace(
             ["[", "]", "'''", "''", ' '],
@@ -308,14 +329,19 @@ $text)
         return $text;
     }
 
-    // TODO : vérif/amélioration refex is_commented() et strip_comments()
-    static public function is_commented($text)
+    /**
+     * TODO : vérif/amélioration refex isCommented() et stripComments()
+     * @param string $text
+     *
+     * @return bool
+     */
+    static public function isCommented(string $text) : bool
     {
         //ou preg_match('#<\!--(?!-->).*-->#s', '', $text); // plus lourd mais précis
         return preg_match("#<\!--[^>]*-->#", $text);
     }
 
-    static public function strip_comments($text)
+    static public function stripComments(string $text): string
     {
         // NON : preg_replace('#<\!--(?!-->).*-->#s', '', $text); // incorrect avec "<!-- -->oui<!-- -->"
         // OK mais ne gère pas "<!-- <!-- <b> -->"
