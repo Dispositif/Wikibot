@@ -7,7 +7,7 @@ namespace App\Domain\Models\Wiki;
  */
 abstract class AbstractWikiTemplate
 {
-    const MODEL_NAME = '';
+    const MODEL_NAME  = '';
     const PARAM_ALIAS = [];
     /**
      * todo : modify to [a,b,c] ?
@@ -23,7 +23,7 @@ abstract class AbstractWikiTemplate
     protected $parametersByOrder = [];
 
     protected $paramOrderByUser = [];
-    protected $inlineStyle = true;
+    public $inlineStyle = true;
     protected $parametersValues;
 
     /**
@@ -72,29 +72,35 @@ abstract class AbstractWikiTemplate
      *
      * @throws \Exception
      */
-    public function __set($param, $value):void
+    public function __set($param, $value): void
     {
         $this->checkParamName($param);
         throw new \Exception('not yet');
     }
 
-    public function setInlineStyle(bool $bool = true):void
-    {
-        $this->inlineStyle = $bool;
-    }
-
     /**
-     * @param $name
+     * TODO return bool + log() ?
+     * todo check keyNum <= count($parametersByOrder)
+     *
+     * @param $name string|int
      *
      * @throws \Exception
      */
     protected function checkParamName($name): void
     {
+        if (is_int($name)) {
+            $name = (string)$name;
+        }
+
         // that parameter exists in template ?
-        if (!in_array($name, $this->parametersByOrder)
-            && !array_key_exists($name, static::PARAM_ALIAS)
-            && !in_array($name,[1,2,3,4])
+        if (in_array($name, $this->parametersByOrder)
+            || array_key_exists($name, static::PARAM_ALIAS)
         ) {
+            return;
+        }
+
+        // keyNum parameter ?
+        if (!in_array($name, ['1', '2', '3', '4'])) {
             throw new \Exception(
                 sprintf(
                     'no parameter "%s" in template "%s"',
@@ -103,6 +109,43 @@ abstract class AbstractWikiTemplate
                 )
             );
         }
+        return;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return string|null
+     * @throws \Exception
+     */
+    public function getParam(string $name): ?string
+    {
+        $this->checkParamName($name);
+        $name = $this->getAliasParam($name);
+
+        return ($this->parametersValues[$name]) ?? null;
+    }
+
+    /**
+     * TODO check if method set{ParamName} exists
+     * @param string $name
+     * @param string $value
+     *
+     * @return AbstractWikiTemplate
+     * @throws \Exception
+     */
+    public function setParam(string $name, string $value): AbstractWikiTemplate
+    {
+        $this->checkParamName($name);
+        $name = $this->getAliasParam($name);
+        $this->parametersValues[$name] = $value;
+
+        return $this;
+    }
+
+    public function setInlineStyle(bool $bool = true): void
+    {
+        $this->inlineStyle = $bool;
     }
 
     /**
@@ -131,8 +174,8 @@ abstract class AbstractWikiTemplate
     {
         // if name = 1,2,3,4 -> replaced by the 1st, 2nd... parameter name
         // from the required parameters list
-        if (is_int($name) || in_array($name, ['1','2','3','4','5'])) {
-            $keyNum = (int) $name;
+        if (is_int($name) || in_array($name, ['1', '2', '3', '4', '5'])) {
+            $keyNum = (int)$name;
             $defaultKeys = array_keys(static::REQUIRED_PARAMETERS);
             if (!array_key_exists($keyNum - 1, $defaultKeys)) {
                 throw new \Exception(
@@ -203,14 +246,20 @@ abstract class AbstractWikiTemplate
     }
 
     /**
-     * @param array $params [a,b,c]
+     * Define the serialize order of parameters (from user initial choice).
+     * default : $params = ['param1'=>'', 'param2' => '', ...]
+     * OK with $params = ['a','b','c']
+     *
+     * @param array
      *
      * @throws \Exception
      */
-    public function setParamOrderByUser(array $params): void
+    public function setParamOrderByUser(array $params = []): void
     {
         $validParams = [];
-        foreach ($params as $name) {
+        foreach ($params as $key => $value) {
+            $name = (is_integer($key)) ? $value : $key;
+
             $this->checkParamName($name);
             $name = $this->getAliasParam($name);
             $validParams[] = $name;
@@ -218,9 +267,8 @@ abstract class AbstractWikiTemplate
         $this->paramOrderByUser = $validParams;
     }
 
-    // todo useless ?
-
     /**
+     * todo useless ?
      * @return array
      */
     final public function toArray(): array
@@ -228,13 +276,9 @@ abstract class AbstractWikiTemplate
         return $this->parametersValues;
     }
 
-    final public function __toString()
-    {
-        return $this->serialize();
-    }
 
     /**
-     * todo $inline as private attribute
+     *
      * @param bool $inline
      *
      * @return string
@@ -242,14 +286,16 @@ abstract class AbstractWikiTemplate
     final public function serialize(): string
     {
         $paramsByRenderOrder = $this->paramsByRenderOrder();
-        $paramsByRenderOrder = $this->filterEmptyNotRequired($paramsByRenderOrder);
+        $paramsByRenderOrder = $this->filterEmptyNotRequired(
+            $paramsByRenderOrder
+        );
 
         $string = '{{'.static::MODEL_NAME;
         foreach ($paramsByRenderOrder AS $paramName => $paramValue) {
             $string .= ($this->inlineStyle === true) ? '' : "\n";
             $string .= '|';
 
-            if( !in_array($paramName,['1','2','3'])) {
+            if (!in_array($paramName, ['1', '2', '3'])) {
                 $string .= $paramName.'=';
                 // {{template|1=blabla}} -> {{template|blabla}}
             }

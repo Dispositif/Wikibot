@@ -9,7 +9,6 @@ use App\Domain\Models\Wiki\WikiTemplateFactory;
 /**
  * todo legacy
  * Utility for wikitext transformations.
- *
  * Class WikiTextUtil
  */
 abstract class WikiTextUtil extends TextUtil
@@ -29,39 +28,38 @@ abstract class WikiTextUtil extends TextUtil
         string $tplName,
         string $text
     ): array {
-
         // Extract wikiText from that template
-        $templRes = self::findAllTemplatesByName($tplName, $text);
+        $arrayTplText = self::findAllTemplatesByName($tplName, $text);
 
-        if (empty($templRes) || empty($templRes[0])) {
+        if (empty($arrayTplText) || empty($arrayTplText[0])) {
             return [];
         }
 
         $result[$tplName] = [];
         $inc = -1;
-        foreach ($templRes as $tmplText) {
+        foreach ($arrayTplText as $tplText) {
             $inc++;
             // store the raw text of the template
-            $result[$tplName][$inc] = ['raw' => $tmplText];
+            $result[$tplName][$inc] = ['raw' => $tplText];
 
             // create an object of the template
             /**
-             * @var $templObject AbstractWikiTemplate
+             * @var $tplObject AbstractWikiTemplate
              */
-            $templObject = WikiTemplateFactory::create($tplName);
-            if (!is_object($templObject)
+            $tplObject = WikiTemplateFactory::create($tplName);
+            if (!is_object($tplObject)
                 || !is_subclass_of(
-                    $templObject,
+                    $tplObject,
                     AbstractWikiTemplate::class
                 )
             ) {
                 continue;
             }
 
-            $data = self::parseDataFromTemplate($tplName, $tmplText);
+            $data = self::parseDataFromTemplate($tplName, $tplText);
 
-            $templObject->hydrate($data);
-            $result[$tplName][$inc] += ['model' => $templObject];
+            $tplObject->hydrate($data);
+            $result[$tplName][$inc] += ['model' => $tplObject];
         }
 
         return (array)$result;
@@ -211,6 +209,7 @@ abstract class WikiTextUtil extends TextUtil
     /**
      * From ['fr', 'url=blabla', 'titre=popo']
      * To [ '1'=> 'fr', url' => 'blabla', 'titre' => 'popo' ]
+     *
      * @param array $wikiLines
      *
      * @return array
@@ -331,11 +330,12 @@ abstract class WikiTextUtil extends TextUtil
 
     /**
      * TODO : vérif/amélioration refex isCommented() et stripComments()
+     *
      * @param string $text
      *
      * @return bool
      */
-    static public function isCommented(string $text) : bool
+    static public function isCommented(string $text): bool
     {
         //ou preg_match('#<\!--(?!-->).*-->#s', '', $text); // plus lourd mais précis
         return preg_match("#<\!--[^>]*-->#", $text);
@@ -347,59 +347,6 @@ abstract class WikiTextUtil extends TextUtil
         // OK mais ne gère pas "<!-- <!-- <b> -->"
         return trim(preg_replace("#<\!--[^>]*-->#", '', $text));
     }
-
-    /**
-     * @param       $nom
-     * @param array $template
-     * @param array $infos
-     * @param bool  $defaultvalue
-     *
-     * @return bool|string
-     */
-    //    static public function mix_templateinfos(
-    //        $nom,
-    //        array $template,
-    //        array $infos,
-    //        $defaultvalue = true
-    //    ) {
-    //        if ($nom === false OR $template === false OR $infos === false) {
-    //            die('erreur : mix_infobox() erreur');
-    //
-    //            return false;
-    //        }
-    //
-    //        $botedit_utile = false;
-    //        if ((array_diff_key($template, $infos) === true) OR (array_diff_key(
-    //                    $template,
-    //                    $infos
-    //                ) === true)
-    //        ) {
-    //            $botedit_utile = true;
-    //        }
-    //
-    //        $wikitext = "{{Infobox ".ucfirst(trim($nom));
-    //        foreach ($template as $parametre => $value) {
-    //            $wikitext .= "\n | ".$parametre.' ';
-    //            if (strlen(utf8_decode($parametre)) <= 7) {
-    //                $wikitext .= "\t\t";
-    //            }elseif (strlen(utf8_decode($parametre)) <= 12) {
-    //                $wikitext .= "\t";
-    //            }
-    //            $wikitext .= '= '.$infos[$parametre];
-    //            if ($infos[$parametre] === false AND $defaultvalue === true) {
-    //                $wikitext .= $value;
-    //                $botedit_utile = true;
-    //            }
-    //        }
-    //        $wikitext .= "\n}}";
-    //
-    //        if ($botedit_utile === true) {
-    //            return $wikitext;
-    //        }else {
-    //            return false;
-    //        }
-    //    }
-
 
     /**
      * Delete keys with empty string value ""
@@ -420,7 +367,6 @@ abstract class WikiTextUtil extends TextUtil
         return $retArray;
     }
 
-
     /**
      * Find usernames and IP id occurrences from wiki text (frwiki + enwiki)
      *
@@ -430,56 +376,33 @@ abstract class WikiTextUtil extends TextUtil
      *
      * @return array
      */
-    //    static public function findUsernames(string $text): array
-    //    {
-    //        $usernames = [];
-    //
-    //        if (preg_match_all(
-    //                '#\[\[(?:utilisateur|utilisatrice|user)\:([^\]\|]+)#i',
-    //                $text,
-    //                $matches
-    //            ) === true
-    //        ) {
-    //            foreach ($matches[1] as $id => $nom) {
-    //                $usernames[trim($nom)]++;
-    //            }
-    //        }
-    //        if (preg_match_all(
-    //                '#\{\{(?:u|u\'|user|utilisateur|utilisatrice|identité|IP)\|([^\}]+)\}\}#i',
-    //                $text,
-    //                $matches
-    //            ) === true
-    //        ) {
-    //            foreach ($matches[1] as $id => $nom) {
-    //                $usernames[trim($nom)]++;
-    //            }
-    //        }
-    //
-    //        return $usernames;
-    //    }
+//    static public function findUsernames(string $text): array
+//    {
+//        $usernames = [];
+//
+//        if (preg_match_all(
+//                '#\[\[(?:utilisateur|utilisatrice|user)\:([^\]\|]+)#i',
+//                $text,
+//                $matches
+//            ) === true
+//        ) {
+//            foreach ($matches[1] as $id => $nom) {
+//                $usernames[trim($nom)]++;
+//            }
+//        }
+//        if (preg_match_all(
+//                '#\{\{(?:u|u\'|user|utilisateur|utilisatrice|identité|IP)\|([^\}]+)\}\}#i',
+//                $text,
+//                $matches
+//            ) === true
+//        ) {
+//            foreach ($matches[1] as $id => $nom) {
+//                $usernames[trim($nom)]++;
+//            }
+//        }
+//
+//        return $usernames;
+//    }
 
-    /**
-     * Retourne l'intro sans infobox
-     * COCHON : le mieux, c'est API section0 (interprété html) puis strip_tags
-     *
-     * @param $text
-     *
-     * @return string|string[]|null
-     */
-    //    static public function get_intro_text($text)
-    //    {
-    //        $text = preg_replace('#==.*#s', '', $text); // texte après ==
-    //        $text = preg_replace("#^[^A-Za-z'].*$#", '', $text);
-    //        //$text = preg_replace('#\{\{[^\}]+\}\}#', '', $text); // {{...}}
-    //        //$text = preg_replace('#\{\{[^\}]+\}\}#s', '', $text);
-    //
-    //        $text = preg_replace(
-    //            '#\[\[(?:image|file)[^\]\r]+(?:\[\[[^\]]+\]\][^\]\[\r\n]*)*\]\]#i',
-    //            '',
-    //            $text
-    //        ); // images
-    //
-    //        return $text;
-    //    }
 
 }
