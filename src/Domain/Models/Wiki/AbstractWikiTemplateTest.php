@@ -29,6 +29,7 @@ class AbstractWikiTemplateTest extends TestCase
             $actual
         );
 
+        $lienWeb->setInlineStyle(false);
         $this::assertEquals(
             '{{lien web
 |auteur1=Bob
@@ -36,7 +37,7 @@ class AbstractWikiTemplateTest extends TestCase
 |url=http://google.com
 |date=2010-11-25
 |consulté le=}}',
-            $lienWeb->serialize(false)
+            $lienWeb->serialize()
         );
     }
 

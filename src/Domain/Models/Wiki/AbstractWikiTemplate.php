@@ -23,6 +23,7 @@ abstract class AbstractWikiTemplate
     protected $parametersByOrder = [];
 
     protected $paramOrderByUser = [];
+    protected $inlineStyle = true;
     protected $parametersValues;
 
     /**
@@ -71,10 +72,15 @@ abstract class AbstractWikiTemplate
      *
      * @throws \Exception
      */
-    public function __set($param, $value)
+    public function __set($param, $value):void
     {
         $this->checkParamName($param);
         throw new \Exception('not yet');
+    }
+
+    public function setInlineStyle(bool $bool = true):void
+    {
+        $this->inlineStyle = $bool;
     }
 
     /**
@@ -227,17 +233,27 @@ abstract class AbstractWikiTemplate
         return $this->serialize();
     }
 
-    final public function serialize(bool $inline = true): string
+    /**
+     * todo $inline as private attribute
+     * @param bool $inline
+     *
+     * @return string
+     */
+    final public function serialize(): string
     {
         $paramsByRenderOrder = $this->paramsByRenderOrder();
-        $paramsByRenderOrder = $this->filterEmptyNotRequired(
-            $paramsByRenderOrder
-        );
+        $paramsByRenderOrder = $this->filterEmptyNotRequired($paramsByRenderOrder);
 
         $string = '{{'.static::MODEL_NAME;
         foreach ($paramsByRenderOrder AS $paramName => $paramValue) {
-            $string .= ($inline === true) ? '' : "\n";
-            $string .= '|'.$paramName.'='.$paramValue;
+            $string .= ($this->inlineStyle === true) ? '' : "\n";
+            $string .= '|';
+
+            if( !in_array($paramName,['1','2','3'])) {
+                $string .= $paramName.'=';
+                // {{template|1=blabla}} -> {{template|blabla}}
+            }
+            $string .= $paramValue;
         }
         $string .= '}}';
 

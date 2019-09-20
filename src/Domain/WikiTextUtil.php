@@ -3,6 +3,9 @@
 
 namespace App\Domain;
 
+use App\Domain\Models\Wiki\AbstractWikiTemplate;
+use App\Domain\Models\Wiki\WikiTemplateFactory;
+
 /**
  * todo legacy
  * Class WikiTextUtil
@@ -11,6 +14,7 @@ abstract class WikiTextUtil extends TextUtil
 {
 
     /**
+     * TODO refactor (extract)
      *  find all the recurrences of a wiki's template in a text
      * Compatible with inclusion of sub-templates.
      *
@@ -26,6 +30,7 @@ abstract class WikiTextUtil extends TextUtil
     static public function findAllTemplatesByName(string $templateName, string
     $text):array
     {
+        // TODO check {{fr}}
         $res = preg_match_all(
             "#\{\{[ ]*".preg_quote(trim($templateName), '#')
             ."[ \t \n\r]*\|[^\{\}]*(?:\{\{[^\{\}]+\}\}[^\{\}]*)*\}\}#i",
@@ -67,6 +72,56 @@ abstract class WikiTextUtil extends TextUtil
         }
 
         return null;
+    }
+
+
+    /**
+     * todo : simplify array if only one occurrence ?
+     * todo refac extract/logic
+     *
+     * @param string $templName
+     * @param string $text
+     *
+     * @return array
+     * @throws \Exception
+     */
+    static public function parseAllTemplateByName(string $templName, string
+$text)
+    :array
+    {
+        // Extract wikiText from that template
+        $templRes = self::findAllTemplatesByName(
+            $templName,
+            $text
+        );
+
+        if (empty($templRes) || empty($templRes[0])) {
+            return [];
+        }
+        $result[$templName] = [];
+        $inc = -1;
+        foreach ($templRes as $tmplText) {
+            $inc++;
+            // store the raw text of the template
+            $result[$templName][$inc] = ['raw' => $tmplText];
+
+            // create an object of the template
+            /**
+             * @var $templObject AbstractWikiTemplate
+             */
+            $templObject = WikiTemplateFactory::create($templName);
+            if( !is_object($templObject) || !is_subclass_of($templObject,
+                    AbstractWikiTemplate::class) ) {
+                continue;
+            }
+
+            $data = self::parseDataFromTemplate($templName, $tmplText);
+
+            $templObject->hydrate($data);
+            $result[$templName][$inc] += ['model' => $templObject];
+        }
+
+        return (array) $result;
     }
 
 
