@@ -24,6 +24,122 @@ abstract class TextUtil
         return $first.$rest;
     }
 
+    /**
+     * Strip punctuation
+     * UTF-8 compatible ??
+     * See http://fr.wikipedia.org/wiki/Ponctuation
+     *
+     * @return string
+     */
+    static public function strip_punctuation(string $str)
+    {
+        return str_replace(
+            [
+                '!',
+                '"',
+                '«',
+                '»',
+                '#',
+                '$',
+                '%',
+                '&',
+                "'",
+                '’',
+                '´',
+                '`',
+                '^',
+                '…',
+                '‽',
+                '(',
+                ')',
+                '*',
+                '⁂',
+                '+',
+                ',',
+                '-',
+                '–',
+                '—',
+                '.',
+                '/',
+                ':',
+                ';',
+                '?',
+                '@',
+                '[',
+                '\\',
+                ']',
+                '_',
+                '`',
+                '{',
+                '|',
+                '¦',
+                '}',
+                '~',
+                '<',
+                '>',
+                '№',
+                '©',
+                '®',
+                '°',
+                '†',
+                '§',
+                '∴',
+                '∵',
+                '¶',
+                '•',
+                '+',
+                '-',
+            ],
+            '',
+            $str
+        );
+    }
+
+    static public function containsNonLatinCharacters(string $str): bool
+    {
+        return preg_match('/[^\\p{Common}\\p{Latin}]/u', $str);
+    }
+
+    /**
+     * Simplest levenshtein distance prediction of the correct param name.
+     * Weird results with ASCII extended chars :
+     * levenshtein('notre','nôtre') => 2
+     * TODO move
+     *
+     * @param string $str
+     * @param array  $names
+     * @param int    $max Maximum number of permutation/add/subtraction)
+     *
+     * @return string|null
+     */
+    static public function predictCorrectParam(
+        string $str,
+        array $names,
+        int $max = 2
+    ): ?string {
+        $shortest = -1;
+        $closest = '';
+        $str2 = mb_strtolower(self::stripAccents($str));
+        foreach ($names as $name) {
+            if ($str === $name) {
+                return $name; // exact match
+            }
+            $lev = levenshtein($str, $name);
+            $lev2 = levenshtein(
+                $str2,
+                mb_strtolower(self::stripAccents($name))
+            );
+            if ($lev < $shortest || $lev2 < $shortest || $shortest === -1) {
+                $closest = $name;
+                $shortest = $lev;
+            }
+        }
+        if ($shortest <= $max) {
+            return $closest;
+        }
+
+        return null;
+    }
 
     /**
      * Strip accents
@@ -42,24 +158,6 @@ abstract class TextUtil
             utf8_decode(
                 'aaaaaceeeeiiiinooooouuuuyyAAAAACEEEEIIIINOOOOOUUUUYoaaaeeeglioooooooruuuyæиαιυcszиyuaegAauwy'
             )
-        );
-    }
-
-    /**
-     * Strip punctuation
-     * UTF-8 compatible ??
-     * See http://fr.wikipedia.org/wiki/Ponctuation
-     *
-     * @return string
-     */
-    static public function strip_punctuation($string)
-    {
-        return str_replace(
-            [
-                '!', '"', '«', '»', '#', '$', '%', '&', "'", '’', '´', '`', '^', '…', '‽', '(', ')', '*', '⁂', '+', ',', '-', '–', '—', '.', '/', ':', ';', '?', '@', '[', '\\', ']', '_', '`', '{', '|', '¦', '}', '~', '<', '>', '№', '©', '®', '°', '†', '§', '∴', '∵', '¶', '•', '+', '-'
-            ],
-            '',
-            $string
         );
     }
 

@@ -207,6 +207,29 @@ abstract class WikiTextUtil extends TextUtil
     }
 
     /**
+     * todo : replace by return " | " or "\n|" ...
+     * @param string $tplText
+     *
+     * @return string
+     */
+    static public function findSeparatorStyleInTemplate(string $tplText): string
+    {
+        // 's' modifier allows carriage return in '.'
+        if(preg_match('#\{\{[^\}]+\n[^\}]+\}\}#s', $tplText) > 0){
+            return "\n";
+        }
+        // {{bob |alan=are |park=non}} or {{bob | alan=are | park=non}}
+        if(preg_match('#\{\{[^\|]+ \|.+\}\}#', $tplText) > 0){
+            return ' ';
+        }
+        // {{bob| alan=are| park=non}}
+        if(preg_match('#\{\{[^\|]+\| .+\}\}#', $tplText) > 0){
+            return ' ';
+        }
+        return '';
+    }
+
+    /**
      * From ['fr', 'url=blabla', 'titre=popo']
      * To [ '1'=> 'fr', url' => 'blabla', 'titre' => 'popo' ]
      *
@@ -355,16 +378,15 @@ abstract class WikiTextUtil extends TextUtil
      *
      * @return array
      */
-    static public function deleteEmptyArray(array $myArray)
+    static public function deleteEmptyValueArray(array $myArray)
     {
-        $retArray = [];
-        foreach ($myArray as $key => $val) {
-            if (($key != '') && ($val != '')) {
-                $retArray[$key] = $val;
+        $result = [];
+        foreach ($myArray as $key => $value) {
+            if ( !empty($key) && !empty($value) ) {
+                $result[$key] = $value;
             }
         }
-
-        return $retArray;
+        return $result;
     }
 
     /**
