@@ -25,17 +25,17 @@ class AbstractWikiTemplateTest extends TestCase
         $actual = $lienWeb->serialize();
 
         $this::assertEquals(
-            '{{lien web|auteur1=Bob|titre=Foo bar|url=http://google.com|date=2010-11-25|consulté le=}}',
+            '{{lien web|url=http://google.com|auteur1=Bob|date=2010-11-25|titre=Foo bar|consulté le=}}',
             $actual
         );
 
-        $lienWeb->setInlineStyle(false);
+        $lienWeb->userSeparator = "\n|";
         $this::assertEquals(
             '{{lien web
-|auteur1=Bob
-|titre=Foo bar
 |url=http://google.com
+|auteur1=Bob
 |date=2010-11-25
+|titre=Foo bar
 |consulté le=}}',
             $lienWeb->serialize()
         );
@@ -64,16 +64,16 @@ class AbstractWikiTemplateTest extends TestCase
         );
     }
 
-    public function testUnknownParameter()
-    {
-        $data = [
-            'fu' => 'bar',
-        ];
-        $lienWeb = new LienWebTemplate();
-        $this::expectException(\Exception::class);
-        // no parameter "fu" in template "lien web"
-        $lienWeb->hydrate($data);
-    }
+//    public function testUnknownParameter()
+//    {
+//        $data = [
+//            'fu' => 'bar',
+//        ];
+//        $lienWeb = new LienWebTemplate();
+//        $this::expectException(\Exception::class);
+//        // no parameter "fu" in template "lien web"
+//        $lienWeb->hydrate($data);
+//    }
 
     public function testAliasParameter()
     {
@@ -120,7 +120,7 @@ class AbstractWikiTemplateTest extends TestCase
         );
 
         $this::assertEquals(
-            '{{lien web|titre=|url=|consulté le=}}',
+            '{{lien web|url=|titre=|consulté le=}}',
             $lienWeb->serialize()
         );
     }

@@ -24,10 +24,8 @@ abstract class WikiTextUtil extends TextUtil
      * @return array
      * @throws \Exception
      */
-    static public function parseAllTemplateByName(
-        string $tplName,
-        string $text
-    ): array {
+    static public function parseAllTemplateByName(string $tplName, string $text): array
+    {
         // Extract wikiText from that template
         $arrayTplText = self::findAllTemplatesByName($tplName, $text);
 
@@ -47,18 +45,14 @@ abstract class WikiTextUtil extends TextUtil
              * @var $tplObject AbstractWikiTemplate
              */
             $tplObject = WikiTemplateFactory::create($tplName);
-            if (!is_object($tplObject)
-                || !is_subclass_of(
-                    $tplObject,
-                    AbstractWikiTemplate::class
-                )
-            ) {
+            if (!is_object($tplObject) || !is_subclass_of($tplObject, AbstractWikiTemplate::class)) {
                 continue;
             }
 
             $data = self::parseDataFromTemplate($tplName, $tplText);
-
             $tplObject->hydrate($data);
+            $tplObject->detectUserSeparator($tplText);
+
             $result[$tplName][$inc] += ['model' => $tplObject];
         }
 
@@ -75,16 +69,13 @@ abstract class WikiTextUtil extends TextUtil
      * @param $templateName
      * @param $text
      *
-     * @return array
+     * @return array [ 0=>{{bla|...}}, 1=>{{bla|...}} ]
      */
-    static public function findAllTemplatesByName(
-        string $templateName,
-        string $text
-    ): array {
+    static public function findAllTemplatesByName(string $templateName, string $text): array
+    {
         // TODO check {{fr}}
         $res = preg_match_all(
-            "#\{\{[ ]*".preg_quote(trim($templateName), '#')
-            ."[ \t \n\r]*\|[^\{\}]*(?:\{\{[^\{\}]+\}\}[^\{\}]*)*\}\}#i",
+            "#\{\{[ ]*".preg_quote(trim($templateName), '#')."[ \t \n\r]*\|[^\{\}]*(?:\{\{[^\{\}]+\}\}[^\{\}]*)*\}\}#i",
             $text,
             $matches
         );
@@ -93,7 +84,7 @@ abstract class WikiTextUtil extends TextUtil
             return [];
         }
 
-        return $matches[0]; // array [ 0=>{{bla|...}}, 1=>{{bla|...}} ]
+        return $matches[0];
         //OK : preg_match_all("#\{\{".preg_quote(trim($nommodele), '#')."[ \t \n\r]*\|([^\{\}]*(\{\{[^\{\}]+\}\}[^\{\}]*)*)\}\}#i", $text, $matches);
     }
 
@@ -107,10 +98,8 @@ abstract class WikiTextUtil extends TextUtil
      *
      * @return array
      */
-    static public function parseDataFromTemplate(
-        string $tplName,
-        string $text
-    ): array {
+    static public function parseDataFromTemplate(string $tplName, string $text): array
+    {
         $data = [];
         $text = str_replace("\n", '', $text);
 
@@ -150,9 +139,7 @@ abstract class WikiTextUtil extends TextUtil
         );
 
         if ($res === false || $res === 0 || empty($wikiParams[1])) {
-            throw new \LogicException(
-                "Parameters from template '$tplName' can't be parsed"
-            );
+            throw new \LogicException("Parameters from template '$tplName' can't be parsed");
         }
 
         $data = self::explodeParameterValue($wikiParams[1]);
@@ -168,15 +155,12 @@ abstract class WikiTextUtil extends TextUtil
      *
      * @return array|null
      */
-    static private function findFirstTemplateInText(
-        string $templateName,
-        string $text
-    ): ?array {
+    static private function findFirstTemplateInText(string $templateName, string $text): ?array
+    {
         $text = str_replace("\n", '', $text);
 
         if (preg_match(
-                "~\{\{".preg_quote($templateName, '~')
-                ."[\ \t\ \n\r]*\|([^\{\}]*(?:\{\{[^\{\}]+\}\}[^\{\}]*)*)\}\}~i",
+                "~\{\{".preg_quote($templateName, '~')."[\ \t\ \n\r]*\|([^\{\}]*(?:\{\{[^\{\}]+\}\}[^\{\}]*)*)\}\}~i",
                 $text,
                 $matches
             ) > 0
@@ -207,41 +191,17 @@ abstract class WikiTextUtil extends TextUtil
     }
 
     /**
-     * todo : replace by return " | " or "\n|" ...
-     * @param string $tplText
-     *
-     * @return string
-     */
-    static public function findSeparatorStyleInTemplate(string $tplText): string
-    {
-        // 's' modifier allows carriage return in '.'
-        if(preg_match('#\{\{[^\}]+\n[^\}]+\}\}#s', $tplText) > 0){
-            return "\n";
-        }
-        // {{bob |alan=are |park=non}} or {{bob | alan=are | park=non}}
-        if(preg_match('#\{\{[^\|]+ \|.+\}\}#', $tplText) > 0){
-            return ' ';
-        }
-        // {{bob| alan=are| park=non}}
-        if(preg_match('#\{\{[^\|]+\| .+\}\}#', $tplText) > 0){
-            return ' ';
-        }
-        return '';
-    }
-
-    /**
      * From ['fr', 'url=blabla', 'titre=popo']
      * To [ '1'=> 'fr', url' => 'blabla', 'titre' => 'popo' ]
      *
-     * @param array $wikiLines
+     * @param array $wikiLines ['url=blabla', 'titre=popo']
      *
      * @return array
      */
     static protected function explodeParameterValue(array $wikiLines): array
     {
         $data = [];
-        // $wikiLines: ['url=blabla', 'titre=popo']
-        $keyNum = 0;
+        $keyNum = 1;
         foreach ($wikiLines as $line) {
             if (empty($line)) {
                 continue;
@@ -255,16 +215,13 @@ abstract class WikiTextUtil extends TextUtil
             // $line : fu = bar (OK : fu=bar=coco)
             if (($pos = strpos($line, '=')) >= 0) {
                 $param = mb_strtolower(substr($line, 0, $pos), 'UTF-8');
-                $value = substr(
-                    $line,
-                    $pos + 1
-                );
+                $value = substr($line, $pos + 1);
             }
             // No param name => take $keyNum as param name
             if ($pos === false) {
-                $keyNum++;
                 $param = (string)$keyNum;
                 $value = $line;
+                $keyNum++;
             }
 
             if (!isset($param) || !isset($value)) {
@@ -282,43 +239,30 @@ abstract class WikiTextUtil extends TextUtil
 
         return $data;
     }
-    /**
-     * Same as findAllTemplatesByName but include the language detection on
-     * language template placed before
-     * Example {{fr}} {{ouvrage|...}}
-     *
-     * @param $nommodele
-     * @param $text
-     *
-     * @return mixed
-     */
-    //    static public function findAllTemplatesWithLang($nommodele, $text)
-    //    {
-    //        $this->lang_findallmodele = [];
-    //        //OK : preg_match_all("#\{\{".preg_quote($nommodele, '#')."[ \t \n\r]*\|([^\{\}]*(\{\{[^\{\}]+\}\}[^\{\}]*)*)\}\}#i", $text, $matches);
-    //        preg_match_all(
-    //            "#\{\{".preg_quote($nommodele, '#')
-    //            ."[ \t \n\r]*\|[^\{\}]*(?:\{\{[^\{\}]+\}\}[^\{\}]*)*\}\}#i",
-    //            $text,
-    //            $matches
-    //        );
-    //        foreach ($matches[0] AS $key => $template) {
-    //            if (preg_match(
-    //                    '#\{\{([a-zA-Z]{2})\}\}[  ]?'.preg_quote($template, '#')
-    //                    .'#',
-    //                    $text,
-    //                    $mama
-    //                ) === true
-    //            ) {
-    //                $this->lang_findallmodele[$key] = $mama[1];
-    //                $matches[0][$key] = $mama[0];
-    //            }
-    //        }
-    //
-    //        return $matches[0];
-    //    }
 
     /**
+     * Find text style of template : only pipe, space-pipe-space, pipe-space, return-pipe, etc.
+     *
+     * @param string $tplText
+     *
+     * @return string
+     */
+    static public function findUserStyleSeparator(string $tplText): string
+    {
+        // {{fu | bar}} (duplicate : because [^\}\|\n]+ allows final space...)
+        if (preg_match('#\{\{[^\}\|\n]+([ \n]\|[ \n]?)[^\}]+\}\}#i', $tplText, $matches) > 0) {
+            return $matches[1];
+        }
+        // others : {{fu|bar}} ; {{fu\n|bar}} ; {{fu |bar}} ...
+        if (preg_match('#\{\{[^\}\|\n]+([ \n]?\|[ \n]?)[^\}]+\}\}#i', $tplText, $matches) > 0) {
+            return $matches[1];
+        }
+
+        return '|';
+    }
+
+    /**
+     * todo legacy
      * remove wiki encoding : italic, bold, links [ ] and [[fu|bar]] => bar
      * replace non-breaking spaces
      * replace {{lang|en|fubar}} => fubar
@@ -326,9 +270,9 @@ abstract class WikiTextUtil extends TextUtil
      * @param      $text
      * @param bool $stripcomment
      *
-     * @return mixed|string|string[]|null
+     * @return string
      */
-    static public function deWikify($text, $stripcomment = false)
+    static public function deWikify($text, $stripcomment = false): string
     {
         $text = str_replace(
             ["[", "]", "'''", "''", ' '],
@@ -382,49 +326,12 @@ abstract class WikiTextUtil extends TextUtil
     {
         $result = [];
         foreach ($myArray as $key => $value) {
-            if ( !empty($key) && !empty($value) ) {
+            if (!empty($key) && !empty($value)) {
                 $result[$key] = $value;
             }
         }
+
         return $result;
     }
-
-    /**
-     * Find usernames and IP id occurrences from wiki text (frwiki + enwiki)
-     *
-     * @return array de type [bob] => 3, [123.45.56.566] => 1
-     *
-     * @param $text
-     *
-     * @return array
-     */
-//    static public function findUsernames(string $text): array
-//    {
-//        $usernames = [];
-//
-//        if (preg_match_all(
-//                '#\[\[(?:utilisateur|utilisatrice|user)\:([^\]\|]+)#i',
-//                $text,
-//                $matches
-//            ) === true
-//        ) {
-//            foreach ($matches[1] as $id => $nom) {
-//                $usernames[trim($nom)]++;
-//            }
-//        }
-//        if (preg_match_all(
-//                '#\{\{(?:u|u\'|user|utilisateur|utilisatrice|identité|IP)\|([^\}]+)\}\}#i',
-//                $text,
-//                $matches
-//            ) === true
-//        ) {
-//            foreach ($matches[1] as $id => $nom) {
-//                $usernames[trim($nom)]++;
-//            }
-//        }
-//
-//        return $usernames;
-//    }
-
 
 }

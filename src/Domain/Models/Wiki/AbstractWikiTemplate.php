@@ -10,7 +10,7 @@ use App\Domain\WikiTextUtil;
  */
 abstract class AbstractWikiTemplate
 {
-    const MODEL_NAME = '';
+    const MODEL_NAME  = '';
     const PARAM_ALIAS = [];
     /**
      * todo : modify to [a,b,c] ?
@@ -18,8 +18,7 @@ abstract class AbstractWikiTemplate
     const REQUIRED_PARAMETERS = [];
     public $log = [];
     public $parametersErrorFromHydrate;
-    public $inlineStyle = true;
-    public $userSeparator = ''; // todo move to WikiRef
+    public $userSeparator; // todo move to WikiRef
     /**
      * optional
      * Not a constant so it can be modified in constructor
@@ -107,11 +106,7 @@ abstract class AbstractWikiTemplate
         // keyNum parameter ?
         //        if (!in_array($name, ['1', '2', '3', '4'])) {
         throw new \Exception(
-            sprintf(
-                'no parameter "%s" in template "%s"',
-                $name,
-                static::MODEL_NAME
-            )
+            sprintf('no parameter "%s" in template "%s"', $name, static::MODEL_NAME)
         );
     }
 
@@ -137,11 +132,7 @@ abstract class AbstractWikiTemplate
      */
     protected function setterMethodName(string $name): string
     {
-        $sanitizedName = str_replace(
-            [' ', 'à', 'é'],
-            ['', 'a', 'e'],
-            $name
-        );
+        $sanitizedName = str_replace([' ', 'à', 'é'], ['', 'a', 'e'], $name);
         $sanitizedName = preg_replace('#[^A-Za-z0-9]#', '', $sanitizedName);
         $method = 'set'.ucfirst($sanitizedName);
 
@@ -150,10 +141,7 @@ abstract class AbstractWikiTemplate
 
     public function getParamsAndAlias(): array
     {
-        return array_merge(
-            $this->parametersByOrder,
-            array_keys($this::PARAM_ALIAS)
-        );
+        return array_merge($this->parametersByOrder, array_keys($this::PARAM_ALIAS));
     }
 
     /**
@@ -175,7 +163,7 @@ abstract class AbstractWikiTemplate
      *
      * @return string
      */
-    protected function getAliasParam(string $name): string
+    public function getAliasParam(string $name): string
     {
         if (key_exists($name, static::PARAM_ALIAS)) {
             $name = static::PARAM_ALIAS[$name];
@@ -198,11 +186,7 @@ abstract class AbstractWikiTemplate
         try{
             $this->checkParamName($name);
         }catch (\Throwable $e){
-            $this->log[] = sprintf(
-                'no parameter "%s" in template "%s"',
-                $name,
-                static::MODEL_NAME
-            );
+            $this->log[] = sprintf('no parameter "%s" in template "%s"', $name, static::MODEL_NAME);
 
             return $this;
         }
@@ -223,9 +207,23 @@ abstract class AbstractWikiTemplate
         unset($this->parametersValues[$name]);
     }
 
-    public function setInlineStyle(bool $bool = true): void
+    /**
+     * TODO move/refac
+     *
+     * @param string $text
+     *
+     * @throws \Exception
+     */
+    public function hydrateFromText(string $tplText)
     {
-        $this->inlineStyle = $bool;
+        $data = WikiTextUtil::parseDataFromTemplate($this::MODEL_NAME, $tplText);
+        $this->detectUserSeparator($tplText);
+        $this->hydrate($data);
+    }
+
+    public function detectUserSeparator($text): void
+    {
+        $this->userSeparator = WikiTextUtil::findUserStyleSeparator($text);
     }
 
     /**
@@ -270,7 +268,6 @@ abstract class AbstractWikiTemplate
             // optional parameter
             if (!isset(static::REQUIRED_PARAMETERS[$name])) {
                 unset($this->parametersValues[$name]);
-
                 return;
             }
             // required parameter
@@ -281,7 +278,6 @@ abstract class AbstractWikiTemplate
         $method = $this->setterMethodName($name);
         if (method_exists($this, $method)) {
             $this->$method($value);
-
             return;
         }
 
@@ -328,8 +324,7 @@ abstract class AbstractWikiTemplate
 
 
     /**
-     * TODO : + parameterErrorfromHydrate...
-     * TODO : data transfer object (DTO) to mix userErrorParam data
+     * TODO : data transfer object (DTO) to mix userErrorParam data ?
      * TODO : refac $inlineStyle as $userPreferences[] and bool flag on serialize()
      *
      * @param bool $inline
@@ -346,10 +341,9 @@ abstract class AbstractWikiTemplate
 
         $string = '{{'.static::MODEL_NAME;
         foreach ($paramsByRenderOrder AS $paramName => $paramValue) {
-            $string .= ($this->inlineStyle === true) ? '' : "\n";
-            $string .= '|';
+            $string .= ($this->userSeparator) ?? '|';
 
-            if (!in_array($paramName, ['0', '1', '2', '3','4','5'])) {
+            if (!in_array($paramName, ['0', '1', '2', '3', '4', '5'])) {
                 $string .= $paramName.'=';
                 // {{template|1=blabla}} -> {{template|blabla}}
             }
@@ -358,27 +352,6 @@ abstract class AbstractWikiTemplate
         $string .= '}}';
 
         return $string;
-    }
-
-    /**
-     * Merge Render data with wrong parameters+value from user input.
-     * The wrong ones already corrected are not added.
-     *
-     * @param array $paramsByRenderOrder
-     *
-     * @return array
-     */
-    protected function mergeWrongParametersFromUser(array $paramsByRenderOrder):array
-    {
-        if (!empty($this->parametersErrorFromHydrate)) {
-            $errorUserData = WikiTextUtil::deleteEmptyValueArray($this->parametersErrorFromHydrate);
-            // Add a note in HTML commentary
-            foreach ($errorUserData as $param => $value) {
-                $errorUserData[$param] = $value." <!--PARAMETRE '$param' N'EXISTE PAS -->";
-            }
-            $paramsByRenderOrder = array_merge($paramsByRenderOrder, $errorUserData);
-        }
-        return $paramsByRenderOrder;
     }
 
     /**
@@ -399,8 +372,7 @@ abstract class AbstractWikiTemplate
             }
             foreach ($newOrder as $paramName) {
                 if (isset($this->parametersValues[$paramName])) {
-                    $renderParams[$paramName]
-                        = $this->parametersValues[$paramName];
+                    $renderParams[$paramName] = $this->parametersValues[$paramName];
                 }
             }
         }
@@ -409,8 +381,7 @@ abstract class AbstractWikiTemplate
         if (empty($this->paramOrderByUser)) {
             foreach ($this->parametersByOrder as $order => $paramName) {
                 if (isset($this->parametersValues[$paramName])) {
-                    $renderParams[$paramName]
-                        = $this->parametersValues[$paramName];
+                    $renderParams[$paramName]= $this->parametersValues[$paramName];
                 }
             }
         }
@@ -436,6 +407,28 @@ abstract class AbstractWikiTemplate
         }
 
         return $render;
+    }
+
+    /**
+     * Merge Render data with wrong parameters+value from user input.
+     * The wrong ones already corrected are not added.
+     *
+     * @param array $paramsByRenderOrder
+     *
+     * @return array
+     */
+    protected function mergeWrongParametersFromUser(array $paramsByRenderOrder): array
+    {
+        if (!empty($this->parametersErrorFromHydrate)) {
+            $errorUserData = WikiTextUtil::deleteEmptyValueArray($this->parametersErrorFromHydrate);
+            // Add a note in HTML commentary
+            foreach ($errorUserData as $param => $value) {
+                $errorUserData[$param] = $value." <!--PARAMETRE '$param' N'EXISTE PAS -->";
+            }
+            $paramsByRenderOrder = array_merge($paramsByRenderOrder, $errorUserData);
+        }
+
+        return $paramsByRenderOrder;
     }
 
 }
