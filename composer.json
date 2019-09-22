@@ -4,13 +4,14 @@
     "type": "project",
     "license": "MIT",
     "require": {
+        "desmond/isbndb": "dev-master",
         "addwiki/mediawiki-api": "~0.7.0",
         "symfony/dotenv": "^4.3",
         "symfony/console": "4.2",
         "guzzlehttp/guzzle": "^6.3",
         "php-amqplib/php-amqplib": "^2.10",
         "yooper/php-text-analysis": "^1.5",
-        "ext-json": "*",
+        "ext-json": "*"
     },
     "autoload": {
         "psr-4": {
