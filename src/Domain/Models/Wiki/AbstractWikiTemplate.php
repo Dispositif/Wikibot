@@ -19,6 +19,7 @@ abstract class AbstractWikiTemplate
     public $log = [];
     public $parametersErrorFromHydrate;
     public $userSeparator; // todo move to WikiRef
+
     /**
      * optional
      * Not a constant so it can be modified in constructor
@@ -216,6 +217,9 @@ abstract class AbstractWikiTemplate
      */
     public function hydrateFromText(string $tplText)
     {
+        if( WikiTextUtil::isCommented($tplText) ) {
+            throw new \DomainException('HTML comment tag detected');
+        }
         $data = WikiTextUtil::parseDataFromTemplate($this::MODEL_NAME, $tplText);
         $this->detectUserSeparator($tplText);
         $this->hydrate($data);

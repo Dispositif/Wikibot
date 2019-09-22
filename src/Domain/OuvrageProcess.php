@@ -48,10 +48,13 @@ class OuvrageProcess
         $this->typoDeuxPoints('titre chapitre');
 
         $this->currentTask = 'éditeur';
+
+        $this->externalTemplates();
+
         //        $this->deWikifyEditeur();
 
         $this->currentTask = 'suite';
-        $this->dateIsYear();
+        //        $this->dateIsYear(); // géré par LUA ?
         $this->predictFormatByPattern();
 
         //        $tasks = [
@@ -167,6 +170,7 @@ class OuvrageProcess
 
     /**
      * Typo internationale 'titre : sous-titre'
+     * https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Le_Bistro/13_janvier_2016#Modif_du_mod%C3%A8le:Ouvrage
      * Todo? déplacer sous-titre dans 'sous-titre' ?
      *
      * @param $param
@@ -185,8 +189,8 @@ class OuvrageProcess
         if (empty($value)) {
             return;
         }
-        // "12" ou "VI"
-        if (preg_match('#^[0-9IVXL]+$#i', $value) > 0) {
+        // "12" ou "VI", {{II}}, II:3
+        if (preg_match('#^[0-9IVXL\-\.\:\{\}]+$#i', $value) > 0) {
             return;
         }
         // déplace vers "titre chapitre" ?
@@ -202,32 +206,94 @@ class OuvrageProcess
         $this->ouvrage->unsetParam($name);
     }
 
+    /**
+     * -----------------------------------------------------------
+     *              TASKS
+     * --------------------------------------------------------
+     */
+
+    /**
+     * TODO move
+     * TODO PlumeTemplate CommentaireBiblioTemplate  ExtraitTemplate
+     * Probleme {{commentaire biblio}} <> {{commentaire biblio SRL}}
+     * Generate supplementary templates from obsoletes params
+     *
+     * @throws \Exception
+     */
+    protected function externalTemplates()
+    {
+        // "plume=bla" => {{plume}}
+        // =oui selon doc, mais testé OK avec "non"
+        // todo detect duplication ouvrage/plume dans externalTemplate ?
+        if (!empty($this->getParam('plume'))) {
+            $plumeValue = $this->getParam('plume');
+            $this->ouvrage->externalTemplates[] = (object)[
+                'template' => 'plume',
+                '1' => $plumeValue,
+                'raw' => '{{plume}}',
+            ];
+            $this->unsetParam('plume');
+        }
+
+        // "extrait=bla" => {{citation bloc|bla}}
+        if (!empty($this->getParam('extrait'))) {
+            $extrait = $this->getParam('extrait');
+            // StdClass
+            $this->ouvrage->externalTemplates[] = (object)[
+                'template' => 'citation bloc',
+                '1' => $extrait,
+                'raw' => '{{extrait|'.$extrait.'}}',
+            ];
+            $this->unsetParam('extrait');
+        }
+
+        // "commentaire=bla" => {{Commentaire biblio|1=bla}}
+        if (!empty($this->getParam('commentaire'))) {
+            $commentaire = $this->getParam('commentaire');
+            $this->ouvrage->externalTemplates[] = (object)[
+                'template' => 'commentaire biblio',
+                '1' => $commentaire,
+                'raw' => '{{commentaire biblio|'.$commentaire.'}}',
+            ];
+            $this->unsetParam('commentaire');
+        }
+    }
+
     // ----------------------
     // ----------------------
     // ----------------------
 
-    private function dateIsYear()
-    {
-        if (($date = $this->getParam('date'))) {
-            if (preg_match('#^\-?[12][0-9][0-9][0-9]$#', $date)) {
-                $this->setParam('année', $date);
-                $this->unsetParam('date');
-                $this->log('date=>année');
-            }
-        }
-    }
+    /**
+     * todo : invisible/inutile ? (LUA)
+     *
+     * @throws \Exception
+     */
+    //    private function dateIsYear()
+    //    {
+    //        if (($date = $this->getParam('date'))) {
+    //            if (preg_match('#^\-?[12][0-9][0-9][0-9]$#', $date)) {
+    //                $this->setParam('année', $date);
+    //                $this->unsetParam('date');
+    //                $this->log('date=>année');
+    //            }
+    //        }
+    //    }
+
 
     private function predictFormatByPattern()
     {
         if (($value = $this->getParam('format'))) {
             // predict if 'format électronique'
-            if (preg_match('#(pdf|epub|html|kindle|audio|\{\{aud|jpg)#i', $value) > 0) {
-                $this->setParam('format électronique', $value);
-                $this->unsetParam('format');
-                $this->log('format:électronique?');
-
-                return;
-            }
+            // format electronique lié au champ 'lire en ligne'
+            // 2015 https://fr.wikipedia.org/wiki/Discussion_mod%C3%A8le:Ouvrage#format,_format_livre,_format_%C3%A9lectronique
+            //            if (preg_match('#(pdf|epub|html|kindle|audio|\{\{aud|jpg)#i', $value) > 0) {
+            //
+            //                $this->setParam('format électronique', $value);
+            //                $this->unsetParam('format');
+            //                $this->log('format:électronique?');
+            //
+            //                return;
+            //            }
             if (preg_match(
                     '#(ill\.|couv\.|in\-[0-9]|in-fol|poche|broché|relié|\{\{unité|\{\{Dunité|[0-9]{2} ?cm|\|cm\}\}|vol\.|A4)#i',
                     $value

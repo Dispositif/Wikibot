@@ -5,6 +5,7 @@ namespace App\Domain\Models\Wiki;
 
 
 use App\Domain\TextUtil;
+use App\Domain\WikiTextUtil;
 
 /**
  * TODO : Extraction de plume=,extrait=,commentaire= (obsolètes) sur {{plume}},{{citation bloc}},{{commentaire biblio}}
@@ -12,6 +13,8 @@ use App\Domain\TextUtil;
  */
 class OuvrageTemplate extends AbstractWikiTemplate
 {
+    public $externalTemplates = []; // todo
+
     const MODEL_NAME = 'ouvrage';
 
     const REQUIRED_PARAMETERS
@@ -131,12 +134,13 @@ class OuvrageTemplate extends AbstractWikiTemplate
             'quote' => 'extrait',
             /* END {{cite book}} to {{ouvrage}} convertion */
             'publication-place' => 'lieu',
-           //  'editor-last', 'editor-first', 'editor2-last', etc
+            //  'editor-last', 'editor-first', 'editor2-last', etc
             'publication-date' => 'date',
-            'author-link' => 'lien auteur1'
+            'author-link' => 'lien auteur1',
         ];
     protected $parametersByOrder
         = [
+            'id', // déconseillé. En tête pour visibilité, car utilisé comme ancre
             'langue',
             'langue originale',
             'auteurs', // déconseillé => auteur1, auteur2...
@@ -345,7 +349,6 @@ class OuvrageTemplate extends AbstractWikiTemplate
             'numéro chapitre',
             'titre chapitre',
             'passage',
-            'id',
             'libellé',
             'référence',
             'référence simplifiée',
@@ -361,100 +364,140 @@ class OuvrageTemplate extends AbstractWikiTemplate
         $this->parametersValues['titre'] = $titre;
     }
 
-    //    private function setLangue() { }
-    //    private function setLangueoriginale() { }
-    //    private function setAuteur1() { }
-    //    private function setPrenom1() { }
-    //    private function setNom1() { }
-    //    private function setPostnom1() { }
-    //    private function setLienauteur1() { }
-    //    private function setDirecteur1() { }
-    //    private function setResponsabilite1() { }
-    //    private function setAuteur2() { }
-    //    private function setPrenom2() { }
-    //    private function setNom2() { }
-    //    private function setPostnom2() { }
-    //    private function setLienauteur2() { }
-    //    private function setDirecteur2() { }
-    //    private function setResponsabilite2() { }
-    //    private function setAuteur3() { }
-    //    private function setPrenom3() { }
-    //    private function setNom3() { }
-    //    private function setPostnom3() { }
-    //    private function setLienauteur3() { }
-    //    private function setDirecteur3() { }
-    //    private function setResponsabilite3() { }
-    //    private function setEtal() { }
-    //    private function setAuteurinstitutionnel() { }
-    //    private function setTraducteur() { }
-    //    private function setTraductrice() { }
-    //    private function setPreface() { }
-    //    private function setPostface() { }
-    //    private function setIllustrateur() { }
-    //    private function setPhotographe() { }
-    //    private function setChamplibre() { }
-    //    private function setTitre() { }
-    //    private function setSoustitre() { }
-    //    private function setTitreoriginal() { }
-    //    private function setTraductiontitre() { }
-    //    private function setVolume() { }
-    //    private function setTome() { }
-    //    private function setTitrevolume() { }
-    //    private function setTitretome() { }
-    //    private function setLieu() { }
-    //    private function setEditeur() { }
-    //    private function setNatureouvrage() { }
-    //    private function setCollection() { }
-    //    private function setSerie() { }
-    //    private function setNumerodanscollection() { }
-    //    private function setAnnee() { }
-    //    private function setMois() { }
-    //    private function setJour() { }
-    //    private function setDate() { }
-    //    private function setNumerodedition() { }
-    //    private function setAnneepremireedition() { }
-    //    private function setReimpression() { }
-    //    private function setPagestotales() { }
-    //    private function setFormatlivre() { }
-    //    private function setIsbn() { }
-    //    private function setIsbn2() { }
-    //    private function setIsbn3() { }
-    //    private function setIsbnerrone() { }
-    //    private function setIssn() { }
-    //    private function setIssn2() { }
-    //    private function setIssn3() { }
-    //    private function setEissn() { }
-    //    private function setIsmn() { }
-    //    private function setEan() { }
-    //    private function setAsin() { }
-    //    private function setOclc() { }
-    //    private function setBnf() { }
-    //    private function setLccn() { }
-    //    private function setDnb() { }
-    //    private function setDoi() { }
-    //    private function setPmid() { }
-    //    private function setJstor() { }
-    //    private function setBibcode() { }
-    //    private function setMathreviews() { }
-    //    private function setZbl() { }
-    //    private function setArxiv() { }
-    //    private function setSudoc() { }
-    //    private function setWikisource() { }
-    //    private function setPresentationenligne() { }
-    //    private function setLireenligne() { }
-    //    private function setEcouterenligne() { }
-    //    private function setFormatelectronique() { }
-    //    private function setConsultele() { }
-    //    private function setPartie() { }
-    //    private function setNumerochapitre() { }
-    //    private function setTitrechapitre() { }
-    //    private function setPassage() { }
-    //    private function setId() { }
-    //    private function setLibelle() { }
-    //    private function setReference() { }
-    //    private function setReferencesimplifiee() { }
-    //    private function setPlume() { }
-    //    private function setExtrait() { }
-    //    private function setCommentaire() { }
+    protected function setLieu($lieu)
+    {
+        // pas de wikilien sur lieu (stats/pertinence)
+        $lieu = WikiTextUtil::deWikify($lieu);
+        $this->parametersValues['lieu'] = $lieu;
+    }
+    protected function setPagestotales($pages) {
+        // confusion 'passage' = "134-145"
+        if(preg_match('/[0-9]+\-[0-9]+$/',$pages) > 0){
+            $this->parametersValues['passage'] = $pages;
+            return;
+        }
+        $this->parametersValues['pages totales'] = $pages;
+    }
+
+    /**
+     * todo move + refac
+     * dirty
+     */
+    public function serializeExternalTemplates(): string
+    {
+        $res = '';
+        if(!empty($this->externalTemplates)){
+            foreach ($this->externalTemplates as $externalTemplate) {
+                $res .= $externalTemplate->raw;
+            }
+        }
+        return $res;
+    }
+
+    /**
+     * Consensus Ouvrage (2012) sur suppression [[2010 en littérature|2010]]
+     * @param $str
+     */
+    protected function setAnnee($str) {
+        $str = WikiTextUtil::deWikify($str);
+        $this->parametersValues['année'] = $str;
+        // major
+    }
+
+    //    protected function setLangue() { }
+    //    protected function setLangueoriginale() { }
+    //    protected function setAuteur1() { }
+    //    protected function setPrenom1() { }
+    //    protected function setNom1() { }
+    //    protected function setPostnom1() { }
+    //    protected function setLienauteur1() { }
+    //    protected function setDirecteur1() { }
+    //    protected function setResponsabilite1() { }
+    //    protected function setAuteur2() { }
+    //    protected function setPrenom2() { }
+    //    protected function setNom2() { }
+    //    protected function setPostnom2() { }
+    //    protected function setLienauteur2() { }
+    //    protected function setDirecteur2() { }
+    //    protected function setResponsabilite2() { }
+    //    protected function setAuteur3() { }
+    //    protected function setPrenom3() { }
+    //    protected function setNom3() { }
+    //    protected function setPostnom3() { }
+    //    protected function setLienauteur3() { }
+    //    protected function setDirecteur3() { }
+    //    protected function setResponsabilite3() { }
+    //    protected function setEtal() { }
+    //    protected function setAuteurinstitutionnel() { }
+    //    protected function setTraducteur() { }
+    //    protected function setTraductrice() { }
+    //    protected function setPreface() { }
+    //    protected function setPostface() { }
+    //    protected function setIllustrateur() { }
+    //    protected function setPhotographe() { }
+    //    protected function setChamplibre() { }
+    //    protected function setTitre() { }
+    //    protected function setSoustitre() { }
+    //    protected function setTitreoriginal() { }
+    //    protected function setTraductiontitre() { }
+    //    protected function setVolume() { }
+    //    protected function setTome() { }
+    //    protected function setTitrevolume() { }
+    //    protected function setTitretome() { }
+
+    //    protected function setEditeur() { }
+    //    protected function setNatureouvrage() { }
+    //    protected function setCollection() { }
+    //    protected function setSerie() { }
+    //    protected function setNumerodanscollection() { }
+    //    protected function setAnnee() { }
+    //    protected function setMois() { }
+    //    protected function setJour() { }
+    //    protected function setDate() { }
+    //    protected function setNumerodedition() { }
+    //    protected function setAnneepremireedition() { }
+    //    protected function setReimpression() { }
+    //    protected function setPagestotales() { }
+    //    protected function setFormatlivre() { }
+    //    protected function setIsbn() { }
+    //    protected function setIsbn2() { }
+    //    protected function setIsbn3() { }
+    //    protected function setIsbnerrone() { }
+    //    protected function setIssn() { }
+    //    protected function setIssn2() { }
+    //    protected function setIssn3() { }
+    //    protected function setEissn() { }
+    //    protected function setIsmn() { }
+    //    protected function setEan() { }
+    //    protected function setAsin() { }
+    //    protected function setOclc() { }
+    //    protected function setBnf() { }
+    //    protected function setLccn() { }
+    //    protected function setDnb() { }
+    //    protected function setDoi() { }
+    //    protected function setPmid() { }
+    //    protected function setJstor() { }
+    //    protected function setBibcode() { }
+    //    protected function setMathreviews() { }
+    //    protected function setZbl() { }
+    //    protected function setArxiv() { }
+    //    protected function setSudoc() { }
+    //    protected function setWikisource() { }
+    //    protected function setPresentationenligne() { }
+    //    protected function setLireenligne() { }
+    //    protected function setEcouterenligne() { }
+    //    protected function setFormatelectronique() { }
+    //    protected function setConsultele() { }
+    //    protected function setPartie() { }
+    //    protected function setNumerochapitre() { }
+    //    protected function setTitrechapitre() { }
+    //    protected function setPassage() { }
+    //    protected function setId() { }
+    //    protected function setLibelle() { }
+    //    protected function setReference() { }
+    //    protected function setReferencesimplifiee() { }
+    //    protected function setPlume() { }
+    //    protected function setExtrait() { }
+    //    protected function setCommentaire() { }
 
 }

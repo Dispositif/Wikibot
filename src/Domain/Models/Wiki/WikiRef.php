@@ -43,6 +43,7 @@ class WikiRef
     }
 
     /**
+     * TODO : check duplicate code
      * TODO : multiple occurrences of the same template
      * TODO : move method to WikiTextUtil ?
      * Generate an array with all the wikiTemplate objects
@@ -66,6 +67,10 @@ class WikiRef
 
         $this->findTemplateNames();
         $allTempNames = $this->getTemplateNames();
+
+        if(WikiTextUtil::isCommented($this->refText)){
+            throw new \DomainException('HTML comment tag detected');
+        }
 
         $res = [];
         foreach ($allTempNames as $templName) {

@@ -296,8 +296,6 @@ abstract class WikiTextUtil extends TextUtil
     }
 
     /**
-     * TODO : vérif/amélioration refex isCommented() et stripComments()
-     *
      * @param string $text
      *
      * @return bool
@@ -305,7 +303,7 @@ abstract class WikiTextUtil extends TextUtil
     static public function isCommented(string $text): bool
     {
         //ou preg_match('#<\!--(?!-->).*-->#s', '', $text); // plus lourd mais précis
-        return preg_match("#<\!--[^>]*-->#", $text);
+        return (preg_match("#<\!--[^>]*-->#", $text) > 0) ? true : false;
     }
 
     static public function stripComments(string $text): string
@@ -313,6 +311,25 @@ abstract class WikiTextUtil extends TextUtil
         // NON : preg_replace('#<\!--(?!-->).*-->#s', '', $text); // incorrect avec "<!-- -->oui<!-- -->"
         // OK mais ne gère pas "<!-- <!-- <b> -->"
         return trim(preg_replace("#<\!--[^>]*-->#", '', $text));
+    }
+
+    /**
+     * Detect {{nobots}}, {{bots|deny=all}}, {{bots|deny=MyBot,BobBot}}
+     * OK frwiki — ? enwiki
+     * @param string      $text
+     * @param string|null $botName
+     *
+     * @return bool
+     */
+    static public function isNoBotTag(string $text, string $botName = null): bool
+    {
+        $denyReg = (!is_null($botName)) ? '|\{\{bots ?\| ?deny\=[^\}]*'.preg_quote($botName, '#').'[^\}]*\}\}' : '';
+
+        if (preg_match('#(\{\{nobots\}\}|\{\{bots ?\| ?(optout|deny) ?= ?all ?\}\}'.$denyReg.')#i', $text) > 0) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
