@@ -4,7 +4,6 @@
     "type": "project",
     "license": "MIT",
     "require": {
-        "desmond/isbndb": "dev-master",
         "addwiki/mediawiki-api": "~0.7.0",
         "symfony/dotenv": "^4.3",
         "symfony/console": "4.2",

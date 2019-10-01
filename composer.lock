@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c455031c73d5325dd6f9169f6c64ff40",
+    "content-hash": "dd11561df93d068cb2c465f5393b9702",
     "packages": [
         {
             "name": "addwiki/mediawiki-api",
@@ -184,45 +184,6 @@
             ],
             "description": "Porter Stemmer created by Richard Heyes",
             "time": "2013-02-06T21:39:08+00:00"
-        },
-        {
-            "name": "desmond/isbndb",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/kingdido999/isbndb.git",
-                "reference": "2c6d28a1d9ab0a40b8ef1d01ca10764a6fbdee2e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/kingdido999/isbndb/zipball/2c6d28a1d9ab0a40b8ef1d01ca10764a6fbdee2e",
-                "reference": "2c6d28a1d9ab0a40b8ef1d01ca10764a6fbdee2e",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "~4.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "ISBNdb": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Pengcheng Ding",
-                    "email": "kingdido999@gmail.com"
-                }
-            ],
-            "description": "ISBNdb API",
-            "time": "2018-01-13T15:15:30+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -2855,9 +2816,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "desmond/isbndb": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
