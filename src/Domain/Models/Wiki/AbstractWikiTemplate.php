@@ -211,7 +211,7 @@ abstract class AbstractWikiTemplate
     /**
      * TODO move/refac
      *
-     * @param string $text
+     * @param string $tplText
      *
      * @throws \Exception
      */
@@ -335,7 +335,7 @@ abstract class AbstractWikiTemplate
      *
      * @return string
      */
-    final public function serialize(): string
+    public function serialize(): string
     {
         $paramsByRenderOrder = $this->paramsByRenderOrder();
         $paramsByRenderOrder = $this->filterEmptyNotRequired($paramsByRenderOrder);

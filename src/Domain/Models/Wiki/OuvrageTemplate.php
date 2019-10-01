@@ -8,15 +8,12 @@ use App\Domain\TextUtil;
 use App\Domain\WikiTextUtil;
 
 /**
- * TODO : Extraction de plume=,extrait=,commentaire= (obsolètes) sur {{plume}},{{citation bloc}},{{commentaire biblio}}
+ * Note : Extraction de plume=,extrait=,commentaire= (obsolètes) sur {{plume}},{{citation bloc}},{{commentaire biblio}}
  * Class OuvrageTemplate
  */
 class OuvrageTemplate extends AbstractWikiTemplate
 {
-    public $externalTemplates = []; // todo
-
-    const MODEL_NAME = 'ouvrage';
-
+        const MODEL_NAME = 'ouvrage'; // todo
     const REQUIRED_PARAMETERS
         = [
             //        'auteur1' => '',
@@ -138,6 +135,7 @@ class OuvrageTemplate extends AbstractWikiTemplate
             'publication-date' => 'date',
             'author-link' => 'lien auteur1',
         ];
+public $externalTemplates = [];
     protected $parametersByOrder
         = [
             'id', // déconseillé. En tête pour visibilité, car utilisé comme ancre
@@ -357,6 +355,32 @@ class OuvrageTemplate extends AbstractWikiTemplate
             'commentaire', // obsolete => {{commentaire biblio}}
         ];
 
+    /**
+     * todo move to abstract ?
+     *
+     * @return string
+     */
+    public function serialize(): string
+    {
+        return parent::serialize().$this->serializeExternalTemplates();
+    }
+
+    /**
+     * todo move to abstract ? + refac
+     * dirty
+     */
+    public function serializeExternalTemplates(): string
+    {
+        $res = '';
+        if (!empty($this->externalTemplates)) {
+            foreach ($this->externalTemplates as $externalTemplate) {
+                $res .= $externalTemplate->raw;
+            }
+        }
+
+        return $res;
+    }
+
     protected function setTitre(string $titre)
     {
         // Typo : majuscule
@@ -370,35 +394,25 @@ class OuvrageTemplate extends AbstractWikiTemplate
         $lieu = WikiTextUtil::deWikify($lieu);
         $this->parametersValues['lieu'] = $lieu;
     }
-    protected function setPagestotales($pages) {
+
+    protected function setPagestotales($pages)
+    {
         // confusion 'passage' = "134-145"
-        if(preg_match('/[0-9]+\-[0-9]+$/',$pages) > 0){
+        if (preg_match('/[0-9]+\-[0-9]+$/', $pages) > 0 && !isset($this->parametersValues['passage'])) {
             $this->parametersValues['passage'] = $pages;
+
             return;
         }
         $this->parametersValues['pages totales'] = $pages;
     }
 
     /**
-     * todo move + refac
-     * dirty
-     */
-    public function serializeExternalTemplates(): string
-    {
-        $res = '';
-        if(!empty($this->externalTemplates)){
-            foreach ($this->externalTemplates as $externalTemplate) {
-                $res .= $externalTemplate->raw;
-            }
-        }
-        return $res;
-    }
-
-    /**
      * Consensus Ouvrage (2012) sur suppression [[2010 en littérature|2010]]
+     *
      * @param $str
      */
-    protected function setAnnee($str) {
+    protected function setAnnee($str)
+    {
         $str = WikiTextUtil::deWikify($str);
         $this->parametersValues['année'] = $str;
         // major
