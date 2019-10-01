@@ -30,6 +30,11 @@ class PredictFromTypo
      */
     public function predictNameFirstName(string $author): array
     {
+        // multiple authors // todo? explode authors
+        if ($this->hasManyAuthors($author)) {
+            return ['fail' => '2+ authors in string'];
+        }
+
         // ALLUPPER, FIRSTUPPER, ALLLOWER, MIXED, INITIAL, ALLNUMBER, WITHNUMBER, DASHNUMBER, URL, ITALIC, BIBABREV,
         // AND, VIRGULE, PUNCTUATION
         $typoPattern = $this->typoPatternFromAuthor($author);
@@ -59,6 +64,7 @@ class PredictFromTypo
 
         // A. Durand
         if ($typoPattern === 'INITIAL FIRSTUPPER' && !empty($tokenAuthor[0]) && !empty($tokenAuthor[1])) {
+            // todo : prendre name après dernier point et rétablir "A. B." == FIRSTCAP
             return ['firstname' => $tokenAuthor[0], 'name' => $tokenAuthor[1]];
         }
         // A. B. Durand (todo : gérer "A.B. Durand")
@@ -76,6 +82,24 @@ class PredictFromTypo
             'fail' => 'unknown typo pattern',
             'pattern' => $typoPattern,
         ];
+    }
+
+    /**
+     * From underTwoAuthors() by MartinS
+     * Return true if 0 or 1 author in $author; false otherwise
+     *
+     * @param $author
+     *
+     * @return bool
+     */
+    private function hasManyAuthors($author): bool
+    {
+        $chars = count_chars(trim($author));
+        if ($chars[ord(";")] > 0 || $chars[ord(" ")] > 2 || $chars[ord(",")] > 1) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -131,9 +155,57 @@ class PredictFromTypo
 
         // PUNCTUATION : sans virgule, sans &, sans point, sans tiret petit '-'
         $text = str_replace(
-            [ '!', '"', '«', '»', '#', '$', '%', "'", '’', '´', '`', '^', '…', '‽', '(', ')', '*', '⁂', '+', '–', '—',
-              '/', ':', ';', '?', '@', '[', '\\', ']', '_', '`', '{', '|', '¦', '}', '~', '<', '>', '№', '©', '®', '°',
-              '†', '§', '∴', '∵', '¶', '•', '+', ],
+            [
+                '!',
+                '"',
+                '«',
+                '»',
+                '#',
+                '$',
+                '%',
+                "'",
+                '’',
+                '´',
+                '`',
+                '^',
+                '…',
+                '‽',
+                '(',
+                ')',
+                '*',
+                '⁂',
+                '+',
+                '–',
+                '—',
+                '/',
+                ':',
+                ';',
+                '?',
+                '@',
+                '[',
+                '\\',
+                ']',
+                '_',
+                '`',
+                '{',
+                '|',
+                '¦',
+                '}',
+                '~',
+                '<',
+                '>',
+                '№',
+                '©',
+                '®',
+                '°',
+                '†',
+                '§',
+                '∴',
+                '∵',
+                '¶',
+                '•',
+                '+',
+            ],
             ' PUNCTUATION ',
             $text
         );
@@ -191,6 +263,7 @@ class PredictFromTypo
      */
     private function checkFirstname($firstname): bool
     {
+        // todo? sanitize firstname  (ucfirst?)
         if (strlen(trim($firstname)) >= 2 && in_array($firstname, $this->firstnameList)) {
             return true;
         }

@@ -51,6 +51,7 @@ class PredictFromTypoTest extends TestCase
             ['J. Penaud', ['firstname' => 'J.', 'name' => 'Penaud']],
             ['Penaud, J.', ['firstname' => 'J.', 'name' => 'Penaud']],
             ['A. B. Durand', ['firstname' => 'A. B.', 'name' => 'Durand']],
+            ['Pierre Durand, Paul Marchal', ['fail' => '2+ authors in string']],
         ];
     }
 }
