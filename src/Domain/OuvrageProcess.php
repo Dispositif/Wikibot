@@ -18,7 +18,9 @@ class OuvrageProcess
     private $log = [];
     private $ouvrage;
     private $currentTask;
+    private $util;
 
+    // todo inject TextUtil + ArticleVersion ou WikiRef
     public function __construct(OuvrageTemplate $ouvrage, $wikiPageTitle = null)
     {
         $this->original = $ouvrage;
@@ -213,7 +215,7 @@ class OuvrageProcess
      */
 
     /**
-     * TODO move
+     * TODO move+refac
      * TODO PlumeTemplate CommentaireBiblioTemplate  ExtraitTemplate
      * Probleme {{commentaire biblio}} <> {{commentaire biblio SRL}}
      * Generate supplementary templates from obsoletes params
@@ -238,12 +240,23 @@ class OuvrageProcess
         // "extrait=bla" => {{citation bloc|bla}}
         if (!empty($this->getParam('extrait'))) {
             $extrait = $this->getParam('extrait');
-            // StdClass
-            $this->ouvrage->externalTemplates[] = (object)[
-                'template' => 'citation bloc',
-                '1' => $extrait,
-                'raw' => '{{extrait|'.$extrait.'}}',
-            ];
+            // todo bug {{citation bloc}} si "=" ou "|" dans texte de citation
+            // Legacy : use {{début citation}} ... {{fin citation}}
+            if ( preg_match('#[=|\|]#', $extrait) > 0 ) {
+                $this->ouvrage->externalTemplates[] = (object)[
+                    'template' => 'début citation',
+                    '1' => '',
+                    'raw' => '{{début citation}}'.$extrait.'{{fin citation}}',
+                ];
+            }else{
+                // StdClass
+                $this->ouvrage->externalTemplates[] = (object)[
+                    'template' => 'citation bloc',
+                    '1' => $extrait,
+                    'raw' => '{{extrait|'.$extrait.'}}',
+                ];
+            }
+
             $this->unsetParam('extrait');
         }
 
