@@ -8,7 +8,7 @@ use App\Domain\WikiTextUtil;
  * TODO detect userPreferences (inlineStyle, spaceStyle...)
  * Class AbstractWikiTemplate
  */
-abstract class AbstractWikiTemplate
+abstract class AbstractWikiTemplate extends AbstractParametersObject
 {
     const MODEL_NAME  = '';
     const PARAM_ALIAS = [];
@@ -28,7 +28,6 @@ abstract class AbstractWikiTemplate
      */
     protected $parametersByOrder = [];
     protected $paramOrderByUser = [];
-    protected $parametersValues;
 
     /**
      * AbstractWikiTemplate constructor.
@@ -41,7 +40,7 @@ abstract class AbstractWikiTemplate
             throw new \Exception(
                 sprintf(
                     'REQUIRED_PARAMETERS not configured in "%s"',
-                    static::MODEL_NAME
+                    __CLASS__
                 )
             );
         }
@@ -52,34 +51,23 @@ abstract class AbstractWikiTemplate
         }
     }
 
+    public function getParamsAndAlias(): array
+    {
+        return array_merge($this->parametersByOrder, array_keys($this::PARAM_ALIAS));
+    }
+
     /**
-     * @param $param
+     * @param string $name
      *
      * @return string|null
      * @throws \Exception
      */
-    public function __get($param): ?string
+    public function getParam(string $name): ?string
     {
-        $this->checkParamName($param);
+        $this->checkParamName($name);
+        $name = $this->getAliasParam($name);
 
-        if (!empty($this->parametersValues[$param])) {
-            return $this->parametersValues[$param];
-        }
-
-        // todo param_alias ?
-        return null;
-    }
-
-    /**
-     * @param $param
-     * @param $value
-     *
-     * @throws \Exception
-     */
-    public function __set($param, $value): void
-    {
-        $this->checkParamName($param);
-        throw new \Exception('not yet');
+        return ($this->parametersValues[$name]) ?? null;
     }
 
     /**
@@ -107,56 +95,8 @@ abstract class AbstractWikiTemplate
         // keyNum parameter ?
         //        if (!in_array($name, ['1', '2', '3', '4'])) {
         throw new \Exception(
-            sprintf('no parameter "%s" in template "%s"', $name, static::MODEL_NAME)
+            sprintf('no parameter "%s" in template "%s"', $name, __CLASS__)
         );
-    }
-
-    /**
-     * todo extract
-     */
-    public function generateSetterMethodList()
-    {
-        $list = '';
-        foreach ($this->parametersByOrder as $name) {
-            $method = $this->setterMethodName($name);
-            $list .= 'private function '.$method."() { }\n";
-        }
-        echo "<pre>$list</pre>";
-    }
-
-    /**
-     * Magic param setter
-     *
-     * @param $name
-     *
-     * @return string
-     */
-    protected function setterMethodName(string $name): string
-    {
-        $sanitizedName = str_replace([' ', 'à', 'é'], ['', 'a', 'e'], $name);
-        $sanitizedName = preg_replace('#[^A-Za-z0-9]#', '', $sanitizedName);
-        $method = 'set'.ucfirst($sanitizedName);
-
-        return $method;
-    }
-
-    public function getParamsAndAlias(): array
-    {
-        return array_merge($this->parametersByOrder, array_keys($this::PARAM_ALIAS));
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return string|null
-     * @throws \Exception
-     */
-    public function getParam(string $name): ?string
-    {
-        $this->checkParamName($name);
-        $name = $this->getAliasParam($name);
-
-        return ($this->parametersValues[$name]) ?? null;
     }
 
     /**
@@ -179,15 +119,15 @@ abstract class AbstractWikiTemplate
      * @param string $name
      * @param string $value
      *
-     * @return AbstractWikiTemplate
+     * @return AbstractParametersObject
      * @throws \Exception
      */
-    public function setParam(string $name, string $value): AbstractWikiTemplate
+    public function setParam(string $name, string $value): AbstractParametersObject
     {
         try{
             $this->checkParamName($name);
         }catch (\Throwable $e){
-            $this->log[] = sprintf('no parameter "%s" in template "%s"', $name, static::MODEL_NAME);
+            $this->log[] = sprintf('no parameter "%s" in AbstractParametersObject "%s"', $name, __CLASS__);
 
             return $this;
         }
@@ -199,6 +139,24 @@ abstract class AbstractWikiTemplate
         }
 
         return $this;
+    }
+
+    /**
+     * @param $param
+     *
+     * @return string|null
+     * @throws \Exception
+     */
+    public function __get($param): ?string
+    {
+        $this->checkParamName($param);
+
+        if (!empty($this->parametersValues[$param])) {
+            return $this->parametersValues[$param];
+        }
+
+        // todo param_alias ?
+        return null;
     }
 
     public function unsetParam(string $name): void
@@ -217,7 +175,7 @@ abstract class AbstractWikiTemplate
      */
     public function hydrateFromText(string $tplText)
     {
-        if( WikiTextUtil::isCommented($tplText) ) {
+        if (WikiTextUtil::isCommented($tplText)) {
             throw new \DomainException('HTML comment tag detected');
         }
         $data = WikiTextUtil::parseDataFromTemplate($this::MODEL_NAME, $tplText);
@@ -272,6 +230,7 @@ abstract class AbstractWikiTemplate
             // optional parameter
             if (!isset(static::REQUIRED_PARAMETERS[$name])) {
                 unset($this->parametersValues[$name]);
+
                 return;
             }
             // required parameter
@@ -282,6 +241,7 @@ abstract class AbstractWikiTemplate
         $method = $this->setterMethodName($name);
         if (method_exists($this, $method)) {
             $this->$method($value);
+
             return;
         }
 
@@ -315,17 +275,6 @@ abstract class AbstractWikiTemplate
         }
         $this->paramOrderByUser = $validParams;
     }
-
-    /**
-     * todo useless ?
-     *
-     * @return array
-     */
-    final public function toArray(): array
-    {
-        return $this->parametersValues;
-    }
-
 
     /**
      * TODO : data transfer object (DTO) to mix userErrorParam data ?
@@ -385,7 +334,7 @@ abstract class AbstractWikiTemplate
         if (empty($this->paramOrderByUser)) {
             foreach ($this->parametersByOrder as $order => $paramName) {
                 if (isset($this->parametersValues[$paramName])) {
-                    $renderParams[$paramName]= $this->parametersValues[$paramName];
+                    $renderParams[$paramName] = $this->parametersValues[$paramName];
                 }
             }
         }
