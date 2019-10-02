@@ -28,7 +28,7 @@ class PredictFromTypoTest extends TestCase
             ['Paul Penaud', 'FIRSTUPPER FIRSTUPPER'],
             ['Jean-Pierre Penaud', 'MIXED FIRSTUPPER'],
             ['J. Penaud', 'INITIAL FIRSTUPPER'],
-            ['A. B. Penaud', 'INITIAL INITIAL FIRSTUPPER'],
+            ['A. B. Penaud', 'INITIAL FIRSTUPPER'],
         ];
     }
 
