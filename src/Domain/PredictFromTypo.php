@@ -8,15 +8,18 @@ namespace App\Domain;
  */
 class PredictFromTypo
 {
+    /**
+     * @var CorpusInterface|null
+     */
+    private $corpus;
+    private $firstnameCorpus = [];
 
-    private $firstnameList = [];
-
-    // todo inject listManager  (constru or setter)
-    public function __construct(array $firstnameList = null)
+    public function __construct(?CorpusInterface $corpus = null)
     {
-        $this->firstnameList = ['Paul', 'Pierre', 'Jean-Pierre']; // temp
-        if (!is_null($firstnameList)) {
-            $this->firstnameList = $firstnameList;
+        //$this->firstnameCorpus = ['Paul', 'Pierre', 'Jean-Pierre']; // temp
+        if (!is_null($corpus)) {
+            $this->corpus = $corpus;
+            $this->firstnameCorpus = $corpus->getFirstnameCorpus();
         }
     }
 
@@ -40,37 +43,54 @@ class PredictFromTypo
         $typoPattern = $this->typoPatternFromAuthor($author);
         $tokenAuthor = preg_split('#[ ]+#', $author);
 
-        // Paul Durand
-        if ($typoPattern === 'FIRSTUPPER FIRSTUPPER'
-            && $this->checkFirstname($tokenAuthor[0])
-            && !empty($tokenAuthor[1])
-        ) {
-            return ['firstname' => $tokenAuthor[0], 'name' => $tokenAuthor[1],];
-        }
+        if ($typoPattern === 'FIRSTUPPER FIRSTUPPER' && !empty($tokenAuthor[1])) {
+            // Paul Durand
+            if ($this->checkFirstname($tokenAuthor[0], true) && !$this->checkFirstname($tokenAuthor[1])) {
+                return ['firstname' => $tokenAuthor[0], 'name' => $tokenAuthor[1]];
+            }
+            // Durand Paul
+            if ($this->checkFirstname($tokenAuthor[1]) && !$this->checkFirstname($tokenAuthor[0])) {
+                return ['firstname' => $tokenAuthor[1], 'name' => $tokenAuthor[0]];
+            }
 
-        // Zorglub Durand => singe savant
-        if ($typoPattern === 'FIRSTUPPER FIRSTUPPER' && $this->checkFirstname($tokenAuthor[0])
-            && !empty($tokenAuthor[1])
-        ) {
-            return ['fail' => 'firstname not in list'];
+            // Pierre Paul
+            if ($this->checkFirstname($tokenAuthor[1]) && $this->checkFirstname($tokenAuthor[0])) {
+                return ['fail' => 'both names in the firstnames corpus'];
+            }
+
+            return ['fail' => 'firstname not in corpus'];
         }
 
         // Jean-Pierre Durand
-        if ($typoPattern === 'MIXED FIRSTUPPER' && !empty($tokenAuthor[0]) && !empty($tokenAuthor[1])
-            && $this->checkFirstname($tokenAuthor[0])
-        ) {
-            return ['firstname' => $tokenAuthor[0], 'name' => $tokenAuthor[1]];
+        if ($typoPattern === 'MIXED FIRSTUPPER' && !empty($tokenAuthor[0]) && !empty($tokenAuthor[1])) {
+            // Jean-Pierre Durand
+            if ($this->checkFirstname($tokenAuthor[0], true) && !$this->checkFirstname($tokenAuthor[1])) {
+                return ['firstname' => $tokenAuthor[0], 'name' => $tokenAuthor[1]];
+            }
+            // Ducroz-Lacroix Pierre
+            if ($this->checkFirstname($tokenAuthor[1]) && !$this->checkFirstname($tokenAuthor[0])) {
+                return ['firstname' => $tokenAuthor[1], 'name' => $tokenAuthor[0]];
+            }
+            // Luc-Zorglub Durand
+            $pos = mb_strpos($tokenAuthor[0], '-');
+            $firstnamePart = mb_substr($tokenAuthor[0],0,$pos);
+            if( $pos > 0 && $this->checkFirstname($firstnamePart) ) {
+                return ['firstname' => $tokenAuthor[0], 'name' => $tokenAuthor[1]];
+            }
+
+            return ['fail' => 'firstname MIXED not in corpus'];
         }
 
         // A. Durand
         if ($typoPattern === 'INITIAL FIRSTUPPER' && !empty($tokenAuthor[0]) && !empty($tokenAuthor[1])) {
-            // todo : prendre name après dernier point et rétablir "A. B." == FIRSTCAP
-            return ['firstname' => $tokenAuthor[0], 'name' => $tokenAuthor[1]];
+            // get last "." position (compatible with "A. B. Durand")
+            $pos = mb_strrpos($author, '.');
+            return [
+                'firstname' => substr($author, 0, $pos + 1),
+                'name' => trim(substr($author, $pos + 1)),
+            ];
         }
-        // A. B. Durand (todo : gérer "A.B. Durand")
-        if ($typoPattern === 'INITIAL INITIAL FIRSTUPPER' && !empty($tokenAuthor[0]) && !empty($tokenAuthor[2])) {
-            return ['firstname' => $tokenAuthor[0].' '.$tokenAuthor[1], 'name' => $tokenAuthor[2]];
-        }
+
         // Durand, P.
         if ($typoPattern === 'FIRSTUPPER VIRGULE INITIAL' && !empty($tokenAuthor[0]) && !empty($tokenAuthor[1])) {
             $name = trim(str_replace(',', '', $tokenAuthor[0]));
@@ -85,7 +105,7 @@ class PredictFromTypo
     }
 
     /**
-     * From underTwoAuthors() by MartinS
+     * From underTwoAuthors() by MartinS@Wikipedia
      * Return true if 0 or 1 author in $author; false otherwise
      *
      * @param $author
@@ -104,12 +124,12 @@ class PredictFromTypo
 
     /**
      * todo legacy : refac with array+trim
-     * Tokenize pour analyse patterns
-     * importance de la ponctuation (voir tableaux recherche)
-     * Inspiré des travaux CLÉO : http://bilbo.hypotheses.org/193 et http://bilbo.hypotheses.org/133 /111
-     * ALLUPPER, FIRSTUPPER, ALLLOWER, MIXED, INITIAL, ALLNUMBER, WITHNUMBER, DASHNUMBER, URL, ITALIC, BIBABREV, AND, VIRGULE, PUNCTUATION,
-     * dewikif > URL > BIBABREV > VIRGULE / POINT / ITALIQUE / GUILLEMET > PUNCTUATION > split? > ...
-     * BIBABREV = dir. trad. Jr.
+     * Tokenize for typographic analysis
+     * See studies by CLÉO : http://bilbo.hypotheses.org/193 et http://bilbo.hypotheses.org/133 /111
+     * ALLUPPER, FIRSTUPPER, ALLLOWER, MIXED, INITIAL, ALLNUMBER, WITHNUMBER, DASHNUMBER, URL, ITALIC, BIBABREV, AND,
+     * VIRGULE, PUNCTUATION,
+     * Process order : unWikify > URL > BIBABREV > VIRGULE / POINT / ITALIQUE / GUILLEMET > PUNCTUATION > split? > ...
+     * BIBABREV = "dir.", "trad." ("Jr." = INITIAL)
      * Current version 2 : Tokenize all the space " ". Initials first funds. VIRGULE, PUNCTUATION
      *
      * @param $text
@@ -118,7 +138,7 @@ class PredictFromTypo
      */
     public function typoPatternFromAuthor(string $text): string
     {
-        // todo : unWikify (pour biblio faudra garder italique)
+        // todo : unWikify? (pour ref biblio faudrait garder italique)
 
         // URL = adresse web
         $text = preg_replace('#\bhttps?\:\/\/[^ ]+#i', ' URL ', $text);
@@ -151,7 +171,7 @@ class PredictFromTypo
             '#\b[\(\[]?(dir|trad)\.[\)\]]?#i',
             ' BIBABREV ',
             $text
-        ); // TODO : améliorer regex
+        ); // TODO : compléter regex
 
         // PUNCTUATION : sans virgule, sans &, sans point, sans tiret petit '-'
         $text = str_replace(
@@ -221,12 +241,8 @@ class PredictFromTypo
 
             if (preg_match('#^(INITIAL|URL|AND|VIRGULE|BIBABREV|PUNCTUATION)$#', $tok) > 0) {
                 $res .= ' '.$tok;
-                // "J. R . R." => INITIAL (1 seule fois)
-                //                $res = str_replace(
-                //                    'INITIAL INITIAL',
-                //                    'INITIAL',
-                //                    $res
-                //                );
+                //"J. R . R." => INITIAL (1 seule fois)
+                $res = str_replace('INITIAL INITIAL', 'INITIAL', $res);
             }elseif (preg_match('#^[0-9]+$#', $tok) > 0) {
                 $res .= ' ALLNUMBER';
             }elseif (preg_match('#^[0-9\-]+$#', $tok) > 0) {
@@ -255,20 +271,24 @@ class PredictFromTypo
     }
 
     /**
-     * Check if $firstname in the list of firstnames
+     * Check if the name is already inside the corpus of firstnames
      *
      * @param $firstname
      *
      * @return bool
      */
-    private function checkFirstname($firstname): bool
+    private function checkFirstname(string $firstname, bool $log=false): bool
     {
-        // todo? sanitize firstname  (ucfirst?)
-        if (strlen(trim($firstname)) >= 2 && in_array($firstname, $this->firstnameList)) {
+        $sanitizedName = mb_strtolower($firstname);
+        if (strlen(trim($firstname)) >= 2 && in_array($sanitizedName, $this->firstnameCorpus)) {
             return true;
         }
-        // todo : add $firstname to list of unknow firstnames
-        //        file_put_contents('./temp/LISTE_prenominconnu_nom.txt', utf8_encode($firstname), FILE_APPEND | LOCK_EX);
+
+        // add the name to a corpus
+        if ($this->corpus && $log) {
+            $this->corpus->addNewElementToCorpus('corpus_unknow_firstname', $sanitizedName);
+        }
+
         return false;
     }
 }

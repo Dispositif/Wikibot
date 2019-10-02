@@ -2,6 +2,7 @@
 
 namespace App\Domain;
 
+use App\Infrastructure\CorpusAdapter;
 use PHPUnit\Framework\TestCase;
 
 class PredictFromTypoTest extends TestCase
@@ -36,7 +37,7 @@ class PredictFromTypoTest extends TestCase
      */
     public function testPredictNameFirstName($author, $expected)
     {
-        $predict = new PredictFromTypo();
+        $predict = new PredictFromTypo(new CorpusAdapter());
         $this::assertEquals(
             $expected,
             $predict->predictNameFirstName($author)
@@ -50,8 +51,10 @@ class PredictFromTypoTest extends TestCase
             ['Jean-Pierre Penaud', ['firstname' => 'Jean-Pierre', 'name' => 'Penaud']],
             ['J. Penaud', ['firstname' => 'J.', 'name' => 'Penaud']],
             ['Penaud, J.', ['firstname' => 'J.', 'name' => 'Penaud']],
+            ['A. Durand', ['firstname' => 'A.', 'name' => 'Durand']],
             ['A. B. Durand', ['firstname' => 'A. B.', 'name' => 'Durand']],
             ['Pierre Durand, Paul Marchal', ['fail' => '2+ authors in string']],
+            ['Babar Elephant', ['fail' => 'firstname not in corpus']]
         ];
     }
 }
