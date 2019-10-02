@@ -7,15 +7,56 @@ use App\Domain\CorpusInterface;
 
 /**
  * Dirty todo refac with FileManager and league/flysystem
+ * todo : deleteElementFromCorpus, setCorpusFromFilename ???
  * Class CorpusAdapter
  */
 class CorpusAdapter extends FileManager implements CorpusInterface
 {
-    public function getFirstnameCorpus(): ?array
+    private $storage = [
+        'test' => ['hop', 'hup', 'hip']
+    ];
+
+    /**
+     * ugly memory // todo refac
+     *
+     * @param string $element
+     * @param string $corpusName
+     *
+     * @return bool
+     */
+    public function inCorpus(string $element, string $corpusName): bool
     {
-        // todo refac
-        $firstnameCorpus = include __DIR__.'/../Domain/ressources/corpus_firstname.php';
-        return $firstnameCorpus;
+        $corpData = $this->getCorpusContent($corpusName);
+
+        // corpus as text
+        if ( !is_null($corpData) && is_string($corpData)
+            && preg_match('/^'.preg_quote($element).'$/m', $corpData) > 0) {
+            return true;
+        }
+        // corpus as array variable
+        if( is_array($corpData) && in_array($element, $corpData)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private function getCorpusContent(string $name)
+    {
+        // Corpus as array variable
+        if( isset($this->storage[$name])) {
+            return (array) $this->storage[$name];
+        }
+        // Corpus as text file
+        if ($name === 'firstname') {
+            return (string) file_get_contents(__DIR__.'/../Domain/ressources/corpus_firstname.txt');
+        }
+        throw new \DomainException("corpus $name not defined");
+    }
+
+    public function setCorpusInStorage(string $corpusName, array $arrayContent):void
+    {
+        $this->storage[$corpusName] = $arrayContent;
     }
 
     /**
@@ -29,14 +70,14 @@ class CorpusAdapter extends FileManager implements CorpusInterface
     public function addNewElementToCorpus(string $corpusName, string $element): bool
     {
         $filename = __DIR__.'/../Domain/ressources/'.$corpusName.'.txt';
-        if(empty($element) ) {
+        if (empty($element)) {
             return false;
         }
 
         // check if the element already in the corpus
-        if(file_exists($filename)) {
+        if (file_exists($filename)) {
             $data = file_get_contents($filename);
-            if( preg_match('/^'.preg_quote($element).'$/m', $data) > 0 ) {
+            if (preg_match('/^'.preg_quote($element).'$/m', $data) > 0) {
                 return false;
             }
         }
@@ -46,6 +87,7 @@ class CorpusAdapter extends FileManager implements CorpusInterface
             utf8_encode($element)."\n",
             FILE_APPEND | LOCK_EX
         );
+
         return true;
     }
 

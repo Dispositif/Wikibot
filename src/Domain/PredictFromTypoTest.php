@@ -57,4 +57,15 @@ class PredictFromTypoTest extends TestCase
             ['Babar Elephant', ['fail' => 'firstname not in corpus']]
         ];
     }
+
+    public function testWithStorageCorpus()
+    {
+        $corpus = new CorpusAdapter();
+        $corpus->setCorpusInStorage('firstname', ['fubar', 'dada']);
+        $predict = new PredictFromTypo($corpus);
+        $this::assertEquals(
+            ['firstname' => 'Fubar', 'name' => 'Penaud'],
+            $predict->predictNameFirstName('Fubar Penaud')
+        );
+    }
 }

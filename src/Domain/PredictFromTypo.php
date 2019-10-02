@@ -11,16 +11,13 @@ class PredictFromTypo
     /**
      * @var CorpusInterface|null
      */
-    private $corpus;
-    private $firstnameCorpus = [];
+    private $corpusAdapter;
+    private $unknownCorpusName = 'corpus_unknow_firstname'; // temp refac
+    private $firstnameCorpusName = 'firstname'; // temp refac
 
     public function __construct(?CorpusInterface $corpus = null)
     {
-        //$this->firstnameCorpus = ['Paul', 'Pierre', 'Jean-Pierre']; // temp
-        if (!is_null($corpus)) {
-            $this->corpus = $corpus;
-            $this->firstnameCorpus = $corpus->getFirstnameCorpus();
-        }
+        $this->corpusAdapter = $corpus;
     }
 
     /**
@@ -73,8 +70,8 @@ class PredictFromTypo
             }
             // Luc-Zorglub Durand
             $pos = mb_strpos($tokenAuthor[0], '-');
-            $firstnamePart = mb_substr($tokenAuthor[0],0,$pos);
-            if( $pos > 0 && $this->checkFirstname($firstnamePart) ) {
+            $firstnamePart = mb_substr($tokenAuthor[0], 0, $pos);
+            if ($pos > 0 && $this->checkFirstname($firstnamePart)) {
                 return ['firstname' => $tokenAuthor[0], 'name' => $tokenAuthor[1]];
             }
 
@@ -85,6 +82,7 @@ class PredictFromTypo
         if ($typoPattern === 'INITIAL FIRSTUPPER' && !empty($tokenAuthor[0]) && !empty($tokenAuthor[1])) {
             // get last "." position (compatible with "A. B. Durand")
             $pos = mb_strrpos($author, '.');
+
             return [
                 'firstname' => substr($author, 0, $pos + 1),
                 'name' => trim(substr($author, $pos + 1)),
@@ -233,8 +231,6 @@ class PredictFromTypo
 
         $res = '';
         foreach ($tokens AS $tok) {
-            // virer tok vide > NUMBER > INITIAL > lower/upper
-
             if (empty($tok)) {
                 continue;
             }
@@ -267,7 +263,7 @@ class PredictFromTypo
             }
         }
 
-        return trim($res); // todo return array ?
+        return trim($res);
     }
 
     /**
@@ -277,16 +273,22 @@ class PredictFromTypo
      *
      * @return bool
      */
-    private function checkFirstname(string $firstname, bool $log=false): bool
+    private function checkFirstname(string $firstname, bool $logInCorpus = false): bool
     {
+        if (!$this->corpusAdapter) {
+            return false;
+        }
+
         $sanitizedName = mb_strtolower($firstname);
-        if (strlen(trim($firstname)) >= 2 && in_array($sanitizedName, $this->firstnameCorpus)) {
+        if (strlen(trim($firstname)) >= 2
+            && $this->corpusAdapter->inCorpus($sanitizedName, $this->firstnameCorpusName)
+        ) {
             return true;
         }
 
         // add the name to a corpus
-        if ($this->corpus && $log) {
-            $this->corpus->addNewElementToCorpus('corpus_unknow_firstname', $sanitizedName);
+        if ($this->corpusAdapter && $logInCorpus) {
+            $this->corpusAdapter->addNewElementToCorpus($this->unknownCorpusName, $sanitizedName);
         }
 
         return false;
