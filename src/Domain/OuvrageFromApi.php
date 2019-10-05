@@ -63,6 +63,10 @@ class OuvrageFromApi
     private function mapping($volume): array
     {
         $mapper = $this->adapter->getMapper();
+
+        if(empty($volume)){
+            return [];
+        }
         /**
          * @var $mapper MapperInterface
          */

@@ -18,7 +18,6 @@ class OuvrageProcess
     private $log = [];
     private $ouvrage;
     private $currentTask;
-    private $util;
 
     // todo inject TextUtil + ArticleVersion ou WikiRef
     public function __construct(OuvrageTemplate $ouvrage, $wikiPageTitle = null)
@@ -377,7 +376,7 @@ class OuvrageProcess
         // [[éditeur]]
         $old = $this->getParam('éditeur');
         // - "éd."
-        $new = trim(str_ireplace(['éd.', 'ed.', 'Éd.', 'édit.', 'Édit.', '(éd.)', '(ed.)'], '', $old));
+        $new = trim(str_ireplace(['éd.', 'ed.', 'Éd.', 'édit.', 'Édit.', '(éd.)', '(ed.)','Ltd.'], '', $old));
         // todo gérer "Ed. de ...."
         $new = trim($new);
         if ($old !== $new) {
@@ -386,24 +385,5 @@ class OuvrageProcess
         }
     }
 
-    //----
-
-    /**
-     * underTwoAuthors by MartinS
-     * Return true if 0 or 1 author in $author; false otherwise
-     *
-     * @param $author
-     *
-     * @return bool
-     */
-    private function underTwoAuthors($author)
-    {
-        $chars = count_chars(trim($author));
-        if ($chars[ord(";")] > 0 || $chars[ord(" ")] > 2 || $chars[ord(",")] > 1) {
-            return false;
-        }
-
-        return true;
-    }
 
 }
