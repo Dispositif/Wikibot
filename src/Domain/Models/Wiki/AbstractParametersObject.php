@@ -4,8 +4,12 @@
 namespace App\Domain\Models\Wiki;
 
 
+use App\Domain\ArrayProcessTrait;
+
 abstract class AbstractParametersObject
 {
+    use ArrayProcessTrait;
+
     protected $parametersValues;
 
 
@@ -49,4 +53,29 @@ abstract class AbstractParametersObject
     {
         return $this->parametersValues;
     }
+
+    /**
+     * Compare param/value datas. Empty value ignored. Params order ignored.
+     *
+     * @param AbstractParametersObject $object
+     *
+     * @return bool
+     */
+    public function isParamValueEquals(AbstractParametersObject $object):bool
+    {
+        $dat1 = $this->deleteEmptyValueArray($this->toArray());
+        $dat2 = $this->deleteEmptyValueArray($object->toArray());
+        if(count($dat1) !== count($dat2)){
+            return false;
+        }
+        foreach ($dat1 as $param => $value){
+            if(!isset($dat2[$param]) || $dat2[$param] !== $value){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
 }
