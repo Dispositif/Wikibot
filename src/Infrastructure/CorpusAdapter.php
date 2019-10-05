@@ -12,9 +12,7 @@ use App\Domain\CorpusInterface;
  */
 class CorpusAdapter extends FileManager implements CorpusInterface
 {
-    private $storage = [
-        'test' => ['hop', 'hup', 'hip']
-    ];
+    private $storage = [];
 
     /**
      * ugly memory // todo refac Generator
@@ -49,7 +47,7 @@ class CorpusAdapter extends FileManager implements CorpusInterface
         }
         // Corpus as text file
         if ($name === 'firstname') {
-            return (string) file_get_contents(__DIR__.'/../Domain/ressources/corpus_firstname.txt');
+            return (string) file_get_contents(__DIR__.'/../Domain/resources/corpus_firstname.txt');
         }
         throw new \DomainException("corpus $name not defined");
     }
@@ -69,7 +67,7 @@ class CorpusAdapter extends FileManager implements CorpusInterface
      */
     public function addNewElementToCorpus(string $corpusName, string $element): bool
     {
-        $filename = __DIR__.'/../Domain/ressources/'.$corpusName.'.txt';
+        $filename = __DIR__.'/../Domain/resources/'.$corpusName.'.txt';
         if (empty($element)) {
             return false;
         }

@@ -5,12 +5,14 @@ namespace App\Infrastructure;
 
 
 use App\Domain\BookApiInterface;
+use App\Domain\GoogleBookMapper;
 use Scriptotek\GoogleBooks\GoogleBooks;
 
-class GoogleBooksAdapter extends BookApiAdapter implements BookApiInterface
+class GoogleBooksAdapter extends AbstractBookApiAdapter implements BookApiInterface
 {
 
-    private $api;
+    protected $api;
+    protected $mapper;
 
     // todo inject + factory
     public function __construct()
@@ -19,7 +21,9 @@ class GoogleBooksAdapter extends BookApiAdapter implements BookApiInterface
             ['key' => getenv('GOOGLE_BOOKS_API_KEY'), 'maxResults' => 10]
         );
         $this->api = $api;
+        $this->mapper = new GoogleBookMapper();
     }
+
 
     public function getDataByIsbn(string $isbn)
     {
