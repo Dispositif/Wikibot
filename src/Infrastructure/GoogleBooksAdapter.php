@@ -16,7 +16,7 @@ class GoogleBooksAdapter extends BookApiAdapter implements BookApiInterface
     public function __construct()
     {
         $api = new GoogleBooks(
-            ['key' => getenv('GOOGLE_BOOK_API_KEY'), 'maxResults' => 10,]
+            ['key' => getenv('GOOGLE_BOOKS_API_KEY'), 'maxResults' => 10]
         );
         $this->api = $api;
     }

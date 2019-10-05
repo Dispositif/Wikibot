@@ -64,7 +64,11 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
      */
     public function getParam(string $name): ?string
     {
-        $this->checkParamName($name);
+        try{
+            $this->checkParamName($name);
+        }catch (\Exception $e){
+            return null;
+        }
         $name = $this->getAliasParam($name);
 
         return ($this->parametersValues[$name]) ?? null;
@@ -197,7 +201,9 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     public function hydrate(array $data): AbstractWikiTemplate
     {
         foreach ($data as $name => $value) {
-            $this->hydrateTemplateParameter($name, $value);
+            if( is_string($value)) {
+                $this->hydrateTemplateParameter($name, $value);
+            }
         }
 
         // todo?

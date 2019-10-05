@@ -17,7 +17,7 @@ class CorpusAdapter extends FileManager implements CorpusInterface
     ];
 
     /**
-     * ugly memory // todo refac
+     * ugly memory // todo refac Generator
      *
      * @param string $element
      * @param string $corpusName
