@@ -67,7 +67,41 @@ class CorpusAdapter extends FileManager implements CorpusInterface
      */
     public function addNewElementToCorpus(string $corpusName, string $element): bool
     {
+        // check empty $element ?
+
         //corpus as variable
+        if (isset($this->storage[$corpusName])) {
+            return $this->addNewElementToArrayCorpus($corpusName, $element);
+        }
+
+        // else : corpus as file
+        return $this->addNewElementToFileCorpus($corpusName, $element);
+    }
+
+    private function addNewElementToFileCorpus(string $corpusName, string $element): bool
+    {
+        if (empty($element)) {
+            return false;
+        }
+
+        $filename = __DIR__.'/../Domain/resources/'.$corpusName.'.txt';
+
+        // check if the element already in the corpus
+        if ($this->isStringInCSV($filename, $element)) {
+            return false;
+        }
+
+        $write = file_put_contents(
+            $filename,
+            utf8_encode($element)."\n",
+            FILE_APPEND | LOCK_EX
+        );
+
+        return ($write) ? true : false;
+    }
+
+    private function addNewElementToArrayCorpus(string $corpusName, string $element): bool
+    {
         if (isset($this->storage[$corpusName]) && is_array($this->storage[$corpusName])) {
             if (!in_array($element, $this->storage[$corpusName])) {
                 $this->storage[$corpusName][] = $element;
@@ -76,27 +110,7 @@ class CorpusAdapter extends FileManager implements CorpusInterface
             return true;
         }
 
-        // corpus as file
-        $filename = __DIR__.'/../Domain/resources/'.$corpusName.'.txt';
-        if (empty($element)) {
-            return false;
-        }
-
-        // check if the element already in the corpus
-        if (file_exists($filename)) {
-            $data = file_get_contents($filename);
-            if (preg_match('/^'.preg_quote($element).'$/m', $data) > 0) {
-                return false;
-            }
-        }
-
-        file_put_contents(
-            $filename,
-            utf8_encode($element)."\n",
-            FILE_APPEND | LOCK_EX
-        );
-
-        return true;
+        return false;
     }
 
 }
