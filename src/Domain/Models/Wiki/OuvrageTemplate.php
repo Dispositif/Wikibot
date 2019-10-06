@@ -30,17 +30,17 @@ class OuvrageTemplate extends AbstractWikiTemplate
         = [
             'lang' => 'langue',
             'lien langue' => 'langue',
-            //            'prénom' => 'prénom1', // fréquent : ajouté sur params normaux
+                        'prénom' => 'prénom1', // fréquent : ajouté sur params normaux
             'first1' => 'prénom1',
             'first2' => 'prénom2',
             'first3' => 'prénom3',
-            //            'nom' => 'nom1', // fréquent : ajouté sur params normaux
+                        'nom' => 'nom1', // fréquent : ajouté sur params normaux
             'last1' => 'nom1',
             'last2' => 'nom2',
             'last3' => 'nom3',
             'postnom' => 'postnom1',
             'lien auteur' => 'lien auteur1',
-            //        'auteur' => 'auteur1', // fréquent : ajouté sur params normaux malgré alias
+                    'auteur' => 'auteur1', // fréquent : ajouté sur params normaux malgré alias
             'directeur' => 'directeur1',
             // non-documenté (Aristote)
             'author1' => 'auteur1',
@@ -143,12 +143,12 @@ public $externalTemplates = [];
             'langue originale',
             'auteurs', // déconseillé => auteur1, auteur2...
             'co-auteur', // obsolète
-            'auteur', // alias de auteur1 mais très fréquent (conservation style)
+//            'auteur', // alias de auteur1 mais très fréquent (conservation style)
             'auteur1',
             'prénom1',
-            'prénom', // alias mais fréquent
+//            'prénom', // alias mais fréquent
             'nom1',
-            'nom', // alias mais fréquent
+//            'nom', // alias mais fréquent
             'postnom1',
             'lien auteur1',
             'directeur1',
