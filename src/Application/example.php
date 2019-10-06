@@ -2,6 +2,7 @@
 
 namespace App\Application;
 
+use App\Domain\Models\Wiki\GoogleLivresTemplate;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\OuvrageComplete;
 use App\Domain\OuvrageFactory;
@@ -37,7 +38,10 @@ $raw
 // auteur1 <> prénom/nom
 // si auteur= alors faut bloquer setParam('auteur1')
 
+dump(GoogleLivresTemplate::isGoogleBookURL('https://books.google.com/books?id=GI78oVLDoHwC&pg=PA92'));
+dump(GoogleLivresTemplate::createFromURL('https://books.google.com/books?id=GI78oVLDoHwC&pg=PA92')->serialize());
 
+die;
 
 
 
