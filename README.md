@@ -4,12 +4,14 @@
 
 PHP7 app for my Wikipedia's bot
 
+Correction and completion of bibliographic references
+
 See https://github.com/addwiki/mediawiki-api
 Doc http://addwiki.readthedocs.io/
 
-commands :
-php src/console bot:page "<page_name>"
+console commands :
+php src/console list
 
 
 Memo : 
-https://fr.wikipedia.org/w/api.php?action=opensearch&search=Skateboard
+https://fr.wikipedia.org/w/api.php?action=opensearch&search=blabla
