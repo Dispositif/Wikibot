@@ -13,7 +13,8 @@
         "ext-json": "*",
         "ext-simplexml": "*",
         "ext-dom": "*",
-        "scriptotek/google-books": "^0.2.4"
+        "scriptotek/google-books": "^0.2.4",
+        "simplon/mysql": "^2.2"
     },
     "autoload": {
         "psr-4": {

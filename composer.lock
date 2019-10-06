@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "695305784587bba5730061a89f13963d",
+    "content-hash": "8b8f0cc147384725b0556c84c9b011b7",
     "packages": [
         {
             "name": "addwiki/mediawiki-api",
@@ -184,6 +184,64 @@
             ],
             "description": "Porter Stemmer created by Richard Heyes",
             "time": "2013-02-06T21:39:08+00:00"
+        },
+        {
+            "name": "dusank/knapsack",
+            "version": "10.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/DusanKasan/Knapsack.git",
+                "reference": "cc29a0bbaadbfcb958b98aa4fd69a4ad7d173bba"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/DusanKasan/Knapsack/zipball/cc29a0bbaadbfcb958b98aa4fd69a4ad7d173bba",
+                "reference": "cc29a0bbaadbfcb958b98aa4fd69a4ad7d173bba",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.6.0"
+            },
+            "require-dev": {
+                "ciaranmcnulty/phpspec-typehintedmethods": "^1.0",
+                "henrikbjorn/phpspec-code-coverage": "^2.0",
+                "phpmd/phpmd": "^2.0",
+                "phpspec/phpspec": "^2.0",
+                "phpunit/phpunit": "^5.0",
+                "squizlabs/php_codesniffer": "^2.0",
+                "symfony/console": "^2.7"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/collection_functions.php",
+                    "src/utility_functions.php"
+                ],
+                "psr-4": {
+                    "DusanKasan\\Knapsack\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dusan Kasan",
+                    "email": "dusan@kasan.sk",
+                    "homepage": "http://kasan.sk",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Collection library for PHP",
+            "homepage": "https://github.com/DusanKasan/Knapsack",
+            "keywords": [
+                "collections",
+                "map",
+                "reduce",
+                "sequences"
+            ],
+            "time": "2017-04-24T22:52:29+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -718,6 +776,97 @@
             "description": "Package for interacting with the Google Books API",
             "homepage": "http://github.com/scriptotek/google-books",
             "time": "2018-02-03T15:50:10+00:00"
+        },
+        {
+            "name": "simplon/helper",
+            "version": "1.0.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fightbulc/simplon_helper.git",
+                "reference": "50b9078a5c2fb35a57e9cdcf48bf60142a8964ee"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fightbulc/simplon_helper/zipball/50b9078a5c2fb35a57e9cdcf48bf60142a8964ee",
+                "reference": "50b9078a5c2fb35a57e9cdcf48bf60142a8964ee",
+                "shasum": ""
+            },
+            "require": {
+                "dusank/knapsack": "^10.0",
+                "php": ">=7.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Simplon\\Helper\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Tino Ehrich",
+                    "email": "tino@bigpun.me",
+                    "role": "developer"
+                }
+            ],
+            "description": "Helpers for recurring requirements",
+            "homepage": "https://github.com/fightbulc/simplon_helper",
+            "keywords": [
+                "casts",
+                "passwords",
+                "tokens"
+            ],
+            "time": "2017-08-16T11:03:50+00:00"
+        },
+        {
+            "name": "simplon/mysql",
+            "version": "2.2.10",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fightbulc/simplon_mysql.git",
+                "reference": "21da390cb2b3846a2407a410486b4642501e3098"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fightbulc/simplon_mysql/zipball/21da390cb2b3846a2407a410486b4642501e3098",
+                "reference": "21da390cb2b3846a2407a410486b4642501e3098",
+                "shasum": ""
+            },
+            "require": {
+                "ext-pdo": "*",
+                "php": ">=7.1",
+                "simplon/helper": "^1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Simplon\\Mysql\\": "src/",
+                    "Test\\": "test/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Tino Ehrich",
+                    "email": "tino@bigpun.me",
+                    "role": "developer"
+                }
+            ],
+            "description": "Simplon MySQL Library",
+            "homepage": "https://github.com/fightbulc/simplon_mysql",
+            "keywords": [
+                "db",
+                "manager",
+                "mysql",
+                "pdo"
+            ],
+            "time": "2017-11-22T10:17:02+00:00"
         },
         {
             "name": "symfony/console",
