@@ -75,7 +75,7 @@ abstract class WikiTextUtil extends TextUtil
     {
         // TODO check {{fr}}
         $res = preg_match_all(
-            "#\{\{[ ]*".preg_quote(trim($templateName), '#')."[ \t \n\r]*\|[^\{\}]*(?:\{\{[^\{\}]+\}\}[^\{\}]*)*\}\}#i",
+            "#\{\{[ \n]*".preg_quote(trim($templateName), '#')."[ \t \n\r]*\|[^\{\}]*(?:\{\{[^\{\}]+\}\}[^\{\}]*)*\}\}#i",
             $text,
             $matches
         );
@@ -160,7 +160,7 @@ abstract class WikiTextUtil extends TextUtil
         $text = str_replace("\n", '', $text);
 
         if (preg_match(
-                "~\{\{".preg_quote($templateName, '~')."[\ \t\ \n\r]*\|([^\{\}]*(?:\{\{[^\{\}]+\}\}[^\{\}]*)*)\}\}~i",
+                "~\{\{ ?".preg_quote($templateName, '~')."[\ \t\ \n\r]*\|([^\{\}]*(?:\{\{[^\{\}]+\}\}[^\{\}]*)*)\}\}~i",
                 $text,
                 $matches
             ) > 0
