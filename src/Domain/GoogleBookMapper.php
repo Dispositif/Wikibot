@@ -7,7 +7,6 @@ use Scriptotek\GoogleBooks\Volume;
 /**
  * Google mapping.
  * Doc : https://developers.google.com/books/docs/v1/reference/volumes
- *
  * Class GoogleBookMapper
  *
  * @package App\Domain
@@ -30,12 +29,24 @@ class GoogleBookMapper implements MapperInterface
             'auteur3' => $volume->authors[2] ?? null,
             'titre' => $volume->title,
             'sous-titre' => $volume->subtitle,
-            'date' => $volume->publishedDate, // todo convert 'année'
+            'année' => $this->convertDate2Year($volume->publishedDate),
             'pages totales' => (string)$volume->pageCount,
             'isbn' => $this->isbn($volume),
             'présentation en ligne' => $this->presentationEnLigne($volume),
             'lire en ligne' => $this->lireEnLigne($volume),
         ];
+    }
+
+    private function convertDate2Year($data)
+    {
+        if (!isset($data)) {
+            return null;
+        }
+        if (preg_match('/[^0-9]?([12][0-9]{3})[^0-9]?/', $data, $matches) > 0) {
+            return (string)$matches[1];
+        }
+
+        return null;
     }
 
     /**
@@ -50,6 +61,7 @@ class GoogleBookMapper implements MapperInterface
         }
         // so isbn-13 replace isbn-10
         // todo refac algo (if 2x isbn13?)
+        $isbn = null;
         $ids = (array)$volume->industryIdentifiers;
         foreach ($ids as $id) {
             if (!isset($isbn) && in_array($id->type, ['ISBN_10', 'ISBN_13'])) {
