@@ -74,7 +74,7 @@ class OuvrageOptimize
             $goo = GoogleLivresTemplate::createFromURL($this->getParam($param));
             if (is_object($goo)) {
                 $this->setParam($param, $goo->serialize());
-                $this->log('+{{Google Livre}}');
+                $this->log('{Google}');
             }
         }
     }

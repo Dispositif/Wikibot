@@ -34,14 +34,24 @@ class OuvrageComplete
 
     private function complete()
     {
+        // si livre suspect, on stoppe
         if(!$this->predictSameBook()){
             $this->log[] = 'not same book';
             return false;
         }
+
+        $authorParam = ['auteur1','prénom1','nom1','auteur2','prénom2','nom2','auteur3','prénom3','nom3'];
+        // completion automatique
         foreach ($this->book->toArray() as $param => $value){
             if(empty($this->origin->getParam($param))){
+
+                if(in_array($param, $authorParam)) {
+                    continue;
+                }
+
                 $this->origin->setParam($param, $value);
                 $this->log[] = '+'.$param;
+
             }
         }
         return true;
