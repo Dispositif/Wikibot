@@ -3,8 +3,7 @@
 
 namespace App\Domain\Models\Wiki;
 
-
-use App\Domain\ArrayProcessTrait;
+use App\Domain\Utils\ArrayProcessTrait;
 
 abstract class AbstractParametersObject
 {

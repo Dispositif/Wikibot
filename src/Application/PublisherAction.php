@@ -2,6 +2,7 @@
 
 namespace App\Application;
 
+use App\Infrastructure\TagParser;
 use GuzzleHttp\Client;
 
 class PublisherAction

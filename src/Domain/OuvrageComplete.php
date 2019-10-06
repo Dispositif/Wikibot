@@ -5,6 +5,7 @@ namespace App\Domain;
 
 
 use App\Domain\Models\Wiki\OuvrageTemplate;
+use App\Domain\Utils\TextUtil;
 
 class OuvrageComplete
 {

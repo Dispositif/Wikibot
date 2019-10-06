@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Domain;
+namespace App\Domain\Utils;
 
 use App\Domain\Models\Wiki\AbstractWikiTemplate;
 use App\Domain\Models\Wiki\WikiTemplateFactory;

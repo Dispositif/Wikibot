@@ -2,7 +2,7 @@
 
 namespace App\Domain\Models\Wiki;
 
-use App\Domain\TextUtil;
+use App\Domain\Utils\TextUtil;
 
 /**
  * Class LienWebTemplate

@@ -2,6 +2,7 @@
 
 namespace App\Application;
 
+use App\Infrastructure\ServiceFactory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

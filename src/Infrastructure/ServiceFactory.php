@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Application;
+namespace App\Infrastructure;
 
 use Mediawiki\Api\ApiUser;
 use Mediawiki\Api\MediawikiApi;

@@ -6,6 +6,8 @@ namespace App\Domain;
 
 use App\Domain\Models\Wiki\GoogleLivresTemplate;
 use App\Domain\Models\Wiki\OuvrageTemplate;
+use App\Domain\Utils\TextUtil;
+use App\Domain\Utils\WikiTextUtil;
 
 /**
  * Legacy.

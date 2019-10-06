@@ -2,6 +2,7 @@
 
 namespace App\Application;
 
+use App\Infrastructure\TagParser;
 use Mediawiki\Api\MediawikiFactory;
 use Mediawiki\DataModel\Page;
 

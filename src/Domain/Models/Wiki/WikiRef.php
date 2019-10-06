@@ -4,7 +4,7 @@
 namespace App\Domain\Models\Wiki;
 
 
-use App\Domain\WikiTextUtil;
+use App\Domain\Utils\WikiTextUtil;
 
 /**
  * TODO: refactor legacy

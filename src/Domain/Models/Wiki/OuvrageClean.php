@@ -4,8 +4,8 @@
 namespace App\Domain\Models\Wiki;
 
 
-use App\Domain\TextUtil;
-use App\Domain\WikiTextUtil;
+use App\Domain\Utils\TextUtil;
+use App\Domain\Utils\WikiTextUtil;
 
 class OuvrageClean extends OuvrageTemplate
 {

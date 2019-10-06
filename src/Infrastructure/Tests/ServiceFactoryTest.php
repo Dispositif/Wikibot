@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Application;
+namespace App\Infrastructure;
 
 use Mediawiki\Api\MediawikiFactory;
 use PhpAmqpLib\Channel\AMQPChannel;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Application;
+namespace App\Infrastructure;
 
 use DOMDocument;
 use SimpleXMLElement;
