@@ -20,8 +20,6 @@ class GoogleBookMapper implements MapperInterface
      */
     public function process($volume): array
     {
-        dump($volume);
-
         return [
             'langue' => $volume->language,
             'auteur1' => $volume->authors[0],

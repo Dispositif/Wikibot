@@ -33,13 +33,26 @@ class OuvrageOptimize
     {
         $this->currentTask = 'start';
         $this->parametersErrorFromHydrate();
-        $this->extraTemplates();
+        $this->processTitle();
+        $this->processEditeur();
+        $this->processDates();
+        $this->externalTemplates();
+        $this->currentTask = 'suite';
+        $this->predictFormatByPattern();
 
+        $this->GoogleBookURL('lire en ligne');
+        $this->GoogleBookURL('présentation en ligne');
 
-        $this->currentTask = 'titre';
+        return $this;
+    }
+
+    private function processTitle()
+    {
+        $this->currentTask = 'titres';
+
         $oldtitre = $this->getParam('titre');
-        $this->deWikifyUrlLink('titre');
-        $this->currentTask = 'upperCase title';
+        $this->langInTitle();
+        $this->deWikifyExternalLink('titre');
         $this->upperCaseFirstLetter('titre');
         $this->typoDeuxPoints('titre');
         if ($this->getParam('titre') !== $oldtitre) {
@@ -48,45 +61,50 @@ class OuvrageOptimize
 
         $this->currentTask = 'titre chapitre';
         $this->valideNumeroChapitre();
-        $this->deWikifyUrlLink('titre chapitre');
+        $this->deWikifyExternalLink('titre chapitre');
         $this->upperCaseFirstLetter('titre chapitre');
         $this->typoDeuxPoints('titre chapitre');
-
-        $this->currentTask = 'éditeur';
-
-        $this->externalTemplates();
-
-        //        $this->deWikifyEditeur();
-
-        $this->currentTask = 'suite';
-        //        $this->dateIsYear(); // géré par LUA ?
-        $this->predictFormatByPattern();
-
-        //        $tasks = [
-        //            ['deWikifyUrlLink', 'title'],
-        //            ['deWikifyUrlLink', 'titre chapitre'],
-        //            ['upperCaseFirstLetter', 'title']
-        ////            'blabla',
-        //        ];
-        //
-        //        foreach ($tasks as $task ) {
-        //            if(!is_array($task)) {
-        //                $this->currentTask = $task;
-        //                $this->{$task}();
-        //                continue;
-        //            }
-        //            $this->currentTask = implode(' ', $task);
-        //            $this->{$task[0]}($task[1]);
-        //        }
-
-        return $this;
     }
 
-    private function extraTemplates()
+    private function googleBookUrl($param)
     {
-        if ($this->getParam('commentaire') || $this->getParam('extrait') || $this->getParam('plume')) {
-            $this->log('+extra template');
+        if (!empty($this->getParam($param))
+            && GoogleLivresTemplate::isGoogleBookURL($this->getParam($param))
+        ) {
+            $goo = GoogleLivresTemplate::createFromURL($this->getParam($param));
+            if (is_object($goo)) {
+                $this->setParam($param, $goo->serialize());
+                $this->log('+{{Google Livre}}');
+            }
         }
+    }
+
+    /**
+     * - {{lang|...}} dans titre => langue=... puis titre nettoyé
+     *  langue=L’utilisation de ce paramètre permet aussi aux synthétiseurs vocaux de reconnaître la langue du titre de
+     * l’ouvrage.
+     * Il est possible d'afficher plusieurs langues, en saisissant le nom séparé par des espaces ou des virgules. La première langue doit être celle du titre.
+     *
+     * @throws \Exception
+     */
+    private function langInTitle()
+    {
+        if (preg_match('#^\{\{lang ?\| ?([a-z]+) ?\|([^\{\}]+)\}\}$#i', $this->getParam('titre'), $matches) > 0) {
+            $lang = $matches[1];
+            $newtitre = str_replace($matches[0], $matches[2], $this->getParam('titre'));
+            $this->setParam('titre', $newtitre);
+            $this->log('°titre');
+            if (empty($this->getParam('langue'))) {
+                $this->setParam('langue', $matches[1]);
+                $this->log('+lang='.$matches[1]);
+            }
+        }
+    }
+
+    private function processDates()
+    {
+        // dewikification
+        $params = ['date', 'année', 'mois', 'jour'];
     }
 
     /**
@@ -144,7 +162,7 @@ class OuvrageOptimize
 
     public function log(string $text)
     {
-        $this->log[] = $this->currentTask.' : '.$text;
+        $this->log[] = $text;
     }
 
     /**
@@ -153,7 +171,7 @@ class OuvrageOptimize
      *
      * @throws \Exception
      */
-    private function deWikifyUrlLink($param)
+    private function deWikifyExternalLink($param)
     {
         if (preg_match('#^\[(http[^ \]]+) ([^\]]+)\]#i', $this->getParam($param), $matches) > 0) {
             $this->setParam($param, str_replace($matches[0], $matches[2], $this->getParam($param)));
@@ -247,6 +265,7 @@ class OuvrageOptimize
                 'raw' => '{{plume}}',
             ];
             $this->unsetParam('plume');
+            $this->log('+{{plume}}');
         }
 
         // "extrait=bla" => {{citation bloc|bla}}
@@ -260,6 +279,7 @@ class OuvrageOptimize
                     '1' => '',
                     'raw' => '{{début citation}}'.$extrait.'{{fin citation}}',
                 ];
+                $this->log('+{{début citation}}');
             }else {
                 // StdClass
                 $this->ouvrage->externalTemplates[] = (object)[
@@ -267,6 +287,7 @@ class OuvrageOptimize
                     '1' => $extrait,
                     'raw' => '{{extrait|'.$extrait.'}}',
                 ];
+                $this->log('+{{extrait}}');
             }
 
             $this->unsetParam('extrait');
@@ -281,6 +302,7 @@ class OuvrageOptimize
                 'raw' => '{{commentaire biblio|'.$commentaire.'}}',
             ];
             $this->unsetParam('commentaire');
+            $this->log('+{{commentaire}}');
         }
     }
 
@@ -381,19 +403,71 @@ class OuvrageOptimize
         return $this->ouvrage;
     }
 
-    private function deWikifyEditeur()
+    private function iswikified(string $str)
     {
-        // Déconseillé: 'lien éditeur' (obsolete)
-        // todo 'lien éditeur' affiché 1x par page
+        if (preg_match('#\[\[.+\]\]#', $str) > 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * todo : vérif lien rouge
+     * todo 'lien éditeur' affiché 1x par page
+     * opti : Suppression lien éditeur si c'est l'article de l'éditeur
+     *
+     * @throws \Exception
+     */
+    private function processEditeur()
+    {
+        $this->currentTask = 'start';
+        $editeur = $this->getParam('éditeur');
 
         // [[éditeur]]
-        $old = $this->getParam('éditeur');
-        // - "éd."
-        $new = trim(str_ireplace(['éd.', 'ed.', 'Éd.', 'édit.', 'Édit.', '(éd.)', '(ed.)', 'Ltd.'], '', $old));
-        // todo gérer "Ed. de ...."
-        $new = trim($new);
-        if ($old !== $new) {
-            $this->setParam('éditeur', $new);
+        if (preg_match('#\[\[([^\|]+)\]\]#', $editeur, $matches) > 0) {
+            $editeurUrl = $matches[1];
+        }
+        // [[bla|éditeur]]
+        if (preg_match('#\[\[([^\]\|]+)\|.+\]\]#', $editeur, $matches) > 0) {
+            $editeurUrl = $matches[1];
+        }
+
+        // abréviations communes
+        $editeurStr = WikiTextUtil::deWikify($editeur);
+        $editeurStr = trim(
+            str_ireplace(
+                ['éd. de ', 'éd.', 'ed.', 'Éd. de ', 'Éd.', 'édit.', 'Édit.', '(éd.)', '(ed.)', 'Ltd.'],
+                '',
+                $editeurStr
+            )
+        );
+
+        // "Éditions de la Louve" => "La Louve"
+        if (preg_match('#([EeÉé]ditions? de )(la|le|l\')#iu', $editeurStr, $matches) > 0) {
+            $editeurStr = str_replace($matches[1], '', $editeurStr);
+        }
+
+
+        // Déconseillé : 'lien éditeur' (obsolete 2019)
+        if (!empty($this->getParam('lien éditeur'))) {
+            if (empty($editeurUrl)) {
+                $editeurUrl = $this->getParam('lien éditeur');
+            }
+            $this->log('-lien éditeur');
+            $this->unsetParam('lien éditeur');
+        }
+
+        $newEditeur = $editeurStr;
+        if (isset($editeurUrl) && $editeurUrl !== $editeurStr) {
+            $newEditeur = '[['.$editeurUrl.'|'.$editeurStr.']]';
+        }
+        if (isset($editeurUrl) && $editeurUrl === $editeurStr) {
+            $newEditeur = '[['.$editeurStr.']]';
+        }
+
+        if ($newEditeur !== $editeur) {
+            $this->setParam('éditeur', $newEditeur);
             $this->log('±éditeur');
         }
     }

@@ -9,6 +9,7 @@ namespace App\Domain;
 abstract class TextUtil
 {
     /**
+     * TODO : vérifier !
      * UTF8 first letter in upper case
      *
      * @param string      $str

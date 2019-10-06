@@ -21,6 +21,11 @@ class OuvrageComplete
         $this->book = $book;
     }
 
+    public function getLog()
+    {
+        return implode(';',$this->log);
+    }
+
     public function getResult()
     {
         $this->complete();
@@ -39,17 +44,10 @@ class OuvrageComplete
                 $this->log[] = '+'.$param;
             }
         }
-        dump(implode(' ', $this->log));
         return true;
     }
 
     //----
-
-    public function report()
-    {
-        dump('sameBookTitle', $this->hasSameBookTitle());
-        dump('hasSameAuthors', $this->hasSameAuthors());
-    }
 
     public function predictSameBook()
     {
