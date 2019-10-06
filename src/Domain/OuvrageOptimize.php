@@ -11,6 +11,7 @@ use App\Domain\Utils\WikiTextUtil;
 
 /**
  * Legacy.
+ * TODO move methods to OuvrageClean setters
  * TODO AbstractProcess
  * TODO observer/event (log, MajorEdition)
  * Class OuvrageProcess

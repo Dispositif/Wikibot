@@ -25,10 +25,16 @@ abstract class TextUtil
         return $first.$rest;
     }
 
-    static public function containsNonLatinCharacters(string $str): bool
-    {
-        return preg_match('/[^\\p{Common}\\p{Latin}]/u', $str);
-    }
+    /**
+     * Todo verify/correct
+     * @param string $str
+     *
+     * @return bool
+     */
+//    static public function containsNonLatinCharacters(string $str): bool
+//    {
+//        return preg_match('/[^\\p{Common}\\p{Latin}]/u', $str);
+//    }
 
     /**
      * Simplest levenshtein distance prediction of the correct param name.
@@ -42,7 +48,8 @@ abstract class TextUtil
      *
      * @return string|null
      */
-    static public function predictCorrectParam(string $str, array $names, int $max = 2): ?string {
+    static public function predictCorrectParam(string $str, array $names, int $max = 2): ?string
+    {
         $sanitized = self::sanitizeParamForPredict($str);
         foreach ($names as $name) {
             $sanitizedName = self::sanitizeParamForPredict($name);
@@ -82,6 +89,7 @@ abstract class TextUtil
     /**
      * Strip punctuation
      * UTF-8 compatible ??
+     * Note : can't use str_split() which cut on 1 byte length
      * See http://fr.wikipedia.org/wiki/Ponctuation
      *
      * @return string
@@ -89,62 +97,8 @@ abstract class TextUtil
     static public function stripPunctuation(string $str)
     {
         return str_replace(
-            [
-                '!',
-                '"',
-                '«',
-                '»',
-                '#',
-                '$',
-                '%',
-                '&',
-                "'",
-                '’',
-                '´',
-                '`',
-                '^',
-                '…',
-                '‽',
-                '(',
-                ')',
-                '*',
-                '⁂',
-                '+',
-                ',',
-                '-',
-                '–',
-                '—',
-                '.',
-                '/',
-                ':',
-                ';',
-                '?',
-                '@',
-                '[',
-                '\\',
-                ']',
-                '_',
-                '`',
-                '{',
-                '|',
-                '¦',
-                '}',
-                '~',
-                '<',
-                '>',
-                '№',
-                '©',
-                '®',
-                '°',
-                '†',
-                '§',
-                '∴',
-                '∵',
-                '¶',
-                '•',
-                '+',
-                '-',
-            ],
+            ['!','"','«','»','#','$','%',"'",'’','´','`','^','…','‽','(',')','*','⁂','+','–','—','/',':',';','?','@',
+             '[','\\',']','_','`','{','|','¦','}','~','<','>','№','©','®','°','†','§','∴','∵','¶','•','+',],
             '',
             $str
         );
