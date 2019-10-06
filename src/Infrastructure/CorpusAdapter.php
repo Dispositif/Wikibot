@@ -24,35 +24,35 @@ class CorpusAdapter extends FileManager implements CorpusInterface
      */
     public function inCorpus(string $element, string $corpusName): bool
     {
-        $corpData = $this->getCorpusContent($corpusName);
+        // corpus as array variable
+        if (isset($this->storage[$corpusName])) {
+            $corpData = $this->storage[$corpusName];
+            if (is_array($corpData) && in_array($element, $corpData)) {
+                return true;
+            }
+
+            return false;
+        }
 
         // corpus as text
-        if ( !is_null($corpData) && is_string($corpData)
-            && preg_match('/^'.preg_quote($element).'$/m', $corpData) > 0) {
-            return true;
-        }
-        // corpus as array variable
-        if( is_array($corpData) && in_array($element, $corpData)) {
-            return true;
-        }
+        $filename = $this->getCorpusFilename($corpusName);
 
-        return false;
+        return $this->isStringInCSV($filename, $element);
     }
 
-    private function getCorpusContent(string $name)
+    private function getCorpusFilename(string $corpusName)
     {
-        // Corpus as array variable
-        if( isset($this->storage[$name])) {
-            return (array) $this->storage[$name];
-        }
         // Corpus as text file
-        if ($name === 'firstname') {
-            return (string) file_get_contents(__DIR__.'/../Domain/resources/corpus_firstname.txt');
+        if ($corpusName === 'firstname') {
+            return __DIR__.'/../Domain/resources/corpus_firstname.txt';
         }
-        throw new \DomainException("corpus $name not defined");
+        if ($corpusName === 'all-titles') {
+            return __DIR__.'/frwiki-latest-all-titles-in-ns0.txt';
+        }
+        throw new \DomainException("corpus $corpusName not defined");
     }
 
-    public function setCorpusInStorage(string $corpusName, array $arrayContent):void
+    public function setCorpusInStorage(string $corpusName, array $arrayContent): void
     {
         $this->storage[$corpusName] = $arrayContent;
     }
@@ -67,6 +67,16 @@ class CorpusAdapter extends FileManager implements CorpusInterface
      */
     public function addNewElementToCorpus(string $corpusName, string $element): bool
     {
+        //corpus as variable
+        if (isset($this->storage[$corpusName]) && is_array($this->storage[$corpusName])) {
+            if (!in_array($element, $this->storage[$corpusName])) {
+                $this->storage[$corpusName][] = $element;
+            }
+
+            return true;
+        }
+
+        // corpus as file
         $filename = __DIR__.'/../Domain/resources/'.$corpusName.'.txt';
         if (empty($element)) {
             return false;
