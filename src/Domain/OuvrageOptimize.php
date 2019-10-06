@@ -4,14 +4,16 @@
 namespace App\Domain;
 
 
+use App\Domain\Models\Wiki\GoogleLivresTemplate;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 
 /**
+ * Legacy.
  * TODO AbstractProcess
  * TODO observer/event (log, MajorEdition)
  * Class OuvrageProcess
  */
-class OuvrageProcess
+class OuvrageOptimize
 {
     protected $original;
     private $wikiPageTitle;
@@ -27,10 +29,12 @@ class OuvrageProcess
         $this->wikiPageTitle = ($wikiPageTitle) ?? null;
     }
 
-    public function doTasks()
+    public function doTasks(): OuvrageOptimize
     {
         $this->currentTask = 'start';
         $this->parametersErrorFromHydrate();
+        $this->extraTemplates();
+
 
         $this->currentTask = 'titre';
         $oldtitre = $this->getParam('titre');
@@ -74,6 +78,15 @@ class OuvrageProcess
         //            $this->currentTask = implode(' ', $task);
         //            $this->{$task[0]}($task[1]);
         //        }
+
+        return $this;
+    }
+
+    private function extraTemplates()
+    {
+        if ($this->getParam('commentaire') || $this->getParam('extrait') || $this->getParam('plume')) {
+            $this->log('+extra template');
+        }
     }
 
     /**
@@ -241,13 +254,13 @@ class OuvrageProcess
             $extrait = $this->getParam('extrait');
             // todo bug {{citation bloc}} si "=" ou "|" dans texte de citation
             // Legacy : use {{début citation}} ... {{fin citation}}
-            if ( preg_match('#[=|\|]#', $extrait) > 0 ) {
+            if (preg_match('#[=|\|]#', $extrait) > 0) {
                 $this->ouvrage->externalTemplates[] = (object)[
                     'template' => 'début citation',
                     '1' => '',
                     'raw' => '{{début citation}}'.$extrait.'{{fin citation}}',
                 ];
-            }else{
+            }else {
                 // StdClass
                 $this->ouvrage->externalTemplates[] = (object)[
                     'template' => 'citation bloc',
@@ -376,7 +389,7 @@ class OuvrageProcess
         // [[éditeur]]
         $old = $this->getParam('éditeur');
         // - "éd."
-        $new = trim(str_ireplace(['éd.', 'ed.', 'Éd.', 'édit.', 'Édit.', '(éd.)', '(ed.)','Ltd.'], '', $old));
+        $new = trim(str_ireplace(['éd.', 'ed.', 'Éd.', 'édit.', 'Édit.', '(éd.)', '(ed.)', 'Ltd.'], '', $old));
         // todo gérer "Ed. de ...."
         $new = trim($new);
         if ($old !== $new) {
@@ -385,5 +398,202 @@ class OuvrageProcess
         }
     }
 
+    /**
+     * https://books.google.com/books?id=mlj71rhp-EwC&pg=PA69
+     * @param string $text
+     *
+     * @return bool
+     */
+    public function isGoogleBookURL(string $text): bool
+    {
+        //
+        if (preg_match('#^https?\:\/\/books\.google\.com\/books\?#i', $text) > 0) {
+            return true;
+        }
+
+        //        if (preg_match('#{{ ?Google (Livres|Books)#i', $text) > 0) {
+
+        return false;
+    }
+
+    /**
+     * See also https://fr.wikipedia.org/wiki/Utilisateur:Jack_ma/GB
+     * https://stackoverflow.com/questions/11584551/need-information-on-query-parameters-for-google-books-e-g-difference-between-d
+     *
+     * @param string $link
+     *
+     * @return bool|string
+     * @throws \Exception
+     */
+    public function convertGoogleBook2template(string $link)
+    {
+        if (!$this->isGoogleBookURL($link)) {
+            throw new \DomainException('not a Google Book URL');
+        }
+        // escape / ?
+        if (preg_match(
+                '#^https?://books\.google\.com/books\?id=(?<id>[a-z0-9-]+)(?<pg>&pg=[a-z0-9-]+)?(?<q>&q=[^&=]*)?(?<dq>&dq=[^&=]*)?(?<extra>&.+)?$#i',
+                $link,
+                $matches
+            ) > 0
+        ) {
+            // URL too complex : consensus for simplification ?
+            if (!empty($matches['dq']) || !empty($matches['extra'])) {
+                return false;
+            }
+
+            $dat['id'] = $matches['id'];
+
+            // pages
+            //  PAx (|page=x) et PRx (|page=x|romain=
+            if (isset($matches['pg'])) {
+                if (preg_match('/^&pg=([a-z-]+[0-9]+)$/i', $matches['pg'], $toc) > 0) {
+                    $dat['page autre'] = $toc[1];
+                }
+                if (preg_match('/^&pg=PA([0-9]+)$/', $matches['pg'], $toc) > 0) {
+                    $dat['page'] = $toc[1];
+                    unset($dat['page autre']);
+                }
+                if (preg_match('/^&pg=PR([0-9]+)$/', $matches['pg'], $toc) > 0) {
+                    $dat['page'] = $toc[1];
+                    $dat['romain'] = 1;
+                    unset($dat['page autre']);
+                }
+            }
+
+
+            if (isset($matches['q'])) {
+                if (preg_match('/^&q=([^&]+)$/i', $matches['q'], $toc) > 0) {
+                    $dat['surligne'] = $toc[1];
+                }
+            }
+
+            $templ = new GoogleLivresTemplate();
+            $templ->hydrate($dat);
+
+            return $templ->serialize();
+        }
+
+        return false;
+    }
+
+    // TODO legacy
+    //    public function legacyDate()
+    //    {
+    //        // === DATES ===
+    //        // date=année ?
+    //        if (is_numeric($ouvrage['date']) AND $ouvrage['date'] < 2013 AND $ouvrage['date'] > 1500) {
+    //            $ouvrage['année']
+    //                = $ouvrage['date'];
+    //            unset($ouvrage['date']);
+    //            $suivi[]
+    //                = '+année';
+    //        }
+    //
+    //        if ($ouvrage['date'] == true) {
+    //            $ouvrage['date'] = str_replace(
+    //                [
+    //                    'January',
+    //                    'February',
+    //                    'March',
+    //                    'April',
+    //                    'May',
+    //                    'June',
+    //                    'July',
+    //                    'August',
+    //                    'September',
+    //                    'October',
+    //                    'November',
+    //                    'December',
+    //                ],
+    //                [
+    //                    'janvier',
+    //                    'février',
+    //                    'mars',
+    //                    'avril',
+    //                    'mai',
+    //                    'juin',
+    //                    'juillet',
+    //                    'août',
+    //                    'septembre',
+    //                    'octobre',
+    //                    'novembre',
+    //                    'décembre',
+    //                ],
+    //                $ouvrage['date']
+    //            );
+    //        }
+    //        if ($ouvrage['date'] == true) {
+    //            if (preg_match("#([0-9]{4})[ \-\/]([01][0-9])[ \-\/]([0123][0-9])#", $ouvrage['date'], $matches)
+    //                == true
+    //            ) { // 2011-04-15
+    //                $ouvrage['année'] = intval($matches[1]);
+    //                $ouvrage['mois'] = intval($matches[2]);
+    //                $ouvrage['jour'] = intval($matches[3]);
+    //                unset($ouvrage['date']);
+    //                $suivi[] = '±date';
+    //            }elseif (preg_match("#([0123][0-9])[ \-\/]([01][0-9])[ \-\/]([0-9]{4})#", $ouvrage['date'], $matches)
+    //                == true
+    //            ) { // 15-04-2011
+    //                $ouvrage['année'] = $matches[3];
+    //                $ouvrage['mois'] = intval($matches[2]);
+    //                $ouvrage['jour'] = intval($matches[1]);
+    //                unset($ouvrage['date']);
+    //                $suivi[] = '±date2';
+    //            }
+    //        }
+    //
+    //        // consulté le (date anglaise)
+    //        if ($ouvrage['consulté le']) {
+    //            $old_consultele = $ouvrage['consulté le'];
+    //            $ouvrage['consulté le'] = str_replace(
+    //                [
+    //                    'January',
+    //                    'February',
+    //                    'March',
+    //                    'April',
+    //                    'May',
+    //                    'June',
+    //                    'July',
+    //                    'August',
+    //                    'September',
+    //                    'October',
+    //                    'November',
+    //                    'December',
+    //                ],
+    //                [
+    //                    'janvier',
+    //                    'février',
+    //                    'mars',
+    //                    'avril',
+    //                    'mai',
+    //                    'juin',
+    //                    'juillet',
+    //                    'août',
+    //                    'septembre',
+    //                    'octobre',
+    //                    'novembre',
+    //                    'décembre',
+    //                ],
+    //                $ouvrage['consulté le']
+    //            );
+    //
+    //            if (preg_match("#([0-9]{4})[ \-\/]([01][0-9])[ \-\/]([0123][0-9])#", $ouvrage['consulté le'], $matches)
+    //                == true
+    //            ) { // 2011-04-15 => 15 avril 2011
+    //                $ouvrage['consulté le'] = intval($matches[3]).' '.$date_mois_francais[intval($matches[2])].' '
+    //                    .$matches[1];
+    //                // TODO: Bug : 3 = mars, 03 ≠ mars (corrigé cochon). Trouver la fonction php d'éval
+    //            }elseif (preg_match("#([0123][0-9])[ \-\/]([01][0-9])[ \-\/]([0-9]{4})#", $ouvrage['consulté le'], $matches)
+    //                == true
+    //            ) { // 2011-04-15 => 15 avril 2011
+    //                $ouvrage['consulté le'] = intval($matches[1]).' '.$date_mois_francais[intval($matches[2])].' '
+    //                    .$matches[3];
+    //            }
+    //            if ($ouvrage['consulté le'] != $old_consultele) {
+    //                $suivi[] = '±consulté';
+    //            }
+    //        }
+    //    }
 
 }
