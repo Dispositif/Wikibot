@@ -3,8 +3,8 @@
 
 namespace App\Infrastructure;
 
-use App\Domain\BookApiInterface;
-use App\Domain\OpenLibraryMapper;
+use App\Domain\Publisher\BookApiInterface;
+use App\Domain\Publisher\OpenLibraryMapper;
 
 class OpenLibraryAdapter extends AbstractBookApiAdapter implements BookApiInterface
 {

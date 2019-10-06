@@ -5,6 +5,8 @@ namespace App\Domain;
 
 
 use App\Domain\Models\Wiki\OuvrageTemplate;
+use App\Domain\Publisher\BookApiInterface;
+use App\Domain\Publisher\MapperInterface;
 use Scriptotek\GoogleBooks\Volume;
 
 class OuvrageFromApi

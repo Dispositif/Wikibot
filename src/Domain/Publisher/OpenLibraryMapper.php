@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domain;
+namespace App\Domain\Publisher;
 
 /**
  * https://openlibrary.org/dev/docs/api/books
