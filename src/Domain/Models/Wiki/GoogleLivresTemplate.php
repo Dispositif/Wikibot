@@ -34,7 +34,7 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
         }
         // escape / ?
         if (preg_match(
-                '#^https?://books\.google\.com/books\?id=(?<id>[a-z0-9-]+)(?<pg>&pg=[a-z0-9-]+)?(?<q>&q=[^&=]*)?(?<dq>&dq=[^&=]*)?(?<extra>&.+)?$#i',
+                '#^https?://books\.google\.[a-z]{2,3}/books\?id=(?<id>[a-z0-9-]+)(?<pg>&pg=[a-z0-9-]+)?(?<q>&q=[^&=]*)?(?<dq>&dq=[^&=]*)?(?<extra>&.+)?$#i',
                 $link,
                 $matches
             ) > 0
@@ -87,8 +87,7 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
      */
     static public function isGoogleBookURL(string $text): bool
     {
-        //
-        if (preg_match('#^https?\:\/\/books\.google\.com\/books\?#i', $text) > 0) {
+        if (preg_match('#^https?\:\/\/books\.google\.[a-z]{2,3}\/books\?id=#i', $text) > 0) {
             return true;
         }
 
