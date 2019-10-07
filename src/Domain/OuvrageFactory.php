@@ -30,4 +30,15 @@ class OuvrageFactory
 
         return $ouvrage;
     }
+
+    static public function OptimizedFromData(array $data): OuvrageTemplate
+    {
+        $ouvrage = new OuvrageClean();
+        $ouvrage->hydrate($data);
+        $proc = new OuvrageOptimize($ouvrage);
+        $proc->doTasks();
+
+        return $proc->getOuvrage();
+    }
+
 }
