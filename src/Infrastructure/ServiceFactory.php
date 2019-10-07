@@ -9,8 +9,6 @@ use Mediawiki\Api\MediawikiFactory;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 
-require_once 'myBootstrap.php'; // todo temp
-
 /**
  * Class ServiceFactory
  */
@@ -31,6 +29,7 @@ class ServiceFactory
     /**
      * AMQP queue (actual RabbitMQ)
      * todo $param
+     * todo $channel->close(); $AMQPConnection->close();
      *
      * @param string $taskName
      *
