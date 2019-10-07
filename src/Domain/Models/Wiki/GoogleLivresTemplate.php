@@ -26,12 +26,12 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
      * @return GoogleLivresTemplate|null
      * @throws \Exception
      */
-
     static public function createFromURL(string $link): ?self
     {
         if (!self::isGoogleBookURL($link)) {
             throw new \DomainException('not a Google Book URL');
         }
+        // TODO: refac with parse_str(parse_url($url, PHP_URL_QUERY), $arrayResult);
         // escape / ?
         if (preg_match(
                 '#^https?://books\.google\.[a-z]{2,3}/books\?id=(?<id>[a-z0-9-]+)(?<pg>&pg=[a-z0-9-]+)?(?<q>&q=[^&=]*)?(?<dq>&dq=[^&=]*)?(?<extra>&.+)?$#i',
@@ -87,6 +87,7 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
      */
     static public function isGoogleBookURL(string $text): bool
     {
+        // Note : Refactor with parse_str(parse_url($url, PHP_URL_QUERY ), $arrayResult) ??
         if (preg_match('#^https?\:\/\/books\.google\.[a-z]{2,3}\/books\?id=#i', $text) > 0) {
             return true;
         }

@@ -22,8 +22,15 @@ class OpenLibraryAdapter extends AbstractBookApiAdapter implements BookApiInterf
     public function getDataByIsbn(string $isbn)
     {
         $isbn = str_replace([' ','-'], '', $isbn);
-        // jscmd=data or jscmd=details
-        $json = file_get_contents('https://openlibrary.org/api/books?bibkeys=ISBN:'.$isbn.'&format=json&jscmd=data');
+
+         $url = 'https://openlibrary.org/api/books?'
+             .http_build_query([
+                'bibkeys' => sprintf('ISBN:%s', urlencode($isbn)),
+                'format' => 'json',
+                'jscmd' => 'details' // 'data' or 'details'
+            ]);
+
+        $json = file_get_contents($url);
 
         if (empty($json)) {
             return null;

@@ -51,6 +51,7 @@ class WikiPageAction
 
     /**
      * TODO $url parameter
+     * TODO? refactor with : parse_str() + parse_url($url, PHP_URL_QUERY)
      * check if any ref contains a targeted website/URL
      *
      * @param array $refs

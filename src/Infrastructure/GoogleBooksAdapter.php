@@ -4,8 +4,8 @@
 namespace App\Infrastructure;
 
 
-use App\Domain\BookApiInterface;
-use App\Domain\GoogleBookMapper;
+use App\Domain\Publisher\GoogleBookMapper;
+use App\Domain\Publisher\BookApiInterface;
 use Scriptotek\GoogleBooks\GoogleBooks;
 
 class GoogleBooksAdapter extends AbstractBookApiAdapter implements BookApiInterface
