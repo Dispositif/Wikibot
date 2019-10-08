@@ -58,6 +58,9 @@ class OuvrageOptimize
         $this->deWikifyExternalLink('titre');
         $this->upperCaseFirstLetter('titre');
         $this->typoDeuxPoints('titre');
+        // todo :extract sous-titre
+        $this->extractSubTitle();
+
         if ($this->getParam('titre') !== $oldtitre) {
             $this->log('±titre');
         }
@@ -67,6 +70,34 @@ class OuvrageOptimize
         $this->deWikifyExternalLink('titre chapitre');
         $this->upperCaseFirstLetter('titre chapitre');
         $this->typoDeuxPoints('titre chapitre');
+    }
+
+    private function detectColon($param): bool
+    {
+        // > 0 don't count a starting colon ":bla"
+        if (!empty($this->getParam($param)) && mb_strrpos($this->getParam('titre'), ':') > 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private function extractSubTitle(): void
+    {
+        if (!$this->detectColon('titre')) {
+            return;
+        }
+        // Que faire si déjà un sous-titre ?
+        if (!empty($this->getParam('sous-titre'))) {
+            return;
+        }
+
+        // titre>3 and sous-titre>5
+        if (preg_match('#^(?<titre>[^:]{3,}):(?<st>.{5,})$#', $this->getParam('titre'), $matches) > 0) {
+            $this->setParam('titre', trim($matches['titre']));
+            $this->setParam('sous-titre', trim($matches['st']));
+            $this->log('>sous-titre');
+        }
     }
 
     private function googleBookUrl($param)
@@ -92,10 +123,12 @@ class OuvrageOptimize
      */
     private function langInTitle()
     {
-        if (preg_match('#^\{\{ ?(?:lang|langue) ?\| ?([a-z-]{2,5}) ?\| ?(?:texte=)?([^\{\}=]+)(?:\|dir=rtl)?\}\}$#i',
-                $this->getParam
-            ('titre'),
-                $matches) > 0) {
+        if (preg_match(
+                '#^\{\{ ?(?:lang|langue) ?\| ?([a-z-]{2,5}) ?\| ?(?:texte=)?([^\{\}=]+)(?:\|dir=rtl)?\}\}$#i',
+                $this->getParam('titre'),
+                $matches
+            ) > 0
+        ) {
             $lang = trim($matches[1]);
             $newtitre = str_replace($matches[0], trim($matches[2]), $this->getParam('titre'));
             $this->setParam('titre', $newtitre);
@@ -149,6 +182,7 @@ class OuvrageOptimize
 
     /**
      * TODO : return "" instead of null ?
+     *
      * @param $name
      *
      * @return string|null
@@ -179,9 +213,9 @@ class OuvrageOptimize
      *
      * @throws \Exception
      */
-    private function deWikifyExternalLink(string $param):void
+    private function deWikifyExternalLink(string $param): void
     {
-        if(empty($this->getParam($param))){
+        if (empty($this->getParam($param))) {
             return;
         }
         if (preg_match('#^\[(http[^ \]]+) ([^\]]+)\]#i', $this->getParam($param), $matches) > 0) {
@@ -202,7 +236,7 @@ class OuvrageOptimize
 
     private function upperCaseFirstLetter($param)
     {
-        if(empty($this->getParam($param))){
+        if (empty($this->getParam($param))) {
             return;
         }
         $newValue = TextUtil::mb_ucfirst(trim($this->getParam($param)));
@@ -217,7 +251,6 @@ class OuvrageOptimize
     /**
      * Typo internationale 'titre : sous-titre'
      * https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Le_Bistro/13_janvier_2016#Modif_du_mod%C3%A8le:Ouvrage
-     * Todo? déplacer sous-titre dans 'sous-titre' ?
      *
      * @param $param
      *
@@ -437,7 +470,7 @@ class OuvrageOptimize
     {
         $this->currentTask = 'start';
         $editeur = $this->getParam('éditeur');
-        if(empty($editeur)){
+        if (empty($editeur)) {
             return;
         }
 
