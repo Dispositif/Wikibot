@@ -280,7 +280,7 @@ abstract class WikiTextUtil extends TextUtil
             preg_replace(
                 [
                     "#\[\[[^\|\]]*\|([^\]]*)\]\]#",
-                    '#\{\{lang ?\|[^\|]+\|([^\{\}\|]+)\}\}#i',
+                    '#\{\{ ?(?:lang|langue) ?\|[^\|]+\| ?(?:texte=)?([^\{\}=]+)(?:\|dir=rtl)?\}\}#i',
                     "#\&[\w\d]{2,7};#",
                 ],
                 ["\$1", "\$1", ''],

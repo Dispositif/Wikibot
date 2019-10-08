@@ -92,9 +92,12 @@ class OuvrageOptimize
      */
     private function langInTitle()
     {
-        if (preg_match('#^\{\{lang ?\| ?([a-z]+) ?\|([^\{\}]+)\}\}$#i', $this->getParam('titre'), $matches) > 0) {
-            $lang = $matches[1];
-            $newtitre = str_replace($matches[0], $matches[2], $this->getParam('titre'));
+        if (preg_match('#^\{\{ ?(?:lang|langue) ?\| ?([a-z-]{2,5}) ?\| ?(?:texte=)?([^\{\}=]+)(?:\|dir=rtl)?\}\}$#i',
+                $this->getParam
+            ('titre'),
+                $matches) > 0) {
+            $lang = trim($matches[1]);
+            $newtitre = str_replace($matches[0], trim($matches[2]), $this->getParam('titre'));
             $this->setParam('titre', $newtitre);
             $this->log('°titre');
             if (empty($this->getParam('langue'))) {
