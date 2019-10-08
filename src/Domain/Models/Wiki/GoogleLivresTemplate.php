@@ -46,7 +46,7 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
         }
         $gooDat = self::parseGoogleBookQuery($link);
 
-        if (empty($val['id'])) {
+        if (empty($gooDat['id'])) {
             throw new \DomainException("no GoogleBook 'id' in URL");
         }
         $dat['id'] = $gooDat['id'];
