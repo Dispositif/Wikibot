@@ -66,6 +66,15 @@ class OuvrageComplete
                     continue;
                 }
 
+                // TODO : détection accessibilité document Google
+                // HACK: duplication 'lire en ligne'/'présentation en ligne'
+                if (in_array($param, ['lire en ligne', 'présentation en ligne'])
+                    && (!empty($this->origin->getParam('lire en ligne'))
+                        || !empty($this->origin->getParam('présentation en ligne')))
+                ) {
+                    continue;
+                }
+
                 $this->origin->setParam($param, $value);
                 $this->log[] = '+'.$param;
             }
@@ -212,5 +221,4 @@ class OuvrageComplete
 
         return $text;
     }
-
 }
