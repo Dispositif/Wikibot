@@ -41,7 +41,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
             throw new \Exception(
                 sprintf(
                     'REQUIRED_PARAMETERS not configured in "%s"',
-                    __CLASS__
+                     get_called_class()
                 )
             );
         }
@@ -100,7 +100,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
         // keyNum parameter ?
         //        if (!in_array($name, ['1', '2', '3', '4'])) {
         throw new \Exception(
-            sprintf('no parameter "%s" in template "%s"', $name, __CLASS__)
+            sprintf('no parameter "%s" in template "%s"', $name, get_called_class())
         );
     }
 
@@ -132,7 +132,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
         try{
             $this->checkParamName($name);
         }catch (\Throwable $e){
-            $this->log[] = sprintf('no parameter "%s" in AbstractParametersObject "%s"', $name, __CLASS__);
+            $this->log[] = sprintf('no parameter "%s" in AbstractParametersObject "%s"', $name, get_called_class());
 
             return $this;
         }
