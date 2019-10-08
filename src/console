@@ -10,6 +10,8 @@ use Symfony\Component\Console\Application;
 include __DIR__.'/Application/myBootstrap.php';
 
 $console = new Application();
+
+// List of commands
 $console->add(new WikiPageContentCommand());
 
 // Bug on command with arguments related to symfony/.../input/ArgvInput.php
