@@ -8,14 +8,16 @@ include __DIR__.'/../Application/myBootstrap.php';
 
 $channel = ServiceFactory::queueChannel('test');
 
+$data = implode(' ', array_slice($argv, 1));
 if (empty($data)) {
-    $data = "Hello World...";
+    $data = "Hello World 2...";
 }
 $msg = new AMQPMessage(
     $data, ['delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT]
 );
 
-$channel->basic_publish($msg, '', 'task_queue');
+// set routing_key to queueName value when using the default '' exchanger
+$channel->basic_publish($msg, '', 'test');
 
 echo ' [x] Sent ', $data, "\n";
 
