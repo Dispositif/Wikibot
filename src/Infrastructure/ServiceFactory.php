@@ -31,11 +31,11 @@ class ServiceFactory
      * todo $param
      * todo $channel->close(); $AMQPConnection->close();
      *
-     * @param string $taskName
+     * @param string $queueName
      *
      * @return AMQPChannel
      */
-    public static function queueChannel(string $taskName): AMQPChannel
+    public static function queueChannel(string $queueName): AMQPChannel
     {
         if (!isset(self::$AMQPConnection)) {
             self::$AMQPConnection = new AMQPStreamConnection(
@@ -50,7 +50,7 @@ class ServiceFactory
         $channel = self::$AMQPConnection->channel();
 
         $channel->queue_declare(
-            $taskName,
+            $queueName,
             false,
             true, // won't be lost if MQ server restarts
             false,
