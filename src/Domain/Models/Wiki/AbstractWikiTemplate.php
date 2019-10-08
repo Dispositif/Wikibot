@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Domain\Models\Wiki;
 
@@ -201,7 +202,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     public function hydrate(array $data): AbstractWikiTemplate
     {
         foreach ($data as $name => $value) {
-            if( is_string($value)) {
+            if (is_string($value)) {
                 $this->hydrateTemplateParameter($name, $value);
             }
         }

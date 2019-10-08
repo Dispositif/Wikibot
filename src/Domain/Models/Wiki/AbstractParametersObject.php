@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Domain\Models\Wiki;
 
@@ -10,7 +11,6 @@ abstract class AbstractParametersObject
     use ArrayProcessTrait;
 
     protected $parametersValues;
-
 
     /**
      * todo extract
@@ -24,7 +24,6 @@ abstract class AbstractParametersObject
         }
         echo "<pre>$list</pre>";
     }
-
 
     /**
      * Magic param setter
@@ -41,7 +40,6 @@ abstract class AbstractParametersObject
 
         return $method;
     }
-
 
     /**
      * todo useless ?
@@ -60,21 +58,20 @@ abstract class AbstractParametersObject
      *
      * @return bool
      */
-    public function isParamValueEquals(AbstractParametersObject $object):bool
+    public function isParamValueEquals(AbstractParametersObject $object): bool
     {
         $dat1 = $this->deleteEmptyValueArray($this->toArray());
         $dat2 = $this->deleteEmptyValueArray($object->toArray());
-        if(count($dat1) !== count($dat2)){
+        if (count($dat1) !== count($dat2)) {
             return false;
         }
-        foreach ($dat1 as $param => $value){
-            if(!isset($dat2[$param]) || $dat2[$param] !== $value){
+        foreach ($dat1 as $param => $value) {
+            if (!isset($dat2[$param]) || $dat2[$param] !== $value) {
                 return false;
             }
         }
 
         return true;
     }
-
 
 }
