@@ -3,13 +3,12 @@ declare(strict_types=1);
 
 namespace App\Domain;
 
-
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\Publisher\BookApiInterface;
 use App\Domain\Publisher\MapperInterface;
 use Scriptotek\GoogleBooks\Volume;
 
-class OuvrageFromApi
+class ImportOuvrageFromApi
 {
     private $adapter;
     private $ouvrage;
@@ -23,13 +22,15 @@ class OuvrageFromApi
     public function __construct(OuvrageTemplate $ouvrage, BookApiInterface $adapter)
     {
         $this->adapter = $adapter;
-        $this->ouvrage = $ouvrage;
+        $this->ouvrage = clone $ouvrage;
     }
 
     /**
-     * @return OuvrageTemplate
+     * Inutile si pas de clonage $ouvrage dans construct()
+     *
+     * @return OuvrageTemplate|null
      */
-    public function getOuvrage(): OuvrageTemplate
+    public function getOuvrage(): ?OuvrageTemplate
     {
         return $this->ouvrage;
     }
@@ -66,7 +67,7 @@ class OuvrageFromApi
     {
         $mapper = $this->adapter->getMapper();
 
-        if(empty($volume)){
+        if (empty($volume)) {
             return [];
         }
         /**

@@ -13,22 +13,20 @@ class OuvrageFactory
 {
     private function __construct() { }
 
-    static public function OpenLibraryFromIsbn(string $isbn): OuvrageTemplate
+    static public function OpenLibraryFromIsbn(string $isbn): ?OuvrageTemplate
     {
-        $ouvrage = new OuvrageClean();
-        $map = new OuvrageFromApi($ouvrage, new OpenLibraryAdapter());
-        $map->hydrateFromIsbn($isbn);
+        $import = new ImportOuvrageFromApi(new OuvrageClean(), new OpenLibraryAdapter());
+        $import->hydrateFromIsbn($isbn);
 
-        return $ouvrage;
+        return $import->getOuvrage();
     }
 
     static public function GoogleFromIsbn(string $isbn): OuvrageTemplate
     {
-        $ouvrage = new OuvrageClean();
-        $map = new OuvrageFromApi($ouvrage, new GoogleBooksAdapter());
-        $map->hydrateFromIsbn($isbn);
+        $import = new ImportOuvrageFromApi(new OuvrageClean(),new GoogleBooksAdapter());
+        $import->hydrateFromIsbn($isbn);
 
-        return $ouvrage;
+        return $import->getOuvrage();
     }
 
     static public function OptimizedFromData(array $data): OuvrageTemplate
