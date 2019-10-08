@@ -1,8 +1,8 @@
 <?php
+declare(strict_types=1);
 
 use Symfony\Component\Dotenv\Dotenv;
 
-declare(strict_types=1); // to put in every PHP file !
 $bootstrap = true;
 
 error_reporting(E_ALL);
