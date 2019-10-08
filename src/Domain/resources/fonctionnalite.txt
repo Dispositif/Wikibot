@@ -42,3 +42,17 @@ Pas réactivé :
 * X analyse proportion de {{fr}} {{en}} pour ajout de {{fr}}
 * X un seul wikilien par page
 
+----
+* Lien Google Books :
+- simplification d'URL : forçage domaine .fr, suppression des paramètres non nécessaires (infos de tracking) :
+conservation id, pg (page), dq (requête/surlignage) qui permettent d'obtenir la même interface. 'q'?.
+- Suppression lien invalide (id manquant)
+- dans {{Ouvrage}} : prédiction 'lire en ligne/présentation en ligne' selon que consultation totale ou partielle.
+Suppression si lecture impossible. possibilité de conversion en {{Google Livres}}
+- citation libre (partout) : possibilité de conversion en {{Google Livres}} mais pas de consensus. Ça apporte belle
+présentation. (todo : amélioration citation libre)
+- possibilité d'ajout de lien Google si absent. Me semble pertinent pour {{ouvrage}} si livre disponible en lecture
+complète.
+
+* Lien Le Monde :
+
