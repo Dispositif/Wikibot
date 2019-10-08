@@ -89,7 +89,10 @@ class OuvrageComplete
      */
     private function predictSameBook()
     {
-        if ($this->hasSameBookTitle() || $this->hasSameAuthors()) {
+        if ($this->hasSameISBN() && ($this->hasSameBookTitles() || $this->hasSameAuthors())) {
+            return true;
+        }
+        if ($this->hasSameBookTitles() && $this->hasSameAuthors()) {
             return true;
         }
 
@@ -153,7 +156,25 @@ class OuvrageComplete
      * @return bool
      * @throws \Exception
      */
-    private function hasSameBookTitle(): bool
+    private function hasSameISBN(): bool
+    {
+        if (empty($this->origin->getParam('isbn')) || empty($this->book->getParam('isbn'))) {
+            return false;
+        }
+        $isbn1 = str_replace('-', '', $this->origin->getParam('isbn'));
+        $isbn2 = str_replace('-', '', $this->book->getParam('isbn'));
+        if ($isbn1 === $isbn2) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @return bool
+     * @throws \Exception
+     */
+    private function hasSameBookTitles(): bool
     {
         // todo distance 1 ou 2
         if ($this->charsFromBigTitle($this->origin) === $this->charsFromBigTitle($this->book)) {
