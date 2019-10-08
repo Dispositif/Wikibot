@@ -1,7 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Domain\Models\Wiki;
+namespace App\Domain;
+
+use App\Domain\Models\Wiki\AbstractWikiTemplate;
+use App\Domain\Models\Wiki\GoogleLivresTemplate;
+use App\Domain\Models\Wiki\LienWebTemplate;
+use App\Domain\Models\Wiki\OuvrageTemplate;
 
 /**
  * Class WikiTemplateFactory

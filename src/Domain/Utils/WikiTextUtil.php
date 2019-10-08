@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Domain\Utils;
 
 use App\Domain\Models\Wiki\AbstractWikiTemplate;
-use App\Domain\Models\Wiki\WikiTemplateFactory;
+use App\Domain\WikiTemplateFactory;
 
 /**
  * todo legacy
