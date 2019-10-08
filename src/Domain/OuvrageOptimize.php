@@ -148,6 +148,7 @@ class OuvrageOptimize
     }
 
     /**
+     * TODO : return "" instead of null ?
      * @param $name
      *
      * @return string|null
@@ -172,13 +173,17 @@ class OuvrageOptimize
     }
 
     /**
+     * Bool ?
      * déwikification du titre : consensus Bistro 27 août 2011
      * idem  'titre chapitre'
      *
      * @throws \Exception
      */
-    private function deWikifyExternalLink($param)
+    private function deWikifyExternalLink(string $param):void
     {
+        if(empty($this->getParam($param))){
+            return;
+        }
         if (preg_match('#^\[(http[^ \]]+) ([^\]]+)\]#i', $this->getParam($param), $matches) > 0) {
             $this->setParam($param, str_replace($matches[0], $matches[2], $this->getParam($param)));
             $this->log('±'.$param);
@@ -197,6 +202,9 @@ class OuvrageOptimize
 
     private function upperCaseFirstLetter($param)
     {
+        if(empty($this->getParam($param))){
+            return;
+        }
         $newValue = TextUtil::mb_ucfirst(trim($this->getParam($param)));
         $this->setParam($param, $newValue);
 
@@ -429,6 +437,9 @@ class OuvrageOptimize
     {
         $this->currentTask = 'start';
         $editeur = $this->getParam('éditeur');
+        if(empty($editeur)){
+            return;
+        }
 
         // [[éditeur]]
         if (preg_match('#\[\[([^\|]+)\]\]#', $editeur, $matches) > 0) {
