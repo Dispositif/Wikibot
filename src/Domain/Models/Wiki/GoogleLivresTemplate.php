@@ -20,7 +20,7 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
     protected $parametersByOrder
         = ['id', 'titre', 'couv', 'page', 'romain', 'page autre', 'surligne'];
 
-    public function serialize(): string
+    public function serialize(?bool $cleanOrder=true): string
     {
         $text = parent::serialize();
         // Documentation suggère non affichage de ces 2 paramètres

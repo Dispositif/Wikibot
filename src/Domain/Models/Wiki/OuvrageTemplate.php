@@ -358,12 +358,15 @@ class OuvrageTemplate extends AbstractWikiTemplate
 
     /**
      * todo move to abstract ?
+     * todo 'lang' au début, 'sous-titre' après 'titre'
+     *
+     * @param bool|null $cleanOrder
      *
      * @return string
      */
-    public function serialize(): string
+    public function serialize(?bool $cleanOrder=false): string
     {
-        return parent::serialize().$this->serializeExternalTemplates();
+        return parent::serialize($cleanOrder).$this->serializeExternalTemplates();
     }
 
     /**

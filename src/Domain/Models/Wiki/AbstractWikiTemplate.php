@@ -287,15 +287,16 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
      * TODO : data transfer object (DTO) to mix userErrorParam data ?
      * TODO : refac $inlineStyle as $userPreferences[] and bool flag on serialize()
      *
-     * @param bool $inline
+     * @param bool|null $cleanOrder
      *
      * @return string
      */
-    public function serialize(): string
+    public function serialize(?bool $cleanOrder = false): string
     {
-        $paramsByRenderOrder = $this->paramsByRenderOrder();
+        $paramsByRenderOrder = $this->paramsByRenderOrder($cleanOrder);
         $paramsByRenderOrder = $this->filterEmptyNotRequired($paramsByRenderOrder);
 
+        // TODO : $option to add or not the wrong parameters ?
         // Using the wrong parameters+value from user input ?
         $paramsByRenderOrder = $this->mergeWrongParametersFromUser($paramsByRenderOrder);
 
@@ -315,14 +316,16 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     }
 
     /**
+     * @param bool|null $cleanOrder
+     *
      * @return array
      */
-    protected function paramsByRenderOrder(): array
+    protected function paramsByRenderOrder(?bool $cleanOrder = false): array
     {
         $renderParams = [];
 
-        // By user order TODO: extract?
-        if (!empty($this->paramOrderByUser)) {
+        // By user order
+        if (!empty($this->paramOrderByUser) && !$cleanOrder) {
             // merge parameter orders (can't use the array operator +)
             $newOrder = $this->paramOrderByUser;
             foreach ($this->parametersByOrder as $paramName) {
@@ -335,14 +338,15 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
                     $renderParams[$paramName] = $this->parametersValues[$paramName];
                 }
             }
+
+            return $renderParams;
         }
 
+
         // default order
-        if (empty($this->paramOrderByUser)) {
-            foreach ($this->parametersByOrder as $order => $paramName) {
-                if (isset($this->parametersValues[$paramName])) {
-                    $renderParams[$paramName] = $this->parametersValues[$paramName];
-                }
+        foreach ($this->parametersByOrder as $order => $paramName) {
+            if (isset($this->parametersValues[$paramName])) {
+                $renderParams[$paramName] = $this->parametersValues[$paramName];
             }
         }
 
