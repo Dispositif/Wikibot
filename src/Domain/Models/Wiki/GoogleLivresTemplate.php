@@ -11,6 +11,8 @@ namespace App\Domain\Models\Wiki;
  */
 class GoogleLivresTemplate extends AbstractWikiTemplate
 {
+    const DEFAULT_DOMAIN_URL = 'https://books.google.fr/books';
+
     const ALLOW_USER_ORDER    = false;
     const MODEL_NAME          = 'Google Livres';
     const REQUIRED_PARAMETERS = ['id' => ''];
@@ -42,37 +44,31 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
         if (!self::isGoogleBookURL($link)) {
             throw new \DomainException('not a Google Book URL');
         }
-
-        // Note : Also datas in URL after the '#' !!! (URL fragment)
-        $queryData = parse_url($link, PHP_URL_QUERY); // after ?
-        $fragmentData = parse_url($link, PHP_URL_FRAGMENT); // after #
-        // queryData precedence over fragmentData
-        parse_str(implode('&', [$fragmentData, $queryData]), $val);
+        $gooDat = self::parseGoogleBookQuery($link);
 
         if (empty($val['id'])) {
             throw new \DomainException("no GoogleBook 'id' in URL");
         }
-
-        $dat['id'] = $val['id'];
+        $dat['id'] = $gooDat['id'];
 
         // pages
-        if (!empty($val['pg'])) {
-            $dat['page autre'] = $val['pg'];
+        if (!empty($gooDat['pg'])) {
+            $dat['page autre'] = $gooDat['pg'];
 
             //  pg=PAx => "page=x"
-            if (preg_match('/^PA([0-9]+)$/', $val['pg'], $toc) > 0) {
+            if (preg_match('/^PA([0-9]+)$/', $gooDat['pg'], $toc) > 0) {
                 $dat['page'] = $toc[1];
                 unset($dat['page autre']);
             }
             //  pg=PRx => "page=x|romain=1"
-            if (preg_match('/^PR([0-9]+)$/', $val['pg'], $toc) > 0) {
+            if (preg_match('/^PR([0-9]+)$/', $gooDat['pg'], $toc) > 0) {
                 $dat['page'] = $toc[1];
                 $dat['romain'] = 1;
                 unset($dat['page autre']);
             }
         }
 
-        $dat['surligne'] = $val['dq'] ?? $val['q'] ?? null;
+        $dat['surligne'] = $gooDat['dq'] ?? $gooDat['q'] ?? null;
         // fix bug frwiki sur encodage/espace
         if (!empty($dat['surligne'])) {
             $dat['surligne'] = urlencode($dat['surligne']);
@@ -82,6 +78,40 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
         $templ->hydrate($dat);
 
         return $templ;
+    }
+
+    static public function simplifyGoogleUrl(string $url): string
+    {
+        if (!self::isGoogleBookURL($url)) {
+            throw new \DomainException('not a Google Book URL');
+        }
+        $gooDat = self::parseGoogleBookQuery($url);
+
+        if (empty($gooDat['id'])) {
+            throw new \DomainException("no GoogleBook 'id' in URL");
+        }
+
+        $dat = [];
+        // keep only a few parameters (+'q' ?)
+        $keeps = ['id', 'pg', 'dq'];
+        foreach ($keeps as $keep) {
+            if (!empty($gooDat[$keep])) {
+                $dat[$keep] = $gooDat[$keep];
+            }
+        }
+
+        return self::DEFAULT_DOMAIN_URL.'?'.http_build_query($dat);
+    }
+
+    static private function parseGoogleBookQuery(string $url): array
+    {
+        // Note : Also datas in URL after the '#' !!! (URL fragment)
+        $queryData = parse_url($url, PHP_URL_QUERY); // after ?
+        $fragmentData = parse_url($url, PHP_URL_FRAGMENT); // after #
+        // queryData precedence over fragmentData
+        parse_str(implode('&', [$fragmentData, $queryData]), $val);
+
+        return $val;
     }
 
     /**
