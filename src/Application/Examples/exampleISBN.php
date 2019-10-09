@@ -18,7 +18,7 @@ use App\Infrastructure\MessageAdapter;
 use App\Infrastructure\OpenLibraryAdapter;
 
 
-include 'myBootstrap.php';
+include __DIR__.'/../myBootstrap.php';
 
 
 
@@ -28,23 +28,6 @@ include 'myBootstrap.php';
 // COOL
 // {{Ouvrage|langue=fr|auteur1=Ernest Nègre|titre=Toponymie générale de la France|tome=3|passage=1527|isbn=2600028846}}
 
-
-
-
-//Saint-Aignan-le-Jaillard : {{Ouvrage |prénom1= Jean-Louis |nom1=Masson | titre = Provinces, départements, régions : l'organisation administrative de la France| éditeur = Fernand Lanore| lieu = | année = 1984 | isbn = 285157003X| pages totales = 703|lire en ligne=https://books.google.fr/books?id=pbspjvZst5UC&pg=PA395&lpg=PA395&dq=D%C3%A9cret-Loi+10+septembre+1926&source=bl&ots=kiCzMrHO7b&sig=Jxt2Ybpig7Oo-Mtuzgp_sL5ipQ4&hl=fr&sa=X&ei=6SMLU_zIDarL0AX75YAI&ved=0CFEQ6AEwBA#v=onepage&q=D%C3%A9cret-Loi%2010%20septembre%201926&f=false}}
-$raw
-    = ' 
-Saint-Aignan-le-Jaillard : {{Ouvrage |id =Bonneton|nom1=Collectif | titre = Loiret : un département à l\'élégance naturelle | éditeur = Christine Bonneton | lieu = Paris | année = 2 septembre 1998 | isbn = 978-2-86253-234-9| pages totales = 319}}';
-
-// https://books.google.fr/books?id=pbspjvZst5UC&pg=PA395&lpg=PA395&dq=D%C3%A9cret-Loi+10+septembre+1926&source=bl&ots=kiCzMrHO7b&sig=Jxt2Ybpig7Oo-Mtuzgp_sL5ipQ4&hl=fr&sa=X&ei=6SMLU_zIDarL0AX75YAI&ved=0CFEQ6AEwBA#v=onepage&q=D%C3%A9cret-Loi%2010%20septembre%201926&f=false
-
-
-
-
-// https://books.google.fr/books?id=pbspjvZst5UC&pg=PA395&lpg=PA395&dq=D%C3%A9cret-Loi+10+septembre+1926&source=bl&ots=kiCzMrHO7b&sig=Jxt2Ybpig7Oo-Mtuzgp_sL5ipQ4&hl=fr&sa=X&ei=6SMLU_zIDarL0AX75YAI&ved=0CFEQ6AEwBA#v=onepage&q=D%C3%A9cret-Loi%2010%20septembre%201926&f=false
-
-// https://books.google.fr/books?id=pbspjvZst5UC&pg=PA395&lpg=PA395&lp&dq=D%C3%A9cret-Loi+10+septembre+1926&q=D%C3%A9cret-Loi%2010%20septembre%201926
-// https://books.google.fr/books?id=pbspjvZst5UC&pg=PA395&dq=D%C3%A9cret-Loi+10+septembre+1926
 
 // TODO
 // google : 1) Détect url google (+page) 2) convert {{Google Livres}} 2) détect si PARTIAL : lire en ligne=>présentation
@@ -58,6 +41,7 @@ $raw = '{{Ouvrage |id =Bonneton|nom1=Collectif | titre = Loiret : un départemen
 
 $mess = new MessageAdapter();
 $mess->send('test','bla');
+$mess->send('ISBN invalide', 'blabla');
 $mess->send('rabbit', 'CACA');
 dump($mess);
 die;

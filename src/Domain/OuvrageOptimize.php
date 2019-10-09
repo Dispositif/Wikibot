@@ -407,10 +407,6 @@ class OuvrageOptimize
      */
     public function checkMajorEdit(): bool
     {
-        // compare object attributes (==)
-        if ($this->original == $this->ouvrage) {
-            return false;
-        }
         // Correction paramètre
         if ($this->ouvrage->parametersErrorFromHydrate !== $this->original->parametersErrorFromHydrate) {
             return true;
@@ -536,7 +532,7 @@ class OuvrageOptimize
     //                = '+année';
     //        }
     //
-    //        if ($ouvrage['date'] == true) {
+    //        if ($ouvrage['date'] === true) {
     //            $ouvrage['date'] = str_replace(
     //                [
     //                    'January',
@@ -569,9 +565,9 @@ class OuvrageOptimize
     //                $ouvrage['date']
     //            );
     //        }
-    //        if ($ouvrage['date'] == true) {
+    //        if ($ouvrage['date'] === true) {
     //            if (preg_match("#([0-9]{4})[ \-\/]([01][0-9])[ \-\/]([0123][0-9])#", $ouvrage['date'], $matches)
-    //                == true
+    //                === true
     //            ) { // 2011-04-15
     //                $ouvrage['année'] = intval($matches[1]);
     //                $ouvrage['mois'] = intval($matches[2]);
@@ -579,7 +575,7 @@ class OuvrageOptimize
     //                unset($ouvrage['date']);
     //                $suivi[] = '±date';
     //            }elseif (preg_match("#([0123][0-9])[ \-\/]([01][0-9])[ \-\/]([0-9]{4})#", $ouvrage['date'], $matches)
-    //                == true
+    //                === true
     //            ) { // 15-04-2011
     //                $ouvrage['année'] = $matches[3];
     //                $ouvrage['mois'] = intval($matches[2]);
@@ -625,13 +621,13 @@ class OuvrageOptimize
     //            );
     //
     //            if (preg_match("#([0-9]{4})[ \-\/]([01][0-9])[ \-\/]([0123][0-9])#", $ouvrage['consulté le'], $matches)
-    //                == true
+    //                === true
     //            ) { // 2011-04-15 => 15 avril 2011
     //                $ouvrage['consulté le'] = intval($matches[3]).' '.$date_mois_francais[intval($matches[2])].' '
     //                    .$matches[1];
     //                // TODO: Bug : 3 = mars, 03 ≠ mars (corrigé cochon). Trouver la fonction php d'éval
     //            }elseif (preg_match("#([0123][0-9])[ \-\/]([01][0-9])[ \-\/]([0-9]{4})#", $ouvrage['consulté le'], $matches)
-    //                == true
+    //                === true
     //            ) { // 2011-04-15 => 15 avril 2011
     //                $ouvrage['consulté le'] = intval($matches[1]).' '.$date_mois_francais[intval($matches[2])].' '
     //                    .$matches[3];

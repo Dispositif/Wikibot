@@ -21,11 +21,11 @@ class PredictFromPage
     {
         global $clone;
         $textlivre = $clone->getpage($titre);
-        if (stristr($textlivre, "Catégorie:Livre") == true OR stristr($textlivre, "Catégorie:Roman") == true OR stristr(
+        if (stristr($textlivre, "Catégorie:Livre") === true OR stristr($textlivre, "Catégorie:Roman") === true OR stristr(
                 $textlivre,
                 "Catégorie:Œuvre"
-            ) == true OR stristr($textlivre, "Catégorie:Essai") == true OR stristr($textlivre, "Catégorie:Ouvrage")
-            == true OR stristr($textlivre, "Catégorie:Album de bande dessinée") == true
+            ) === true OR stristr($textlivre, "Catégorie:Essai") === true OR stristr($textlivre, "Catégorie:Ouvrage")
+            === true OR stristr($textlivre, "Catégorie:Album de bande dessinée") === true
         ) {
             return true;
         }else {
@@ -77,11 +77,11 @@ class PredictFromPage
 
         // {{en}} en indicateur libre
         if ($total_indic = preg_match_all('#\{\{([a-z]{2})\}\}#i', $text, $matchesi)
-            == true
+            === true
         ) { // restreint à 2 caractères (cf. zh-han)
             foreach ($matchesi[1] AS $indic) {
                 if (in_array(strtolower($indic), ['fr', 'fre', 'français', 'française', 'francais', 'french'])
-                    == true
+                    === true
                 ) {
                     $indic_fr++;
                 }else {
@@ -91,11 +91,11 @@ class PredictFromPage
         }
         // "langue = en" dans modèles
         if ($total_langue = preg_match_all('#lang(?:ue)? ?= ?([a-z][a-zçéè-]+)#i', $text, $matchesl)
-            == true
+            === true
         ) { // <!> exclure {{lang|...}}
             foreach ($matchesl[1] AS $indic) {
                 if (in_array(strtolower($indic), ['fr', 'fre', 'français', 'française', 'francais', 'french'])
-                    == true
+                    === true
                 ) {
                     $langue_fr++;
                 }else {

@@ -63,7 +63,7 @@ class PublisherAction
             $data = json_decode($json, true);
 
             // filtrage : @type => BreadcrumbList (lemonde)
-            if ($data['@type'] == 'BreadcrumbList') {
+            if ($data['@type'] === 'BreadcrumbList') {
                 continue;
             }
 
