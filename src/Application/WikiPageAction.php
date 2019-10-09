@@ -12,7 +12,7 @@ class WikiPageAction
     /**
      * @var Page
      */
-    protected $page;
+    public $page; // public for debug
 
     /**
      * WikiPageAction constructor.

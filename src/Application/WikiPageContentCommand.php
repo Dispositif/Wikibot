@@ -8,6 +8,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class WikiPageContentCommand extends Command
 {
@@ -30,11 +31,19 @@ class WikiPageContentCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $io = new SymfonyStyle($input, $output);
+        $output->writeln('Link ? <href=https://symfony.com>Symfony Homepage</>');
+
+        $name = $io->ask('What is your name?');
+        echo "Hello $name !\n";
+
+        die('exit');
+
         $wiki = ServiceFactory::wikiApi();
         $page = new WikiPageAction($wiki, $input->getArgument('title'));
         $text = $page->getText();
 
-        $output->writeln('*** TEXT ***');
+        $output->writeln('<info>*** TEXT ***</info>');
         $output->writeln($text);
     }
 

@@ -313,24 +313,6 @@ abstract class WikiTextUtil extends TextUtil
         return trim(preg_replace("#<\!--[^>]*-->#", '', $text));
     }
 
-    /**
-     * Detect {{nobots}}, {{bots|deny=all}}, {{bots|deny=MyBot,BobBot}}
-     * OK frwiki — ? enwiki
-     * @param string      $text
-     * @param string|null $botName
-     *
-     * @return bool
-     */
-    static public function isNoBotTag(string $text, string $botName = null): bool
-    {
-        $denyReg = (!is_null($botName)) ? '|\{\{bots ?\| ?deny\=[^\}]*'.preg_quote($botName, '#').'[^\}]*\}\}' : '';
-
-        if (preg_match('#(\{\{nobots\}\}|\{\{bots ?\| ?(optout|deny) ?= ?all ?\}\}'.$denyReg.')#i', $text) > 0) {
-            return true;
-        }
-
-        return false;
-    }
 
     /**
      * Delete keys with empty string value ""
