@@ -5,5 +5,7 @@ languages:
 exclude:
   - .*/resources/.*
   - .*/ressources/.*
+  - .*/Examples/*
+  - .*/languageData.php
 
 component_depth: 2
