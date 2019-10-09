@@ -22,6 +22,7 @@ class CorpusAdapter extends FileManager implements CorpusInterface
      * @param string $corpusName
      *
      * @return bool
+     * @throws \Exception
      */
     public function inCorpus(string $element, string $corpusName): bool
     {
@@ -31,7 +32,6 @@ class CorpusAdapter extends FileManager implements CorpusInterface
             if (is_array($corpData) && in_array($element, $corpData)) {
                 return true;
             }
-
             return false;
         }
 
@@ -66,14 +66,17 @@ class CorpusAdapter extends FileManager implements CorpusInterface
      * @param string $element
      *
      * @return bool
+     * @throws \Exception
      */
     public function addNewElementToCorpus(string $corpusName, string $element): bool
     {
-        // check empty $element ?
+        if (empty($element)) {
+            return false;
+        }
 
         //corpus as variable
         if (isset($this->storage[$corpusName])) {
-            return $this->addNewElementToArrayCorpus($corpusName, $element);
+            return $this->addNewElementToMemoryCorpus($corpusName, $element);
         }
 
         // else : corpus as file
@@ -87,8 +90,8 @@ class CorpusAdapter extends FileManager implements CorpusInterface
         }
 
         // strip "/"
-        $sanitizCorpusName = preg_replace('#[^0-9a-z_]#i', '', $corpusName);
-        $filename = __DIR__.'/../Domain/resources/'.$sanitizCorpusName.'.txt';
+        $sanitizeCorpusName = preg_replace('#[^0-9a-z_]#i', '', $corpusName);
+        $filename = __DIR__.'/../Domain/resources/'.$sanitizeCorpusName.'.txt';
 
         // hack: create file or not ?
         if (!file_exists($filename)) {
@@ -113,7 +116,7 @@ class CorpusAdapter extends FileManager implements CorpusInterface
         return ($write) ? true : false;
     }
 
-    private function addNewElementToArrayCorpus(string $corpusName, string $element): bool
+    private function addNewElementToMemoryCorpus(string $corpusName, string $element): bool
     {
         if (isset($this->storage[$corpusName]) && is_array($this->storage[$corpusName])) {
             if (!in_array($element, $this->storage[$corpusName])) {

@@ -41,7 +41,19 @@ class PredictFromTypoTest extends TestCase
      */
     public function testPredictNameFirstName($author, $expected)
     {
-        $predict = new PredictFromTypo(new CorpusAdapter());
+        $corpus = new CorpusAdapter();
+        // lowercap !!!!!
+        $corpus->setCorpusInStorage(
+            'firstname',
+            [
+                'totoro',
+                'pierre',
+                'paul',
+                'jean',
+            ]
+        );
+
+        $predict = new PredictFromTypo($corpus);
         $this::assertEquals(
             $expected,
             $predict->predictNameFirstName($author)
@@ -51,7 +63,7 @@ class PredictFromTypoTest extends TestCase
     public function authorProvider()
     {
         return [
-            ['Pierre Penaud', ['firstname' => 'Pierre', 'name' => 'Penaud']],
+            ['Totoro Penaud', ['firstname' => 'Totoro', 'name' => 'Penaud']],
             ['Jean-Pierre Penaud', ['firstname' => 'Jean-Pierre', 'name' => 'Penaud']],
             ['J. Penaud', ['firstname' => 'J.', 'name' => 'Penaud']],
             ['Penaud, J.', ['firstname' => 'J.', 'name' => 'Penaud']],
