@@ -1,15 +1,14 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Domain\Models\Wiki;
-
 
 use App\Domain\Utils\TextUtil;
 use App\Domain\Utils\WikiTextUtil;
 
 class OuvrageClean extends OuvrageTemplate
 {
-
     protected function setTitre(string $titre)
     {
         // Typo : majuscule
@@ -36,7 +35,7 @@ class OuvrageClean extends OuvrageTemplate
     }
 
     /**
-     * Consensus Ouvrage (2012) sur suppression [[2010 en littérature|2010]]
+     * Consensus Ouvrage (2012) sur suppression [[2010 en littérature|2010]].
      *
      * @param $str
      */

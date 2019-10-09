@@ -1,17 +1,15 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Domain;
 
-
 use App\Domain\Models\Wiki\OuvrageClean;
 use App\Domain\Models\Wiki\OuvrageTemplate;
-use App\Domain\Utils\WikiTextUtil;
 use PHPUnit\Framework\TestCase;
 
 class OuvrageCompleteTest extends TestCase
 {
-
     public function testGetResult()
     {
         $origin = new OuvrageTemplate();
@@ -26,6 +24,4 @@ class OuvrageCompleteTest extends TestCase
             $comp->getResult()->serialize()
         );
     }
-
-
 }

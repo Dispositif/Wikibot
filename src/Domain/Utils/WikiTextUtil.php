@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Domain\Utils;
@@ -9,22 +10,22 @@ use App\Domain\WikiTemplateFactory;
 /**
  * todo legacy
  * Utility for wikitext transformations.
- * Class WikiTextUtil
+ * Class WikiTextUtil.
  */
 abstract class WikiTextUtil extends TextUtil
 {
-
     /**
      * todo : simplify array if only one occurrence ?
-     * todo refac extract/logic
+     * todo refac extract/logic.
      *
      * @param string $tplName
      * @param string $text
      *
      * @return array
+     *
      * @throws \Exception
      */
-    static public function parseAllTemplateByName(string $tplName, string $text): array
+    public static function parseAllTemplateByName(string $tplName, string $text): array
     {
         // Extract wikiText from that template
         $arrayTplText = self::findAllTemplatesByName($tplName, $text);
@@ -36,13 +37,13 @@ abstract class WikiTextUtil extends TextUtil
         $result[$tplName] = [];
         $inc = -1;
         foreach ($arrayTplText as $tplText) {
-            $inc++;
+            ++$inc;
             // store the raw text of the template
             $result[$tplName][$inc] = ['raw' => $tplText];
 
             // create an object of the template
             /**
-             * @var $tplObject AbstractWikiTemplate
+             * @var AbstractWikiTemplate
              */
             $tplObject = WikiTemplateFactory::create($tplName);
             if (!is_object($tplObject) || !is_subclass_of($tplObject, AbstractWikiTemplate::class)) {
@@ -56,7 +57,7 @@ abstract class WikiTextUtil extends TextUtil
             $result[$tplName][$inc] += ['model' => $tplObject];
         }
 
-        return (array)$result;
+        return (array) $result;
     }
 
     /**
@@ -64,14 +65,14 @@ abstract class WikiTextUtil extends TextUtil
      * Compatible with inclusion of sub-templates.
      * Example :
      * {{Infobox |pays={{pays|France}} }}
-     * retourne array {{modèle|...}}
+     * retourne array {{modèle|...}}.
      *
      * @param $templateName
      * @param $text
      *
      * @return array [ 0=>{{bla|...}}, 1=>{{bla|...}} ]
      */
-    static public function findAllTemplatesByName(string $templateName, string $text): array
+    public static function findAllTemplatesByName(string $templateName, string $text): array
     {
         // TODO check {{fr}}
         $res = preg_match_all(
@@ -80,7 +81,7 @@ abstract class WikiTextUtil extends TextUtil
             $matches
         );
 
-        if ($res === false) {
+        if (false === $res) {
             return [];
         }
 
@@ -91,14 +92,14 @@ abstract class WikiTextUtil extends TextUtil
     /**
      * Parsing of any wiki template from text and templateName
      * Using the first {{template}} definition found in text
-     * todo legacy
+     * todo legacy.
      *
      * @param string $tplName
      * @param string $text
      *
      * @return array
      */
-    static public function parseDataFromTemplate(string $tplName, string $text): array
+    public static function parseDataFromTemplate(string $tplName, string $text): array
     {
         $data = [];
         $text = str_replace("\n", '', $text);
@@ -107,13 +108,13 @@ abstract class WikiTextUtil extends TextUtil
         $tplFounded = self::findFirstTemplateInText($tplName, $text);
 
         // $matches[0] : {{template|...}}
-        if ($tplFounded === null) {
+        if (null === $tplFounded) {
             throw new \LogicException(
                 "Template $tplName not found in text"
             );
         }
         // $matches[1] : url=blabla|titre=Popo
-        if ($tplFounded[1] === false) {
+        if (false === $tplFounded[1]) {
             throw new \LogicException("No parameters found in $tplName");
         }
 
@@ -138,7 +139,7 @@ abstract class WikiTextUtil extends TextUtil
             $wikiParams
         );
 
-        if ($res === false || $res === 0 || empty($wikiParams[1])) {
+        if (false === $res || 0 === $res || empty($wikiParams[1])) {
             throw new \LogicException("Parameters from template '$tplName' can't be parsed");
         }
 
@@ -148,14 +149,14 @@ abstract class WikiTextUtil extends TextUtil
     }
 
     /**
-     * For multiple occurrences see findAllTemplatesByName()
+     * For multiple occurrences see findAllTemplatesByName().
      *
      * @param string $templateName
      * @param string $text
      *
      * @return array|null
      */
-    static private function findFirstTemplateInText(string $templateName, string $text): ?array
+    private static function findFirstTemplateInText(string $templateName, string $text): ?array
     {
         $text = str_replace("\n", '', $text);
 
@@ -172,13 +173,13 @@ abstract class WikiTextUtil extends TextUtil
     }
 
     /**
-     * replace sub-templates pipes | by @PIPE@ in text
+     * replace sub-templates pipes | by @PIPE@ in text.
      *
      * @param string $text
      *
      * @return string
      */
-    static protected function encodeTemplatePipes(string $text): string
+    protected static function encodeTemplatePipes(string $text): string
     {
         if (preg_match_all('#\{\{(?:[^\{\}]+)\}\}#m', $text, $subTmpl) > 0) {
             foreach ($subTmpl[0] as $sub) {
@@ -192,13 +193,13 @@ abstract class WikiTextUtil extends TextUtil
 
     /**
      * From ['fr', 'url=blabla', 'titre=popo']
-     * To [ '1'=> 'fr', url' => 'blabla', 'titre' => 'popo' ]
+     * To [ '1'=> 'fr', url' => 'blabla', 'titre' => 'popo' ].
      *
      * @param array $wikiLines ['url=blabla', 'titre=popo']
      *
      * @return array
      */
-    static protected function explodeParameterValue(array $wikiLines): array
+    protected static function explodeParameterValue(array $wikiLines): array
     {
         $data = [];
         $keyNum = 1;
@@ -207,7 +208,7 @@ abstract class WikiTextUtil extends TextUtil
                 continue;
             }
             $line = str_replace(
-                ["\t", "\n", "\r", " "],
+                ["\t", "\n", "\r", ' '],
                 ['', '', '', ' '],
                 $line
             ); // perte cosmétique : est-ce bien ? + espace insécable remplacé par espace sécable
@@ -218,10 +219,10 @@ abstract class WikiTextUtil extends TextUtil
                 $value = substr($line, $pos + 1);
             }
             // No param name => take $keyNum as param name
-            if ($pos === false) {
-                $param = (string)$keyNum;
+            if (false === $pos) {
+                $param = (string) $keyNum;
                 $value = $line;
-                $keyNum++;
+                ++$keyNum;
             }
 
             if (!isset($param) || !isset($value)) {
@@ -229,7 +230,7 @@ abstract class WikiTextUtil extends TextUtil
             }
 
             // TODO : accept empty value ?
-            if (strlen(trim($value)) === false) {
+            if (false === strlen(trim($value))) {
                 continue;
             }
             // reverse the sub-template pipe encoding
@@ -247,7 +248,7 @@ abstract class WikiTextUtil extends TextUtil
      *
      * @return string
      */
-    static public function findUserStyleSeparator(string $tplText): string
+    public static function findUserStyleSeparator(string $tplText): string
     {
         // {{fu | bar}} (duplicate : because [^\}\|\n]+ allows final space...)
         if (preg_match('#\{\{[^\}\|\n]+([ \n]\|[ \n]?)[^\}]+\}\}#i', $tplText, $matches) > 0) {
@@ -265,17 +266,17 @@ abstract class WikiTextUtil extends TextUtil
      * todo legacy
      * remove wiki encoding : italic, bold, links [ ] and [[fu|bar]] => bar
      * replace non-breaking spaces
-     * replace {{lang|en|fubar}} => fubar
+     * replace {{lang|en|fubar}} => fubar.
      *
      * @param      $text
      * @param bool $stripcomment
      *
      * @return string
      */
-    static public function deWikify($text, $stripcomment = false): string
+    public static function deWikify($text, $stripcomment = false): string
     {
         $text = str_replace(
-            ["[", "]", "'''", "''", ' '],
+            ['[', ']', "'''", "''", ' '],
             ['', '', '', '', ' '],
             preg_replace(
                 [
@@ -283,12 +284,12 @@ abstract class WikiTextUtil extends TextUtil
                     '#\{\{ ?(?:lang|langue) ?\|[^\|]+\| ?(?:texte=)?([^\{\}=]+)(?:\|dir=rtl)?\}\}#i',
                     "#\&[\w\d]{2,7};#",
                 ],
-                ["\$1", "\$1", ''],
+                ['$1', '$1', ''],
                 $text
             )
         );
         $text = str_replace(['<small>', '</small>'], '', $text);
-        if ($stripcomment === true) {
+        if (true === $stripcomment) {
             $text = preg_replace("#<\!--([^>]*)-->#", '', $text);
         }
 
@@ -300,28 +301,27 @@ abstract class WikiTextUtil extends TextUtil
      *
      * @return bool
      */
-    static public function isCommented(string $text): bool
+    public static function isCommented(string $text): bool
     {
         //ou preg_match('#<\!--(?!-->).*-->#s', '', $text); // plus lourd mais précis
         return (preg_match("#<\!--[^>]*-->#", $text) > 0) ? true : false;
     }
 
-    static public function stripComments(string $text): string
+    public static function stripComments(string $text): string
     {
         // NON : preg_replace('#<\!--(?!-->).*-->#s', '', $text); // incorrect avec "<!-- -->oui<!-- -->"
         // OK mais ne gère pas "<!-- <!-- <b> -->"
         return trim(preg_replace("#<\!--[^>]*-->#", '', $text));
     }
 
-
     /**
-     * Delete keys with empty string value ""
+     * Delete keys with empty string value "".
      *
      * @param array $myArray
      *
      * @return array
      */
-    static public function deleteEmptyValueArray(array $myArray)
+    public static function deleteEmptyValueArray(array $myArray)
     {
         $result = [];
         foreach ($myArray as $key => $value) {
@@ -332,5 +332,4 @@ abstract class WikiTextUtil extends TextUtil
 
         return $result;
     }
-
 }

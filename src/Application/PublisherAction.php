@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Application;
@@ -16,9 +17,10 @@ class PublisherAction
     }
 
     /**
-     * import source from URL with Guzzle
+     * import source from URL with Guzzle.
      *
      * @return string|null
+     *
      * @throws \Exception
      */
     public function getHTMLSource(): string
@@ -30,7 +32,7 @@ class PublisherAction
         );
         $response = $client->get($this->url);
 
-        if ($response->getStatusCode() !== 200) {
+        if (200 !== $response->getStatusCode()) {
             throw new \Exception('response error '.$response);
         }
         $html = $response->getBody()->getContents();
@@ -39,11 +41,12 @@ class PublisherAction
     }
 
     /**
-     * extract LD-JSON metadata from <script type="application/ld+json">
+     * extract LD-JSON metadata from <script type="application/ld+json">.
      *
      * @param string $html
      *
      * @return mixed
+     *
      * @throws \Exception
      */
     public function extractLdJson(string $html)
@@ -53,24 +56,22 @@ class PublisherAction
             '//script[@type="application/ld+json"]'
         );
 
-
         foreach ($results as $result) {
             $json = trim($result);
             // filtrage empty value (todo?)
-            if (strlen($json) === 0) {
+            if (0 === strlen($json)) {
                 continue;
             }
             $data = json_decode($json, true);
 
             // filtrage : @type => BreadcrumbList (lemonde)
-            if ($data['@type'] == 'BreadcrumbList') {
+            if ('BreadcrumbList' === $data['@type']) {
                 continue;
             }
 
-
             return $data;
         }
+
         throw new \Exception('no results');
     }
-
 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 use Symfony\Component\Dotenv\Dotenv;
@@ -15,6 +16,4 @@ include __DIR__.'/../../vendor/autoload.php';
 
 $dotEnv = new Dotenv();
 $dotEnv->load(__DIR__.'/../../.env');
-ini_set("user_agent", getenv('USER_AGENT'));
-
-
+ini_set('user_agent', getenv('USER_AGENT'));

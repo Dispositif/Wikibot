@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Infrastructure;
@@ -24,12 +25,12 @@ class MessageAdapter implements MessageInterface
     public function send(string $queue, $message): void
     {
         // keep message in memory
-        if ($queue === 'test') {
+        if ('test' === $queue) {
             dump('queue:test', $message);
         }
 
         // insert message in text file
-        if ($queue === 'ISBN invalide') {
+        if ('ISBN invalide' === $queue) {
             $corpus = new CorpusAdapter();
             $corpus->addNewElementToCorpus('queue_ISBN invalide', $message);
 
@@ -37,7 +38,7 @@ class MessageAdapter implements MessageInterface
         }
 
         // send message to AMQP server
-        if ($queue === 'rabbit') {
+        if ('rabbit' === $queue) {
             $this->amqpMsg($queue, $message);
 
             return;

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Infrastructure;
@@ -9,9 +10,7 @@ use SplSubject;
 /**
  * TODO: not used
  * Observer pattern. For class which implements SplSubject.
- * Trait SubjectTrait
- *
- * @package App\Infrastructure
+ * Trait SubjectTrait.
  */
 trait SubjectTrait
 {
@@ -36,11 +35,10 @@ trait SubjectTrait
     public function notify()
     {
         foreach ($this->observers as $observer) {
-            /**
+            /*
              * @var $observer SplObserver
              */
             $observer->update($this);
         }
     }
-
 }

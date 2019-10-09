@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Application;
@@ -27,6 +28,7 @@ class WikiPageContentCommand extends Command
      * @param OutputInterface $output
      *
      * @return int|void|null
+     *
      * @throws \Mediawiki\Api\UsageException
      */
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -46,5 +48,4 @@ class WikiPageContentCommand extends Command
         $output->writeln('<info>*** TEXT ***</info>');
         $output->writeln($text);
     }
-
 }

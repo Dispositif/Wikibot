@@ -1,18 +1,16 @@
 <?php
 
-
 namespace App\Domain;
 
 /**
  * todo legacy
- * Class PredictFromPage
- *
- * @package App\Domain
+ * Class PredictFromPage.
  */
 class PredictFromPage
 {
     /**
      * Fouille article pour détecter s'il traite d'un livre/ouvrage/roman...
+     *
      * @param $titre
      *
      * @return bool
@@ -21,16 +19,16 @@ class PredictFromPage
     {
         global $clone;
         $textlivre = $clone->getpage($titre);
-        if (stristr($textlivre, "Catégorie:Livre") == true OR stristr($textlivre, "Catégorie:Roman") == true OR stristr(
+        if (true === stristr($textlivre, 'Catégorie:Livre') or true === stristr($textlivre, 'Catégorie:Roman') or true === stristr(
                 $textlivre,
-                "Catégorie:Œuvre"
-            ) == true OR stristr($textlivre, "Catégorie:Essai") == true OR stristr($textlivre, "Catégorie:Ouvrage")
-            == true OR stristr($textlivre, "Catégorie:Album de bande dessinée") == true
+                'Catégorie:Œuvre'
+            ) or true === stristr($textlivre, 'Catégorie:Essai') or true
+            === stristr($textlivre, 'Catégorie:Ouvrage') or true === stristr($textlivre, 'Catégorie:Album de bande dessinée')
         ) {
             return true;
-        }else {
-            return false;
         }
+
+        return false;
     }
 
     // Détermine l'id d'ancrage de l'ouvrage : titre#ancrage ou {{harvsp}}
@@ -39,17 +37,17 @@ class PredictFromPage
     // @return string spanid
     public function ouvrage_span_id(array $ouvrage)
     {
-        $id = (string)trim($ouvrage['id']);
+        $id = (string) trim($ouvrage['id']);
         if ($id) {
             return $id;
         }
 
         if ($ouvrage['nom1']) {
-            $id1 = (string)$ouvrage['nom1'];
-        }elseif ($ouvrage['auteur']) {
-            $id1 = (string)$ouvrage['auteur'];
+            $id1 = (string) $ouvrage['nom1'];
+        } elseif ($ouvrage['auteur']) {
+            $id1 = (string) $ouvrage['auteur'];
         }
-        $mul_id = (string)trim($id1.$ouvrage['nom2'].$ouvrage['nom3'].$ouvrage['nom4'].$ouvrage['année']);
+        $mul_id = (string) trim($id1.$ouvrage['nom2'].$ouvrage['nom3'].$ouvrage['nom4'].$ouvrage['année']);
         if ($mul_id) {
             return $mul_id;
         }
@@ -76,30 +74,30 @@ class PredictFromPage
         $indic_autre = 0;
 
         // {{en}} en indicateur libre
-        if ($total_indic = preg_match_all('#\{\{([a-z]{2})\}\}#i', $text, $matchesi)
-            == true
+        if ($total_indic = true
+            === preg_match_all('#\{\{([a-z]{2})\}\}#i', $text, $matchesi)
         ) { // restreint à 2 caractères (cf. zh-han)
-            foreach ($matchesi[1] AS $indic) {
-                if (in_array(strtolower($indic), ['fr', 'fre', 'français', 'française', 'francais', 'french'])
-                    == true
+            foreach ($matchesi[1] as $indic) {
+                if (true
+                    === in_array(strtolower($indic), ['fr', 'fre', 'français', 'française', 'francais', 'french'])
                 ) {
-                    $indic_fr++;
-                }else {
-                    $indic_autre++;
+                    ++$indic_fr;
+                } else {
+                    ++$indic_autre;
                 }
             }
         }
         // "langue = en" dans modèles
-        if ($total_langue = preg_match_all('#lang(?:ue)? ?= ?([a-z][a-zçéè-]+)#i', $text, $matchesl)
-            == true
+        if ($total_langue = true
+            === preg_match_all('#lang(?:ue)? ?= ?([a-z][a-zçéè-]+)#i', $text, $matchesl)
         ) { // <!> exclure {{lang|...}}
-            foreach ($matchesl[1] AS $indic) {
-                if (in_array(strtolower($indic), ['fr', 'fre', 'français', 'française', 'francais', 'french'])
-                    == true
+            foreach ($matchesl[1] as $indic) {
+                if (true
+                    === in_array(strtolower($indic), ['fr', 'fre', 'français', 'française', 'francais', 'french'])
                 ) {
-                    $langue_fr++;
-                }else {
-                    $langue_autre++;
+                    ++$langue_fr;
+                } else {
+                    ++$langue_autre;
                 }
             }
         }

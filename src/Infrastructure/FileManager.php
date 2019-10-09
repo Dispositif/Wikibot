@@ -1,13 +1,14 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Infrastructure;
 
-
 class FileManager
 {
     /**
-     * Search string in a simple list CSV
+     * Search string in a simple list CSV.
+     *
      * @param string $filename
      * @param string $str
      *
@@ -15,7 +16,7 @@ class FileManager
      */
     public function isStringInCSV(string $filename, string $str): bool
     {
-        $f = fopen($filename, "r");
+        $f = fopen($filename, 'r');
         $result = false;
         while ($row = fgetcsv($f)) {
             if ($row[0] === $str) {
@@ -101,5 +102,4 @@ class FileManager
     //        //echo $res;
     //        file_put_contents($filename, $res);
     //    }
-
 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Domain\Models\Wiki;
@@ -116,7 +117,7 @@ class AbstractWikiTemplateTest extends TestCase
         $lienWeb->hydrate(
             [
                 'url' => '', // default parameter
-                'auteur2' => '' // optional parameter
+                'auteur2' => '', // optional parameter
             ]
         );
 
@@ -142,5 +143,4 @@ class AbstractWikiTemplateTest extends TestCase
             $lienWeb->serialize()
         );
     }
-
 }

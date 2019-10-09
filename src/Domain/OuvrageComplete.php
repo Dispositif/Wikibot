@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Domain;
-
 
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\Utils\TextUtil;
@@ -14,7 +14,9 @@ class OuvrageComplete
      * @var OuvrageTemplate
      */
     private $origin;
+
     private $book;
+
     private $log = [];
 
     public function __construct(OuvrageTemplate $origin, OuvrageTemplate $book)
@@ -85,6 +87,7 @@ class OuvrageComplete
 
     /**
      * @return bool
+     *
      * @throws \Exception
      */
     private function predictSameBook()
@@ -101,6 +104,7 @@ class OuvrageComplete
 
     /**
      * @return bool
+     *
      * @throws \Exception
      */
     private function hasSameAuthors(): bool
@@ -121,6 +125,7 @@ class OuvrageComplete
      * @param OuvrageTemplate $ouv
      *
      * @return string
+     *
      * @throws \Exception
      */
     private function authorsFromBook(OuvrageTemplate $ouv)
@@ -154,6 +159,7 @@ class OuvrageComplete
 
     /**
      * @return bool
+     *
      * @throws \Exception
      */
     private function hasSameISBN(): bool
@@ -172,6 +178,7 @@ class OuvrageComplete
 
     /**
      * @return bool
+     *
      * @throws \Exception
      */
     private function hasSameBookTitles(): bool
@@ -201,7 +208,7 @@ class OuvrageComplete
     }
 
     /**
-     * Give string before ":" (or same string if no ":")
+     * Give string before ":" (or same string if no ":").
      *
      * @param string $str
      *
@@ -220,6 +227,7 @@ class OuvrageComplete
      * @param OuvrageTemplate $ouvrage
      *
      * @return string
+     *
      * @throws \Exception
      */
     private function charsFromBigTitle(OuvrageTemplate $ouvrage): string

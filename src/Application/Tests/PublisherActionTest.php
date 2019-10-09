@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Application;
@@ -7,7 +8,6 @@ use PHPUnit\Framework\TestCase;
 
 class PublisherActionTest extends TestCase
 {
-
     public function testGetHTMLSource()
     {
         $this::markTestIncomplete();

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Infrastructure;
@@ -8,8 +9,8 @@ use App\Domain\Publisher\OpenLibraryMapper;
 
 class OpenLibraryAdapter extends AbstractBookApiAdapter implements BookApiInterface
 {
-
     protected $api;
+
     protected $mapper;
 
     // todo refac Guzzle
@@ -21,13 +22,13 @@ class OpenLibraryAdapter extends AbstractBookApiAdapter implements BookApiInterf
 
     public function getDataByIsbn(string $isbn)
     {
-        $isbn = str_replace([' ','-'], '', $isbn);
+        $isbn = str_replace([' ', '-'], '', $isbn);
 
-         $url = 'https://openlibrary.org/api/books?'
+        $url = 'https://openlibrary.org/api/books?'
              .http_build_query([
                 'bibkeys' => sprintf('ISBN:%s', urlencode($isbn)),
                 'format' => 'json',
-                'jscmd' => 'details' // 'data' or 'details'
+                'jscmd' => 'details', // 'data' or 'details'
             ]);
 
         $json = file_get_contents($url);

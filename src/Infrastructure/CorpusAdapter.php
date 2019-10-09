@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Infrastructure;
@@ -8,14 +9,14 @@ use App\Domain\CorpusInterface;
 /**
  * Dirty todo refac with FileManager and league/flysystem
  * todo : deleteElementFromCorpus, setCorpusFromFilename ???
- * Class CorpusAdapter
+ * Class CorpusAdapter.
  */
 class CorpusAdapter extends FileManager implements CorpusInterface
 {
     private $storage = [];
 
     /**
-     * ugly memory // todo refac Generator
+     * ugly memory // todo refac Generator.
      *
      * @param string $element
      * @param string $corpusName
@@ -43,12 +44,13 @@ class CorpusAdapter extends FileManager implements CorpusInterface
     private function getCorpusFilename(string $corpusName)
     {
         // Corpus as text file
-        if ($corpusName === 'firstname') {
+        if ('firstname' === $corpusName) {
             return __DIR__.'/../Domain/resources/corpus_firstname.txt';
         }
-        if ($corpusName === 'all-titles') {
+        if ('all-titles' === $corpusName) {
             return __DIR__.'/frwiki-latest-all-titles-in-ns0.txt';
         }
+
         throw new \DomainException("corpus $corpusName not defined");
     }
 
@@ -58,7 +60,7 @@ class CorpusAdapter extends FileManager implements CorpusInterface
     }
 
     /**
-     * dirty TODO
+     * dirty TODO.
      *
      * @param string $corpusName
      * @param string $element
@@ -85,14 +87,14 @@ class CorpusAdapter extends FileManager implements CorpusInterface
         }
 
         // strip "/"
-        $sanitizCorpusName = preg_replace('#[^0-9a-z_]#i','', $corpusName);
+        $sanitizCorpusName = preg_replace('#[^0-9a-z_]#i', '', $corpusName);
         $filename = __DIR__.'/../Domain/resources/'.$sanitizCorpusName.'.txt';
 
         // hack: create file or not ?
-        if(!file_exists($filename)){
-            $newFile = @fopen($filename, "w");
+        if (!file_exists($filename)) {
+            $newFile = @fopen($filename, 'w');
             fclose($newFile);
-            if(!file_exists($filename)){
+            if (!file_exists($filename)) {
                 throw new \Exception('corpus filename does not exist'.$filename);
             }
         }
@@ -123,5 +125,4 @@ class CorpusAdapter extends FileManager implements CorpusInterface
 
         return false;
     }
-
 }

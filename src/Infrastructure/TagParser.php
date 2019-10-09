@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Infrastructure;
@@ -13,7 +14,9 @@ class TagParser
      */
     protected $xml;
 
-    public function __construct() { }
+    public function __construct()
+    {
+    }
 
     /**
      * @param string $data
@@ -34,8 +37,10 @@ class TagParser
     }
 
     /**
-     * Get the <ref> values
+     * Get the <ref> values.
+     *
      * @return array
+     *
      * @throws \Exception
      */
     public function getRefValues(): array
@@ -45,11 +50,12 @@ class TagParser
         $refs = [];
         // filter the empty <ref name="bla" />
         foreach ($nodes as $key => $node) {
-            $raw = trim((string)$node);
+            $raw = trim((string) $node);
             if (strlen($raw) > 1) {
                 $refs[] = $raw;
             }
         }
+
         return $refs;
     }
 
@@ -57,6 +63,7 @@ class TagParser
      * @param string $path
      *
      * @return array string[]
+     *
      * @throws \Exception
      */
     public function xpathResults(string $path): array
@@ -69,10 +76,9 @@ class TagParser
         $results = [];
         // Note : empty value included
         foreach ($nodes as $key => $node) {
-            $results[] = trim((string)$node);
+            $results[] = trim((string) $node);
         }
 
         return $results; // string[]
     }
-
 }

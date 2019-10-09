@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Domain\Models\Wiki;
@@ -39,7 +40,6 @@ class WikiRefTest extends TestCase
             $templates['ouvrage'][0]['model']->lieu
         );
     }
-
 
     public function testGetTemplateNames()
     {

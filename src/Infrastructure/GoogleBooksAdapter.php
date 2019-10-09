@@ -1,17 +1,17 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Infrastructure;
 
-
-use App\Domain\Publisher\GoogleBookMapper;
 use App\Domain\Publisher\BookApiInterface;
+use App\Domain\Publisher\GoogleBookMapper;
 use Scriptotek\GoogleBooks\GoogleBooks;
 
 class GoogleBooksAdapter extends AbstractBookApiAdapter implements BookApiInterface
 {
-
     protected $api;
+
     protected $mapper;
 
     // todo inject + factory
@@ -23,7 +23,6 @@ class GoogleBooksAdapter extends AbstractBookApiAdapter implements BookApiInterf
         $this->api = $api;
         $this->mapper = new GoogleBookMapper();
     }
-
 
     public function getDataByIsbn(string $isbn)
     {

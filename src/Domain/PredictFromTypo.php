@@ -1,10 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Domain;
 
 /**
- * Class PredictFromTypo
+ * Class PredictFromTypo.
  */
 class PredictFromTypo
 {
@@ -12,7 +13,9 @@ class PredictFromTypo
      * @var CorpusInterface|null
      */
     private $corpusAdapter;
+
     private $unknownCorpusName = 'corpus_unknow_firstname'; // temp refac
+
     private $firstnameCorpusName = 'firstname'; // temp refac
 
     public function __construct(?CorpusInterface $corpus = null)
@@ -22,7 +25,7 @@ class PredictFromTypo
 
     /**
      * Determine name and firstname from a string where both are mixed or abbreviated
-     * Prediction from typo pattern, statistical analysis and list of famous firstnames
+     * Prediction from typo pattern, statistical analysis and list of famous firstnames.
      *
      * @param string $author
      *
@@ -40,7 +43,7 @@ class PredictFromTypo
         $typoPattern = $this->typoPatternFromAuthor($author);
         $tokenAuthor = preg_split('#[ ]+#', $author);
 
-        if ($typoPattern === 'FIRSTUPPER FIRSTUPPER' && !empty($tokenAuthor[1])) {
+        if ('FIRSTUPPER FIRSTUPPER' === $typoPattern && !empty($tokenAuthor[1])) {
             // Paul Durand
             if ($this->checkFirstname($tokenAuthor[0], true) && !$this->checkFirstname($tokenAuthor[1])) {
                 return ['firstname' => $tokenAuthor[0], 'name' => $tokenAuthor[1]];
@@ -59,7 +62,7 @@ class PredictFromTypo
         }
 
         // Jean-Pierre Durand
-        if ($typoPattern === 'MIXED FIRSTUPPER' && !empty($tokenAuthor[0]) && !empty($tokenAuthor[1])) {
+        if ('MIXED FIRSTUPPER' === $typoPattern && !empty($tokenAuthor[0]) && !empty($tokenAuthor[1])) {
             // Jean-Pierre Durand
             if ($this->checkFirstname($tokenAuthor[0], true) && !$this->checkFirstname($tokenAuthor[1])) {
                 return ['firstname' => $tokenAuthor[0], 'name' => $tokenAuthor[1]];
@@ -79,7 +82,7 @@ class PredictFromTypo
         }
 
         // A. Durand
-        if ($typoPattern === 'INITIAL FIRSTUPPER' && !empty($tokenAuthor[0]) && !empty($tokenAuthor[1])) {
+        if ('INITIAL FIRSTUPPER' === $typoPattern && !empty($tokenAuthor[0]) && !empty($tokenAuthor[1])) {
             // get last "." position (compatible with "A. B. Durand")
             $pos = mb_strrpos($author, '.');
 
@@ -90,7 +93,7 @@ class PredictFromTypo
         }
 
         // Durand, P.
-        if ($typoPattern === 'FIRSTUPPER VIRGULE INITIAL' && !empty($tokenAuthor[0]) && !empty($tokenAuthor[1])) {
+        if ('FIRSTUPPER VIRGULE INITIAL' === $typoPattern && !empty($tokenAuthor[0]) && !empty($tokenAuthor[1])) {
             $name = trim(str_replace(',', '', $tokenAuthor[0]));
 
             return ['firstname' => $tokenAuthor[1], 'name' => $name];
@@ -104,7 +107,7 @@ class PredictFromTypo
 
     /**
      * From underTwoAuthors() by MartinS@Wikipedia
-     * Return true if 0 or 1 author in $author; false otherwise
+     * Return true if 0 or 1 author in $author; false otherwise.
      *
      * @param $author
      *
@@ -113,7 +116,7 @@ class PredictFromTypo
     private function hasManyAuthors($author): bool
     {
         $chars = count_chars(trim($author));
-        if ($chars[ord(";")] > 0 || $chars[ord(" ")] > 2 || $chars[ord(",")] > 1) {
+        if ($chars[ord(';')] > 0 || $chars[ord(' ')] > 2 || $chars[ord(',')] > 1) {
             return true;
         }
 
@@ -128,7 +131,7 @@ class PredictFromTypo
      * VIRGULE, PUNCTUATION,
      * Process order : unWikify > URL > BIBABREV > VIRGULE / POINT / ITALIQUE / GUILLEMET > PUNCTUATION > split? > ...
      * BIBABREV = "dir.", "trad." ("Jr." = INITIAL)
-     * Current version 2 : Tokenize all the space " ". Initials first funds. VIRGULE, PUNCTUATION
+     * Current version 2 : Tokenize all the space " ". Initials first funds. VIRGULE, PUNCTUATION.
      *
      * @param $text
      *
@@ -174,15 +177,15 @@ class PredictFromTypo
         // PUNCTUATION : sans virgule, sans &, sans point, sans tiret petit '-'
         // don't use str_split() which cuts on 1 byte length (≠ multibytes chars)
         $text = str_replace(
-            ['!','"','«','»','#','$','%',"'",'’','´','`','^','…','‽','(',')','*','⁂','+','–','—','/',':',';','?','@',
-             '[','\\',']','_','`','{','|','¦','}','~','<','>','№','©','®','°','†','§','∴','∵','¶','•','+',],
+            ['!', '"', '«', '»', '#', '$', '%', "'", '’', '´', '`', '^', '…', '‽', '(', ')', '*', '⁂', '+', '–', '—', '/', ':', ';', '?', '@',
+             '[', '\\', ']', '_', '`', '{', '|', '¦', '}', '~', '<', '>', '№', '©', '®', '°', '†', '§', '∴', '∵', '¶', '•', '+', ],
             ' PUNCTUATION ',
             $text
         );
         $tokens = preg_split('#[ ]#', $text);
 
         $res = '';
-        foreach ($tokens AS $tok) {
+        foreach ($tokens as $tok) {
             if (empty($tok)) {
                 continue;
             }
@@ -191,26 +194,26 @@ class PredictFromTypo
                 $res .= ' '.$tok;
                 //"J. R . R." => INITIAL (1 seule fois)
                 $res = str_replace('INITIAL INITIAL', 'INITIAL', $res);
-            }elseif (preg_match('#^[0-9]+$#', $tok) > 0) {
+            } elseif (preg_match('#^[0-9]+$#', $tok) > 0) {
                 $res .= ' ALLNUMBER';
-            }elseif (preg_match('#^[0-9\-]+$#', $tok) > 0) {
+            } elseif (preg_match('#^[0-9\-]+$#', $tok) > 0) {
                 $res .= ' DASHNUMBER';
-            }elseif (preg_match('#[0-9]#', $tok) > 0) {
+            } elseif (preg_match('#[0-9]#', $tok) > 0) {
                 $res .= ' WITHNUMBER';
-            }elseif (mb_strtolower($tok, 'UTF-8') === $tok) {
+            } elseif (mb_strtolower($tok, 'UTF-8') === $tok) {
                 $res .= ' ALLLOWER';
-            }elseif (mb_strtoupper($tok, 'UTF-8') === $tok) {
+            } elseif (mb_strtoupper($tok, 'UTF-8') === $tok) {
                 $res .= ' ALLUPPER';
-            }elseif (mb_strtoupper(substr($tok, 0, 1), 'UTF-8') === substr(
+            } elseif (mb_strtoupper(substr($tok, 0, 1), 'UTF-8') === substr(
                     $tok,
                     0,
                     1
-                ) AND mb_strtolower(substr($tok, 1), 'UTF-8') === substr($tok, 1)
+                ) and mb_strtolower(substr($tok, 1), 'UTF-8') === substr($tok, 1)
             ) {
                 $res .= ' FIRSTUPPER';
-            }elseif (preg_match('#[a-zA-Zàéù]#', $tok) > 0) {
+            } elseif (preg_match('#[a-zA-Zàéù]#', $tok) > 0) {
                 $res .= ' MIXED';
-            }else {
+            } else {
                 $res .= ' UNKNOW';
             }
         }
@@ -219,7 +222,7 @@ class PredictFromTypo
     }
 
     /**
-     * Check if the name is already inside the corpus of firstnames
+     * Check if the name is already inside the corpus of firstnames.
      *
      * @param $firstname
      *

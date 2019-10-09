@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Domain;
@@ -8,10 +9,11 @@ use PHPUnit\Framework\TestCase;
 
 class PredictFromTypoTest extends TestCase
 {
-
     /**
-     * For TDD
+     * For TDD.
+     *
      * @dataProvider patternProvider
+     *
      * @param string $author
      * @param string $pattern
      */
@@ -24,7 +26,8 @@ class PredictFromTypoTest extends TestCase
         );
     }
 
-    public function patternProvider(){
+    public function patternProvider()
+    {
         return [
             ['Paul Penaud', 'FIRSTUPPER FIRSTUPPER'],
             ['Jean-Pierre Penaud', 'MIXED FIRSTUPPER'],
@@ -55,7 +58,7 @@ class PredictFromTypoTest extends TestCase
             ['A. Durand', ['firstname' => 'A.', 'name' => 'Durand']],
             ['A. B. Durand', ['firstname' => 'A. B.', 'name' => 'Durand']],
             ['Pierre Durand, Paul Marchal', ['fail' => '2+ authors in string']],
-            ['Babar Elephant', ['fail' => 'firstname not in corpus']]
+            ['Babar Elephant', ['fail' => 'firstname not in corpus']],
         ];
     }
 

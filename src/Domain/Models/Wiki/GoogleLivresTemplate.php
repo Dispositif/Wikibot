@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Domain\Models\Wiki;
@@ -7,20 +8,24 @@ namespace App\Domain\Models\Wiki;
  * https://fr.wikipedia.org/wiki/Mod%C3%A8le:Google_Livres
  * Le premier paramètre (ou id) est obligatoire. L
  * Le deuxième (ou titre) est requis si on ne veut pas fabriquer le lien brut (inclusion {{ouvrage}} 'Lire en ligne')
- * Class GoogleLivresTemplate
+ * Class GoogleLivresTemplate.
  */
 class GoogleLivresTemplate extends AbstractWikiTemplate
 {
     const DEFAULT_DOMAIN_URL = 'https://books.google.fr/books';
 
-    const ALLOW_USER_ORDER    = false;
-    const MODEL_NAME          = 'Google Livres';
+    const ALLOW_USER_ORDER = false;
+
+    const MODEL_NAME = 'Google Livres';
+
     const REQUIRED_PARAMETERS = ['id' => ''];
-    const PARAM_ALIAS         = ['1' => 'id', '2' => 'titre'];
+
+    const PARAM_ALIAS = ['1' => 'id', '2' => 'titre'];
+
     protected $parametersByOrder
         = ['id', 'titre', 'couv', 'page', 'romain', 'page autre', 'surligne'];
 
-    public function serialize(?bool $cleanOrder=true): string
+    public function serialize(?bool $cleanOrder = true): string
     {
         $text = parent::serialize();
         // Documentation suggère non affichage de ces 2 paramètres
@@ -37,9 +42,10 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
      * @param string $link
      *
      * @return GoogleLivresTemplate|null
+     *
      * @throws \Exception
      */
-    static public function createFromURL(string $link): ?self
+    public static function createFromURL(string $link): ?self
     {
         if (!self::isGoogleBookURL($link)) {
             throw new \DomainException('not a Google Book URL');
@@ -74,13 +80,13 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
             $dat['surligne'] = urlencode($dat['surligne']);
         }
 
-        $templ = new GoogleLivresTemplate();
+        $templ = new self();
         $templ->hydrate($dat);
 
         return $templ;
     }
 
-    static public function simplifyGoogleUrl(string $url): string
+    public static function simplifyGoogleUrl(string $url): string
     {
         if (!self::isGoogleBookURL($url)) {
             throw new \DomainException('not a Google Book URL');
@@ -103,7 +109,7 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
         return self::DEFAULT_DOMAIN_URL.'?'.http_build_query($dat);
     }
 
-    static private function parseGoogleBookQuery(string $url): array
+    private static function parseGoogleBookQuery(string $url): array
     {
         // Note : Also datas in URL after the '#' !!! (URL fragment)
         $queryData = parse_url($url, PHP_URL_QUERY); // after ?
@@ -116,13 +122,13 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
 
     /**
      * TODO move.
-     * https://books.google.com/books?id=mlj71rhp-EwC&pg=PA69
+     * https://books.google.com/books?id=mlj71rhp-EwC&pg=PA69.
      *
      * @param string $text
      *
      * @return bool
      */
-    static public function isGoogleBookURL(string $text): bool
+    public static function isGoogleBookURL(string $text): bool
     {
         if (preg_match('#^https?\:\/\/books\.google\.[a-z]{2,3}\/books\?id=#i', $text) > 0) {
             return true;
@@ -131,9 +137,9 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
         return false;
     }
 
-    static public function isGoogleBookValue(string $text): bool
+    public static function isGoogleBookValue(string $text): bool
     {
-        if (self::isGoogleBookURL($text) === true) {
+        if (true === self::isGoogleBookURL($text)) {
             return true;
         }
         if (preg_match('#^{{[ \n]*Google (Livres|Books)[^\}]+\}\}$#i', $text) > 0) {

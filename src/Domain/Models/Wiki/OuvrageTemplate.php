@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Domain\Models\Wiki;
-
 
 /**
  * Parameters names changed on hydration (alias)
@@ -15,6 +15,7 @@ namespace App\Domain\Models\Wiki;
 class OuvrageTemplate extends AbstractWikiTemplate
 {
     const MODEL_NAME = 'ouvrage'; // todo
+
     const REQUIRED_PARAMETERS
                      = [
             //        'auteur1' => '',
@@ -24,8 +25,9 @@ class OuvrageTemplate extends AbstractWikiTemplate
             //        'pages totales' => '',
             //        'isbn' => ''
         ];
+
     /**
-     * update 18 sept 2019
+     * update 18 sept 2019.
      */
     const PARAM_ALIAS
         = [
@@ -136,7 +138,9 @@ class OuvrageTemplate extends AbstractWikiTemplate
             'publication-date' => 'date',
             'author-link' => 'lien auteur1',
         ];
+
     public $externalTemplates = [];
+
     protected $parametersByOrder
         = [
             'id', // déconseillé. En tête pour visibilité, car utilisé comme ancre
@@ -358,20 +362,20 @@ class OuvrageTemplate extends AbstractWikiTemplate
 
     /**
      * todo move to abstract ?
-     * todo 'lang' au début, 'sous-titre' après 'titre'
+     * todo 'lang' au début, 'sous-titre' après 'titre'.
      *
      * @param bool|null $cleanOrder
      *
      * @return string
      */
-    public function serialize(?bool $cleanOrder=false): string
+    public function serialize(?bool $cleanOrder = false): string
     {
         return parent::serialize($cleanOrder).$this->serializeExternalTemplates();
     }
 
     /**
      * todo move to abstract ? + refac
-     * dirty
+     * dirty.
      */
     public function serializeExternalTemplates(): string
     {
@@ -384,5 +388,4 @@ class OuvrageTemplate extends AbstractWikiTemplate
 
         return $res;
     }
-
 }

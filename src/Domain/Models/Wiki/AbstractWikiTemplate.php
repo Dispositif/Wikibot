@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Domain\Models\Wiki;
@@ -7,27 +8,33 @@ use App\Domain\Utils\WikiTextUtil;
 
 /**
  * TODO detect userPreferences (inlineStyle, spaceStyle...)
- * Class AbstractWikiTemplate
+ * Class AbstractWikiTemplate.
  */
 abstract class AbstractWikiTemplate extends AbstractParametersObject
 {
-    const MODEL_NAME  = '';
+    const MODEL_NAME = '';
+
     const PARAM_ALIAS = [];
+
     /**
      * todo : modify to [a,b,c] ?
      */
     const REQUIRED_PARAMETERS = [];
+
     public $log = [];
+
     public $parametersErrorFromHydrate;
+
     public $userSeparator; // todo move to WikiRef
 
     /**
      * optional
-     * Not a constant so it can be modified in constructor
+     * Not a constant so it can be modified in constructor.
      *
      * @var array
      */
     protected $parametersByOrder = [];
+
     protected $paramOrderByUser = [];
 
     /**
@@ -61,13 +68,14 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
      * @param string $name
      *
      * @return string|null
+     *
      * @throws \Exception
      */
     public function getParam(string $name): ?string
     {
-        try{
+        try {
             $this->checkParamName($name);
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             return null;
         }
         $name = $this->getAliasParam($name);
@@ -77,7 +85,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
 
     /**
      * TODO return bool + log() ?
-     * todo check keyNum <= count($parametersByOrder)
+     * todo check keyNum <= count($parametersByOrder).
      *
      * @param $name string|int
      *
@@ -87,7 +95,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     {
         // todo verify/useless ?
         if (is_int($name)) {
-            $name = (string)$name;
+            $name = (string) $name;
         }
 
         // that parameter exists in template ?
@@ -111,7 +119,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
      */
     public function getAliasParam(string $name): string
     {
-        if (key_exists($name, static::PARAM_ALIAS)) {
+        if (array_key_exists($name, static::PARAM_ALIAS)) {
             $name = static::PARAM_ALIAS[$name];
         }
 
@@ -119,19 +127,20 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     }
 
     /**
-     * TODO check if method set{ParamName} exists
+     * TODO check if method set{ParamName} exists.
      *
      * @param string $name
      * @param string $value
      *
      * @return AbstractParametersObject
+     *
      * @throws \Exception
      */
     public function setParam(string $name, string $value): AbstractParametersObject
     {
-        try{
+        try {
             $this->checkParamName($name);
-        }catch (\Throwable $e){
+        } catch (\Throwable $e) {
             $this->log[] = sprintf('no parameter "%s" in AbstractParametersObject "%s"', $name, get_called_class());
 
             return $this;
@@ -150,6 +159,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
      * @param $param
      *
      * @return string|null
+     *
      * @throws \Exception
      */
     public function __get($param): ?string
@@ -172,7 +182,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     }
 
     /**
-     * TODO move/refac
+     * TODO move/refac.
      *
      * @param string $tplText
      *
@@ -197,9 +207,10 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
      * @param array $data
      *
      * @return AbstractWikiTemplate
+     *
      * @throws \Exception
      */
-    public function hydrate(array $data): AbstractWikiTemplate
+    public function hydrate(array $data): self
     {
         foreach ($data as $name => $value) {
             if (is_string($value)) {
@@ -214,7 +225,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     }
 
     /**
-     * @param        $name string|int
+     * @param        $name  string|int
      * @param string $value
      *
      * @throws \Exception
@@ -222,10 +233,10 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     protected function hydrateTemplateParameter($name, string $value): void
     {
         // Gestion alias
-        try{
+        try {
             $this->checkParamName($name);
             $name = $this->getAliasParam($name);
-        }catch (\Throwable $e){
+        } catch (\Throwable $e) {
             unset($e);
             $this->log[] = "parameter $name not found";
             $this->parametersErrorFromHydrate[$name] = $value;
@@ -244,7 +255,6 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
             $this->parametersValues[$name] = '';
         }
 
-
         $method = $this->setterMethodName($name);
         if (method_exists($this, $method)) {
             $this->$method($value);
@@ -258,7 +268,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     /**
      * Define the serialize order of parameters (from user initial choice).
      * default : $params = ['param1'=>'', 'param2' => '', ...]
-     * OK with $params = ['a','b','c']
+     * OK with $params = ['a','b','c'].
      *
      * @param array
      *
@@ -268,15 +278,16 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     {
         $validParams = [];
         foreach ($params as $key => $value) {
-            $name = (is_integer($key)) ? $value : $key;
+            $name = (is_int($key)) ? $value : $key;
 
-            try{
+            try {
                 $this->checkParamName($name);
                 $name = $this->getAliasParam($name);
                 $validParams[] = $name;
-            }catch (\Throwable $e){
+            } catch (\Throwable $e) {
                 unset($e);
                 $this->log[] = "Parameter $name do not exists";
+
                 continue;
             }
         }
@@ -285,7 +296,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
 
     /**
      * TODO : data transfer object (DTO) to mix userErrorParam data ?
-     * TODO : refac $inlineStyle as $userPreferences[] and bool flag on serialize()
+     * TODO : refac $inlineStyle as $userPreferences[] and bool flag on serialize().
      *
      * @param bool|null $cleanOrder
      *
@@ -301,7 +312,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
         $paramsByRenderOrder = $this->mergeWrongParametersFromUser($paramsByRenderOrder);
 
         $string = '{{'.static::MODEL_NAME;
-        foreach ($paramsByRenderOrder AS $paramName => $paramValue) {
+        foreach ($paramsByRenderOrder as $paramName => $paramValue) {
             $string .= ($this->userSeparator) ?? '|';
 
             if (!in_array($paramName, ['0', '1', '2', '3', '4', '5'])) {
@@ -342,7 +353,6 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
             return $renderParams;
         }
 
-
         // default order
         foreach ($this->parametersByOrder as $order => $paramName) {
             if (isset($this->parametersValues[$paramName])) {
@@ -354,7 +364,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     }
 
     /**
-     * Delete key if empty value and the key not required
+     * Delete key if empty value and the key not required.
      *
      * @param array $params
      *
@@ -394,5 +404,4 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
 
         return $paramsByRenderOrder;
     }
-
 }
