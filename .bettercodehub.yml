@@ -1,0 +1,9 @@
+languages:
+  - php
+  - javascript
+
+exclude:
+  - .*/resources/.*
+  - .*/ressources/.*
+
+component_depth: 2
