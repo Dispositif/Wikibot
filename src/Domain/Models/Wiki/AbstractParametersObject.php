@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Domain\Models\Wiki;
@@ -12,7 +13,7 @@ abstract class AbstractParametersObject
     protected $parametersValues;
 
     /**
-     * todo extract
+     * todo extract.
      */
     public function generateSetterMethodList()
     {
@@ -25,7 +26,7 @@ abstract class AbstractParametersObject
     }
 
     /**
-     * Magic param setter
+     * Magic param setter.
      *
      * @param $name
      *
@@ -57,7 +58,7 @@ abstract class AbstractParametersObject
      *
      * @return bool
      */
-    public function isParamValueEquals(AbstractParametersObject $object): bool
+    public function isParamValueEquals(self $object): bool
     {
         $dat1 = $this->deleteEmptyValueArray($this->toArray());
         $dat2 = $this->deleteEmptyValueArray($object->toArray());
@@ -72,5 +73,4 @@ abstract class AbstractParametersObject
 
         return true;
     }
-
 }

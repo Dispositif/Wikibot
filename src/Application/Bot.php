@@ -1,23 +1,31 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Application;
-
 
 use App\Infrastructure\ServiceFactory;
 
 class Bot
 {
     const WORKER_ID = '[test]';
+
     const TASK_DESC = 'Correction bibliographique';
-    const BOT_FLAG  = false;
+
+    const BOT_FLAG = false;
+
     const MODE_AUTO = false;
 
-    const EXIT_ON_WIKIMESSAGE     = true;
-    const EDIT_LAPS               = 20;
-    const EDIT_LAPS_MANUAL        = 20;
-    const EDIT_LAPS_AUTOBOT       = 60;
-    const EDIT_LAPS_FLAGBOT       = 8;
+    const EXIT_ON_WIKIMESSAGE = true;
+
+    const EDIT_LAPS = 20;
+
+    const EDIT_LAPS_MANUAL = 20;
+
+    const EDIT_LAPS_AUTOBOT = 60;
+
+    const EDIT_LAPS_FLAGBOT = 8;
+
     const EXIT_ON_CHECK_WATCHPAGE = true;
 
     private $watchPages
@@ -28,7 +36,7 @@ class Bot
 
     public function __construct()
     {
-        ini_set("user_agent", getenv('USER_AGENT'));
+        ini_set('user_agent', getenv('USER_AGENT'));
     }
 
     /**
@@ -58,7 +66,6 @@ class Bot
                 }
             }
         }
-
     }
 
     private function getTimestamp(string $title): string
@@ -80,20 +87,20 @@ class Bot
     {
         $time = $this->getTimestamp($title);  // 2011-09-02T16:31:13Z
 
-        return (int)round((time() - strtotime($time)) / 60);
+        return (int) round((time() - strtotime($time)) / 60);
     }
 
     /**
      * Legacy.
      * Detect {{nobots}}, {{bots|deny=all}}, {{bots|deny=MyBot,BobBot}}
-     * OK frwiki — ? enwiki
+     * OK frwiki — ? enwiki.
      *
      * @param string      $text
      * @param string|null $botName
      *
      * @return bool
      */
-    static public function isNoBotTag(string $text, string $botName = 'ZiziBot'): bool
+    public static function isNoBotTag(string $text, string $botName = 'ZiziBot'): bool
     {
         $denyReg = (!is_null($botName)) ? '|\{\{bots ?\| ?deny\=[^\}]*'.preg_quote($botName, '#').'[^\}]*\}\}' : '';
 
@@ -103,5 +110,4 @@ class Bot
 
         return false;
     }
-
 }

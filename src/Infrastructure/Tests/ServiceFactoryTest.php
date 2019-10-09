@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Infrastructure;
@@ -9,7 +10,6 @@ use PHPUnit\Framework\TestCase;
 
 class ServiceFactoryTest extends TestCase
 {
-
     public function testCreateQueueChannel()
     {
         $this::markTestSkipped('integration webservice desactived');

@@ -1,26 +1,26 @@
 <?php
+
 declare(strict_types=1);
 
-
 namespace App\Domain\Models\Wiki;
-
 
 use App\Domain\Utils\WikiTextUtil;
 
 /**
  * TODO: refactor legacy
- * Class WikiRef
+ * Class WikiRef.
  */
 class WikiRef
 {
     /**
-     * string WikiTextUtil::class
+     * string WikiTextUtil::class.
      *
      * @var WikiTextUtil
      */
     private $wikiTextUtil;
 
     private $refText;
+
     /**
      * @var array
      */
@@ -58,7 +58,7 @@ class WikiRef
      *    'lien web' => [
      *              ...
      *     ]
-     *  ]
+     *  ].
      *
      * @throws \Exception
      */
@@ -69,22 +69,21 @@ class WikiRef
         $this->findTemplateNames();
         $allTempNames = $this->getTemplateNames();
 
-        if(WikiTextUtil::isCommented($this->refText)){
+        if (WikiTextUtil::isCommented($this->refText)) {
             throw new \DomainException('HTML comment tag detected');
         }
 
         $res = [];
         foreach ($allTempNames as $templName) {
-            $res += $this->wikiTextUtil::parseAllTemplateByName ($templName,
+            $res += $this->wikiTextUtil::parseAllTemplateByName($templName,
                 $this->refText);
         }
         $this->templateParsed = $res;
     }
 
-
     /**
      * todo move to WikiTextUtil::method ?
-     * todo private
+     * todo private.
      */
     public function findTemplateNames()
     {
@@ -111,6 +110,4 @@ class WikiRef
     {
         return $this->templateParsed;
     }
-
 }
-

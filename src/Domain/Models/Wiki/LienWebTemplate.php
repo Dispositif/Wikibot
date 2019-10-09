@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Domain\Models\Wiki;
@@ -6,11 +7,12 @@ namespace App\Domain\Models\Wiki;
 use App\Domain\Utils\TextUtil;
 
 /**
- * Class LienWebTemplate
+ * Class LienWebTemplate.
  */
 class LienWebTemplate extends AbstractWikiTemplate
 {
     const MODEL_NAME = 'lien web';
+
     const REQUIRED_PARAMETERS
                      = [
 //            'langue' => '', // suggéré
@@ -97,5 +99,4 @@ class LienWebTemplate extends AbstractWikiTemplate
 
         $this->parametersValues['titre'] = $titre;
     }
-
 }

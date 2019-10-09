@@ -1,13 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Domain\Publisher;
 
 /**
  * https://openlibrary.org/dev/docs/api/books
- * Class OpenLibraryMapper
- *
- * @package App\Domain
+ * Class OpenLibraryMapper.
  */
 class OpenLibraryMapper implements MapperInterface
 {
@@ -37,8 +36,9 @@ class OpenLibraryMapper implements MapperInterface
             return null;
         }
         if (preg_match('/[^0-9]?([12][0-9]{3})[^0-9]?/', $data['publish_date'], $matches) > 0) {
-            return (string)$matches[1];
+            return (string) $matches[1];
         }
+
         return null;
     }
 
@@ -46,5 +46,4 @@ class OpenLibraryMapper implements MapperInterface
     {
         return (isset($data['number_of_pages'])) ? (intval($data['number_of_pages'])) : null;
     }
-
 }

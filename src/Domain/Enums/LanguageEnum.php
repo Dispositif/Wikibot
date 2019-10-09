@@ -1,6 +1,6 @@
 <?php
-declare(strict_types=1);
 
+declare(strict_types=1);
 
 namespace App\Domain\Enums;
 
@@ -8,20 +8,21 @@ namespace App\Domain\Enums;
 
 /**
  * Class LanguageEnum
- * new LanguageEnum(LanguageEnum::FROM_LANG,'fr');
+ * new LanguageEnum(LanguageEnum::FROM_LANG,'fr');.
  *
  * @method static self FROM_LANG()
  */
 class LanguageEnum extends Enum
 {
     /**
-     * __callStatic()
+     * __callStatic().
      */
     public const FROM_LANG = 'fromlang';
 
     private $origin;
+
     /**
-     * Default frwiki lang
+     * Default frwiki lang.
      *
      * @var string
      */
@@ -39,12 +40,13 @@ class LanguageEnum extends Enum
         string $origin,
         string $valueLanguage
     ) {
-        if ($origin === 'fromlang') {
+        if ('fromlang' === $origin) {
             $this->frlang = $valueLanguage;
             $this->origin = $origin;
 
             return;
         }
+
         throw new \Exception('No language origin constant');
     }
 
@@ -55,9 +57,10 @@ class LanguageEnum extends Enum
 
     /**
      * @return string
+     *
      * @throws \Exception
      */
-    public function getFrLangText():string
+    public function getFrLangText(): string
     {
         // todo Refactor
         require_once 'languageData.php';
@@ -67,5 +70,4 @@ class LanguageEnum extends Enum
 
         return $frlang_to_french[$this->frlang];
     }
-
 }

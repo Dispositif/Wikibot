@@ -1,23 +1,24 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Domain\Utils;
 
 /**
- * Class TextUtil
+ * Class TextUtil.
  */
 abstract class TextUtil
 {
     /**
      * TODO : vérifier !
-     * UTF8 first letter in upper case
+     * UTF8 first letter in upper case.
      *
      * @param string      $str
      * @param string|null $e
      *
      * @return string
      */
-    static public function mb_ucfirst(string $str, ?string $e = 'UTF-8'): string
+    public static function mb_ucfirst(string $str, ?string $e = 'UTF-8'): string
     {
         $first = mb_strtoupper(mb_substr($str, 0, 1, $e), $e);
         $rest = mb_substr($str, 1, mb_strlen($str, $e), $e);
@@ -26,7 +27,8 @@ abstract class TextUtil
     }
 
     /**
-     * Todo verify/correct
+     * Todo verify/correct.
+     *
      * @param string $str
      *
      * @return bool
@@ -40,15 +42,15 @@ abstract class TextUtil
      * Simplest levenshtein distance prediction of the correct param name.
      * Weird results with ASCII extended chars :
      * levenshtein('notre','nôtre') => 2
-     * TODO move
+     * TODO move.
      *
      * @param string $str
      * @param array  $names
-     * @param int    $max Maximum number of permutation/add/subtraction)
+     * @param int    $max   Maximum number of permutation/add/subtraction)
      *
      * @return string|null
      */
-    static public function predictCorrectParam(string $str, array $names, int $max = 2): ?string
+    public static function predictCorrectParam(string $str, array $names, int $max = 2): ?string
     {
         $sanitized = self::sanitizeParamForPredict($str);
         foreach ($names as $name) {
@@ -72,7 +74,7 @@ abstract class TextUtil
     }
 
     /**
-     * For predictCorrectParam()
+     * For predictCorrectParam().
      *
      * @param string $str
      *
@@ -90,15 +92,15 @@ abstract class TextUtil
      * Strip punctuation
      * UTF-8 compatible ??
      * Note : can't use str_split() which cut on 1 byte length
-     * See http://fr.wikipedia.org/wiki/Ponctuation
+     * See http://fr.wikipedia.org/wiki/Ponctuation.
      *
      * @return string
      */
-    static public function stripPunctuation(string $str)
+    public static function stripPunctuation(string $str)
     {
         return str_replace(
-            ['!','"','«','»','#','$','%',"'",'’','´','`','^','…','‽','(',')','*','⁂','+','–','—','/',':',';','?','@',
-             '[','\\',']','_','`','{','|','¦','}','~','<','>','№','©','®','°','†','§','∴','∵','¶','•','+',],
+            ['!', '"', '«', '»', '#', '$', '%', "'", '’', '´', '`', '^', '…', '‽', '(', ')', '*', '⁂', '+', '–', '—', '/', ':', ';', '?', '@',
+             '[', '\\', ']', '_', '`', '{', '|', '¦', '}', '~', '<', '>', '№', '©', '®', '°', '†', '§', '∴', '∵', '¶', '•', '+', ],
             '',
             $str
         );
@@ -107,11 +109,11 @@ abstract class TextUtil
     /**
      * Strip accents
      * OK : grec, cyrillique, macron, hatchek, brève, rond en chef, tilde
-     * UTF-8 compatible
+     * UTF-8 compatible.
      *
      * @return string
      */
-    static public function stripAccents(string $string): string
+    public static function stripAccents(string $string): string
     {
         return strtr(
             utf8_decode($string),
@@ -123,5 +125,4 @@ abstract class TextUtil
             )
         );
     }
-
 }

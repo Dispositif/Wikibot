@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Domain;
-
 
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\Utils\TextUtil;
@@ -13,6 +13,7 @@ class OuvragesInPageOptimize
      * @var OuvrageTemplate[]
      */
     private $ouvrages;
+
     private $page;
 
     public function __construct(string $page, array $ouvrages)
@@ -27,7 +28,7 @@ class OuvragesInPageOptimize
     }
 
     /**
-     * Delete wikilink if already showed by precedent template
+     * Delete wikilink if already showed by precedent template.
      *
      * @param array $ouvrages
      */
@@ -35,7 +36,7 @@ class OuvragesInPageOptimize
     {
         $paramIsWikilink = ['lien auteur1', 'lien auteur2', 'lien auteur3', 'lien éditeur'];
         /**
-         * @var $ouvrage OuvrageTemplate
+         * @var OuvrageTemplate
          */
         $deja = [];
         foreach ($ouvrages as $ouvrage) {
@@ -70,5 +71,4 @@ class OuvragesInPageOptimize
             }
         }
     }
-
 }

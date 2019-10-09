@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Domain;
-
 
 use App\Domain\Models\Wiki\GoogleLivresTemplate;
 use App\Domain\Models\Wiki\OuvrageTemplate;
@@ -14,14 +14,18 @@ use App\Domain\Utils\WikiTextUtil;
  * TODO move methods to OuvrageClean setters
  * TODO AbstractProcess
  * TODO observer/event (log, MajorEdition)
- * Class OuvrageProcess
+ * Class OuvrageProcess.
  */
 class OuvrageOptimize
 {
     protected $original;
+
     private $wikiPageTitle;
+
     private $log = [];
+
     private $ouvrage;
+
     private $currentTask;
 
     // todo inject TextUtil + ArticleVersion ou WikiRef
@@ -32,7 +36,7 @@ class OuvrageOptimize
         $this->wikiPageTitle = ($wikiPageTitle) ?? null;
     }
 
-    public function doTasks(): OuvrageOptimize
+    public function doTasks(): self
     {
         $this->currentTask = 'start';
         $this->parametersErrorFromHydrate();
@@ -148,7 +152,7 @@ class OuvrageOptimize
 
     /**
      * todo: move to AbstractWikiTemplate ?
-     * Correction des parametres rejetés à l'hydratation données
+     * Correction des parametres rejetés à l'hydratation données.
      *
      * @throws \Exception
      */
@@ -186,6 +190,7 @@ class OuvrageOptimize
      * @param $name
      *
      * @return string|null
+     *
      * @throws \Exception
      */
     private function getParam(string $name): ?string
@@ -209,7 +214,7 @@ class OuvrageOptimize
     /**
      * Bool ?
      * déwikification du titre : consensus Bistro 27 août 2011
-     * idem  'titre chapitre'
+     * idem  'titre chapitre'.
      *
      * @throws \Exception
      */
@@ -250,7 +255,7 @@ class OuvrageOptimize
 
     /**
      * Typo internationale 'titre : sous-titre'
-     * https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Le_Bistro/13_janvier_2016#Modif_du_mod%C3%A8le:Ouvrage
+     * https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Le_Bistro/13_janvier_2016#Modif_du_mod%C3%A8le:Ouvrage.
      *
      * @param $param
      *
@@ -288,14 +293,14 @@ class OuvrageOptimize
     /**
      * -----------------------------------------------------------
      *              TASKS
-     * --------------------------------------------------------
+     * --------------------------------------------------------.
      */
 
     /**
      * TODO move+refac
      * TODO PlumeTemplate CommentaireBiblioTemplate  ExtraitTemplate
      * Probleme {{commentaire biblio}} <> {{commentaire biblio SRL}}
-     * Generate supplementary templates from obsoletes params
+     * Generate supplementary templates from obsoletes params.
      *
      * @throws \Exception
      */
@@ -306,7 +311,7 @@ class OuvrageOptimize
         // todo detect duplication ouvrage/plume dans externalTemplate ?
         if (!empty($this->getParam('plume'))) {
             $plumeValue = $this->getParam('plume');
-            $this->ouvrage->externalTemplates[] = (object)[
+            $this->ouvrage->externalTemplates[] = (object) [
                 'template' => 'plume',
                 '1' => $plumeValue,
                 'raw' => '{{plume}}',
@@ -321,15 +326,15 @@ class OuvrageOptimize
             // todo bug {{citation bloc}} si "=" ou "|" dans texte de citation
             // Legacy : use {{début citation}} ... {{fin citation}}
             if (preg_match('#[=|\|]#', $extrait) > 0) {
-                $this->ouvrage->externalTemplates[] = (object)[
+                $this->ouvrage->externalTemplates[] = (object) [
                     'template' => 'début citation',
                     '1' => '',
                     'raw' => '{{début citation}}'.$extrait.'{{fin citation}}',
                 ];
                 $this->log('+{{début citation}}');
-            }else {
+            } else {
                 // StdClass
-                $this->ouvrage->externalTemplates[] = (object)[
+                $this->ouvrage->externalTemplates[] = (object) [
                     'template' => 'citation bloc',
                     '1' => $extrait,
                     'raw' => '{{extrait|'.$extrait.'}}',
@@ -343,7 +348,7 @@ class OuvrageOptimize
         // "commentaire=bla" => {{Commentaire biblio|1=bla}}
         if (!empty($this->getParam('commentaire'))) {
             $commentaire = $this->getParam('commentaire');
-            $this->ouvrage->externalTemplates[] = (object)[
+            $this->ouvrage->externalTemplates[] = (object) [
                 'template' => 'commentaire biblio',
                 '1' => $commentaire,
                 'raw' => '{{commentaire biblio|'.$commentaire.'}}',
@@ -358,7 +363,7 @@ class OuvrageOptimize
     // ----------------------
 
     /**
-     * todo : invisible/inutile ? (LUA)
+     * todo : invisible/inutile ? (LUA).
      *
      * @throws \Exception
      */
@@ -372,7 +377,6 @@ class OuvrageOptimize
     //            }
     //        }
     //    }
-
 
     private function predictFormatByPattern()
     {
@@ -403,6 +407,7 @@ class OuvrageOptimize
 
     /**
      * @return bool
+     *
      * @throws \Exception
      */
     public function checkMajorEdit(): bool
@@ -419,8 +424,7 @@ class OuvrageOptimize
         // Retire le param/value 'langue' (pas major si conversion nom langue)
         $datOuvrage = $this->ouvrage->toArray();
         $datOriginal = $this->original->toArray();
-        unset($datOriginal['langue']);
-        unset($datOuvrage['langue']);
+        unset($datOriginal['langue'], $datOuvrage['langue']);
 
         // Modification données
         if ($datOriginal !== $datOuvrage) {
@@ -458,7 +462,7 @@ class OuvrageOptimize
     /**
      * todo : vérif lien rouge
      * todo 'lien éditeur' affiché 1x par page
-     * opti : Suppression lien éditeur si c'est l'article de l'éditeur
+     * opti : Suppression lien éditeur si c'est l'article de l'éditeur.
      *
      * @throws \Exception
      */
@@ -494,7 +498,6 @@ class OuvrageOptimize
             $editeurStr = str_replace($matches[1], '', $editeurStr);
         }
 
-
         // Déconseillé : 'lien éditeur' (obsolete 2019)
         if (!empty($this->getParam('lien éditeur'))) {
             if (empty($editeurUrl)) {
@@ -517,7 +520,6 @@ class OuvrageOptimize
             $this->log('±éditeur');
         }
     }
-
 
     // TODO legacy
     //    public function legacyDate()
@@ -637,5 +639,4 @@ class OuvrageOptimize
     //            }
     //        }
     //    }
-
 }

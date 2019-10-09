@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Domain;
@@ -11,6 +12,7 @@ use Scriptotek\GoogleBooks\Volume;
 class ImportOuvrageFromApi
 {
     private $adapter;
+
     private $ouvrage;
 
     /**
@@ -26,7 +28,7 @@ class ImportOuvrageFromApi
     }
 
     /**
-     * Inutile si pas de clonage $ouvrage dans construct()
+     * Inutile si pas de clonage $ouvrage dans construct().
      *
      * @return OuvrageTemplate|null
      */
@@ -39,19 +41,20 @@ class ImportOuvrageFromApi
      * @param string $isbn
      *
      * @return OuvrageTemplate
+     *
      * @throws \Exception
      */
     public function hydrateFromIsbn(string $isbn): OuvrageTemplate
     {
         $volume = $this->getDataByIsbn($isbn);
         /**
-         * @var $volume Volume
+         * @var Volume
          */
         $data = $this->mapping($volume);
 
-        try{
+        try {
             $this->ouvrage->hydrate($data);
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             throw new \Exception($e);
         }
 
@@ -71,7 +74,7 @@ class ImportOuvrageFromApi
             return [];
         }
         /**
-         * @var $mapper MapperInterface
+         * @var MapperInterface
          */
         $data = $mapper->process($volume);
 

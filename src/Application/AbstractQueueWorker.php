@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Application;
@@ -8,16 +9,14 @@ use PhpAmqpLib\Message\AMQPMessage;
 
 /**
  * Consume RabbitMQ queue and acknowledge each message.
- * Class AbstractWorker
- *
- * @package App\Application
+ * Class AbstractWorker.
  */
 abstract class AbstractQueueWorker
 {
     const QUEUE_NAME = 'AbstractQueueWorker';
 
     /**
-     * Connect and obtain the messages from queue
+     * Connect and obtain the messages from queue.
      *
      * @throws \ErrorException
      */
@@ -56,5 +55,4 @@ abstract class AbstractQueueWorker
         $msg->delivery_info['channel']
             ->basic_ack($msg->delivery_info['delivery_tag']);
     }
-
 }

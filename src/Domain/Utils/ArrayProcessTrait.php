@@ -1,13 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Domain\Utils;
 
-
 trait ArrayProcessTrait
 {
     /**
-     * Delete keys with empty string value ""
+     * Delete keys with empty string value "".
      *
      * @param array $myArray
      *

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Application;
@@ -35,11 +36,12 @@ class WikiPageAction
     }
 
     /**
-     * Extract <ref> data from text
+     * Extract <ref> data from text.
      *
      * @param $text string
      *
      * @return array
+     *
      * @throws \Exception
      */
     public function extractRefFromText(string $text): ?array
@@ -47,13 +49,13 @@ class WikiPageAction
         $parser = new TagParser(); // todo ParserFactory
         $refs = $parser->importHtml($text)->getRefValues(); // []
 
-        return (array)$refs;
+        return (array) $refs;
     }
 
     /**
      * TODO $url parameter
      * TODO? refactor with : parse_str() + parse_url($url, PHP_URL_QUERY)
-     * check if any ref contains a targeted website/URL
+     * check if any ref contains a targeted website/URL.
      *
      * @param array $refs
      *
@@ -75,5 +77,4 @@ class WikiPageAction
 
         return $validRef;
     }
-
 }

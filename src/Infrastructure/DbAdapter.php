@@ -1,25 +1,23 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Infrastructure;
 
 use Simplon\Mysql\Mysql;
-use Simplon\Mysql\MysqlException;
 use Simplon\Mysql\PDOConnector;
 
 /**
- * Temporary SQL play. https://packagist.org/packages/simplon/mysql
+ * Temporary SQL play. https://packagist.org/packages/simplon/mysql.
  *
  * Class DbAdapter
- *
- * @package App\Infrastructure
  */
 class DbAdapter
 {
     private $dbConn;
 
-    public function __construct() {
-
+    public function __construct()
+    {
         $pdo = new PDOConnector(
             getenv('MYSQL_HOST'),
             getenv('MYSQL_USER'),
@@ -34,11 +32,13 @@ class DbAdapter
      * @param $datas
      *
      * @return int|null
+     *
      * @throws \Exception
      */
-    public function  insertTempRawOpti($datas)
+    public function insertTempRawOpti($datas)
     {
         $id = $this->dbConn->insertMany('TempRawOpti', $datas);
+
         return $id;
     }
 
@@ -47,15 +47,15 @@ class DbAdapter
      *
      * @return array
      */
-    public function wstatTextToArrayData($text):array
+    public function wstatTextToArrayData($text): array
     {
         $data = [];
         if (preg_match_all('#^([^\{\}]+) : (\{\{.+\}\})$#m', $text, $matches, PREG_SET_ORDER) > 0) {
-            foreach ($matches as $key => $val){
+            foreach ($matches as $key => $val) {
                 $data[] = ['page' => $val[1], 'raw' => $val[2]];
             }
         }
+
         return $data;
     }
-
 }

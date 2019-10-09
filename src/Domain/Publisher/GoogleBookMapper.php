@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Domain\Publisher;
@@ -8,9 +9,7 @@ use Scriptotek\GoogleBooks\Volume;
 /**
  * Google mapping.
  * Doc : https://developers.google.com/books/docs/v1/reference/volumes
- * Class GoogleBookMapper
- *
- * @package App\Domain
+ * Class GoogleBookMapper.
  */
 class GoogleBookMapper implements MapperInterface
 {
@@ -29,7 +28,7 @@ class GoogleBookMapper implements MapperInterface
             'titre' => $volume->title,
             'sous-titre' => $volume->subtitle,
             'année' => $this->convertDate2Year($volume->publishedDate),
-            'pages totales' => (string)$volume->pageCount,
+            'pages totales' => (string) $volume->pageCount,
             'isbn' => $this->isbn($volume),
             'présentation en ligne' => $this->presentationEnLigne($volume),
             'lire en ligne' => $this->lireEnLigne($volume),
@@ -42,7 +41,7 @@ class GoogleBookMapper implements MapperInterface
             return null;
         }
         if (preg_match('/[^0-9]?([12][0-9]{3})[^0-9]?/', $data, $matches) > 0) {
-            return (string)$matches[1];
+            return (string) $matches[1];
         }
 
         return null;
@@ -61,12 +60,12 @@ class GoogleBookMapper implements MapperInterface
         // so isbn-13 replace isbn-10
         // todo refac algo (if 2x isbn13?)
         $isbn = null;
-        $ids = (array)$volume->industryIdentifiers;
+        $ids = (array) $volume->industryIdentifiers;
         foreach ($ids as $id) {
             if (!isset($isbn) && in_array($id->type, ['ISBN_10', 'ISBN_13'])) {
                 $isbn = $id->identifier;
             }
-            if ($id->type === 'ISBN_13') {
+            if ('ISBN_13' === $id->type) {
                 $isbn = $id->identifier;
             }
         }

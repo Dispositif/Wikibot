@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Domain;
@@ -9,7 +10,7 @@ use App\Domain\Models\Wiki\LienWebTemplate;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 
 /**
- * Class WikiTemplateFactory
+ * Class WikiTemplateFactory.
  */
 abstract class WikiTemplateFactory
 {
@@ -17,9 +18,10 @@ abstract class WikiTemplateFactory
      * @param string $templateName
      *
      * @return AbstractWikiTemplate|null
+     *
      * @throws \Exception
      */
-    static public function create(string $templateName): ?AbstractWikiTemplate
+    public static function create(string $templateName): ?AbstractWikiTemplate
     {
         switch (mb_strtolower($templateName)) {
             case 'ouvrage':

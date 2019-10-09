@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Infrastructure;
@@ -10,7 +11,7 @@ use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 
 /**
- * Class ServiceFactory
+ * Class ServiceFactory.
  */
 class ServiceFactory
 {
@@ -24,12 +25,14 @@ class ServiceFactory
      */
     private static $wikiApi;
 
-    private function __construct() { }
+    private function __construct()
+    {
+    }
 
     /**
      * AMQP queue (actual RabbitMQ)
      * todo $param
-     * todo $channel->close(); $AMQPConnection->close();
+     * todo $channel->close(); $AMQPConnection->close();.
      *
      * @param string $queueName
      *
@@ -72,9 +75,10 @@ class ServiceFactory
     }
 
     /**
-     * todo? replace that singleton pattern ??? (multi-lang wiki?)
+     * todo? replace that singleton pattern ??? (multi-lang wiki?).
      *
      * @return MediawikiFactory
+     *
      * @throws \Mediawiki\Api\UsageException
      */
     public static function wikiApi(): MediawikiFactory
@@ -92,5 +96,4 @@ class ServiceFactory
 
         return self::$wikiApi;
     }
-
 }
