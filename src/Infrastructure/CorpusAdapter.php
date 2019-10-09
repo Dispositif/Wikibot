@@ -84,11 +84,17 @@ class CorpusAdapter extends FileManager implements CorpusInterface
             return false;
         }
 
+        // strip "/"
         $sanitizCorpusName = preg_replace('#[^0-9a-z_]#i','', $corpusName);
         $filename = __DIR__.'/../Domain/resources/'.$sanitizCorpusName.'.txt';
 
+        // hack: create file or not ?
         if(!file_exists($filename)){
-            throw new \Exception('corpus filename does not exist'.$filename);
+            $newFile = @fopen($filename, "w");
+            fclose($newFile);
+            if(!file_exists($filename)){
+                throw new \Exception('corpus filename does not exist'.$filename);
+            }
         }
 
         // check if the element already in the corpus
