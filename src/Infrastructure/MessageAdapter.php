@@ -23,14 +23,27 @@ class MessageAdapter implements MessageInterface
      */
     public function send(string $queue, $message): void
     {
+        // keep message in memory
         if ($queue === 'test') {
-            dump('queue=test', $message);
+            dump('queue:test', $message);
         }
+
+        // insert message in text file
+        if ($queue === 'ISBN invalide') {
+            $corpus = new CorpusAdapter();
+            $corpus->addNewElementToCorpus('queue_ISBN invalide', $message);
+
+            return;
+        }
+
+        // send message to AMQP server
         if ($queue === 'rabbit') {
             $this->amqpMsg($queue, $message);
 
             return;
         }
+
+        //default
         $this->tempStorage[$queue][] = $message;
     }
 

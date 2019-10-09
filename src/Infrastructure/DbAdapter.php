@@ -36,7 +36,7 @@ class DbAdapter
      * @return int|null
      * @throws \Exception
      */
-    public function  insertTempRawOpti($datas):?int
+    public function  insertTempRawOpti($datas)
     {
         $id = $this->dbConn->insertMany('TempRawOpti', $datas);
         return $id;
