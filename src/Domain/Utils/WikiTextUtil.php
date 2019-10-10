@@ -22,7 +22,6 @@ abstract class WikiTextUtil extends TextUtil
      * @param string $text
      *
      * @return array
-     *
      * @throws \Exception
      */
     public static function parseAllTemplateByName(string $tplName, string $text): array
@@ -57,7 +56,7 @@ abstract class WikiTextUtil extends TextUtil
             $result[$tplName][$inc] += ['model' => $tplObject];
         }
 
-        return (array) $result;
+        return (array)$result;
     }
 
     /**
@@ -76,7 +75,8 @@ abstract class WikiTextUtil extends TextUtil
     {
         // TODO check {{fr}}
         $res = preg_match_all(
-            "#\{\{[ \n]*".preg_quote(trim($templateName), '#')."[ \t \n\r]*\|[^\{\}]*(?:\{\{[^\{\}]+\}\}[^\{\}]*)*\}\}#i",
+            "#\{\{[ \n]*".preg_quote(trim($templateName), '#')
+            ."[ \t \n\r]*\|[^\{\}]*(?:\{\{[^\{\}]+\}\}[^\{\}]*)*\}\}#i",
             $text,
             $matches
         );
@@ -160,6 +160,9 @@ abstract class WikiTextUtil extends TextUtil
     {
         $text = str_replace("\n", '', $text);
 
+        // BUG marche pas avec :
+        // {{Ouvrage|langue = Français|auteur1 = Clément, Augustin|titre = Les Borgia : histoire du pape {{nobr|Alexandre {{VI}}}}, de César et de Lucrèce Borgia (1882)|lieu = Bar-le-Duc|éditeur = Imprimerie de l’œuvre de Saint Paul|année = 1882|pages totales = 662|isbn = |lire en ligne = https://archive.org/stream/lesborgiahistoir00cl#page/662/mode/2up|passage = https://archive.org/stream/lesborgiahistoir00cl#page/566/mode/2up}}
+
         if (preg_match(
                 "~\{\{ ?".preg_quote($templateName, '~')."[\ \t\ \n\r]*\|([^\{\}]*(?:\{\{[^\{\}]+\}\}[^\{\}]*)*)\}\}~i",
                 $text,
@@ -214,13 +217,14 @@ abstract class WikiTextUtil extends TextUtil
             ); // perte cosmétique : est-ce bien ? + espace insécable remplacé par espace sécable
 
             // $line : fu = bar (OK : fu=bar=coco)
-            if (($pos = strpos($line, '=')) >= 0) {
+            $pos = strpos($line, '=');
+            if (is_int($pos) && $pos >= 0) {
                 $param = mb_strtolower(substr($line, 0, $pos), 'UTF-8');
                 $value = substr($line, $pos + 1);
             }
             // No param name => take $keyNum as param name
             if (false === $pos) {
-                $param = (string) $keyNum;
+                $param = (string)$keyNum;
                 $value = $line;
                 ++$keyNum;
             }
