@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-
 namespace App\Infrastructure;
-
 
 trait CsvTrait
 {
@@ -16,6 +14,7 @@ trait CsvTrait
      * @param int|null $col
      *
      * @return bool
+     *
      * @throws \Exception
      */
     public function isStringInCSV(string $filename, string $search, ?int $col = 0): bool
@@ -64,7 +63,7 @@ trait CsvTrait
             throw new \Exception('no file '.$filename);
         }
         $f = fopen($filename, 'r');
-        while (($line = fgetcsv($f)) !== false) {
+        while (false !== ($line = fgetcsv($f))) {
             $data[] = $line;
         }
         fclose($f);

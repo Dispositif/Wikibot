@@ -6,7 +6,5 @@ namespace App\Infrastructure;
 
 class FileManager
 {
-   use CsvTrait;
-
-
+    use CsvTrait;
 }
