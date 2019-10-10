@@ -13,7 +13,7 @@ Correction and completion of bibliographic references (books, articles) on fr-wi
  
  ----
  
-Techs : RabbitMQ, MySQL, addwiki framework, etc.
+Techs : RabbitMQ, MySQL, Symfony Components, addwiki/mediawiki-api, etc.
 
 Addwiki doc : http://addwiki.readthedocs.io/
 

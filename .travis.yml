@@ -35,7 +35,7 @@ matrix:
 
 # Define an environment variable
 env:
-  - SYMFONY_VERSION="3.3.*" DB=mysql
+  - WIKIBOT_VERSION="1" DB=msql
 
 # Update composer
 before-install:
@@ -54,9 +54,11 @@ before_script:
   - composer install --dev --quiet --no-interaction
   - echo 'date.timezone = "Europe/Paris"' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
 
-# Run script
 script:
-  - phpunit
+  - vendor/bin/phpunit --coverage-clover=coverage.xml
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
 
 # After a build, send email notification with the build results
 notifications:

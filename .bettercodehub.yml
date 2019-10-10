@@ -2,10 +2,11 @@ languages:
   - php
   - javascript
 
+component_depth: 2
+
 exclude:
   - .*/resources/.*
   - .*/ressources/.*
   - .*/Examples/*
   - .*/languageData.php
 
-component_depth: 2
