@@ -1,10 +1,12 @@
 #!/usr/bin/env php
 <?php
+
 declare(strict_types=1);
 
 namespace App;
 
 use App\Application\WikiPageContentCommand;
+use App\Application\WorkerCommand;
 use Symfony\Component\Console\Application;
 
 include __DIR__.'/Application/myBootstrap.php';
@@ -13,6 +15,7 @@ $console = new Application();
 
 // List of commands
 $console->add(new WikiPageContentCommand());
+$console->add(new WorkerCommand());
 
 // Bug on command with arguments related to symfony/.../input/ArgvInput.php
 // Symfony\Component\Console\Exception\InvalidArgumentException: The "1"
