@@ -1,10 +1,15 @@
 # Wikibot
 
 [![Build Status](https://travis-ci.org/Dispositif/Wikibot.svg?branch=master)](https://travis-ci.org/Dispositif/Wikibot)
-[![Maintainability](https://api.codeclimate.com/v1/badges/b7a0aa7a832ddf24adb0/maintainability)](https://codeclimate.com/repos/5d73cea4465eac01630065a7/maintainability)
+![PHP from Travis config](https://img.shields.io/travis/php-v/Dispositif/Wikibot)[![Maintainability](https://api.codeclimate.com/v1/badges/b7a0aa7a832ddf24adb0/maintainability)](https://codeclimate.com/repos/5d73cea4465eac01630065a7/maintainability)
 [![BCH compliance](https://bettercodehub.com/edge/badge/Dispositif/Wikibot?branch=master)](https://bettercodehub.com/)
+![GitHub](https://img.shields.io/github/license/Dispositif/Wikibot)
+![Codecov](https://img.shields.io/codecov/c/github/Dispositif/Wikibot)
+[![StyleCI](https://github.styleci.io/repos/206988215/shield?branch=master)](https://github.styleci.io/repos/206988215)
 
-PHP7 (CLI) app for my wikipedian bot*
+
+
+PHP CLI app for my wikipedian bot*
 
 Correction and completion of bibliographic references (books, articles) on fr-wikipedia, using my legacy
  code and importing open data (GoogleBooks, OpenLibrary...). 
@@ -13,9 +18,10 @@ Correction and completion of bibliographic references (books, articles) on fr-wi
  
  ----
  
-Techs : RabbitMQ, MySQL, Symfony Components, addwiki/mediawiki-api, etc.
+Technos : RabbitMQ, MySQL, Symfony Components, addwiki/mediawiki-api, etc.
+
+List of console commands : ```php src/console list```
 
 Addwiki doc : http://addwiki.readthedocs.io/
 
-list of console commands :
-php src/console list
+- [x] bla
