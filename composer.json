@@ -1,6 +1,6 @@
 {
     "name": "dispositif/wikibot",
-    "version": "0.1",
+    "version": "1",
     "type": "project",
     "license": "MIT",
     "require": {
@@ -14,7 +14,8 @@
         "ext-simplexml": "*",
         "ext-dom": "*",
         "scriptotek/google-books": "^0.2.4",
-        "simplon/mysql": "^2.2"
+        "simplon/mysql": "^2.2",
+        "rollbar/rollbar": "~1.5"
     },
     "autoload": {
         "psr-4": {
