@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "21956b2470b9781bbae3bd3020129697",
+    "content-hash": "0a7653271afd620f4ce1f8a7ccd8a722",
     "packages": [
         {
             "name": "addwiki/mediawiki-api",
@@ -154,6 +154,52 @@
                 "mediawiki"
             ],
             "time": "2018-01-10T19:14:13+00:00"
+        },
+        {
+            "name": "biblys/isbn",
+            "version": "2.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/biblys/isbn.git",
+                "reference": "e1ee3ad5c21124dddbed7108342cf3c1e9ee95e1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/biblys/isbn/zipball/e1ee3ad5c21124dddbed7108342cf3c1e9ee95e1",
+                "reference": "e1ee3ad5c21124dddbed7108342cf3c1e9ee95e1",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "guzzlehttp/guzzle": "^6.2",
+                "phpunit/phpunit": "^8.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Biblys": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Clement Bourgoin",
+                    "email": "cb@nokto.net"
+                }
+            ],
+            "description": "A PHP library to convert and validate ISBNs & EANs",
+            "homepage": "https://github.com/biblys/isbn",
+            "keywords": [
+                "ISBN",
+                "book",
+                "ean"
+            ],
+            "time": "2019-08-17T00:00:00+00:00"
         },
         {
             "name": "camspiers/porter-stemmer",

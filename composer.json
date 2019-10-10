@@ -15,7 +15,8 @@
         "ext-dom": "*",
         "scriptotek/google-books": "^0.2.4",
         "simplon/mysql": "^2.2",
-        "rollbar/rollbar": "~1.5"
+        "rollbar/rollbar": "~1.5",
+        "biblys/isbn": "^2.1.1"
     },
     "autoload": {
         "psr-4": {
