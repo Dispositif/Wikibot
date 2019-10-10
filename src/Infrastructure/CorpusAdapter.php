@@ -22,6 +22,7 @@ class CorpusAdapter extends FileManager implements CorpusInterface
      * @param string $corpusName
      *
      * @return bool
+     *
      * @throws \Exception
      */
     public function inCorpus(string $element, string $corpusName): bool
@@ -32,6 +33,7 @@ class CorpusAdapter extends FileManager implements CorpusInterface
             if (is_array($corpData) && in_array($element, $corpData)) {
                 return true;
             }
+
             return false;
         }
 
@@ -66,6 +68,7 @@ class CorpusAdapter extends FileManager implements CorpusInterface
      * @param string $element
      *
      * @return bool
+     *
      * @throws \Exception
      */
     public function addNewElementToCorpus(string $corpusName, string $element): bool
