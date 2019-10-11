@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Infrastructure;
 
+use http\Client;
+use mysql_xdevapi\Exception;
+
 /**
  * Data import from https://wstat.fr (frwiki daily dump parsing).
  * https://wstat.fr/template/index.php?title=Ouvrage&query=inclusions&param=isbn&start=50000&limit=50&format=json
@@ -17,9 +20,11 @@ class WstatImport
 
     private $params = [];
     private $max = 100;
+    private $client;
 
-    public function __construct(?array $params = null, ?int $max = 500)
+    public function __construct(\GuzzleHttp\Client $client, ?array $params = null, ?int $max = 500)
     {
+        $this->client = $client;
         $this->max = min(self::MAX_IMPORT, $max);
 
         //example
@@ -98,9 +103,25 @@ class WstatImport
         return (array)$data;
     }
 
+    /**
+     * @param string $url
+     *
+     * @return string
+     * @throws \Exception
+     */
     private function import(string $url)
     {
-        return file_get_contents($url);
+        $response = $this->client->get($url);
+        if (200 !== $response->getStatusCode()) {
+            throw new \Exception(
+                sprintf(
+                    'Error code: %s reason: %s',
+                    $response->getStatusCode(),
+                    $response->getReasonPhrase()
+                )
+            );
+        }
+        return $response->getBody()->getContents();
     }
 
 }
