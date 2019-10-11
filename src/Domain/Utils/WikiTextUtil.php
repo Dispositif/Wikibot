@@ -22,6 +22,7 @@ abstract class WikiTextUtil extends TextUtil
      * @param string $text
      *
      * @return array
+     *
      * @throws \Exception
      */
     public static function parseAllTemplateByName(string $tplName, string $text): array
@@ -56,7 +57,7 @@ abstract class WikiTextUtil extends TextUtil
             $result[$tplName][$inc] += ['model' => $tplObject];
         }
 
-        return (array)$result;
+        return (array) $result;
     }
 
     /**
@@ -224,7 +225,7 @@ abstract class WikiTextUtil extends TextUtil
             }
             // No param name => take $keyNum as param name
             if (false === $pos) {
-                $param = (string)$keyNum;
+                $param = (string) $keyNum;
                 $value = $line;
                 ++$keyNum;
             }

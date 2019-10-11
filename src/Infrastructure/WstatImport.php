@@ -4,22 +4,19 @@ declare(strict_types=1);
 
 namespace App\Infrastructure;
 
-use http\Client;
-use mysql_xdevapi\Exception;
-
 /**
  * Data import from https://wstat.fr (frwiki daily dump parsing).
  * https://wstat.fr/template/index.php?title=Ouvrage&query=inclusions&param=isbn&start=50000&limit=50&format=json
- * Class WstatImport
- *
- * @package App\Infrastructure
+ * Class WstatImport.
  */
 class WstatImport
 {
     const MAX_IMPORT = 50000;
 
     private $params = [];
+
     private $max = 100;
+
     private $client;
 
     public function __construct(\GuzzleHttp\Client $client, ?array $params = null, ?int $max = 500)
@@ -60,6 +57,7 @@ class WstatImport
             $data = array_merge($data, $this->parsingWstatData($raw));
             if ($this->max <= 0) {
                 $flag = false;
+
                 break;
             }
 
@@ -72,7 +70,7 @@ class WstatImport
     }
 
     /**
-     * Explode raw string
+     * Explode raw string.
      *
      * @param array $raw
      *
@@ -100,13 +98,14 @@ class WstatImport
             $data[] = ['title' => $title, 'template' => $template];
         }
 
-        return (array)$data;
+        return (array) $data;
     }
 
     /**
      * @param string $url
      *
      * @return string
+     *
      * @throws \Exception
      */
     private function import(string $url)
@@ -121,7 +120,7 @@ class WstatImport
                 )
             );
         }
+
         return $response->getBody()->getContents();
     }
-
 }
