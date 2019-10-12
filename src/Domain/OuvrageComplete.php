@@ -27,9 +27,10 @@ class OuvrageComplete
 
     public function getLog()
     {
-        return implode(';', $this->log);
+        return $this->log;
     }
 
+    // TODO gérer erreur (not same book)
     public function getResult()
     {
         $this->complete();

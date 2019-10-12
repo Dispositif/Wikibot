@@ -14,7 +14,7 @@ namespace App\Domain\Models\Wiki;
  */
 class OuvrageTemplate extends AbstractWikiTemplate
 {
-    const MODEL_NAME = 'ouvrage'; // todo
+    const MODEL_NAME = 'Ouvrage'; // todo
 
     const REQUIRED_PARAMETERS
                      = [
@@ -320,6 +320,7 @@ class OuvrageTemplate extends AbstractWikiTemplate
             'format livre',
             'format', // obsolete
             'isbn',
+            'isbn10',
             'isbn2',
             'isbn3',
             'isbn erroné',

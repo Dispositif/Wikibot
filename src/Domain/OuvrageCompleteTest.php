@@ -20,7 +20,7 @@ class OuvrageCompleteTest extends TestCase
 
         $comp = new OuvrageComplete($origin, $google);
         $this::assertEquals(
-            '{{ouvrage |identifiant=Bonneton |nom1=Collectif |titre=Loiret : un département à l\'élégance naturelle |éditeur=Christine Bonneton |lieu=Paris |année=2 septembre 1998 |isbn=978-2-86253-234-9 |pages totales=319 |langue=fr}}',
+            '{{Ouvrage |identifiant=Bonneton |nom1=Collectif |titre=Loiret : un département à l\'élégance naturelle |éditeur=Christine Bonneton |lieu=Paris |année=2 septembre 1998 |isbn=978-2-86253-234-9 |pages totales=319 |langue=fr}}',
             $comp->getResult()->serialize()
         );
     }
