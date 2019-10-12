@@ -42,20 +42,4 @@ class DbAdapter
         return $id;
     }
 
-    /**
-     * @param $text
-     *
-     * @return array
-     */
-    public function wstatTextToArrayData($text): array
-    {
-        $data = [];
-        if (preg_match_all('#^([^\{\}]+) : (\{\{.+\}\})$#m', $text, $matches, PREG_SET_ORDER) > 0) {
-            foreach ($matches as $key => $val) {
-                $data[] = ['page' => $val[1], 'raw' => $val[2]];
-            }
-        }
-
-        return $data;
-    }
 }
