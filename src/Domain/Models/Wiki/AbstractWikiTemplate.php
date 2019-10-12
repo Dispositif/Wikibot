@@ -394,7 +394,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     protected function mergeWrongParametersFromUser(array $paramsByRenderOrder): array
     {
         if (!empty($this->parametersErrorFromHydrate)) {
-            $errorUserData = WikiTextUtil::deleteEmptyValueArray($this->parametersErrorFromHydrate);
+            $errorUserData = $this->deleteEmptyValueArray($this->parametersErrorFromHydrate);
             // Add a note in HTML commentary
             foreach ($errorUserData as $param => $value) {
                 $errorUserData[$param] = $value." <!--PARAMETRE '$param' N'EXISTE PAS -->";

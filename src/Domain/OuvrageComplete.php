@@ -150,7 +150,7 @@ class OuvrageComplete
             $value = $ouv->getParam($param);
             // retire wikilien sur auteur
             if (!empty($value)) {
-                $text .= WikiTextUtil::deWikify($value);
+                $text .= WikiTextUtil::unWikify($value);
             }
         }
 

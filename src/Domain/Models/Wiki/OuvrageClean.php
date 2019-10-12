@@ -19,7 +19,7 @@ class OuvrageClean extends OuvrageTemplate
     protected function setLieu($lieu)
     {
         // pas de wikilien sur lieu (stats/pertinence)
-        $lieu = WikiTextUtil::deWikify($lieu);
+        $lieu = WikiTextUtil::unWikify($lieu);
         $this->parametersValues['lieu'] = $lieu;
     }
 
@@ -41,7 +41,7 @@ class OuvrageClean extends OuvrageTemplate
      */
     protected function setAnnee($str)
     {
-        $str = WikiTextUtil::deWikify($str);
+        $str = WikiTextUtil::unWikify($str);
         $this->parametersValues['année'] = $str;
         // major
     }

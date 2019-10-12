@@ -22,7 +22,6 @@ abstract class WikiTextUtil extends TextUtil
      * @param string $text
      *
      * @return array
-     *
      * @throws \Exception
      */
     public static function parseAllTemplateByName(string $tplName, string $text): array
@@ -57,7 +56,7 @@ abstract class WikiTextUtil extends TextUtil
             $result[$tplName][$inc] += ['model' => $tplObject];
         }
 
-        return (array) $result;
+        return (array)$result;
     }
 
     /**
@@ -110,18 +109,16 @@ abstract class WikiTextUtil extends TextUtil
 
         // $matches[0] : {{template|...}}
         if (null === $tplFounded) {
-            throw new \LogicException(
-                "Template $tplName not found in text"
-            );
+            throw new \LogicException("Template $tplName not found in text");
         }
         // $matches[1] : url=blabla|titre=Popo
         if (false === $tplFounded[1]) {
             throw new \LogicException("No parameters found in $tplName");
         }
-
         // sub-template pipe | encoding
         $tplFounded[1] = self::encodeTemplatePipes($tplFounded[1]);
 
+        // x flag => "\ " for space
         $res = preg_match_all(
             "/
 			(
@@ -131,6 +128,7 @@ abstract class WikiTextUtil extends TextUtil
 					(?:\[[^\[\]]+\])?              # [url text] or [text]
 					(?:\<\!\-\-[^\<\>]+\-\-\>)?    # commentary <!-- -->
 					(?:\{\{[^\}\{]+\}\})?          # {{template}} but KO with {{tmp|...}}
+					                               # test : {{bla@PIPE@bla}}
 					(?:\[\[[^\]]+\]\])?            # [[fu|bar]]
 					[^\|\{\}\[\]]*                 # accept <i>,<ref>
 		 		)*
@@ -150,6 +148,7 @@ abstract class WikiTextUtil extends TextUtil
     }
 
     /**
+     * BUG TODO : trouve pas si char russes
      * For multiple occurrences see findAllTemplatesByName().
      *
      * @param string $templateName
@@ -159,17 +158,33 @@ abstract class WikiTextUtil extends TextUtil
      */
     private static function findFirstTemplateInText(string $templateName, string $text): ?array
     {
-        $text = str_replace("\n", '', $text);
-
         // BUG marche pas avec :
-        // {{Ouvrage|langue = Français|auteur1 = Clément, Augustin|titre = Les Borgia : histoire du pape {{nobr|Alexandre {{VI}}}}, de César et de Lucrèce Borgia (1882)|lieu = Bar-le-Duc|éditeur = Imprimerie de l’œuvre de Saint Paul|année = 1882|pages totales = 662|isbn = |lire en ligne = https://archive.org/stream/lesborgiahistoir00cl#page/662/mode/2up|passage = https://archive.org/stream/lesborgiahistoir00cl#page/566/mode/2up}}
+        //        $text = '{{Ouvrage|auteur1 = Clément|titre = Les Borgia {{nobr|Alexandre {{VI}}}}}}'; // to debug
+        //        $templateName = 'ouvrage'; // to debug
 
+        //        $text = str_replace("\n", '', $text); // ??? todo regex multiline or encode char
+
+        // todo: replace <!-- --> by encode char and memorize in var
+
+        // hack : replace solitary { and } by encoded string CURLYBRACKET
+        $text = preg_replace('#([^\{])\{([^\{])#', '${1}CURLYBRACKETO$2', $text);
+        $text = preg_replace('#([^\}])\}([^\}])#', '${1}CURLYBRACKETC$2', $text);
+
+
+        // TODO: implement better regex :(
         if (preg_match(
                 "~\{\{ ?".preg_quote($templateName, '~')."[\ \t\ \n\r]*\|([^\{\}]*(?:\{\{[^\{\}]+\}\}[^\{\}]*)*)\}\}~i",
                 $text,
                 $matches
             ) > 0
         ) {
+            array_walk(
+                $matches,
+                function (&$value) {
+                    $value = str_replace(['CURLYBRACKETO', 'CURLYBRACKETC'], ['{', '}'], $value);
+                }
+            );
+
             return $matches;
         }
 
@@ -225,7 +240,7 @@ abstract class WikiTextUtil extends TextUtil
             }
             // No param name => take $keyNum as param name
             if (false === $pos) {
-                $param = (string) $keyNum;
+                $param = (string)$keyNum;
                 $value = $line;
                 ++$keyNum;
             }
@@ -268,7 +283,7 @@ abstract class WikiTextUtil extends TextUtil
     }
 
     /**
-     * todo legacy
+     * todo remove HTML ?
      * remove wiki encoding : italic, bold, links [ ] and [[fu|bar]] => bar
      * replace non-breaking spaces
      * replace {{lang|en|fubar}} => fubar.
@@ -278,8 +293,12 @@ abstract class WikiTextUtil extends TextUtil
      *
      * @return string
      */
-    public static function deWikify($text, $stripcomment = false): string
+    public static function unWikify(string $text, ?bool $stripcomment = true): string
     {
+        if (true === $stripcomment) {
+            $text = self::removeHTMLcomments($text);
+        }
+
         $text = str_replace(
             ['[', ']', "'''", "''", ' '],
             ['', '', '', '', ' '],
@@ -293,10 +312,7 @@ abstract class WikiTextUtil extends TextUtil
                 $text
             )
         );
-        $text = str_replace(['<small>', '</small>'], '', $text);
-        if (true === $stripcomment) {
-            $text = preg_replace("#<\!--([^>]*)-->#", '', $text);
-        }
+        $text = str_replace(['<small>', '</small>'], '', $text); // ??
 
         return $text;
     }
@@ -312,29 +328,50 @@ abstract class WikiTextUtil extends TextUtil
         return (preg_match("#<\!--[^>]*-->#", $text) > 0) ? true : false;
     }
 
-    public static function stripComments(string $text): string
-    {
-        // NON : preg_replace('#<\!--(?!-->).*-->#s', '', $text); // incorrect avec "<!-- -->oui<!-- -->"
-        // OK mais ne gère pas "<!-- <!-- <b> -->"
-        return trim(preg_replace("#<\!--[^>]*-->#", '', $text));
-    }
-
     /**
-     * Delete keys with empty string value "".
+     * Remove '<!--', '-->', and everything between.
+     * To avoid leaving blank lines, when a comment is both preceded
+     * and followed by a newline (ignoring spaces), trim leading and
+     * trailing spaces and one of the newlines.
+     * (c) WikiMedia /includes/parser/Sanitizer.php
      *
-     * @param array $myArray
+     * @param string $text
      *
-     * @return array
+     * @return string
      */
-    public static function deleteEmptyValueArray(array $myArray)
+    public static function removeHTMLcomments(string $text)
     {
-        $result = [];
-        foreach ($myArray as $key => $value) {
-            if (!empty($key) && !empty($value)) {
-                $result[$key] = $value;
+        while (($start = strpos($text, '<!--')) !== false) {
+            $end = strpos($text, '-->', $start + 4);
+            if ($end === false) {
+                # Unterminated comment; bail out
+                break;
+            }
+            $end += 3;
+            # Trim space and newline if the comment is both
+            # preceded and followed by a newline
+            $spaceStart = max($start - 1, 0);
+            $spaceLen = $end - $spaceStart;
+            while (substr($text, $spaceStart, 1) === ' ' && $spaceStart > 0) {
+                $spaceStart--;
+                $spaceLen++;
+            }
+            while (substr($text, $spaceStart + $spaceLen, 1) === ' ') {
+                $spaceLen++;
+            }
+            if (substr($text, $spaceStart, 1) === "\n"
+                && substr($text, $spaceStart + $spaceLen, 1) === "\n"
+            ) {
+                # Remove the comment, leading and trailing
+                # spaces, and leave only one newline.
+                $text = substr_replace($text, "\n", $spaceStart, $spaceLen + 1);
+            }else {
+                # Remove just the comment.
+                $text = substr_replace($text, '', $start, $end - $start);
             }
         }
 
-        return $result;
+        return $text;
     }
+
 }
