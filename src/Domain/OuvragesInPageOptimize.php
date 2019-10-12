@@ -51,7 +51,7 @@ class OuvragesInPageOptimize
                 }
                 if (preg_match('#\[\[(.+)\]\]#', $value, $matches) > 0) {
                     if (isset($deja[$matches[1]])) {
-                        $newvalue = TextUtil::dewikify($value);
+                        $newvalue = TextUtil::unWikify($value);
                         $ouvrage->setParam($param, $newvalue);
                         $this->log('unlink/article');
                     }

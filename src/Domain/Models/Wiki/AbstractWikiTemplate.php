@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Models\Wiki;
 
+use App\Domain\Utils\TemplateParser;
 use App\Domain\Utils\WikiTextUtil;
 
 /**
@@ -193,14 +194,14 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
         if (WikiTextUtil::isCommented($tplText)) {
             throw new \DomainException('HTML comment tag detected');
         }
-        $data = WikiTextUtil::parseDataFromTemplate($this::MODEL_NAME, $tplText);
+        $data = TemplateParser::parseDataFromTemplate($this::MODEL_NAME, $tplText);
         $this->detectUserSeparator($tplText);
         $this->hydrate($data);
     }
 
     public function detectUserSeparator($text): void
     {
-        $this->userSeparator = WikiTextUtil::findUserStyleSeparator($text);
+        $this->userSeparator = TemplateParser::findUserStyleSeparator($text);
     }
 
     /**

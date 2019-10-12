@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Models\Wiki;
 
+use App\Domain\Utils\TemplateParser;
 use App\Domain\Utils\WikiTextUtil;
 
 /**
@@ -13,9 +14,9 @@ use App\Domain\Utils\WikiTextUtil;
 class WikiRef
 {
     /**
-     * string WikiTextUtil::class.
+     * string TemplateParser::class.
      *
-     * @var WikiTextUtil
+     * @var TemplateParser
      */
     private $wikiTextUtil;
 
@@ -37,7 +38,7 @@ class WikiRef
      */
     public function __construct(string $refText)
     {
-        $this->wikiTextUtil = WikiTextUtil::class;
+        $this->wikiTextUtil = TemplateParser::class;
         $this->refText = $refText;
         $this->parseAllTemplates();
         // todo remove parsing from constructor ? (memory/time/Exception)
@@ -46,7 +47,7 @@ class WikiRef
     /**
      * TODO : check duplicate code
      * TODO : multiple occurrences of the same template
-     * TODO : move method to WikiTextUtil ?
+     * TODO : move method to TemplateParser ?
      * Generate an array with all the wikiTemplate objects
      * Theses objects are already hydrated with data parsed from the raw text
      * Example :
@@ -82,7 +83,7 @@ class WikiRef
     }
 
     /**
-     * todo move to WikiTextUtil::method ?
+     * todo move to TemplateParser::method ?
      * todo private.
      */
     public function findTemplateNames()
