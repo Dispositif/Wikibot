@@ -87,7 +87,6 @@ class OuvrageComplete
 
     /**
      * @return bool
-     *
      * @throws \Exception
      */
     private function predictSameBook()
@@ -104,7 +103,6 @@ class OuvrageComplete
 
     /**
      * @return bool
-     *
      * @throws \Exception
      */
     private function hasSameAuthors(): bool
@@ -125,7 +123,6 @@ class OuvrageComplete
      * @param OuvrageTemplate $ouv
      *
      * @return string
-     *
      * @throws \Exception
      */
     private function authorsFromBook(OuvrageTemplate $ouv)
@@ -159,7 +156,6 @@ class OuvrageComplete
 
     /**
      * @return bool
-     *
      * @throws \Exception
      */
     private function hasSameISBN(): bool
@@ -167,8 +163,9 @@ class OuvrageComplete
         if (empty($this->origin->getParam('isbn')) || empty($this->book->getParam('isbn'))) {
             return false;
         }
-        $isbn1 = str_replace('-', '', $this->origin->getParam('isbn'));
-        $isbn2 = str_replace('-', '', $this->book->getParam('isbn'));
+        // TODO replace with calcul isbn13
+        $isbn1 = IsbnFacade::isbn2ean($this->origin->getParam('isbn'));
+        $isbn2 = IsbnFacade::isbn2ean($this->book->getParam('isbn'));
         if ($isbn1 === $isbn2) {
             return true;
         }
@@ -178,7 +175,6 @@ class OuvrageComplete
 
     /**
      * @return bool
-     *
      * @throws \Exception
      */
     private function hasSameBookTitles(): bool
@@ -227,7 +223,6 @@ class OuvrageComplete
      * @param OuvrageTemplate $ouvrage
      *
      * @return string
-     *
      * @throws \Exception
      */
     private function charsFromBigTitle(OuvrageTemplate $ouvrage): string

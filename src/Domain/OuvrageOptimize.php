@@ -7,7 +7,6 @@ namespace App\Domain;
 use App\Domain\Models\Wiki\GoogleLivresTemplate;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\Utils\TextUtil;
-use App\Domain\Utils\TemplateParser;
 use App\Domain\Utils\WikiTextUtil;
 
 /**
@@ -48,10 +47,50 @@ class OuvrageOptimize
         $this->currentTask = 'suite';
         $this->predictFormatByPattern();
 
+        $this->processIsbn();
+
         $this->GoogleBookURL('lire en ligne');
         $this->GoogleBookURL('présentation en ligne');
 
         return $this;
+    }
+
+    /**
+     * Validate or correct ISBN
+     *
+     * @throws \Exception
+     */
+    private function processIsbn()
+    {
+        if (empty($this->getParam('isbn'))) {
+            return;
+        }
+        $isbn = $this->getParam('isbn');
+        $isbnMachine = new IsbnFacade($isbn);
+        try{
+            $isbnMachine->validate();
+            $isbn13 = $isbnMachine->format("ISBN-13");
+        }catch (\Exception $e){
+            // ISBN invalide
+            // TODO : bot ISBN invalide
+            $this->log(
+                sprintf(
+                    'ISBN invalide: %s',
+                    $isbnMachine->translateMessageFr($e->getMessage())
+                )
+            );
+
+            return;
+        }
+        // ISBN-13 valide
+        $this->setParam('isbn', $isbn13);
+
+        if ($isbnMachine::isbn2ean($isbn13) === $isbn13) {
+            $this->log('ISBN style');
+
+            return;
+        }
+        $this->log('±ISBN');
     }
 
     private function processTitle()
@@ -191,7 +230,6 @@ class OuvrageOptimize
      * @param $name
      *
      * @return string|null
-     *
      * @throws \Exception
      */
     private function getParam(string $name): ?string
@@ -312,7 +350,7 @@ class OuvrageOptimize
         // todo detect duplication ouvrage/plume dans externalTemplate ?
         if (!empty($this->getParam('plume'))) {
             $plumeValue = $this->getParam('plume');
-            $this->ouvrage->externalTemplates[] = (object) [
+            $this->ouvrage->externalTemplates[] = (object)[
                 'template' => 'plume',
                 '1' => $plumeValue,
                 'raw' => '{{plume}}',
@@ -327,15 +365,15 @@ class OuvrageOptimize
             // todo bug {{citation bloc}} si "=" ou "|" dans texte de citation
             // Legacy : use {{début citation}} ... {{fin citation}}
             if (preg_match('#[=|\|]#', $extrait) > 0) {
-                $this->ouvrage->externalTemplates[] = (object) [
+                $this->ouvrage->externalTemplates[] = (object)[
                     'template' => 'début citation',
                     '1' => '',
                     'raw' => '{{début citation}}'.$extrait.'{{fin citation}}',
                 ];
                 $this->log('+{{début citation}}');
-            } else {
+            }else {
                 // StdClass
-                $this->ouvrage->externalTemplates[] = (object) [
+                $this->ouvrage->externalTemplates[] = (object)[
                     'template' => 'citation bloc',
                     '1' => $extrait,
                     'raw' => '{{extrait|'.$extrait.'}}',
@@ -349,7 +387,7 @@ class OuvrageOptimize
         // "commentaire=bla" => {{Commentaire biblio|1=bla}}
         if (!empty($this->getParam('commentaire'))) {
             $commentaire = $this->getParam('commentaire');
-            $this->ouvrage->externalTemplates[] = (object) [
+            $this->ouvrage->externalTemplates[] = (object)[
                 'template' => 'commentaire biblio',
                 '1' => $commentaire,
                 'raw' => '{{commentaire biblio|'.$commentaire.'}}',
@@ -408,7 +446,6 @@ class OuvrageOptimize
 
     /**
      * @return bool
-     *
      * @throws \Exception
      */
     public function checkMajorEdit(): bool
