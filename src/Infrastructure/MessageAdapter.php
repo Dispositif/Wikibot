@@ -11,7 +11,7 @@ class MessageAdapter implements MessageInterface
 {
     private $tempStorage = [];
 
-    // inject AMQPAdapter, logAdapter, etc ?
+    // todo: dependency inject AMQPAdapter, logAdapter, etc ?
     public function __construct()
     {
     }

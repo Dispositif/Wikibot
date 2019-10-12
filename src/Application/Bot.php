@@ -6,6 +6,12 @@ namespace App\Application;
 
 use App\Infrastructure\ServiceFactory;
 
+/**
+ * Define wiki configuration of the bot
+ * Class Bot
+ *
+ * @package App\Application
+ */
 class Bot
 {
     const WORKER_ID = '[test]';
@@ -27,12 +33,12 @@ class Bot
     const EDIT_LAPS_FLAGBOT = 8;
 
     const EXIT_ON_CHECK_WATCHPAGE = true;
-
     private $watchPages
         = [
             'Discussion utilisateur:ZiziBot' => '2019-10-06T20:15:42Z',
             'Discussion utilisateur:Irønie' => '2019-09-18T22:12:52Z',
         ];
+    private $watchPagesLasCheck;
 
     public function __construct()
     {
@@ -45,6 +51,11 @@ class Bot
      */
     public function checkWatchPages()
     {
+        if( null === $this->watchPagesLasCheck ){
+            $this->watchPagesLasCheck = time();
+        }
+
+
         foreach ($this->watchPages as $title => $lastTime) {
             $pageTime = $this->getTimestamp($title);
 
@@ -91,7 +102,7 @@ class Bot
     }
 
     /**
-     * Legacy.
+     * Legacy. todo move
      * Detect {{nobots}}, {{bots|deny=all}}, {{bots|deny=MyBot,BobBot}}
      * OK frwiki — ? enwiki.
      *

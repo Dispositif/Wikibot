@@ -44,6 +44,10 @@ class WstatImport
         return 'https://wstat.fr/template/index.php?'.http_build_query($this->params);
     }
 
+    /**
+     * @return array [ ['title' => ..., 'template' => ...] ]
+     * @throws \Exception
+     */
     public function getData(): array
     {
         $data = [];
@@ -74,7 +78,7 @@ class WstatImport
      *
      * @param array $raw
      *
-     * @return array
+     * @return array [['title' => ..., 'template' => ...]]
      */
     private function parsingWstatData(array $raw): array
     {
