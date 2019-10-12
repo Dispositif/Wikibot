@@ -6,7 +6,10 @@ namespace App\Application;
 
 use App\Infrastructure\TagParser;
 use Mediawiki\Api\MediawikiFactory;
+use Mediawiki\DataModel\Content;
+use Mediawiki\DataModel\EditInfo;
 use Mediawiki\DataModel\Page;
+use Mediawiki\DataModel\Revision;
 
 class WikiPageAction
 {
@@ -14,6 +17,7 @@ class WikiPageAction
      * @var Page
      */
     public $page; // public for debug
+    public $wiki; // api ?
 
     /**
      * WikiPageAction constructor.
@@ -23,6 +27,7 @@ class WikiPageAction
      */
     public function __construct(MediawikiFactory $wiki, string $title)
     {
+        $this->wiki = $wiki;
         $this->page = $wiki->newPageGetter()->getFromTitle($title);
     }
 
@@ -31,8 +36,25 @@ class WikiPageAction
      */
     public function getText(): ?string
     {
-        return $this->page->getRevisions()->getLatest()->getContent()->getData(
-        );
+        return $this->page->getRevisions()->getLatest()->getContent()->getData();
+    }
+
+    /**
+     * Edit the page with new text.
+     *
+     * @param string $newText
+     *
+     * @return bool
+     */
+    public function editPage(string $newText, EditInfo $editInfo): bool
+    {
+        $revision = $this->page->getPageIdentifier();
+
+        $content = new Content($newText);
+        $revision = new Revision($content, $revision);
+        $success = $this->wiki->newRevisionSaver()->save($revision, $editInfo);
+
+        return $success;
     }
 
     /**
@@ -41,7 +63,6 @@ class WikiPageAction
      * @param $text string
      *
      * @return array
-     *
      * @throws \Exception
      */
     public function extractRefFromText(string $text): ?array
@@ -49,7 +70,7 @@ class WikiPageAction
         $parser = new TagParser(); // todo ParserFactory
         $refs = $parser->importHtml($text)->getRefValues(); // []
 
-        return (array) $refs;
+        return (array)$refs;
     }
 
     /**
