@@ -41,5 +41,4 @@ class DbAdapter
 
         return $id;
     }
-
 }

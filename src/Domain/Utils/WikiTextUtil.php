@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-
 namespace App\Domain\Utils;
-
 
 class WikiTextUtil extends TextUtil
 {
@@ -59,7 +57,7 @@ class WikiTextUtil extends TextUtil
      * To avoid leaving blank lines, when a comment is both preceded
      * and followed by a newline (ignoring spaces), trim leading and
      * trailing spaces and one of the newlines.
-     * (c) WikiMedia /includes/parser/Sanitizer.php
+     * (c) WikiMedia /includes/parser/Sanitizer.php.
      *
      * @param string $text
      *
@@ -67,32 +65,32 @@ class WikiTextUtil extends TextUtil
      */
     public static function removeHTMLcomments(string $text)
     {
-        while (($start = strpos($text, '<!--')) !== false) {
+        while (false !== ($start = strpos($text, '<!--'))) {
             $end = strpos($text, '-->', $start + 4);
-            if ($end === false) {
-                # Unterminated comment; bail out
+            if (false === $end) {
+                // Unterminated comment; bail out
                 break;
             }
             $end += 3;
-            # Trim space and newline if the comment is both
-            # preceded and followed by a newline
+            // Trim space and newline if the comment is both
+            // preceded and followed by a newline
             $spaceStart = max($start - 1, 0);
             $spaceLen = $end - $spaceStart;
-            while (substr($text, $spaceStart, 1) === ' ' && $spaceStart > 0) {
-                $spaceStart--;
-                $spaceLen++;
+            while (' ' === substr($text, $spaceStart, 1) && $spaceStart > 0) {
+                --$spaceStart;
+                ++$spaceLen;
             }
-            while (substr($text, $spaceStart + $spaceLen, 1) === ' ') {
-                $spaceLen++;
+            while (' ' === substr($text, $spaceStart + $spaceLen, 1)) {
+                ++$spaceLen;
             }
-            if (substr($text, $spaceStart, 1) === "\n"
-                && substr($text, $spaceStart + $spaceLen, 1) === "\n"
+            if ("\n" === substr($text, $spaceStart, 1)
+                && "\n" === substr($text, $spaceStart + $spaceLen, 1)
             ) {
-                # Remove the comment, leading and trailing
-                # spaces, and leave only one newline.
+                // Remove the comment, leading and trailing
+                // spaces, and leave only one newline.
                 $text = substr_replace($text, "\n", $spaceStart, $spaceLen + 1);
-            }else {
-                # Remove just the comment.
+            } else {
+                // Remove just the comment.
                 $text = substr_replace($text, '', $start, $end - $start);
             }
         }

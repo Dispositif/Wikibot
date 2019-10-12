@@ -8,7 +8,7 @@ use App\Domain\Models\Wiki\AbstractWikiTemplate;
 use App\Domain\WikiTemplateFactory;
 
 /**
- * todo legacy
+ * todo legacy.
  *
  * Class TemplateParser.
  */
@@ -22,6 +22,7 @@ abstract class TemplateParser extends WikiTextUtil
      * @param string $text
      *
      * @return array
+     *
      * @throws \Exception
      */
     public static function parseAllTemplateByName(string $tplName, string $text): array
@@ -56,7 +57,7 @@ abstract class TemplateParser extends WikiTextUtil
             $result[$tplName][$inc] += ['model' => $tplObject];
         }
 
-        return (array)$result;
+        return (array) $result;
     }
 
     /**
@@ -170,7 +171,6 @@ abstract class TemplateParser extends WikiTextUtil
         $text = preg_replace('#([^\{])\{([^\{])#', '${1}CURLYBRACKETO$2', $text);
         $text = preg_replace('#([^\}])\}([^\}])#', '${1}CURLYBRACKETC$2', $text);
 
-
         // TODO: implement better regex :(
         if (preg_match(
                 "~\{\{ ?".preg_quote($templateName, '~')."[\ \t\ \n\r]*\|([^\{\}]*(?:\{\{[^\{\}]+\}\}[^\{\}]*)*)\}\}~i",
@@ -240,7 +240,7 @@ abstract class TemplateParser extends WikiTextUtil
             }
             // No param name => take $keyNum as param name
             if (false === $pos) {
-                $param = (string)$keyNum;
+                $param = (string) $keyNum;
                 $value = $line;
                 ++$keyNum;
             }
@@ -281,7 +281,4 @@ abstract class TemplateParser extends WikiTextUtil
 
         return '|';
     }
-
-
-
 }

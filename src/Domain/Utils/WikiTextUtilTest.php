@@ -8,7 +8,6 @@ use PHPUnit\Framework\TestCase;
 
 class WikiTextUtilTest extends TestCase
 {
-
     public function testRemoveHTMLcomments()
     {
         $text = 'blabla<!-- sdfqfqs 
@@ -57,5 +56,4 @@ class WikiTextUtilTest extends TestCase
             ['{{en}}', '{{en}}'],
         ];
     }
-
 }

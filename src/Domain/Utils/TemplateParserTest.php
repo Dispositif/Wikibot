@@ -31,7 +31,7 @@ class TemplateParserTest extends TestCase
 
     /**
      * TODO {{nobr|Alexandre {{IV}}}}
-     * todo \n
+     * todo \n.
      *
      * @return array
      */
@@ -52,7 +52,6 @@ class TemplateParserTest extends TestCase
             // ok
             ['ouvrage', '{{ouvrage|bla|po}}', ['1' => 'bla', '2' => 'po']],
             // ok
-
         ];
     }
 

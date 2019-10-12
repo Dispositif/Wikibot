@@ -34,5 +34,4 @@ class IsbnFacade extends Isbn
             $message
         );
     }
-
 }
