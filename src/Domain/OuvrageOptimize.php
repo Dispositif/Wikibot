@@ -80,7 +80,7 @@ class OuvrageOptimize
             $this->log(
                 sprintf(
                     'ISBN invalide: %s',
-                    $isbnMachine->translateMessageFr($e->getMessage())
+                    $e->getMessage()
                 )
             );
 
