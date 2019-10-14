@@ -17,6 +17,7 @@ class WikiPageAction
      * @var Page
      */
     public $page; // public for debug
+
     public $wiki; // api ?
 
     /**
@@ -63,6 +64,7 @@ class WikiPageAction
      * @param $text string
      *
      * @return array
+     *
      * @throws \Exception
      */
     public function extractRefFromText(string $text): ?array
@@ -70,7 +72,7 @@ class WikiPageAction
         $parser = new TagParser(); // todo ParserFactory
         $refs = $parser->importHtml($text)->getRefValues(); // []
 
-        return (array)$refs;
+        return (array) $refs;
     }
 
     /**

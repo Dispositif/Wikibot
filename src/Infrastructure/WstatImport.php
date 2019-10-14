@@ -46,6 +46,7 @@ class WstatImport
 
     /**
      * @return array [ ['title' => ..., 'template' => ...] ]
+     *
      * @throws \Exception
      */
     public function getData(): array

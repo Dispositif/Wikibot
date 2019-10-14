@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Application;
 
-use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\Utils\TemplateParser;
 use App\Infrastructure\CorpusAdapter;
 use App\Infrastructure\WstatImport;
@@ -16,7 +15,7 @@ class WstatWorker extends FileWorker
     public function run(?SymfonyStyle $io = null)
     {
         $corp = new CorpusAdapter();
-        echo "WORKER ".__CLASS__."\n";
+        echo 'WORKER '.__CLASS__."\n";
         echo "To exit press CTRL+C\n";
 
         $wstat = new WstatImport(
@@ -33,7 +32,7 @@ class WstatWorker extends FileWorker
         // TODO : data -> getISBN -> sql
         // todo generator?
         foreach ($datas as $data) {
-            if(empty($data['template'])){
+            if (empty($data['template'])) {
                 continue;
             }
             $tpData = $this->getTemplateData($data['template']);
@@ -45,7 +44,6 @@ class WstatWorker extends FileWorker
             if (!empty($tpData['isbn2'])) {
                 $this->saveIsbn($data['title'], $tpData['isbn2']);
             }
-
         }
 
         // TODO : title/isbn -> sql
@@ -57,9 +55,9 @@ class WstatWorker extends FileWorker
 
     private function getTemplateData(string $string): array
     {
-        try{
+        try {
             $tpData = TemplateParser::parseDataFromTemplate('ouvrage', $string);
-        }catch (\Throwable $e){
+        } catch (\Throwable $e) {
             echo sprintf(
                 "EXCEPTION %s %s %s on string %s \n",
                 $e->getMessage(),

@@ -8,7 +8,7 @@ use App\Infrastructure\ServiceFactory;
 
 /**
  * Define wiki configuration of the bot
- * Class Bot
+ * Class Bot.
  */
 class Bot
 {
@@ -93,7 +93,7 @@ class Bot
     {
         $time = $this->getTimestamp($title);  // 2011-09-02T16:31:13Z
 
-        return (int)round((time() - strtotime($time)) / 60);
+        return (int) round((time() - strtotime($time)) / 60);
     }
 
     /**

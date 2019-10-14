@@ -31,6 +31,7 @@ class WorkerCommand extends Command
      * @param OutputInterface $output
      *
      * @return int|void|null
+     *
      * @throws \Mediawiki\Api\UsageException*@throws \Exception
      * @throws \Exception
      */
@@ -43,11 +44,9 @@ class WorkerCommand extends Command
         //            return 0;
         //        }
 
-
         //        $helper = $this->getHelper('question');
         //        $question = new Question('Please select a limit for this execution: ', 25);
         //        $limit = $helper->ask($input, $output, $question);
-
 
         $workerName = $input->getArgument('workerName');
 

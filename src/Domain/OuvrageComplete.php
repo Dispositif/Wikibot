@@ -90,7 +90,8 @@ class OuvrageComplete
 
     /**
      * Gestion doublon et accessibilité document Google Book.
-     * todo: test + refactor logic/duplicate
+     * todo: test + refactor logic/duplicate.
+     *
      * @throws \Exception
      */
     private function googleBookProcess()
@@ -117,13 +118,12 @@ class OuvrageComplete
         }
         // completion basique
         $booklire = $this->book->getParam('lire en ligne');
-        if(empty($lire) && !empty($booklire)){
+        if (empty($lire) && !empty($booklire)) {
             $this->origin->setParam('lire en ligne', $booklire);
             $this->log[] = '+lire en ligne';
             $this->major = true;
         }
-        unset($lire);
-        unset($booklire);
+        unset($lire, $booklire);
 
         $presentation = $this->origin->getParam('présentation en ligne') ?? false;
         if (!empty($presentation) && GoogleLivresTemplate::isGoogleBookValue($presentation)) {
@@ -153,6 +153,7 @@ class OuvrageComplete
 
     /**
      * @return bool
+     *
      * @throws \Exception
      */
     private function predictSameBook()
@@ -169,6 +170,7 @@ class OuvrageComplete
 
     /**
      * @return bool
+     *
      * @throws \Exception
      */
     private function hasSameAuthors(): bool
@@ -189,6 +191,7 @@ class OuvrageComplete
      * @param OuvrageTemplate $ouv
      *
      * @return string
+     *
      * @throws \Exception
      */
     private function authorsFromBook(OuvrageTemplate $ouv)
@@ -222,6 +225,7 @@ class OuvrageComplete
 
     /**
      * @return bool
+     *
      * @throws \Exception
      */
     private function hasSameISBN(): bool
@@ -241,6 +245,7 @@ class OuvrageComplete
 
     /**
      * @return bool
+     *
      * @throws \Exception
      */
     private function hasSameBookTitles(): bool
@@ -289,6 +294,7 @@ class OuvrageComplete
      * @param OuvrageTemplate $ouvrage
      *
      * @return string
+     *
      * @throws \Exception
      */
     private function charsFromBigTitle(OuvrageTemplate $ouvrage): string
