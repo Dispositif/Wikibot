@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain;
 
+use App\Domain\Models\Wiki\GoogleLivresTemplate;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\Utils\TextUtil;
 use App\Domain\Utils\WikiTextUtil;
@@ -16,6 +17,8 @@ class OuvrageComplete
     private $origin;
 
     private $book;
+
+    public $major = false;
 
     private $log = [];
 
@@ -42,7 +45,7 @@ class OuvrageComplete
     {
         // si livre suspect, on stoppe
         if (!$this->predictSameBook()) {
-            $this->log[] = 'not same book';
+            dump('not same book');
 
             return false;
         }
@@ -69,26 +72,87 @@ class OuvrageComplete
                     continue;
                 }
 
-                // TODO : détection accessibilité document Google
-                // HACK: duplication 'lire en ligne'/'présentation en ligne'
-                if (in_array($param, ['lire en ligne', 'présentation en ligne'])
-                    && (!empty($this->origin->getParam('lire en ligne'))
-                        || !empty($this->origin->getParam('présentation en ligne')))
-                ) {
+//                // champs gérés dans GoogleBookProcess
+                if (in_array($param, ['lire en ligne', 'présentation en ligne'])) {
                     continue;
                 }
 
                 $this->origin->setParam($param, $value);
                 $this->log[] = '+'.$param;
+                $this->major = true;
             }
         }
+
+        $this->googleBookProcess();
 
         return true;
     }
 
     /**
+     * Gestion doublon et accessibilité document Google Book.
+     * todo: test + refactor logic/duplicate
+     * @throws \Exception
+     */
+    private function googleBookProcess()
+    {
+        $lire = $this->origin->getParam('lire en ligne') ?? false;
+        if (!empty($lire) && GoogleLivresTemplate::isGoogleBookValue($lire)) {
+            if (!empty($this->book->getParam('lire en ligne'))) {
+                // idem
+            }
+            if (!empty($this->book->getParam('présentation en ligne'))) {
+                // PARTIAL
+                // on déplace sur présentation
+                $this->origin->setParam('présentation en ligne', $lire);
+                $this->origin->unsetParam('lire en ligne');
+                $this->log[] = 'Google partiel';
+
+                return; // ?
+            }
+            if (empty($this->book->getParam('lire en ligne'))) {
+                // todo : delete lire en ligne ?
+                // $this->major = true;
+                $this->log[] = 'non accessible sur Google!';
+            }
+        }
+        // completion basique
+        $booklire = $this->book->getParam('lire en ligne');
+        if(empty($lire) && !empty($booklire)){
+            $this->origin->setParam('lire en ligne', $booklire);
+            $this->log[] = '+lire en ligne';
+            $this->major = true;
+        }
+        unset($lire);
+        unset($booklire);
+
+        $presentation = $this->origin->getParam('présentation en ligne') ?? false;
+        if (!empty($presentation) && GoogleLivresTemplate::isGoogleBookValue($presentation)) {
+            if (!empty($this->book->getParam('présentation en ligne'))) {
+                // idem
+            }
+            if (!empty($this->book->getParam('lire en ligne'))) {
+                // TOTAL
+                // on déplace sur lire en ligne
+                $this->origin->setParam('lire en ligne', $presentation);
+                $this->origin->unsetParam('présentation en ligne');
+                $this->log[] = 'Google accessible';
+            }
+            if (empty($this->book->getParam('présentation en ligne'))) {
+                // todo: delete présentation en ligne ?
+                $this->log[] = 'non accessible sur Google!';
+            }
+        }
+        // completion basique // todo: completion pertinente si consultation partielle ?
+        $bookpresentation = $this->book->getParam('présentation en ligne');
+//        if(empty($presentation) && !empty($bookpresentation)){
+            // $this->major = true;
+//            $this->origin->setParam('présentation en ligne', $bookpresentation);
+//            $this->log[] = '+présentation en ligne';
+//        }
+    }
+
+    /**
      * @return bool
-     *
      * @throws \Exception
      */
     private function predictSameBook()
@@ -105,7 +169,6 @@ class OuvrageComplete
 
     /**
      * @return bool
-     *
      * @throws \Exception
      */
     private function hasSameAuthors(): bool
@@ -126,7 +189,6 @@ class OuvrageComplete
      * @param OuvrageTemplate $ouv
      *
      * @return string
-     *
      * @throws \Exception
      */
     private function authorsFromBook(OuvrageTemplate $ouv)
@@ -160,7 +222,6 @@ class OuvrageComplete
 
     /**
      * @return bool
-     *
      * @throws \Exception
      */
     private function hasSameISBN(): bool
@@ -180,7 +241,6 @@ class OuvrageComplete
 
     /**
      * @return bool
-     *
      * @throws \Exception
      */
     private function hasSameBookTitles(): bool
@@ -229,7 +289,6 @@ class OuvrageComplete
      * @param OuvrageTemplate $ouvrage
      *
      * @return string
-     *
      * @throws \Exception
      */
     private function charsFromBigTitle(OuvrageTemplate $ouvrage): string

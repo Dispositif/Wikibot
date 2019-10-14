@@ -24,6 +24,8 @@ class OuvrageOptimize
 
     private $log = [];
 
+    public $major = false;
+
     private $ouvrage;
 
     private $currentTask;
@@ -90,13 +92,13 @@ class OuvrageOptimize
         // ISBN 10 ?
         if (strlen(str_replace('-', '', $isbn)) === 10 && !$this->getParam('isbn10')) {
             $this->setParam('isbn10', $isbn);
-            //            $this->log('isbn10');
+            $this->log('+isbn10');
         }
 
         // ISBN correction
         if ($isbn13 !== $isbn) {
             $this->setParam('isbn', $isbn13);
-            $this->log('+ISBN-13');
+            $this->log('~ISBN');
         }
     }
 

@@ -9,8 +9,6 @@ use App\Infrastructure\ServiceFactory;
 /**
  * Define wiki configuration of the bot
  * Class Bot
- *
- * @package App\Application
  */
 class Bot
 {
@@ -33,12 +31,6 @@ class Bot
     const EDIT_LAPS_FLAGBOT = 8;
 
     const EXIT_ON_CHECK_WATCHPAGE = true;
-    private $watchPages
-        = [
-            'Discussion utilisateur:ZiziBot' => '2019-10-06T20:15:42Z',
-            'Discussion utilisateur:Irønie' => '2019-09-18T22:12:52Z',
-        ];
-    private $watchPagesLasCheck;
 
     public function __construct()
     {
@@ -51,28 +43,31 @@ class Bot
      */
     public function checkWatchPages()
     {
-        if( null === $this->watchPagesLasCheck ){
-            $this->watchPagesLasCheck = time();
+        $filename = __DIR__.'/resources/watch_pages.json';
+        if (!file_exists($filename)) {
+            dump("no file $filename");
+
+            return;
         }
+        $json = file_get_contents($filename);
+        $watchPages = json_decode($json, true);
 
-
-        foreach ($this->watchPages as $title => $lastTime) {
+        foreach ($watchPages as $title => $lastTime) {
             $pageTime = $this->getTimestamp($title);
 
             // the page has been edited since last check ?
             if ($pageTime !== $lastTime) {
                 echo sprintf(
-                    "!!! WATCHPAGE '%s' has been edited since %s\n",
+                    "WATCHPAGE '%s' has been edited since %s\n",
                     $title,
                     $lastTime
                 );
 
                 // Ask? Mettre à jour $watchPages ?
-                $this->watchPages[$title] = $pageTime;
                 echo "Replace with $title => '$pageTime'";
 
                 if (self::EXIT_ON_CHECK_WATCHPAGE) {
-                    echo "\nEXIT_ON_CHECK_WATCHPAGE\n";
+                    echo "\nSTOP on checkWatchPages\n";
                     exit();
                 }
             }
@@ -98,7 +93,7 @@ class Bot
     {
         $time = $this->getTimestamp($title);  // 2011-09-02T16:31:13Z
 
-        return (int) round((time() - strtotime($time)) / 60);
+        return (int)round((time() - strtotime($time)) / 60);
     }
 
     /**
