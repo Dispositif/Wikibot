@@ -24,7 +24,7 @@ class OuvrageOptimize
 
     private $log = [];
 
-    public $major = false;
+    public $notCosmetic = false;
 
     private $ouvrage;
 
@@ -40,21 +40,90 @@ class OuvrageOptimize
 
     public function doTasks(): self
     {
-        $this->currentTask = 'start';
         $this->parametersErrorFromHydrate();
+
+        $this->processAuthors();
+
         $this->processTitle();
         $this->processEditeur();
         $this->processDates();
         $this->externalTemplates();
-        $this->currentTask = 'suite';
         $this->predictFormatByPattern();
 
         $this->processIsbn();
+        $this->processLang();
 
         $this->GoogleBookURL('lire en ligne');
         $this->GoogleBookURL('présentation en ligne');
 
         return $this;
+    }
+
+    /**
+     * @throws \Exception
+     */
+    private function processAuthors()
+    {
+        $this->multipleAuthors();
+        $this->fusionFirstNameAndName();
+    }
+
+    private function fusionFirstNameAndName()
+    {
+        // Fusion prénom+nom -> auteur, si :
+        // (prénom simple ou prénom avec initiale) ET nom simple
+        // cosmétique
+        for ($i = 1; $i < 5; $i++) {
+            $prenom = $this->getParam('prénom'.$i) ?? false;
+            $nom = $this->getParam('nom'.$i) ?? false;
+            if ($prenom && $nom) {
+                // prénom constitué de "mot A." ?
+                $initialePrenom = preg_match('#^[^ \.]+ [A-Z]\.$#', $prenom);
+
+                // fusion prénom1+nom1 => auteur1
+                if (($initialePrenom || !strpos($prenom, ' ')) && !strpos($nom, ' ')) {
+                    $this->setParam('auteur'.$i, sprintf('%s %s', $prenom, $nom));
+                    $this->unsetParam('prénom'.$i);
+                    $this->unsetParam('nom'.$i);
+                    $this->log('>auteur'.$i); // cosmétique
+                }
+            }
+        }
+    }
+
+    private function multipleAuthors()
+    {
+        // todo explode auteurs multiples // check auteur1 ?
+        $auteur = $this->getParam('auteur') ?? false;
+        if ($auteur && PredictFromTypo::hasManyAuthors($auteur)) {
+            $this->setParam('auteurs', $auteur);
+            $this->unsetParam('auteur');
+            $this->log('>auteurS'); // cosmétique
+
+            return;
+        }
+    }
+
+    private function processLang()
+    {
+        try {
+            $lang = $this->getParam('langue') ?? null;
+        }catch(\Exception $e) {
+            dump($e);
+
+            return;
+        }
+        if ($lang) {
+            $lang2 = str_replace(
+                ['français', 'anglais', 'japonais', 'allemand', 'espagnol'],
+                ['fr', 'en', 'ja', 'de', 'es'],
+                $lang
+            );
+            if ($lang !== $lang2) {
+                $this->setParam('langue', $lang2);
+                $this->log('±langue');
+            }
+        }
     }
 
     /**
@@ -74,7 +143,7 @@ class OuvrageOptimize
         try {
             $isbnMachine->validate();
             $isbn13 = $isbnMachine->format('ISBN-13');
-        } catch (\Throwable $e) {
+        }catch(\Throwable $e) {
             // ISBN not validated
             // TODO : bot ISBN invalide (queue, message PD...)
             $note = ($this->getParam('note')) ?? '';
@@ -85,6 +154,7 @@ class OuvrageOptimize
                     $e->getMessage()
                 )
             );
+            $this->notCosmetic = true;
 
             return;
         }
@@ -93,12 +163,14 @@ class OuvrageOptimize
         if (10 === strlen(str_replace('-', '', $isbn)) && !$this->getParam('isbn10')) {
             $this->setParam('isbn10', $isbn);
             $this->log('+isbn10');
+            $this->notCosmetic = true;
         }
 
         // ISBN correction
         if ($isbn13 !== $isbn) {
             $this->setParam('isbn', $isbn13);
-            $this->log('~ISBN');
+            $this->log('±ISBN');
+            $this->notCosmetic = true;
         }
     }
 
@@ -195,7 +267,12 @@ class OuvrageOptimize
 
     private function processDates()
     {
-        // dewikification
+        try {
+            $this->dateIsYear();
+        }catch(\Exception $e) {
+            dump($e);
+        }
+        // dewikification TODO
         $params = ['date', 'année', 'mois', 'jour'];
     }
 
@@ -227,6 +304,7 @@ class OuvrageOptimize
                     $this->setParam($predName, $value);
                     $predName = $this->ouvrage->getAliasParam($predName);
                     $this->log("$name => $predName");
+                    $this->notCosmetic = true;
                     unset($this->ouvrage->parametersErrorFromHydrate[$name]);
                 }
             }
@@ -239,7 +317,6 @@ class OuvrageOptimize
      * @param $name
      *
      * @return string|null
-     *
      * @throws \Exception
      */
     private function getParam(string $name): ?string
@@ -360,7 +437,7 @@ class OuvrageOptimize
         // todo detect duplication ouvrage/plume dans externalTemplate ?
         if (!empty($this->getParam('plume'))) {
             $plumeValue = $this->getParam('plume');
-            $this->ouvrage->externalTemplates[] = (object) [
+            $this->ouvrage->externalTemplates[] = (object)[
                 'template' => 'plume',
                 '1' => $plumeValue,
                 'raw' => '{{plume}}',
@@ -375,15 +452,15 @@ class OuvrageOptimize
             // todo bug {{citation bloc}} si "=" ou "|" dans texte de citation
             // Legacy : use {{début citation}} ... {{fin citation}}
             if (preg_match('#[=|\|]#', $extrait) > 0) {
-                $this->ouvrage->externalTemplates[] = (object) [
+                $this->ouvrage->externalTemplates[] = (object)[
                     'template' => 'début citation',
                     '1' => '',
                     'raw' => '{{début citation}}'.$extrait.'{{fin citation}}',
                 ];
                 $this->log('+{{début citation}}');
-            } else {
+            }else {
                 // StdClass
-                $this->ouvrage->externalTemplates[] = (object) [
+                $this->ouvrage->externalTemplates[] = (object)[
                     'template' => 'citation bloc',
                     '1' => $extrait,
                     'raw' => '{{extrait|'.$extrait.'}}',
@@ -397,7 +474,7 @@ class OuvrageOptimize
         // "commentaire=bla" => {{Commentaire biblio|1=bla}}
         if (!empty($this->getParam('commentaire'))) {
             $commentaire = $this->getParam('commentaire');
-            $this->ouvrage->externalTemplates[] = (object) [
+            $this->ouvrage->externalTemplates[] = (object)[
                 'template' => 'commentaire biblio',
                 '1' => $commentaire,
                 'raw' => '{{commentaire biblio|'.$commentaire.'}}',
@@ -412,20 +489,21 @@ class OuvrageOptimize
     // ----------------------
 
     /**
-     * todo : invisible/inutile ? (LUA).
+     * Date->année (nécessaire pour OuvrageComplete)
      *
      * @throws \Exception
      */
-    //    private function dateIsYear()
-    //    {
-    //        if (($date = $this->getParam('date'))) {
-    //            if (preg_match('#^\-?[12][0-9][0-9][0-9]$#', $date)) {
-    //                $this->setParam('année', $date);
-    //                $this->unsetParam('date');
-    //                $this->log('date=>année');
-    //            }
-    //        }
-    //    }
+    private function dateIsYear()
+    {
+        $date = $this->getParam('date') ?? false;
+        if ($date) {
+            if (preg_match('#^\-?[12][0-9][0-9][0-9]$#', $date)) {
+                $this->setParam('année', $date);
+                $this->unsetParam('date');
+                $this->log('date->année');
+            }
+        }
+    }
 
     private function predictFormatByPattern()
     {
@@ -456,7 +534,6 @@ class OuvrageOptimize
 
     /**
      * @return bool
-     *
      * @throws \Exception
      */
     public function checkMajorEdit(): bool
@@ -567,6 +644,7 @@ class OuvrageOptimize
         if ($newEditeur !== $editeur) {
             $this->setParam('éditeur', $newEditeur);
             $this->log('±éditeur');
+            $this->notCosmetic = true;
         }
     }
 }
