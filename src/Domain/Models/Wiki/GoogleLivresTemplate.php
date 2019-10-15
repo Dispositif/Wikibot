@@ -12,7 +12,7 @@ namespace App\Domain\Models\Wiki;
  */
 class GoogleLivresTemplate extends AbstractWikiTemplate
 {
-    const DEFAULT_DOMAIN_URL = 'https://books.google.fr/books';
+    const DEFAULT_DOMAIN_URL = 'https://books.google.com/books';
 
     const ALLOW_USER_ORDER = false;
 
