@@ -27,9 +27,6 @@ class ServiceFactory
      */
     private static $wikiApi;
 
-    /**
-     * @var Mysql
-     */
     private static $dbConnection;
 
     private function __construct(){}
@@ -102,23 +99,14 @@ class ServiceFactory
     }
 
     /**
-     * @return Mysql
-     * @throws \Exception
+     * @return DbAdapter
      */
-    public static function sqlConnection(): Mysql
+    public static function sqlConnection(): DbAdapter
     {
-//        if (isset(self::$dbConnection)) {
-//            return self::$dbConnection;
-//        }
-        $pdo = new PDOConnector(
-            getenv('MYSQL_HOST'),
-            getenv('MYSQL_USER'),
-            getenv('MYSQL_PASSWORD'),
-            getenv('MYSQL_DATABASE')
-        );
-
-        $pdoConn = $pdo->connect('utf8', ['port'=>getenv('MYSQL_PORT')]);
-        self::$dbConnection = new Mysql($pdoConn);
+        if (isset(self::$dbConnection)) {
+            return self::$dbConnection;
+        }
+        self::$dbConnection = new DbAdapter();
 
         return self::$dbConnection;
     }
