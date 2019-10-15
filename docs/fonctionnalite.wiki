@@ -1,13 +1,14 @@
 Légende : {{fait}} module activé / {{pas fait}} module pas activé / {{attendre}} consensus communautaire
 
-=== Traitement modèle Ouvrage ===
+=== Traitement modèle {Ouvrage} ===
 
 Correction syntaxique des paramètres :
-* {{fait}} correction des alias
-* {{fait}} conversion des paramètres enwiki ({{m|cite book}})
+* {{fait}} correction des alias [cosmétique]
+* {{fait}} conversion des paramètres enwiki ({{m|cite book}}) [cosmétique]
 * {{fait}} correction de paramètres inconnus (prédiction) : erreur de frappe
 * {{attendre}} {{pas fait}}  signalement paramètre inconnu : commentaire HTML, note=, liste, catégorie ?
-* {{fait}} extraction paramètres obsolètes (plume,extrait,commentaire) vers {{m|plume}}, {{m|citationbloc}}, {{m|commentaire biblio}},{{m|début citation}}...
+* {{fait}} extraction paramètres obsolètes (plume,extrait,commentaire) vers {{m|plume}}, {{m|citation bloc}},
+{{m|commentaire biblio}}, {{m|début citation}}... [cosmétique]
 
 Style : {{attendre}} conservation du style rédactionnel du modèle (ordre des paramètres, espacement)
 
@@ -22,8 +23,8 @@ Améliorations typographiques :
 Titre, sous-titre...
 * {{fait}} Typo : majuscules, règle internationale " : " (bistro 08-2019)
 * {{fait}}retire lien externe titre/sous-titre (Bistro 27 août 2011)
-* {{fait}}retire {{m|lang}} : déplacé vers 'langue'
-* {{fait}} déplacement en 'sous-titre' (cosmétique?)
+* {{fait}}retire {{m|lang}} : déplacé vers 'langue' [cosmétique]
+* {{fait}} déplacement en 'sous-titre' [cosmétique?]
 
 lieu : {{fait}} pas de wikilien sur lieu (stats/pertinence) : [[Paris]] -> Paris
 
@@ -31,13 +32,13 @@ lieu : {{fait}} pas de wikilien sur lieu (stats/pertinence) : [[Paris]] -> Paris
 * {{fait}}correction des confusions 'numéro chapitre'/'titre chapitre', etc
 
 Auteur :
-* {{fait}} Prénom1+Nom1=>Auteur1 (si prénom/nom uniques ou prénom avec initiale)
+* {{fait}} Prénom1+Nom1=>Auteur1 (si prénom/nom uniques ou prénom avec initiale) [cosmétique]
 * {{attendre}}  distinction prénom/nom si 2 prénoms (ancrage).
 * {{pas fait}}  détection/gestion auteurs multiples
 * {{pas fait}} {{3/4}}  prédiction wikilien page d'auteur
 
 Editeur :
-* {{fait}} 'lien éditeur' retiré (obsolète), remplacé par wikilien
+* {{fait}} 'lien éditeur' retiré (obsolète), remplacé par wikilien [cosmétique]
 * {{fait}} correction typographique : abbréviations (Éd.)
 * {{fait}} forme brève : Éd. de La Gourde => [[Éditions de La Gourde|La Gourde]], mais 'Éditions de Minuit' inchangé
 * {{pas fait}} {{3/4}} prédiction du wikilien éditeur
@@ -50,7 +51,7 @@ ISBN :
 * {{pas fait}} contrôle des ISBN multiples
 
 Dates :
-* {{fait}} confusion date/année
+* {{fait}} confusion date/année [cosmétique]
 * {{pas fait}}  conversions dates américaines
 * {{attendre}} Avec LUA plus besoin d'exploser la date en jour/mois/année. Faut-il convertir vers 'date' ?
 
@@ -59,7 +60,9 @@ Format :
 
 Lien Google Books : [https://fr.wikipedia.org/w/index.php?title=Montigny-l%C3%A8s-Metz&diff=163546081&oldid=162802554
 exemple]
-* {{fait}} simplification d'URL : {{fait}} forçage domaine .fr, {{fait}}suppression des paramètres non nécessaires (infos de tracking) : conservation id, pg (page), dq (requête/surlignage) qui permettent d'obtenir la même interface. 'q'?.
+* {{fait}} simplification d'URL : {{fait}} forçage domaine .fr, {{fait}}suppression des paramètres non nécessaires
+(infos de tracking) : conservation id, pg (page), dq (requête/surlignage) qui permettent d'obtenir la même interface.
+'q'?. [cosmétique??]
 * {{attendre}} Suppression lien invalide (id manquant)
 * {{fait}} dans {{m|Ouvrage}} : correction 'lire en ligne'/'présentation en ligne' selon accessibilité totale ou partielle du document.
 * {{attendre}} Suppression lien si accès impossible.
@@ -68,7 +71,7 @@ exemple]
 * {{attendre}} ajout 'lire en ligne' si livre d'accès complet.
 
 Fonctionnement du bot :
-* {{fait}} n'édite pas si modification seulement cosmétique ? (%erreur?)
+* {{fait}} n'édite pas si modifications seulement cosmétiques (sur la page) ? (%erreur?)
 * {{fait}}{{2/4}} si ajout de données (auteur,éditeur...) : édit sans bot flag (à fréquence lente)
 * {{fait}} arrêt si modification page discussion du bot/dresseur
 * {{fait}} arrêt si modèle avec commentaire HTML
@@ -76,14 +79,17 @@ Fonctionnement du bot :
 * {{pas fait}} page de log détaillé quotidien
 
 Sur page globale :
-* {{pas fait}}  analyse des {{fr}}, {{en}} pour ajout {{fr}} si ouvrages étrangers > 50%
+* {{pas fait}}  analyse des {fr}, {en} pour ajout {fr} si ouvrages étrangers > 50%
 * {{pas fait}}  Message en PD pour ISBN invalide, suggestion de correctifs, etc. Par le passé, succès/efficacité.
 * {{pas fait}}  un seul wikilien par page
 
 === Estimation ===
 Durée tâche (/limitations API) :
-* 9 mois pour {ouvrage} avec ISBN (~200 edits/j, 10/h)
-* 2 ans pour {ouvrage} sans ISBN
+* 9 mois pour {ouvrage} avec ISBN (~200 edits/j, 10/h) 170'000
+* 2 ans pour {ouvrage} sans ISBN / 920'000 inclusions
+
+Dans sa version précédente (2012), suite aux édits du bot, y'avait environ 1% de modification humaine des citations. Les
+ 2/3 portant sur la correction d'ISBN ou titres signalés erronés par le bot (genre message en PD).
 
 === Mentions libres de biblio ===
 * {{attendre}} simplification d'URL Google Livres (paramètres de tracking)
