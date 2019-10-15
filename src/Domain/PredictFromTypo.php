@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain;
 
+use App\Domain\Utils\WikiTextUtil;
+
 /**
  * Class PredictFromTypo.
  */
@@ -115,8 +117,10 @@ class PredictFromTypo
      */
     static public function hasManyAuthors(string $author): bool
     {
+        $author = WikiTextUtil::unWikify($author);
         $chars = count_chars(trim($author));
-        if ($chars[ord('&')] > 0 || $chars[ord(';')] > 0 || $chars[ord(' ')] > 2 || $chars[ord(',')] > 1) {
+        // todo : "et" + "and" ?
+        if ($chars[ord('&')] > 0 || $chars[ord(';')] > 0 || $chars[ord(' ')] >= 3 || $chars[ord(',')] > 1) {
             return true;
         }
 
