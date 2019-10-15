@@ -104,17 +104,20 @@ class OuvrageOptimize
         }
     }
 
+    /**
+     * todo: move/implement
+     */
     private function processLang()
     {
         try {
             $lang = $this->getParam('langue') ?? null;
-        }catch(\Exception $e) {
-            dump($e);
+        } catch (\Exception $e) {
+            dump('ERROR '.$e);
 
             return;
         }
         if ($lang) {
-            $lang2 = str_replace(
+            $lang2 = str_ireplace(
                 ['français', 'anglais', 'japonais', 'allemand', 'espagnol'],
                 ['fr', 'en', 'ja', 'de', 'es'],
                 $lang
@@ -143,7 +146,7 @@ class OuvrageOptimize
         try {
             $isbnMachine->validate();
             $isbn13 = $isbnMachine->format('ISBN-13');
-        }catch(\Throwable $e) {
+        } catch (\Throwable $e) {
             // ISBN not validated
             // TODO : bot ISBN invalide (queue, message PD...)
             $note = ($this->getParam('note')) ?? '';
@@ -269,7 +272,7 @@ class OuvrageOptimize
     {
         try {
             $this->dateIsYear();
-        }catch(\Exception $e) {
+        } catch (\Exception $e) {
             dump($e);
         }
         // dewikification TODO
@@ -290,6 +293,10 @@ class OuvrageOptimize
         $allParamsAndAlias = $this->ouvrage->getParamsAndAlias();
 
         foreach ($this->ouvrage->parametersErrorFromHydrate as $name => $value) {
+            if (!is_string($name)) {
+                // example : 1 => "ouvrage collectif" from |ouvrage collectif|
+                continue;
+            }
             $maxDistance = 1;
             if (strlen($name) >= 4) {
                 $maxDistance = 2;
@@ -458,7 +465,7 @@ class OuvrageOptimize
                     'raw' => '{{début citation}}'.$extrait.'{{fin citation}}',
                 ];
                 $this->log('+{{début citation}}');
-            }else {
+            } else {
                 // StdClass
                 $this->ouvrage->externalTemplates[] = (object)[
                     'template' => 'citation bloc',

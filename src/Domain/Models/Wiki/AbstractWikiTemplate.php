@@ -239,6 +239,8 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
             $name = $this->getAliasParam($name);
         } catch (\Throwable $e) {
             unset($e);
+            // hack : 1 => "ouvrage collectif"
+            $name = (string) $name;
             $this->log[] = "parameter $name not found";
             $this->parametersErrorFromHydrate[$name] = $value;
 
