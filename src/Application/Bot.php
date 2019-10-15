@@ -97,9 +97,7 @@ class Bot
     }
 
     /**
-     * Legacy. todo move
      * Detect {{nobots}}, {{bots|deny=all}}, {{bots|deny=MyBot,BobBot}}
-     * OK frwiki — ? enwiki.
      *
      * @param string      $text
      * @param string|null $botName

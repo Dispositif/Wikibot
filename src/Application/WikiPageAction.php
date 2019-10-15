@@ -42,8 +42,10 @@ class WikiPageAction
 
     /**
      * Edit the page with new text.
+     * Opti : EditInfo optional param ?
      *
-     * @param string $newText
+     * @param string   $newText
+     * @param EditInfo $editInfo
      *
      * @return bool
      */

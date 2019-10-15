@@ -34,7 +34,7 @@ class PredictFromTypo
     public function predictNameFirstName(string $author): array
     {
         // multiple authors // todo? explode authors
-        if ($this->hasManyAuthors($author)) {
+        if (self::hasManyAuthors($author)) {
             return ['fail' => '2+ authors in string'];
         }
 
@@ -113,10 +113,10 @@ class PredictFromTypo
      *
      * @return bool
      */
-    private function hasManyAuthors($author): bool
+    static public function hasManyAuthors(string $author): bool
     {
         $chars = count_chars(trim($author));
-        if ($chars[ord(';')] > 0 || $chars[ord(' ')] > 2 || $chars[ord(',')] > 1) {
+        if ($chars[ord('&')] > 0 || $chars[ord(';')] > 0 || $chars[ord(' ')] > 2 || $chars[ord(',')] > 1) {
             return true;
         }
 
@@ -177,8 +177,57 @@ class PredictFromTypo
         // PUNCTUATION : sans virgule, sans &, sans point, sans tiret petit '-'
         // don't use str_split() which cuts on 1 byte length (≠ multibytes chars)
         $text = str_replace(
-            ['!', '"', '«', '»', '#', '$', '%', "'", '’', '´', '`', '^', '…', '‽', '(', ')', '*', '⁂', '+', '–', '—', '/', ':', ';', '?', '@',
-             '[', '\\', ']', '_', '`', '{', '|', '¦', '}', '~', '<', '>', '№', '©', '®', '°', '†', '§', '∴', '∵', '¶', '•', '+', ],
+            [
+                '!',
+                '"',
+                '«',
+                '»',
+                '#',
+                '$',
+                '%',
+                "'",
+                '’',
+                '´',
+                '`',
+                '^',
+                '…',
+                '‽',
+                '(',
+                ')',
+                '*',
+                '⁂',
+                '+',
+                '–',
+                '—',
+                '/',
+                ':',
+                ';',
+                '?',
+                '@',
+                '[',
+                '\\',
+                ']',
+                '_',
+                '`',
+                '{',
+                '|',
+                '¦',
+                '}',
+                '~',
+                '<',
+                '>',
+                '№',
+                '©',
+                '®',
+                '°',
+                '†',
+                '§',
+                '∴',
+                '∵',
+                '¶',
+                '•',
+                '+',
+            ],
             ' PUNCTUATION ',
             $text
         );
@@ -194,26 +243,26 @@ class PredictFromTypo
                 $res .= ' '.$tok;
                 //"J. R . R." => INITIAL (1 seule fois)
                 $res = str_replace('INITIAL INITIAL', 'INITIAL', $res);
-            } elseif (preg_match('#^[0-9]+$#', $tok) > 0) {
+            }elseif (preg_match('#^[0-9]+$#', $tok) > 0) {
                 $res .= ' ALLNUMBER';
-            } elseif (preg_match('#^[0-9\-]+$#', $tok) > 0) {
+            }elseif (preg_match('#^[0-9\-]+$#', $tok) > 0) {
                 $res .= ' DASHNUMBER';
-            } elseif (preg_match('#[0-9]#', $tok) > 0) {
+            }elseif (preg_match('#[0-9]#', $tok) > 0) {
                 $res .= ' WITHNUMBER';
-            } elseif (mb_strtolower($tok, 'UTF-8') === $tok) {
+            }elseif (mb_strtolower($tok, 'UTF-8') === $tok) {
                 $res .= ' ALLLOWER';
-            } elseif (mb_strtoupper($tok, 'UTF-8') === $tok) {
+            }elseif (mb_strtoupper($tok, 'UTF-8') === $tok) {
                 $res .= ' ALLUPPER';
-            } elseif (mb_strtoupper(substr($tok, 0, 1), 'UTF-8') === substr(
+            }elseif (mb_strtoupper(substr($tok, 0, 1), 'UTF-8') === substr(
                     $tok,
                     0,
                     1
                 ) and mb_strtolower(substr($tok, 1), 'UTF-8') === substr($tok, 1)
             ) {
                 $res .= ' FIRSTUPPER';
-            } elseif (preg_match('#[a-zA-Zàéù]#', $tok) > 0) {
+            }elseif (preg_match('#[a-zA-Zàéù]#', $tok) > 0) {
                 $res .= ' MIXED';
-            } else {
+            }else {
                 $res .= ' UNKNOW';
             }
         }

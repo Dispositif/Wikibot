@@ -49,12 +49,13 @@ class MessageAdapter implements MessageInterface
     }
 
     /**
+     * todo : DI
      * AMQP server interface (with acknowledge and durable messages).
      *
      * @param string $queueName
      * @param        $data
      */
-    private function amqpMsg(string $queueName, $data): void
+    public function amqpMsg(string $queueName, string $data): void
     {
         $channel = ServiceFactory::queueChannel($queueName);
         $msg = new AMQPMessage(

@@ -8,9 +8,33 @@ use PHPUnit\Framework\TestCase;
 
 class TemplateParserTest extends TestCase
 {
-    public function testFindUserStyleSeparator()
+    /**
+     * @dataProvider provideStyleSeparator
+     */
+    public function testFindUserStyleSeparator($text, $expected)
     {
-        $this::markTestIncomplete('not implemented');
+        $this::assertSame(
+            $expected,
+            TemplateParser::findUserStyleSeparator($text)
+        );
+    }
+
+    public function provideStyleSeparator()
+    {
+        return [
+            ['{{Ouvrage|langue=fr|prénom1=Ernest|nom1=Nègre|titre=Toponymie}}', '|'],
+            ['{{Ouvrage |langue=fr |prénom1=Ernest |nom1=Nègre |titre=Toponymie }}', ' |'],
+            ['{{Ouvrage | langue=fr | prénom1=Ernest | nom1=Nègre | titre=Toponymie }}', ' | '],
+            [
+                '{{Ouvrage
+|langue=fr
+|prénom1=Ernest
+|nom1=Nègre
+|titre=Toponymie
+}}',
+                "\n|",
+            ],
+        ];
     }
 
     public function testFindAllTemplatesByName()

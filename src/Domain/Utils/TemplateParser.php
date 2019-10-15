@@ -149,7 +149,6 @@ abstract class TemplateParser extends WikiTextUtil
     }
 
     /**
-     * BUG TODO : trouve pas si char russes
      * For multiple occurrences see findAllTemplatesByName().
      *
      * @param string $templateName

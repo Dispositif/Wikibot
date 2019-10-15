@@ -1,3 +1,4 @@
+Légende : {{fait}} module activé / {{pas fait}} module pas activé / {{attendre}} consensus communautaire
 
 === Traitement modèle Ouvrage ===
 
@@ -30,6 +31,7 @@ lieu : {{fait}} pas de wikilien sur lieu (stats/pertinence) : [[Paris]] -> Paris
 * {{fait}}correction des confusions 'numéro chapitre'/'titre chapitre', etc
 
 Auteur :
+* {{fait}} Prénom1+Nom1=>Auteur1 (si prénom/nom uniques ou prénom avec initiale)
 * {{attendre}}  distinction prénom/nom si 2 prénoms (ancrage).
 * {{pas fait}}  détection/gestion auteurs multiples
 * {{pas fait}} {{3/4}}  prédiction wikilien page d'auteur
@@ -41,7 +43,8 @@ Editeur :
 * {{pas fait}} {{3/4}} prédiction du wikilien éditeur
 
 ISBN :
-* {{fait}} conversion EAN (sans tiret) et ISBN-10 => ISBN-13
+* {{fait}} conversion EAN (sans tiret) et ISBN-10 => ISBN-13 ([https://fr.wikipedia.org/w/index
+.php?title=Montigny-l%C3%A8s-Cormeilles&diff=prev&oldid=163545321])
 * {{fait}} ISBN-10 archivé dans 'isbn10' (invisible)
 * {{attendre}} signalement ISBN invalide (checksum, code pays/product) : commentaire HTML, isbn invalide=, liste, catégorie ?
 * {{pas fait}} contrôle des ISBN multiples
@@ -49,11 +52,13 @@ ISBN :
 Dates :
 * {{fait}} confusion date/année
 * {{pas fait}}  conversions dates américaines
+* {{attendre}} Avec LUA plus besoin d'exploser la date en jour/mois/année. Faut-il convertir vers 'date' ?
 
 Format :
 * {{fait}} prédiction 'format livre' ou 'format électronique'
 
-Lien Google Books :
+Lien Google Books : [https://fr.wikipedia.org/w/index.php?title=Montigny-l%C3%A8s-Metz&diff=163546081&oldid=162802554
+exemple]
 * {{fait}} simplification d'URL : {{fait}} forçage domaine .fr, {{fait}}suppression des paramètres non nécessaires (infos de tracking) : conservation id, pg (page), dq (requête/surlignage) qui permettent d'obtenir la même interface. 'q'?.
 * {{attendre}} Suppression lien invalide (id manquant)
 * {{fait}} dans {{m|Ouvrage}} : correction 'lire en ligne'/'présentation en ligne' selon accessibilité totale ou partielle du document.
@@ -64,16 +69,16 @@ Lien Google Books :
 
 Fonctionnement du bot :
 * {{fait}} n'édite pas si modification seulement cosmétique ? (%erreur?)
-* {{fait}} si ajout de données : édit sans bot flag ? (à fréquence lente)
+* {{fait}}{{2/4}} si ajout de données (auteur,éditeur...) : édit sans bot flag (à fréquence lente)
 * {{fait}} arrêt si modification page discussion du bot/dresseur
-* {{pas fait}} arrêt si modèle avec commentaire HTML
+* {{fait}} arrêt si modèle avec commentaire HTML
 * {{pas fait}}  suivi des reverts
+* {{pas fait}} page de log détaillé quotidien
 
 Sur page globale :
 * {{pas fait}}  analyse des {{fr}}, {{en}} pour ajout {{fr}} si ouvrages étrangers > 50%
 * {{pas fait}}  Message en PD pour ISBN invalide, suggestion de correctifs, etc. Par le passé, succès/efficacité.
 * {{pas fait}}  un seul wikilien par page
-
 
 === Estimation ===
 Durée tâche (/limitations API) :

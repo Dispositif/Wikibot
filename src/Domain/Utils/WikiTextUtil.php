@@ -7,7 +7,6 @@ namespace App\Domain\Utils;
 class WikiTextUtil extends TextUtil
 {
     /**
-     * todo remove HTML ?
      * remove wiki encoding : italic, bold, links [ ] and [[fu|bar]] => bar
      * replace non-breaking spaces
      * replace {{lang|en|fubar}} => fubar.
@@ -19,6 +18,7 @@ class WikiTextUtil extends TextUtil
      */
     public static function unWikify(string $text, ?bool $stripcomment = true): string
     {
+        // todo remove HTML tags ?
         if (true === $stripcomment) {
             $text = self::removeHTMLcomments($text);
         }
