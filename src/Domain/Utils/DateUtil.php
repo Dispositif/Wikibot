@@ -46,60 +46,60 @@ class DateUtil
         );
     }
 
-    /**
-     * todo: legacy.
-     *
-     * @param $date
-     */
-    public function legacyDate($date)
-    {
-        // === DATES ===
-        // date=année ?
-        if (is_numeric($date) and intval($date) < 2022 and intval($date) > 1500) {
-            //            $ouvrage['année']
-            //                = $date;
-            //            unset($date);
-            //            $suivi[]
-            //                = '+année';
-        }
-
-        if (!empty($date)) {
-            $date = $this->dateEnglish2french($date);
-        }
-        if (true === $date) {
-            if (true
-                === preg_match("#([0-9]{4})[ \-\/]([01][0-9])[ \-\/]([0123][0-9])#", $date, $matches)
-            ) { // 2011-04-15
-                //                $ouvrage['année'] = intval($matches[1]);
-                //                $ouvrage['mois'] = intval($matches[2]);
-                //                $ouvrage['jour'] = intval($matches[3]);
-                //                unset($date);
-                //                $suivi[] = '±date';
-            } elseif (true
-                === preg_match("#([0123][0-9])[ \-\/]([01][0-9])[ \-\/]([0-9]{4})#", $date, $matches)
-            ) { // 15-04-2011
-                //                $ouvrage['année'] = $matches[3];
-                //                $ouvrage['mois'] = intval($matches[2]);
-                //                $ouvrage['jour'] = intval($matches[1]);
-                //                unset($ouvrage['date']);
-                //                $suivi[] = '±date2';
-            }
-        }
-
-        if (true
-            === preg_match("#([0-9]{4})[ \-\/]([01][0-9])[ \-\/]([0123][0-9])#", $ouvrage['consulté le'], $matches)
-        ) { // 2011-04-15 => 15 avril 2011
-            $ouvrage['consulté le'] = intval($matches[3]).' '.$date_mois_francais[intval($matches[2])].' '.$matches[1];
-        // TODO: Bug : 3 = mars, 03 ≠ mars (corrigé cochon). Trouver la fonction php d'éval
-        } elseif (true
-            === preg_match("#([0123][0-9])[ \-\/]([01][0-9])[ \-\/]([0-9]{4})#", $ouvrage['consulté le'], $matches)
-        ) { // 2011-04-15 => 15 avril 2011
-            $ouvrage['consulté le'] = intval($matches[1]).' '.$date_mois_francais[intval($matches[2])].' '.$matches[3];
-        }
-        if ($ouvrage['consulté le'] !== $old_consultele) {
-            $suivi[] = '±consulté';
-        }
-    }
+//    /**
+//     * todo: legacy.
+//     *
+//     * @param $date
+//     */
+//    public function legacyDate($date)
+//    {
+//        // === DATES ===
+//        // date=année ?
+//        if (is_numeric($date) and intval($date) < 2022 and intval($date) > 1500) {
+//            //            $ouvrage['année']
+//            //                = $date;
+//            //            unset($date);
+//            //            $suivi[]
+//            //                = '+année';
+//        }
+//
+//        if (!empty($date)) {
+//            $date = $this->dateEnglish2french($date);
+//        }
+//        if (true === $date) {
+//            if (true
+//                === preg_match("#([0-9]{4})[ \-\/]([01][0-9])[ \-\/]([0123][0-9])#", $date, $matches)
+//            ) { // 2011-04-15
+//                //                $ouvrage['année'] = intval($matches[1]);
+//                //                $ouvrage['mois'] = intval($matches[2]);
+//                //                $ouvrage['jour'] = intval($matches[3]);
+//                //                unset($date);
+//                //                $suivi[] = '±date';
+//            } elseif (true
+//                === preg_match("#([0123][0-9])[ \-\/]([01][0-9])[ \-\/]([0-9]{4})#", $date, $matches)
+//            ) { // 15-04-2011
+//                //                $ouvrage['année'] = $matches[3];
+//                //                $ouvrage['mois'] = intval($matches[2]);
+//                //                $ouvrage['jour'] = intval($matches[1]);
+//                //                unset($ouvrage['date']);
+//                //                $suivi[] = '±date2';
+//            }
+//        }
+//
+//        if (true
+//            === preg_match("#([0-9]{4})[ \-\/]([01][0-9])[ \-\/]([0123][0-9])#", $ouvrage['consulté le'], $matches)
+//        ) { // 2011-04-15 => 15 avril 2011
+//            $ouvrage['consulté le'] = intval($matches[3]).' '.$date_mois_francais[intval($matches[2])].' '.$matches[1];
+//        // TODO: Bug : 3 = mars, 03 ≠ mars (corrigé cochon). Trouver la fonction php d'éval
+//        } elseif (true
+//            === preg_match("#([0123][0-9])[ \-\/]([01][0-9])[ \-\/]([0-9]{4})#", $ouvrage['consulté le'], $matches)
+//        ) { // 2011-04-15 => 15 avril 2011
+//            $ouvrage['consulté le'] = intval($matches[1]).' '.$date_mois_francais[intval($matches[2])].' '.$matches[3];
+//        }
+//        if ($ouvrage['consulté le'] !== $old_consultele) {
+//            $suivi[] = '±consulté';
+//        }
+//    }
 
     // TYPO https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:AutoWikiBrowser/Typos#Dates
 
