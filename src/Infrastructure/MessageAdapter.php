@@ -21,6 +21,8 @@ class MessageAdapter implements MessageInterface
      *
      * @param string $queue
      * @param        $message
+     *
+     * @throws \Exception
      */
     public function send(string $queue, $message): void
     {

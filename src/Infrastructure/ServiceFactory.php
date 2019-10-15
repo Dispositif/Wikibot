@@ -9,6 +9,8 @@ use Mediawiki\Api\MediawikiApi;
 use Mediawiki\Api\MediawikiFactory;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
+use Simplon\Mysql\Mysql;
+use Simplon\Mysql\PDOConnector;
 
 /**
  * Class ServiceFactory.
@@ -25,9 +27,12 @@ class ServiceFactory
      */
     private static $wikiApi;
 
-    private function __construct()
-    {
-    }
+    /**
+     * @var Mysql
+     */
+    private static $dbConnection;
+
+    private function __construct(){}
 
     /**
      * AMQP queue (actual RabbitMQ)
@@ -78,7 +83,6 @@ class ServiceFactory
      * todo? replace that singleton pattern ??? (multi-lang wiki?).
      *
      * @return MediawikiFactory
-     *
      * @throws \Mediawiki\Api\UsageException
      */
     public static function wikiApi(): MediawikiFactory
@@ -95,5 +99,27 @@ class ServiceFactory
         self::$wikiApi = new MediawikiFactory($api);
 
         return self::$wikiApi;
+    }
+
+    /**
+     * @return Mysql
+     * @throws \Exception
+     */
+    public static function sqlConnection(): Mysql
+    {
+//        if (isset(self::$dbConnection)) {
+//            return self::$dbConnection;
+//        }
+        $pdo = new PDOConnector(
+            getenv('MYSQL_HOST'),
+            getenv('MYSQL_USER'),
+            getenv('MYSQL_PASSWORD'),
+            getenv('MYSQL_DATABASE')
+        );
+
+        $pdoConn = $pdo->connect('utf8', ['port'=>getenv('MYSQL_PORT')]);
+        self::$dbConnection = new Mysql($pdoConn);
+
+        return self::$dbConnection;
     }
 }
