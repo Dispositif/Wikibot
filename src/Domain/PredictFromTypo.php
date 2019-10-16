@@ -115,7 +115,7 @@ class PredictFromTypo
      *
      * @return bool
      */
-    static public function hasManyAuthors(string $author): bool
+    public static function hasManyAuthors(string $author): bool
     {
         $author = WikiTextUtil::unWikify($author);
         $chars = count_chars(trim($author));
@@ -247,26 +247,26 @@ class PredictFromTypo
                 $res .= ' '.$tok;
                 //"J. R . R." => INITIAL (1 seule fois)
                 $res = str_replace('INITIAL INITIAL', 'INITIAL', $res);
-            }elseif (preg_match('#^[0-9]+$#', $tok) > 0) {
+            } elseif (preg_match('#^[0-9]+$#', $tok) > 0) {
                 $res .= ' ALLNUMBER';
-            }elseif (preg_match('#^[0-9\-]+$#', $tok) > 0) {
+            } elseif (preg_match('#^[0-9\-]+$#', $tok) > 0) {
                 $res .= ' DASHNUMBER';
-            }elseif (preg_match('#[0-9]#', $tok) > 0) {
+            } elseif (preg_match('#[0-9]#', $tok) > 0) {
                 $res .= ' WITHNUMBER';
-            }elseif (mb_strtolower($tok, 'UTF-8') === $tok) {
+            } elseif (mb_strtolower($tok, 'UTF-8') === $tok) {
                 $res .= ' ALLLOWER';
-            }elseif (mb_strtoupper($tok, 'UTF-8') === $tok) {
+            } elseif (mb_strtoupper($tok, 'UTF-8') === $tok) {
                 $res .= ' ALLUPPER';
-            }elseif (mb_strtoupper(substr($tok, 0, 1), 'UTF-8') === substr(
+            } elseif (mb_strtoupper(substr($tok, 0, 1), 'UTF-8') === substr(
                     $tok,
                     0,
                     1
                 ) and mb_strtolower(substr($tok, 1), 'UTF-8') === substr($tok, 1)
             ) {
                 $res .= ' FIRSTUPPER';
-            }elseif (preg_match('#[a-zA-Zàéù]#', $tok) > 0) {
+            } elseif (preg_match('#[a-zA-Zàéù]#', $tok) > 0) {
                 $res .= ' MIXED';
-            }else {
+            } else {
                 $res .= ' UNKNOW';
             }
         }

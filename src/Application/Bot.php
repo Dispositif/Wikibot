@@ -97,7 +97,7 @@ class Bot
     }
 
     /**
-     * Detect {{nobots}}, {{bots|deny=all}}, {{bots|deny=MyBot,BobBot}}
+     * Detect {{nobots}}, {{bots|deny=all}}, {{bots|deny=MyBot,BobBot}}.
      *
      * @param string      $text
      * @param string|null $botName

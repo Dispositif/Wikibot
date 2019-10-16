@@ -9,8 +9,6 @@ use Mediawiki\Api\MediawikiApi;
 use Mediawiki\Api\MediawikiFactory;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
-use Simplon\Mysql\Mysql;
-use Simplon\Mysql\PDOConnector;
 
 /**
  * Class ServiceFactory.
@@ -29,7 +27,9 @@ class ServiceFactory
 
     private static $dbConnection;
 
-    private function __construct(){}
+    private function __construct()
+    {
+    }
 
     /**
      * AMQP queue (actual RabbitMQ)
@@ -80,6 +80,7 @@ class ServiceFactory
      * todo? replace that singleton pattern ??? (multi-lang wiki?).
      *
      * @return MediawikiFactory
+     *
      * @throws \Mediawiki\Api\UsageException
      */
     public static function wikiApi(): MediawikiFactory

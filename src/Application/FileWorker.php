@@ -6,7 +6,6 @@ namespace App\Application;
 
 use App\Infrastructure\CorpusAdapter;
 use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 class FileWorker
@@ -18,9 +17,8 @@ class FileWorker
     {
         $corp = new CorpusAdapter();
 
-        echo "WORKER ".__CLASS__."\n";
+        echo 'WORKER '.__CLASS__."\n";
         echo "To exit press CTRL+C\n";
-
 
         while (true) {
             $this->process($io);

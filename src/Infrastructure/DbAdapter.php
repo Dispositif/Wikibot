@@ -11,7 +11,7 @@ use Simplon\Mysql\PDOConnector;
 
 /**
  * Temporary SQL play. https://packagist.org/packages/simplon/mysql.
- * Class DbAdapter
+ * Class DbAdapter.
  */
 class DbAdapter implements QueueInterface
 {
@@ -30,6 +30,7 @@ class DbAdapter implements QueueInterface
      * @param $datas
      *
      * @return int|null
+     *
      * @throws \Exception
      */
     public function insertTempRawOpti($datas)
@@ -42,6 +43,7 @@ class DbAdapter implements QueueInterface
     public function getNewRaw(): string
     {
         $raw = null;
+
         try {
             $raw = $this->db->fetchColumn('SELECT raw FROM TempRawOpti WHERE optidate IS NULL', []);
         } catch (\Throwable $e) {
@@ -51,7 +53,7 @@ class DbAdapter implements QueueInterface
         return $raw;
     }
 
-    public function sendCompletedData(array $finalData):bool
+    public function sendCompletedData(array $finalData): bool
     {
         try {
             $result = $this->db->update(
@@ -61,10 +63,10 @@ class DbAdapter implements QueueInterface
             );
         } catch (MysqlException $e) {
             dump($e);
+
             return false;
         }
 
         return !empty($result);
     }
-
 }

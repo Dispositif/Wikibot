@@ -46,7 +46,6 @@ class WstatWorker extends FileWorker
             if (!empty($tpData['isbn2'])) {
                 $this->saveIsbn($data['title'], $tpData['isbn2']);
             }
-
         }
 
         // TODO data title/template -> SQL
@@ -77,8 +76,9 @@ class WstatWorker extends FileWorker
     {
         $isbnMachine = new IsbnFacade($isbn);
         // validate ISBN
-        if(!$isbnMachine->isValid($isbn)) {
+        if (!$isbnMachine->isValid($isbn)) {
             echo sprintf("Notice : ISBN %s not valid \n", $isbn);
+
             return;
         }
 
