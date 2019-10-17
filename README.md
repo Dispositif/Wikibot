@@ -22,6 +22,12 @@ Technos : RabbitMQ, MySQL, Symfony Components, addwiki/mediawiki-api, etc.
 
 List of console commands : ```php src/console list```
 
-Addwiki doc : http://addwiki.readthedocs.io/
+Special thanks to
+* addshore (addwiki)
+* biblys/isbn
+* php-amqplib
+
+Memo :
+ * addwiki doc http://addwiki.readthedocs.io/
 
 - [x] bla

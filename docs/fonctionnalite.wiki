@@ -14,7 +14,7 @@ Style : {{attendre}} conservation du style rédactionnel du modèle (ordre des p
 
 Complètement de données d'après des bases bibliographiques :
 * recherche par {{fait}}ISBN, {{pas fait}} lien Google, {{pas fait}}  titre de livre, etc
-* Bases : {{fait}} Google Books, {{fait}} OpenLibrary, {{pas fait}}  Wikidata, {{pas fait}}  OCLC (perdu accès)
+* Bases interrogées : {{fait}}Google Books, {{fait}}OpenLibrary, {{attendre}} Worldcat, {{pas fait}}Wikidata, {{pas fait}}Amazon
 * todo: décrire fiabilité données
 * {{fait}} comparaison titre/auteur pour fiabilité infos
 
@@ -58,15 +58,16 @@ Dates :
 Format :
 * {{fait}} prédiction 'format livre' ou 'format électronique'
 
-Lien Google Books : [https://fr.wikipedia.org/w/index.php?title=Montigny-l%C3%A8s-Metz&diff=163546081&oldid=162802554
-exemple]
-* {{fait}} simplification d'URL : {{fait}} forçage domaine .fr, {{fait}}suppression des paramètres non nécessaires
+Lien Google Books :
+* [[https://fr.wikipedia.org/wiki/]Wikip%C3%A9dia:Le_Bistro/15_octobre_2019#Liens_Google_Livres Bistro]]
+* {{fait}} simplification d'URL : {{fait}}suppression des paramètres non nécessaires
 (infos de tracking) : conservation id, pg (page), dq (requête/surlignage) qui permettent d'obtenir la même interface.
 'q'?. [cosmétique??]
 * {{attendre}} Suppression lien invalide (id manquant)
 * {{fait}} dans {{m|Ouvrage}} : correction 'lire en ligne'/'présentation en ligne' selon accessibilité totale ou partielle du document.
 * {{attendre}} Suppression lien si accès impossible.
-* {{attendre}}{{fait}} conversion en {{m|Google Livres}}
+* {{attendre}}{{fait}} conversion en {{m|Google Livres}} [https://fr.wikipedia.org/w/index
+.php?title=Montigny-l%C3%A8s-Metz&diff=prev&oldid=163546081]
 * {{fait}} ajout 'présentation en ligne' si livre d'accès partiel.
 * {{attendre}} ajout 'lire en ligne' si livre d'accès complet.
 
