@@ -6,6 +6,8 @@ namespace App\Domain\Models\Wiki;
 
 use App\Domain\Utils\TemplateParser;
 use App\Domain\Utils\WikiTextUtil;
+use DomainException;
+use Exception;
 
 /**
  * TODO: refactor legacy
@@ -34,7 +36,7 @@ class WikiRef
      *
      * @param string $refText
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct(string $refText)
     {
@@ -61,7 +63,7 @@ class WikiRef
      *     ]
      *  ].
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function parseAllTemplates(): void
     {
@@ -71,7 +73,7 @@ class WikiRef
         $allTempNames = $this->getTemplateNames();
 
         if (WikiTextUtil::isCommented($this->refText)) {
-            throw new \DomainException('HTML comment tag detected');
+            throw new DomainException('HTML comment tag detected');
         }
 
         $res = [];

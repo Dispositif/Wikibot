@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Infrastructure;
 
 use App\Application\QueueInterface;
+use Exception;
 use Simplon\Mysql\Mysql;
 use Simplon\Mysql\MysqlException;
 use Simplon\Mysql\PDOConnector;
+use Throwable;
 
 /**
  * Temporary SQL play. https://packagist.org/packages/simplon/mysql.
@@ -31,7 +33,7 @@ class DbAdapter implements QueueInterface
      *
      * @return int|null
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function insertTempRawOpti($datas)
     {
@@ -46,7 +48,7 @@ class DbAdapter implements QueueInterface
 
         try {
             $raw = $this->db->fetchColumn('SELECT raw FROM TempRawOpti WHERE optidate IS NULL', []);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             echo "SQL : No more queue to process \n";
         }
 

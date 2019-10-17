@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Application;
 
 use App\Infrastructure\CorpusAdapter;
-use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 class FileWorker

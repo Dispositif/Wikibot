@@ -7,6 +7,7 @@ namespace App\Domain;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\Publisher\BookApiInterface;
 use App\Domain\Publisher\MapperInterface;
+use Exception;
 use Scriptotek\GoogleBooks\Volume;
 
 class ImportOuvrageFromApi
@@ -42,7 +43,7 @@ class ImportOuvrageFromApi
      *
      * @return OuvrageTemplate
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function hydrateFromIsbn(string $isbn): OuvrageTemplate
     {
@@ -54,8 +55,8 @@ class ImportOuvrageFromApi
 
         try {
             $this->ouvrage->hydrate($data);
-        } catch (\Exception $e) {
-            throw new \Exception($e);
+        } catch (Exception $e) {
+            throw new Exception($e);
         }
 
         return $this->ouvrage;

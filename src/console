@@ -8,6 +8,7 @@ namespace App;
 use App\Application\WikiPageContentCommand;
 use App\Application\WorkerCommand;
 use Symfony\Component\Console\Application;
+use Throwable;
 
 include __DIR__.'/Application/myBootstrap.php';
 
@@ -24,7 +25,7 @@ $console->add(new WorkerCommand());
 
 try{
     $console->run();
-}catch (\Throwable $e){
+}catch (Throwable $e){
     die($e);
 }
 

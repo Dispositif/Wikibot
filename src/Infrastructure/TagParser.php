@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure;
 
 use DOMDocument;
+use Exception;
 use SimpleXMLElement;
 
 class TagParser
@@ -41,7 +42,7 @@ class TagParser
      *
      * @return array
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function getRefValues(): array
     {
@@ -64,12 +65,12 @@ class TagParser
      *
      * @return array string[]
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function xpathResults(string $path): array
     {
         if (!$this->xml instanceof SimpleXMLElement) {
-            throw new \Exception('XML non défini');
+            throw new Exception('XML non défini');
         }
         $nodes = $this->xml->xpath($path); // SimpleXMLElement[]
 

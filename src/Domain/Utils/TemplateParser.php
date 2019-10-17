@@ -6,6 +6,8 @@ namespace App\Domain\Utils;
 
 use App\Domain\Models\Wiki\AbstractWikiTemplate;
 use App\Domain\WikiTemplateFactory;
+use Exception;
+use LogicException;
 
 /**
  * todo legacy.
@@ -23,7 +25,7 @@ abstract class TemplateParser extends WikiTextUtil
      *
      * @return array
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public static function parseAllTemplateByName(string $tplName, string $text): array
     {
@@ -102,7 +104,6 @@ abstract class TemplateParser extends WikiTextUtil
      */
     public static function parseDataFromTemplate(string $tplName, string $text): array
     {
-        $data = [];
         $text = str_replace("\n", '', $text);
 
         // check {{template}} in text
@@ -110,11 +111,11 @@ abstract class TemplateParser extends WikiTextUtil
 
         // $matches[0] : {{template|...}}
         if (null === $tplFounded) {
-            throw new \LogicException("Template $tplName not found in text");
+            throw new LogicException("Template $tplName not found in text");
         }
         // $matches[1] : url=blabla|titre=Popo
         if (false === $tplFounded[1]) {
-            throw new \LogicException("No parameters found in $tplName");
+            throw new LogicException("No parameters found in $tplName");
         }
         // sub-template pipe | encoding
         $tplFounded[1] = self::encodeTemplatePipes($tplFounded[1]);
@@ -140,7 +141,7 @@ abstract class TemplateParser extends WikiTextUtil
         );
 
         if (false === $res || 0 === $res || empty($wikiParams[1])) {
-            throw new \LogicException("Parameters from template '$tplName' can't be parsed");
+            throw new LogicException("Parameters from template '$tplName' can't be parsed");
         }
 
         $data = self::explodeParameterValue($wikiParams[1]);
@@ -245,7 +246,7 @@ abstract class TemplateParser extends WikiTextUtil
             }
 
             if (!isset($param) || !isset($value)) {
-                throw new \LogicException('param/value variable not defined');
+                throw new LogicException('param/value variable not defined');
             }
 
             // TODO : accept empty value ?

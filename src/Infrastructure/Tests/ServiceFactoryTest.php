@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Infrastructure;
 
-use Mediawiki\Api\MediawikiFactory;
-use PhpAmqpLib\Channel\AMQPChannel;
 use PHPUnit\Framework\TestCase;
 
 class ServiceFactoryTest extends TestCase

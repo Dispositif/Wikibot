@@ -63,7 +63,7 @@ class OuvrageTemplate extends AbstractWikiTemplate
             'origyear' => 'année première édition',
             'publi' => 'réimpression',
             'pages' => 'pages totales',
-            'page' => 'pages totales',
+            'page' => 'passage', // Doc
             //        'format' => 'format livre', //  ou 'format électronique' (pdf)
             'ISBN' => 'isbn',
             'isbn1' => 'isbn',
@@ -86,7 +86,6 @@ class OuvrageTemplate extends AbstractWikiTemplate
             'chapitre' => 'numéro chapitre',
             'chap' => 'titre chapitre',
             'chapter' => 'titre chapitre',
-            'page' => 'passage',
             'ref' => 'référence simplifiée',
             // TODO: desactive ?
             /*

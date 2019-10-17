@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure;
 
 use App\Domain\MessageInterface;
+use Exception;
 use PhpAmqpLib\Message\AMQPMessage;
 
 class MessageAdapter implements MessageInterface
@@ -22,7 +23,7 @@ class MessageAdapter implements MessageInterface
      * @param string $queue
      * @param        $message
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function send(string $queue, $message): void
     {

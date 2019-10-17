@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Domain\Models\Wiki;
 
+use Exception;
 use PHPUnit\Framework\TestCase;
 
 class WikiRefTest extends TestCase
 {
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function testGetTemplateParsed()
     {

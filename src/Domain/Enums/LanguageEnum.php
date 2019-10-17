@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Enums;
 
 // todo legacy
+use Exception;
 
 /**
  * Class LanguageEnum
@@ -34,7 +35,7 @@ class LanguageEnum extends Enum
      * @param string $origin
      * @param string $valueLanguage
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct(
         string $origin,
@@ -47,7 +48,7 @@ class LanguageEnum extends Enum
             return;
         }
 
-        throw new \Exception('No language origin constant');
+        throw new Exception('No language origin constant');
     }
 
     public function getFrLang()
@@ -58,14 +59,14 @@ class LanguageEnum extends Enum
     /**
      * @return string
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function getFrLangText(): string
     {
         // todo Refactor
         require_once 'languageData.php';
         if (!array_key_exists($this->frlang, $frlang_to_french)) {
-            throw new \Exception('unknow language '.$this->frlang);
+            throw new Exception('unknow language '.$this->frlang);
         }
 
         return $frlang_to_french[$this->frlang];

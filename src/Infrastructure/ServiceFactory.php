@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Infrastructure;
 
+use Exception;
 use Mediawiki\Api\ApiUser;
 use Mediawiki\Api\MediawikiApi;
 use Mediawiki\Api\MediawikiFactory;
+use Mediawiki\Api\UsageException;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 
@@ -66,7 +68,7 @@ class ServiceFactory
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public static function closeAMQPconnection()
     {
@@ -81,7 +83,7 @@ class ServiceFactory
      *
      * @return MediawikiFactory
      *
-     * @throws \Mediawiki\Api\UsageException
+     * @throws UsageException
      */
     public static function wikiApi(): MediawikiFactory
     {

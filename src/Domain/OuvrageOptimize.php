@@ -9,6 +9,7 @@ use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\Utils\TextUtil;
 use App\Domain\Utils\WikiTextUtil;
 use Exception;
+use Throwable;
 
 /**
  * Legacy.
@@ -147,7 +148,7 @@ class OuvrageOptimize
         try {
             $isbnMachine->validate();
             $isbn13 = $isbnMachine->format('ISBN-13');
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             // ISBN not validated
             // TODO : bot ISBN invalide (queue, message PD...)
             $note = ($this->getParam('note')) ?? '';

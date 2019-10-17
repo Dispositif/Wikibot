@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application;
 
 use App\Infrastructure\TagParser;
+use Exception;
 use GuzzleHttp\Client;
 
 class PublisherAction
@@ -21,7 +22,7 @@ class PublisherAction
      *
      * @return string|null
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function getHTMLSource(): string
     {
@@ -33,7 +34,7 @@ class PublisherAction
         $response = $client->get($this->url);
 
         if (200 !== $response->getStatusCode()) {
-            throw new \Exception('response error '.$response);
+            throw new Exception('response error '.$response);
         }
         $html = $response->getBody()->getContents();
 
@@ -47,7 +48,7 @@ class PublisherAction
      *
      * @return mixed
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function extractLdJson(string $html)
     {
@@ -72,6 +73,6 @@ class PublisherAction
             return $data;
         }
 
-        throw new \Exception('no results');
+        throw new Exception('no results');
     }
 }

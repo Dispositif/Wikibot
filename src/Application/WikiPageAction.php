@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application;
 
 use App\Infrastructure\TagParser;
+use Exception;
 use Mediawiki\Api\MediawikiFactory;
 use Mediawiki\DataModel\Content;
 use Mediawiki\DataModel\EditInfo;
@@ -67,7 +68,7 @@ class WikiPageAction
      *
      * @return array
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function extractRefFromText(string $text): ?array
     {

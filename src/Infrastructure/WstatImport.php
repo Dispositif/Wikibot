@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Infrastructure;
 
+use Exception;
+use GuzzleHttp\Client;
+
 /**
  * Data import from https://wstat.fr (frwiki daily dump parsing).
  * https://wstat.fr/template/index.php?title=Ouvrage&query=inclusions&param=isbn&start=50000&limit=50&format=json
@@ -19,7 +22,7 @@ class WstatImport
 
     private $client;
 
-    public function __construct(\GuzzleHttp\Client $client, ?array $params = null, ?int $max = 500)
+    public function __construct(Client $client, ?array $params = null, ?int $max = 500)
     {
         $this->client = $client;
         $this->max = min(self::MAX_IMPORT, $max);
@@ -47,7 +50,7 @@ class WstatImport
     /**
      * @return array [ ['title' => ..., 'template' => ...] ]
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function getData(): array
     {
@@ -111,13 +114,13 @@ class WstatImport
      *
      * @return string
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function import(string $url)
     {
         $response = $this->client->get($url);
         if (200 !== $response->getStatusCode()) {
-            throw new \Exception(
+            throw new Exception(
                 sprintf(
                     'Error code: %s reason: %s',
                     $response->getStatusCode(),

@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Application\Examples;
 
 use App\Application\QueueInterface;
-use App\Domain\ImportOuvrageFromApi;
-use App\Domain\Models\Wiki\OuvrageClean;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\OuvrageComplete;
 use App\Domain\OuvrageFactory;
@@ -14,6 +12,7 @@ use App\Domain\OuvrageOptimize;
 use App\Domain\Utils\TemplateParser;
 use App\Infrastructure\DbAdapter;
 use App\Infrastructure\GoogleBooksAdapter;
+use Throwable;
 
 include __DIR__.'/../myBootstrap.php';
 
@@ -64,7 +63,7 @@ class CompleteProcess
             try {
                 $parse = TemplateParser::parseAllTemplateByName('ouvrage', $this->raw);
                 $origin = $parse['ouvrage'][0]['model'] ?? null;
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 echo sprintf("*** ERREUR impossible de transformer en modèle %s \n", $this->raw);
                 continue;
             }
@@ -115,7 +114,7 @@ class CompleteProcess
             dump('GOOGLE...');
             $googleOuvrage = OuvrageFactory::GoogleFromIsbn($isbn);
             $this->completeOuvrage($googleOuvrage);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             echo "*** ERREUR GOOGLE ".$e->getMessage()."\n";
         }
 
@@ -126,7 +125,7 @@ class CompleteProcess
             if (!empty($openLibraryOuvrage)) {
                 $this->completeOuvrage($openLibraryOuvrage);
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             echo '**** ERREUR OpenLibrary';
         }
     }
@@ -144,7 +143,7 @@ class CompleteProcess
             dump($data);die;
 //            return $import->getOuvrage();
 //            $this->completeOuvrage($googleOuvrage);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             echo "*** ERREUR GOOGLE ".$e->getMessage()."\n";
         }
     }

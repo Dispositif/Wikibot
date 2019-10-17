@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application;
 
 use App\Infrastructure\ServiceFactory;
+use ErrorException;
 use PhpAmqpLib\Message\AMQPMessage;
 
 /**
@@ -18,7 +19,7 @@ abstract class AbstractQueueWorker
     /**
      * Connect and obtain the messages from queue.
      *
-     * @throws \ErrorException
+     * @throws ErrorException
      */
     public function run()
     {

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Models\Wiki;
 
+use DomainException;
+use Exception;
+
 /**
  * https://fr.wikipedia.org/wiki/Mod%C3%A8le:Google_Livres
  * Le premier paramètre (ou id) est obligatoire. L
@@ -43,17 +46,17 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
      *
      * @return GoogleLivresTemplate|null
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public static function createFromURL(string $link): ?self
     {
         if (!self::isGoogleBookURL($link)) {
-            throw new \DomainException('not a Google Book URL');
+            throw new DomainException('not a Google Book URL');
         }
         $gooDat = self::parseGoogleBookQuery($link);
 
         if (empty($gooDat['id'])) {
-            throw new \DomainException("no GoogleBook 'id' in URL");
+            throw new DomainException("no GoogleBook 'id' in URL");
         }
         $dat['id'] = $gooDat['id'];
 
@@ -89,12 +92,12 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
     public static function simplifyGoogleUrl(string $url): string
     {
         if (!self::isGoogleBookURL($url)) {
-            throw new \DomainException('not a Google Book URL');
+            throw new DomainException('not a Google Book URL');
         }
         $gooDat = self::parseGoogleBookQuery($url);
 
         if (empty($gooDat['id'])) {
-            throw new \DomainException("no GoogleBook 'id' in URL");
+            throw new DomainException("no GoogleBook 'id' in URL");
         }
 
         $dat = [];

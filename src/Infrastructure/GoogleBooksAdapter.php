@@ -6,7 +6,9 @@ namespace App\Infrastructure;
 
 use App\Domain\Publisher\BookApiInterface;
 use App\Domain\Publisher\GoogleBookMapper;
+use Generator;
 use Scriptotek\GoogleBooks\GoogleBooks;
+use Scriptotek\GoogleBooks\Volume;
 
 /**
  * See https://github.com/scriptotek/php-google-books package.
@@ -42,7 +44,7 @@ class GoogleBooksAdapter extends AbstractBookApiAdapter implements BookApiInterf
     /**
      * @param string $query
      *
-     * @return \Generator|\Scriptotek\GoogleBooks\Volume
+     * @return array
      */
     public function search(string $query)
     {

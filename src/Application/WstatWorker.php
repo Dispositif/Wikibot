@@ -11,6 +11,7 @@ use App\Infrastructure\MessageAdapter;
 use App\Infrastructure\WstatImport;
 use GuzzleHttp\Client;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Throwable;
 
 class WstatWorker extends FileWorker
 {
@@ -57,7 +58,7 @@ class WstatWorker extends FileWorker
     {
         try {
             $tpData = TemplateParser::parseDataFromTemplate('ouvrage', $string);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             echo sprintf(
                 "EXCEPTION %s %s %s on string %s \n",
                 $e->getMessage(),
@@ -76,7 +77,7 @@ class WstatWorker extends FileWorker
     {
         $isbnMachine = new IsbnFacade($isbn);
         // validate ISBN
-        if (!$isbnMachine->isValid($isbn)) {
+        if (!$isbnMachine->isValid()) {
             echo sprintf("Notice : ISBN %s not valid \n", $isbn);
 
             return;

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Infrastructure;
 
 use App\Domain\CorpusInterface;
+use DomainException;
+use Exception;
 
 /**
  * Dirty todo refac with FileManager and league/flysystem
@@ -23,7 +25,7 @@ class CorpusAdapter extends FileManager implements CorpusInterface
      *
      * @return bool
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function inCorpus(string $element, string $corpusName): bool
     {
@@ -53,7 +55,7 @@ class CorpusAdapter extends FileManager implements CorpusInterface
             return __DIR__.'/frwiki-latest-all-titles-in-ns0.txt';
         }
 
-        throw new \DomainException("corpus $corpusName not defined");
+        throw new DomainException("corpus $corpusName not defined");
     }
 
     public function setCorpusInStorage(string $corpusName, array $arrayContent): void
@@ -69,7 +71,7 @@ class CorpusAdapter extends FileManager implements CorpusInterface
      *
      * @return bool
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function addNewElementToCorpus(string $corpusName, string $element): bool
     {
@@ -101,7 +103,7 @@ class CorpusAdapter extends FileManager implements CorpusInterface
             $newFile = @fopen($filename, 'w');
             fclose($newFile);
             if (!file_exists($filename)) {
-                throw new \Exception('corpus filename does not exist'.$filename);
+                throw new Exception('corpus filename does not exist'.$filename);
             }
         }
 

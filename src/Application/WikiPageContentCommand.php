@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application;
 
 use App\Infrastructure\ServiceFactory;
+use Mediawiki\Api\UsageException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -29,7 +30,7 @@ class WikiPageContentCommand extends Command
      *
      * @return int|void|null
      *
-     * @throws \Mediawiki\Api\UsageException
+     * @throws UsageException
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {

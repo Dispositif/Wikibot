@@ -6,6 +6,7 @@ namespace App\Domain;
 
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\Utils\TemplateParser;
+use Exception;
 use PHPUnit\Framework\TestCase;
 
 class OuvrageOptimizeTest extends TestCase
@@ -31,7 +32,7 @@ class OuvrageOptimizeTest extends TestCase
      * @param $data
      * @param $expected
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function testProcessTitle($data, $expected)
     {

@@ -6,7 +6,9 @@ namespace App\Domain\Models\Wiki;
 
 use App\Domain\Utils\TemplateParser;
 use App\Domain\Utils\WikiTextUtil;
+use DomainException;
 use Exception;
+use Throwable;
 
 /**
  * TODO detect userPreferences (inlineStyle, spaceStyle...)
@@ -142,7 +144,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     {
         try {
             $this->checkParamName($name);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->log[] = sprintf('no parameter "%s" in AbstractParametersObject "%s"', $name, get_called_class());
 
             return $this;
@@ -193,7 +195,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     public function hydrateFromText(string $tplText)
     {
         if (WikiTextUtil::isCommented($tplText)) {
-            throw new \DomainException('HTML comment tag detected');
+            throw new DomainException('HTML comment tag detected');
         }
         $data = TemplateParser::parseDataFromTemplate($this::MODEL_NAME, $tplText);
         $this->detectUserSeparator($tplText);
@@ -238,7 +240,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
         try {
             $this->checkParamName($name);
             $name = $this->getAliasParam($name);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             unset($e);
             // hack : 1 => "ouvrage collectif"
             $name = (string) $name;
@@ -288,7 +290,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
                 $this->checkParamName($name);
                 $name = $this->getAliasParam($name);
                 $validParams[] = $name;
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 unset($e);
                 $this->log[] = "Parameter $name do not exists";
 

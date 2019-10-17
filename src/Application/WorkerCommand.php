@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Application;
 
+use Exception;
+use Mediawiki\Api\UsageException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 class WorkerCommand extends Command
@@ -31,9 +32,6 @@ class WorkerCommand extends Command
      * @param OutputInterface $output
      *
      * @return int|void|null
-     *
-     * @throws \Mediawiki\Api\UsageException*@throws \Exception
-     * @throws \Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -49,9 +47,9 @@ class WorkerCommand extends Command
         //        $limit = $helper->ask($input, $output, $question);
 
         $workerName = $input->getArgument('workerName');
+        $io = new SymfonyStyle($input, $output);
 
         if (!$workerName) {
-            $io = new SymfonyStyle($input, $output);
             $workerName = $io->ask('Quel worker ?');
             $workerName = strtolower($workerName);
         }

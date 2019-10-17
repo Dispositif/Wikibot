@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure;
 
+use Exception;
+
 trait CsvTrait
 {
     /**
@@ -15,7 +17,7 @@ trait CsvTrait
      *
      * @return bool
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function isStringInCSV(string $filename, string $search, ?int $col = 0): bool
     {
@@ -25,7 +27,7 @@ trait CsvTrait
     public function getCSVfirstLine(string $filename): array
     {
         if (!file_exists($filename)) {
-            throw new \Exception('no file '.$filename);
+            throw new Exception('no file '.$filename);
         }
         $f = fopen($filename, 'r');
         $row = fgetcsv($f);
@@ -37,7 +39,7 @@ trait CsvTrait
     public function findCSVline(string $filename, string $search, ?int $col = 0): array
     {
         if (!file_exists($filename)) {
-            throw new \Exception('no file '.$filename);
+            throw new Exception('no file '.$filename);
         }
         $f = fopen($filename, 'r');
         while ($row = fgetcsv($f)) {
@@ -55,12 +57,12 @@ trait CsvTrait
      *
      * @param string $filename
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function deleteFirstLineCsv(string $filename): void
     {
         if (!file_exists($filename)) {
-            throw new \Exception('no file '.$filename);
+            throw new Exception('no file '.$filename);
         }
         $f = fopen($filename, 'r');
         while (false !== ($line = fgetcsv($f))) {

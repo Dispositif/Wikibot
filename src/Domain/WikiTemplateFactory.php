@@ -8,6 +8,7 @@ use App\Domain\Models\Wiki\AbstractWikiTemplate;
 use App\Domain\Models\Wiki\GoogleLivresTemplate;
 use App\Domain\Models\Wiki\LienWebTemplate;
 use App\Domain\Models\Wiki\OuvrageTemplate;
+use Exception;
 
 /**
  * Class WikiTemplateFactory.
@@ -19,7 +20,7 @@ abstract class WikiTemplateFactory
      *
      * @return AbstractWikiTemplate|null
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public static function create(string $templateName): ?AbstractWikiTemplate
     {
