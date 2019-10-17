@@ -94,6 +94,8 @@ abstract class TextUtil
      * Note : can't use str_split() which cut on 1 byte length
      * See http://fr.wikipedia.org/wiki/Ponctuation.
      *
+     * @param string $str
+     *
      * @return string
      */
     public static function stripPunctuation(string $str)
@@ -111,6 +113,7 @@ abstract class TextUtil
      * OK : grec, cyrillique, macron, hatchek, brève, rond en chef, tilde
      * UTF-8 compatible.
      *
+     * @param string $string
      * @return string
      */
     public static function stripAccents(string $string): string

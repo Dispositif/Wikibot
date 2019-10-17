@@ -6,6 +6,7 @@ namespace App\Domain\Models\Wiki;
 
 use App\Domain\Utils\TemplateParser;
 use App\Domain\Utils\WikiTextUtil;
+use Exception;
 
 /**
  * TODO detect userPreferences (inlineStyle, spaceStyle...)
@@ -41,12 +42,12 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     /**
      * AbstractWikiTemplate constructor.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct()
     {
         if (empty(static::REQUIRED_PARAMETERS)) {
-            throw new \Exception(
+            throw new Exception(
                 sprintf(
                     'REQUIRED_PARAMETERS not configured in "%s"',
                      get_called_class()
@@ -70,13 +71,13 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
      *
      * @return string|null
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function getParam(string $name): ?string
     {
         try {
             $this->checkParamName($name);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return null;
         }
         $name = $this->getAliasParam($name);
@@ -90,7 +91,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
      *
      * @param $name string|int
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function checkParamName($name): void
     {
@@ -108,7 +109,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
 
         // keyNum parameter ?
         //        if (!in_array($name, ['1', '2', '3', '4'])) {
-        throw new \Exception(
+        throw new Exception(
             sprintf('no parameter "%s" in template "%s"', $name, get_called_class())
         );
     }
@@ -135,7 +136,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
      *
      * @return AbstractParametersObject
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function setParam(string $name, string $value): AbstractParametersObject
     {
@@ -161,7 +162,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
      *
      * @return string|null
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function __get($param): ?string
     {
@@ -187,7 +188,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
      *
      * @param string $tplText
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function hydrateFromText(string $tplText)
     {
@@ -209,7 +210,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
      *
      * @return AbstractWikiTemplate
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function hydrate(array $data): self
     {
@@ -229,7 +230,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
      * @param        $name  string|int
      * @param string $value
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function hydrateTemplateParameter($name, string $value): void
     {
@@ -275,7 +276,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
      *
      * @param array
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function setParamOrderByUser(array $params = []): void
     {

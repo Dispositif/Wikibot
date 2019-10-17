@@ -38,6 +38,9 @@ class PredictFromTypoTest extends TestCase
 
     /**
      * @dataProvider authorProvider
+     *
+     * @param $author
+     * @param $expected
      */
     public function testPredictNameFirstName($author, $expected)
     {

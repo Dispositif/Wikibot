@@ -27,6 +27,11 @@ class OuvrageOptimizeTest extends TestCase
 
     /**
      * @dataProvider provideProcessTitle
+     *
+     * @param $data
+     * @param $expected
+     *
+     * @throws \Exception
      */
     public function testProcessTitle($data, $expected)
     {

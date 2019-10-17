@@ -8,6 +8,7 @@ use App\Domain\Models\Wiki\GoogleLivresTemplate;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\Utils\TextUtil;
 use App\Domain\Utils\WikiTextUtil;
+use Exception;
 
 class OuvrageComplete
 {
@@ -38,6 +39,7 @@ class OuvrageComplete
 
     /**
      * @return OuvrageTemplate
+     * @throws Exception
      */
     public function getResult()
     {
@@ -49,7 +51,7 @@ class OuvrageComplete
     /**
      * @return bool
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function complete()
     {
@@ -113,7 +115,7 @@ class OuvrageComplete
      * Gestion doublon et accessibilité document Google Book.
      * todo: test + refactor logic/duplicate.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function googleBookProcess()
     {
@@ -175,7 +177,7 @@ class OuvrageComplete
     /**
      * @return bool
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function predictSameBook()
     {
@@ -192,7 +194,7 @@ class OuvrageComplete
     /**
      * @return bool
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function hasSameAuthors(): bool
     {
@@ -213,7 +215,7 @@ class OuvrageComplete
      *
      * @return string
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function authorsFromBook(OuvrageTemplate $ouv)
     {
@@ -247,7 +249,7 @@ class OuvrageComplete
     /**
      * @return bool
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function hasSameISBN(): bool
     {
@@ -267,7 +269,7 @@ class OuvrageComplete
     /**
      * @return bool
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function hasSameBookTitles(): bool
     {
@@ -316,7 +318,7 @@ class OuvrageComplete
      *
      * @return string
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function charsFromBigTitle(OuvrageTemplate $ouvrage): string
     {

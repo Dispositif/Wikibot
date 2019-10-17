@@ -277,7 +277,8 @@ class PredictFromTypo
     /**
      * Check if the name is already inside the corpus of firstnames.
      *
-     * @param $firstname
+     * @param string $firstname
+     * @param bool   $logInCorpus
      *
      * @return bool
      */

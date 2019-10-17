@@ -10,6 +10,9 @@ class TemplateParserTest extends TestCase
 {
     /**
      * @dataProvider provideStyleSeparator
+     *
+     * @param $text
+     * @param $expected
      */
     public function testFindUserStyleSeparator($text, $expected)
     {
@@ -44,6 +47,9 @@ class TemplateParserTest extends TestCase
 
     /**
      * @dataProvider provideParseDataFromTemplate
+     * @param       $template
+     * @param       $text
+     * @param array $expected
      */
     public function testParseDataFromTemplate($template, $text, array $expected)
     {

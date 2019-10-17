@@ -36,6 +36,9 @@ class WikiTextUtilTest extends TestCase
 
     /**
      * @dataProvider provideWikify
+     *
+     * @param string $text
+     * @param string $expected
      */
     public function testUnWikify(string $text, string $expected)
     {
