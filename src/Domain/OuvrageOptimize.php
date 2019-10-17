@@ -324,7 +324,6 @@ class OuvrageOptimize
      * @param $name
      *
      * @return string|null
-     *
      * @throws \Exception
      */
     private function getParam(string $name): ?string
@@ -388,8 +387,10 @@ class OuvrageOptimize
     }
 
     /**
-     * Typo internationale 'titre : sous-titre'
-     * https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Le_Bistro/13_janvier_2016#Modif_du_mod%C3%A8le:Ouvrage.
+     * Typo internationale 'titre : sous-titre'.
+     * Fix fantasy typo of subtitle with '. ' or ' - '.
+     * International Standard Bibliographic Description :
+     * https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Le_Bistro/13_janvier_2016#Modif_du_mod%C3%A8le:Ouvrage
      *
      * @param $param
      *
@@ -397,8 +398,25 @@ class OuvrageOptimize
      */
     private function typoDeuxPoints($param)
     {
-        $new = preg_replace('#[ ]*\:[ ]*#', ' : ', $this->getParam($param));
-        $this->setParam($param, $new);
+        $strTitle = $this->getParam($param) ?? '';
+        if (empty($strTitle)) {
+            return;
+        }
+        // TYPO FANTASY : replace '.' and ' - ' in title for " : "
+        // Replace first '.' by ':' if no ': ' and no numbers around (as PHP 7.3)
+        if (!mb_strpos(':', $strTitle) && preg_match('#[^0-9]{5,}\. ?[^0-9)]{5,}#', $strTitle) > 0) {
+            $strTitle = preg_replace('#([^0-9]{5,})\. ?([^0-9)]{5,})#', '$1 : $2', $strTitle);
+        }
+
+        // Replace ' - ' (spaced!) by ' : ' if no ':' and no numbers after (as PHP 7.3)
+        if (!mb_strpos(':', $strTitle) && preg_match('#.{6,} ?- ?[^0-9)]{6,}#', $strTitle) > 0) {
+            $strTitle = preg_replace('#(.{6,}) - ([^0-9)]{6,})#', '$1 : $2', $strTitle);
+        }
+
+        // international typo style " : " (first occurrence)
+        $strTitle = preg_replace('#[ ]*:[ ]*#', ' : ', $strTitle);
+
+        $this->setParam($param, $strTitle);
     }
 
     private function valideNumeroChapitre()
@@ -445,7 +463,7 @@ class OuvrageOptimize
         // todo detect duplication ouvrage/plume dans externalTemplate ?
         if (!empty($this->getParam('plume'))) {
             $plumeValue = $this->getParam('plume');
-            $this->ouvrage->externalTemplates[] = (object) [
+            $this->ouvrage->externalTemplates[] = (object)[
                 'template' => 'plume',
                 '1' => $plumeValue,
                 'raw' => '{{plume}}',
@@ -460,7 +478,7 @@ class OuvrageOptimize
             // todo bug {{citation bloc}} si "=" ou "|" dans texte de citation
             // Legacy : use {{début citation}} ... {{fin citation}}
             if (preg_match('#[=|\|]#', $extrait) > 0) {
-                $this->ouvrage->externalTemplates[] = (object) [
+                $this->ouvrage->externalTemplates[] = (object)[
                     'template' => 'début citation',
                     '1' => '',
                     'raw' => '{{début citation}}'.$extrait.'{{fin citation}}',
@@ -468,7 +486,7 @@ class OuvrageOptimize
                 $this->log('+{{début citation}}');
             } else {
                 // StdClass
-                $this->ouvrage->externalTemplates[] = (object) [
+                $this->ouvrage->externalTemplates[] = (object)[
                     'template' => 'citation bloc',
                     '1' => $extrait,
                     'raw' => '{{extrait|'.$extrait.'}}',
@@ -482,7 +500,7 @@ class OuvrageOptimize
         // "commentaire=bla" => {{Commentaire biblio|1=bla}}
         if (!empty($this->getParam('commentaire'))) {
             $commentaire = $this->getParam('commentaire');
-            $this->ouvrage->externalTemplates[] = (object) [
+            $this->ouvrage->externalTemplates[] = (object)[
                 'template' => 'commentaire biblio',
                 '1' => $commentaire,
                 'raw' => '{{commentaire biblio|'.$commentaire.'}}',
@@ -542,7 +560,6 @@ class OuvrageOptimize
 
     /**
      * @return bool
-     *
      * @throws \Exception
      */
     public function checkMajorEdit(): bool
