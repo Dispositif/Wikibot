@@ -8,6 +8,5 @@ interface QueueInterface
 {
     public function getNewRaw(): ?string;
 
-    public function sendCompletedData(array $finalData):bool;
-
+    public function sendCompletedData(array $finalData): bool;
 }

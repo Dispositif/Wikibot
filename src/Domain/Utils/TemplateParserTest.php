@@ -47,6 +47,7 @@ class TemplateParserTest extends TestCase
 
     /**
      * @dataProvider provideParseDataFromTemplate
+     *
      * @param       $template
      * @param       $text
      * @param array $expected

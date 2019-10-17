@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Application;
 
-use Exception;
-use Mediawiki\Api\UsageException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputArgument;

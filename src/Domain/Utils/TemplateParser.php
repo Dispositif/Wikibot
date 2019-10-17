@@ -173,7 +173,7 @@ abstract class TemplateParser extends WikiTextUtil
 
         // TODO: implement better regex :(
         if (preg_match(
-                "~{{ ?".preg_quote($templateName, '~')."[ \t \n\r]*\|([^{}]*(?:{{[^{}]+}}[^{}]*)*)}}~i",
+                '~{{ ?'.preg_quote($templateName, '~')."[ \t \n\r]*\|([^{}]*(?:{{[^{}]+}}[^{}]*)*)}}~i",
                 $text,
                 $matches
             ) > 0

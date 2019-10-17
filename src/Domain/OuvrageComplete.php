@@ -39,6 +39,7 @@ class OuvrageComplete
 
     /**
      * @return OuvrageTemplate
+     *
      * @throws Exception
      */
     public function getResult()

@@ -49,7 +49,7 @@ class WikiTextUtil extends TextUtil
     public static function isCommented(string $text): bool
     {
         //ou preg_match('#<\!--(?!-->).*-->#s', '', $text); // plus lourd mais précis
-        return (preg_match("#<!--[^>]*-->#", $text) > 0) ? true : false;
+        return (preg_match('#<!--[^>]*-->#', $text) > 0) ? true : false;
     }
 
     /**

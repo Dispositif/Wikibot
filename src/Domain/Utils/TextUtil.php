@@ -114,6 +114,7 @@ abstract class TextUtil
      * UTF-8 compatible.
      *
      * @param string $string
+     *
      * @return string
      */
     public static function stripAccents(string $string): string

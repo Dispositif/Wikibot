@@ -6,13 +6,11 @@ namespace App\Infrastructure;
 
 use App\Domain\Publisher\BookApiInterface;
 use App\Domain\Publisher\GoogleBookMapper;
-use Generator;
 use Scriptotek\GoogleBooks\GoogleBooks;
-use Scriptotek\GoogleBooks\Volume;
 
 /**
  * See https://github.com/scriptotek/php-google-books package.
- * Class GoogleBooksAdapter
+ * Class GoogleBooksAdapter.
  */
 class GoogleBooksAdapter extends AbstractBookApiAdapter implements BookApiInterface
 {
@@ -53,6 +51,7 @@ class GoogleBooksAdapter extends AbstractBookApiAdapter implements BookApiInterf
             dump($vol->title);
             $data[] = $vol;
         }
+
         return $data;
     }
 }
