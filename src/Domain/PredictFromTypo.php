@@ -146,7 +146,7 @@ class PredictFromTypo
         // todo : unWikify? (pour ref biblio faudrait garder italique)
 
         // URL = adresse web
-        $text = preg_replace('#\bhttps?\:\/\/[^ ]+#i', ' URL ', $text);
+        $text = preg_replace('#\bhttps?://[^ ]+#i', ' URL ', $text);
         //$text = preg_replace( '#https?\:\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+\#]*[\w\-\@?^=%&amp;/~\+#])?#', ' URL ', $text);
 
         // AND = and, et, &, with, avec
@@ -173,7 +173,7 @@ class PredictFromTypo
 
         // BIBABREV = abréviations bibliographiques : dir. trad. aussi [dir] (dir.)
         $text = preg_replace(
-            '#\b[\(\[]?(dir|trad)\.[\)\]]?#i',
+            '#\b[(\[]?(dir|trad)\.[)\]]?#i',
             ' BIBABREV ',
             $text
         ); // TODO : compléter regex

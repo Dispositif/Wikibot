@@ -91,7 +91,7 @@ class WikiPageAction
         $validRef = [];
         foreach ($refs as $ref) {
             if (preg_match(
-                    '#(?<url>https?:\/\/(?:www\.)?lemonde\.fr\/[^ \]]+)#i',
+                    '#(?<url>https?://(?:www\.)?lemonde\.fr/[^ \]]+)#i',
                     $ref,
                     $matches
                 ) > 0

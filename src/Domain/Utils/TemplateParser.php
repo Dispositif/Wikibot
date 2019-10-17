@@ -76,8 +76,8 @@ abstract class TemplateParser extends WikiTextUtil
     {
         // TODO check {{fr}}
         $res = preg_match_all(
-            "#\{\{[ \n]*".preg_quote(trim($templateName), '#')
-            ."[ \t \n\r]*\|[^\{\}]*(?:\{\{[^\{\}]+\}\}[^\{\}]*)*\}\}#i",
+            "#{{[ \n]*".preg_quote(trim($templateName), '#')
+            ."[ \t \n\r]*\|[^{}]*(?:{{[^{}]+}}[^{}]*)*}}#i",
             $text,
             $matches
         );
@@ -123,15 +123,15 @@ abstract class TemplateParser extends WikiTextUtil
         $res = preg_match_all(
             "/
 			(
-	  			[^\|=]*=?                          # parameter name (or nothing)
+	  			[^|=]*=?                          # parameter name (or nothing)
 		 		(
-					[^\|\{\}\[\]<>]*               # reject <i>,<ref>
-					(?:\[[^\[\]]+\])?              # [url text] or [text]
-					(?:\<\!\-\-[^\<\>]+\-\-\>)?    # commentary <!-- -->
-					(?:\{\{[^\}\{]+\}\})?          # {{template}} but KO with {{tmp|...}}
+					[^|{}\[\]<>]*               # reject <i>,<ref>
+					(?:\[[^\[\]]+])?              # [url text] or [text]
+					(?:<!--[^<>]+-->)?    # commentary <!-- -->
+					(?:{{[^}{]+}})?          # {{template}} but KO with {{tmp|...}}
 					                               # test : {{bla@PIPE@bla}}
-					(?:\[\[[^\]]+\]\])?            # [[fu|bar]]
-					[^\|\{\}\[\]]*                 # accept <i>,<ref>
+					(?:\[\[[^]]+]])?            # [[fu|bar]]
+					[^|{}\[\]]*                 # accept <i>,<ref>
 		 		)*
 	 		)\|?
 		/x",
@@ -167,12 +167,12 @@ abstract class TemplateParser extends WikiTextUtil
         // todo: replace <!-- --> by encode char and memorize in var
 
         // hack : replace solitary { and } by encoded string CURLYBRACKET
-        $text = preg_replace('#([^\{])\{([^\{])#', '${1}CURLYBRACKETO$2', $text);
-        $text = preg_replace('#([^\}])\}([^\}])#', '${1}CURLYBRACKETC$2', $text);
+        $text = preg_replace('#([^{]){([^{])#', '${1}CURLYBRACKETO$2', $text);
+        $text = preg_replace('#([^}])}([^}])#', '${1}CURLYBRACKETC$2', $text);
 
         // TODO: implement better regex :(
         if (preg_match(
-                "~\{\{ ?".preg_quote($templateName, '~')."[\ \t\ \n\r]*\|([^\{\}]*(?:\{\{[^\{\}]+\}\}[^\{\}]*)*)\}\}~i",
+                "~{{ ?".preg_quote($templateName, '~')."[ \t \n\r]*\|([^{}]*(?:{{[^{}]+}}[^{}]*)*)}}~i",
                 $text,
                 $matches
             ) > 0
@@ -199,7 +199,7 @@ abstract class TemplateParser extends WikiTextUtil
      */
     protected static function encodeTemplatePipes(string $text): string
     {
-        if (preg_match_all('#\{\{(?:[^\{\}]+)\}\}#m', $text, $subTmpl) > 0) {
+        if (preg_match_all('#{{(?:[^{}]+)}}#m', $text, $subTmpl) > 0) {
             foreach ($subTmpl[0] as $sub) {
                 $subSanit = str_replace('|', '@PIPE@', $sub);
                 $text = str_replace($sub, $subSanit, $text);
@@ -270,11 +270,11 @@ abstract class TemplateParser extends WikiTextUtil
     public static function findUserStyleSeparator(string $tplText): string
     {
         // {{fu | bar}} (duplicate : because [^\}\|\n]+ allows final space...)
-        if (preg_match('#\{\{[^\}\|\n]+([ \n]\|[ \n]?)[^\}]+\}\}#i', $tplText, $matches) > 0) {
+        if (preg_match('#{{[^}|\n]+([ \n]\|[ \n]?)[^}]+}}#i', $tplText, $matches) > 0) {
             return $matches[1];
         }
         // others : {{fu|bar}} ; {{fu\n|bar}} ; {{fu |bar}} ...
-        if (preg_match('#\{\{[^\}\|\n]+([ \n]?\|[ \n]?)[^\}]+\}\}#i', $tplText, $matches) > 0) {
+        if (preg_match('#{{[^}|\n]+([ \n]?\|[ \n]?)[^}]+}}#i', $tplText, $matches) > 0) {
             return $matches[1];
         }
 

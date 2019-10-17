@@ -88,7 +88,7 @@ class WikiRef
      */
     public function findTemplateNames()
     {
-        if (preg_match_all('#\{\{[ ]*([^\|\}]+)#', $this->refText, $matches)
+        if (preg_match_all('#{{[ ]*([^|}]+)#', $this->refText, $matches)
             > 0
         ) {
             foreach ($matches[1] as $name) {

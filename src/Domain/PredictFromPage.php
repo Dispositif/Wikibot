@@ -75,7 +75,7 @@ class PredictFromPage
 
         // {{en}} en indicateur libre
         if ($total_indic = true
-            === preg_match_all('#\{\{([a-z]{2})\}\}#i', $text, $matchesi)
+            === preg_match_all('#{{([a-z]{2})}}#i', $text, $matchesi)
         ) { // restreint à 2 caractères (cf. zh-han)
             foreach ($matchesi[1] as $indic) {
                 if (true

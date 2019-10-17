@@ -130,7 +130,7 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
      */
     public static function isGoogleBookURL(string $text): bool
     {
-        if (preg_match('#^https?\:\/\/books\.google\.[a-z]{2,3}\/books\?id=#i', $text) > 0) {
+        if (preg_match('#^https?://books\.google\.[a-z]{2,3}/books\?id=#i', $text) > 0) {
             return true;
         }
 
@@ -142,7 +142,7 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
         if (true === self::isGoogleBookURL($text)) {
             return true;
         }
-        if (preg_match('#^{{[ \n]*Google (Livres|Books)[^\}]+\}\}$#i', $text) > 0) {
+        if (preg_match('#^{{[ \n]*Google (Livres|Books)[^}]+}}$#i', $text) > 0) {
             return true;
         }
 

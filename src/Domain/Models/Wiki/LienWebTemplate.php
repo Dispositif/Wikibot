@@ -94,7 +94,7 @@ class LienWebTemplate extends AbstractWikiTemplate
         // Typo : majuscule
         $titre = TextUtil::mb_ucfirst($titre);
         // Typo : sous-titre précédé de " : "
-        $titre = preg_replace('#[ ]*\:[ ]*#', ' : ', $titre);
+        $titre = preg_replace('#[ ]*:[ ]*#', ' : ', $titre);
         // todo typo : déplacer sous-titre dans [sous-titre]
 
         $this->parametersValues['titre'] = $titre;

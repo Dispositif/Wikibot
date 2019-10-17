@@ -49,7 +49,7 @@ class OuvragesInPageOptimize
                     }
                     $deja[$value] = 1;
                 }
-                if (preg_match('#\[\[(.+)\]\]#', $value, $matches) > 0) {
+                if (preg_match('#\[\[(.+)]]#', $value, $matches) > 0) {
                     if (isset($deja[$matches[1]])) {
                         $newvalue = TextUtil::unWikify($value);
                         $ouvrage->setParam($param, $newvalue);

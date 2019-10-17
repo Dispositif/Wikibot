@@ -28,9 +28,9 @@ class WikiTextUtil extends TextUtil
             ['', '', '', '', ' '],
             preg_replace(
                 [
-                    "#\[\[[^\|\]]*\|([^\]]*)\]\]#",
-                    '#\{\{ ?(?:lang|langue) ?\|[^\|]+\| ?(?:texte=)?([^\{\}=]+)(?:\|dir=rtl)?\}\}#i',
-                    "#\&[\w\d]{2,7};#",
+                    "#\[\[[^|\]]*\|([^]]*)]]#",
+                    '#{{ ?(?:lang|langue) ?\|[^|]+\| ?(?:texte=)?([^{}=]+)(?:\|dir=rtl)?}}#i',
+                    "#&[\w\d]{2,7};#",
                 ],
                 ['$1', '$1', ''],
                 $text
@@ -49,7 +49,7 @@ class WikiTextUtil extends TextUtil
     public static function isCommented(string $text): bool
     {
         //ou preg_match('#<\!--(?!-->).*-->#s', '', $text); // plus lourd mais précis
-        return (preg_match("#<\!--[^>]*-->#", $text) > 0) ? true : false;
+        return (preg_match("#<!--[^>]*-->#", $text) > 0) ? true : false;
     }
 
     /**

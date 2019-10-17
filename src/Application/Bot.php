@@ -108,7 +108,7 @@ class Bot
     {
         $denyReg = (!is_null($botName)) ? '|\{\{bots ?\| ?deny\=[^\}]*'.preg_quote($botName, '#').'[^\}]*\}\}' : '';
 
-        if (preg_match('#(\{\{nobots\}\}|\{\{bots ?\| ?(optout|deny) ?= ?all ?\}\}'.$denyReg.')#i', $text) > 0) {
+        if (preg_match('#({{nobots}}|{{bots ?\| ?(optout|deny) ?= ?all ?}}'.$denyReg.')#i', $text) > 0) {
             return true;
         }
 
