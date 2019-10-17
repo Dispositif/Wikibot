@@ -8,6 +8,7 @@ use App\Domain\Models\Wiki\GoogleLivresTemplate;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\Utils\TextUtil;
 use App\Domain\Utils\WikiTextUtil;
+use Exception;
 
 /**
  * Legacy.
@@ -60,7 +61,7 @@ class OuvrageOptimize
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     private function processAuthors()
     {
@@ -78,7 +79,7 @@ class OuvrageOptimize
             $nom = $this->getParam('nom'.$i) ?? false;
             if ($prenom && $nom) {
                 // prénom constitué de "mot A." ?
-                $initialePrenom = preg_match('#^[^ \.]+ [A-Z]\.$#', $prenom);
+                $initialePrenom = preg_match('#^[^ .]+ [A-Z]\.$#', $prenom);
 
                 // fusion prénom1+nom1 => auteur1
                 if (($initialePrenom || !strpos($prenom, ' ')) && !strpos($nom, ' ')) {
@@ -111,7 +112,7 @@ class OuvrageOptimize
     {
         try {
             $lang = $this->getParam('langue') ?? null;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             dump('ERROR '.$e);
 
             return;
@@ -132,7 +133,7 @@ class OuvrageOptimize
     /**
      * Validate or correct ISBN.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function processIsbn()
     {
@@ -247,12 +248,12 @@ class OuvrageOptimize
      * l’ouvrage.
      * Il est possible d'afficher plusieurs langues, en saisissant le nom séparé par des espaces ou des virgules. La première langue doit être celle du titre.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function langInTitle()
     {
         if (preg_match(
-                '#^\{\{ ?(?:lang|langue) ?\| ?([a-z-]{2,5}) ?\| ?(?:texte=)?([^\{\}=]+)(?:\|dir=rtl)?\}\}$#i',
+                '#^{{ ?(?:lang|langue) ?\| ?([a-z-]{2,5}) ?\| ?(?:texte=)?([^{}=]+)(?:\|dir=rtl)?}}$#i',
                 $this->getParam('titre'),
                 $matches
             ) > 0
@@ -262,8 +263,8 @@ class OuvrageOptimize
             $this->setParam('titre', $newtitre);
             $this->log('°titre');
             if (empty($this->getParam('langue'))) {
-                $this->setParam('langue', $matches[1]);
-                $this->log('+lang='.$matches[1]);
+                $this->setParam('langue', $lang);
+                $this->log('+lang='.$lang);
             }
         }
     }
@@ -272,7 +273,7 @@ class OuvrageOptimize
     {
         try {
             $this->dateIsYear();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             dump($e);
         }
         // dewikification TODO
@@ -283,7 +284,7 @@ class OuvrageOptimize
      * todo: move to AbstractWikiTemplate ?
      * Correction des parametres rejetés à l'hydratation données.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function parametersErrorFromHydrate()
     {
@@ -324,7 +325,7 @@ class OuvrageOptimize
      * @param $name
      *
      * @return string|null
-     * @throws \Exception
+     * @throws Exception
      */
     private function getParam(string $name): ?string
     {
@@ -349,14 +350,16 @@ class OuvrageOptimize
      * déwikification du titre : consensus Bistro 27 août 2011
      * idem  'titre chapitre'.
      *
-     * @throws \Exception
+     * @param string $param
+     *
+     * @throws Exception
      */
     private function deWikifyExternalLink(string $param): void
     {
         if (empty($this->getParam($param))) {
             return;
         }
-        if (preg_match('#^\[(http[^ \]]+) ([^\]]+)\]#i', $this->getParam($param), $matches) > 0) {
+        if (preg_match('#^\[(http[^ \]]+) ([^]]+)]#i', $this->getParam($param), $matches) > 0) {
             $this->setParam($param, str_replace($matches[0], $matches[2], $this->getParam($param)));
             $this->log('±'.$param);
 
@@ -394,21 +397,26 @@ class OuvrageOptimize
      *
      * @param $param
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function typoDeuxPoints($param)
     {
-        $strTitle = $this->getParam($param) ?? '';
-        if (empty($strTitle)) {
+        $origin = $this->getParam($param) ?? '';
+        if (empty($origin)) {
             return;
         }
-        // TYPO FANTASY : replace '.' and ' - ' in title for " : "
+
+        $strTitle = $origin;
+        // CORRECTING TYPO FANTASY OF SUBTITLE
+
         // Replace first '.' by ':' if no ': ' and no numbers around (as PHP 7.3)
-        if (!mb_strpos(':', $strTitle) && preg_match('#[^0-9]{5,}\. ?[^0-9)]{5,}#', $strTitle) > 0) {
+        // exlude pattern "blabla... blabla"
+        if (!mb_strpos(':', $strTitle) && preg_match('#[^0-9.]{5,}\. ?[^0-9.]{5,}#', $strTitle) > 0) {
             $strTitle = preg_replace('#([^0-9]{5,})\. ?([^0-9)]{5,})#', '$1 : $2', $strTitle);
+            // opti : replace all '.' ?
         }
 
-        // Replace ' - ' (spaced!) by ' : ' if no ':' and no numbers after (as PHP 7.3)
+        // Replace ' - ' (spaced!) by ' : ' if no ':' and no numbers after (as PHP 7.3 or 1939-1945)
         if (!mb_strpos(':', $strTitle) && preg_match('#.{6,} ?- ?[^0-9)]{6,}#', $strTitle) > 0) {
             $strTitle = preg_replace('#(.{6,}) - ([^0-9)]{6,})#', '$1 : $2', $strTitle);
         }
@@ -416,7 +424,10 @@ class OuvrageOptimize
         // international typo style " : " (first occurrence)
         $strTitle = preg_replace('#[ ]*:[ ]*#', ' : ', $strTitle);
 
-        $this->setParam($param, $strTitle);
+        if ($strTitle !== $origin) {
+            $this->setParam($param, $strTitle);
+            $this->log(sprintf(':%s', $param));
+        }
     }
 
     private function valideNumeroChapitre()
@@ -426,7 +437,7 @@ class OuvrageOptimize
             return;
         }
         // "12" ou "VI", {{II}}, II:3
-        if (preg_match('#^[0-9IVXL\-\.\:\{\}]+$#i', $value) > 0) {
+        if (preg_match('#^[0-9IVXL\-.:{}]+$#i', $value) > 0) {
             return;
         }
         // déplace vers "titre chapitre" ?
@@ -454,7 +465,7 @@ class OuvrageOptimize
      * Probleme {{commentaire biblio}} <> {{commentaire biblio SRL}}
      * Generate supplementary templates from obsoletes params.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function externalTemplates()
     {
@@ -477,7 +488,7 @@ class OuvrageOptimize
             $extrait = $this->getParam('extrait');
             // todo bug {{citation bloc}} si "=" ou "|" dans texte de citation
             // Legacy : use {{début citation}} ... {{fin citation}}
-            if (preg_match('#[=|\|]#', $extrait) > 0) {
+            if (preg_match('#[=|]#', $extrait) > 0) {
                 $this->ouvrage->externalTemplates[] = (object)[
                     'template' => 'début citation',
                     '1' => '',
@@ -517,13 +528,13 @@ class OuvrageOptimize
     /**
      * Date->année (nécessaire pour OuvrageComplete).
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function dateIsYear()
     {
         $date = $this->getParam('date') ?? false;
         if ($date) {
-            if (preg_match('#^\-?[12][0-9][0-9][0-9]$#', $date)) {
+            if (preg_match('#^-?[12][0-9][0-9][0-9]$#', $date)) {
                 $this->setParam('année', $date);
                 $this->unsetParam('date');
                 $this->log('date->année');
@@ -546,7 +557,7 @@ class OuvrageOptimize
             //                return;
             //            }
             if (preg_match(
-                    '#(ill\.|couv\.|in\-[0-9]|in-fol|poche|broché|relié|\{\{unité|\{\{Dunité|[0-9]{2} ?cm|\|cm\}\}|vol\.|A4)#i',
+                    '#(ill\.|couv\.|in-[0-9]|in-fol|poche|broché|relié|{{unité|{{Dunité|[0-9]{2} ?cm|\|cm}}|vol\.|A4)#i',
                     $value
                 ) > 0
             ) {
@@ -560,7 +571,7 @@ class OuvrageOptimize
 
     /**
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function checkMajorEdit(): bool
     {
@@ -602,21 +613,12 @@ class OuvrageOptimize
         return $this->ouvrage;
     }
 
-    private function iswikified(string $str)
-    {
-        if (preg_match('#\[\[.+\]\]#', $str) > 0) {
-            return true;
-        }
-
-        return false;
-    }
-
     /**
      * todo : vérif lien rouge
      * todo 'lien éditeur' affiché 1x par page
      * opti : Suppression lien éditeur si c'est l'article de l'éditeur.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function processEditeur()
     {
@@ -627,11 +629,11 @@ class OuvrageOptimize
         }
 
         // [[éditeur]]
-        if (preg_match('#\[\[([^\|]+)\]\]#', $editeur, $matches) > 0) {
+        if (preg_match('#\[\[([^|]+)]]#', $editeur, $matches) > 0) {
             $editeurUrl = $matches[1];
         }
         // [[bla|éditeur]]
-        if (preg_match('#\[\[([^\]\|]+)\|.+\]\]#', $editeur, $matches) > 0) {
+        if (preg_match('#\[\[([^]|]+)\|.+]]#', $editeur, $matches) > 0) {
             $editeurUrl = $matches[1];
         }
 
