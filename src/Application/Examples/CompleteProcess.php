@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace App\Application\Examples;
 
 use App\Application\QueueInterface;
+use App\Domain\ImportOuvrageFromApi;
+use App\Domain\Models\Wiki\OuvrageClean;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\OuvrageComplete;
 use App\Domain\OuvrageFactory;
 use App\Domain\OuvrageOptimize;
 use App\Domain\Utils\TemplateParser;
 use App\Infrastructure\DbAdapter;
+use App\Infrastructure\GoogleBooksAdapter;
 
 include __DIR__.'/../myBootstrap.php';
 
@@ -81,7 +84,7 @@ class CompleteProcess
              */
             $isbn = $origin->getParam('isbn') ?? null; // avant mise en forme EAN>ISBN
             if (!empty($isbn)) {
-                $this->onlineSearch($isbn);
+                $this->onlineIsbnSearch($isbn);
             }
 
             $this->sendCompleted();
@@ -104,7 +107,7 @@ class CompleteProcess
         return $raw;
     }
 
-    private function onlineSearch(string $isbn)
+    private function onlineIsbnSearch(string $isbn)
     {
         sleep(40);
 
@@ -125,6 +128,24 @@ class CompleteProcess
             }
         } catch (\Throwable $e) {
             echo '**** ERREUR OpenLibrary';
+        }
+    }
+
+    private function onlineQuerySearch(string $query)
+    {
+        sleep(40);
+
+
+        try {
+            dump('GOOGLE SEARCH...');
+//            $googleOuvrage = OuvrageFactory::GoogleFromIsbn($isbn);
+            $adapter = new GoogleBooksAdapter();
+            $data = $adapter->search('blabla');
+            dump($data);die;
+//            return $import->getOuvrage();
+//            $this->completeOuvrage($googleOuvrage);
+        } catch (\Throwable $e) {
+            echo "*** ERREUR GOOGLE ".$e->getMessage()."\n";
         }
     }
 
