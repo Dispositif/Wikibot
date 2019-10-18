@@ -2,7 +2,6 @@
 
 [![Build Status](https://travis-ci.org/Dispositif/Wikibot.svg?branch=master)](https://travis-ci.org/Dispositif/Wikibot)
 ![PHP from Travis config](https://img.shields.io/travis/php-v/Dispositif/Wikibot)[![Maintainability](https://api.codeclimate.com/v1/badges/b7a0aa7a832ddf24adb0/maintainability)](https://codeclimate.com/repos/5d73cea4465eac01630065a7/maintainability)
-[![BCH compliance](https://bettercodehub.com/edge/badge/Dispositif/Wikibot?branch=master)](https://bettercodehub.com/)
 ![GitHub](https://img.shields.io/github/license/Dispositif/Wikibot)
 ![Codecov](https://img.shields.io/codecov/c/github/Dispositif/Wikibot)
 [![StyleCI](https://github.styleci.io/repos/206988215/shield?branch=master)](https://github.styleci.io/repos/206988215)
