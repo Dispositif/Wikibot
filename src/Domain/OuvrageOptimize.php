@@ -71,7 +71,7 @@ class OuvrageOptimize
      */
     private function processAuthors()
     {
-        $this->multipleAuthors();
+//        $this->multipleAuthors(); // desactived: too many errors
         $this->fusionFirstNameAndName();
     }
 
@@ -98,6 +98,10 @@ class OuvrageOptimize
         }
     }
 
+    /**
+     * Todo: implement better
+     * @throws Exception
+     */
     private function multipleAuthors()
     {
         // todo explode auteurs multiples // check auteur1 ?
