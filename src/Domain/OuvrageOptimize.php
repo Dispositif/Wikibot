@@ -427,9 +427,9 @@ class OuvrageOptimize
             // opti : replace all '.' ?
         }
 
-        // Replace ' - ' (spaced!) by ' : ' if no ':' and no numbers after (as PHP 7.3 or 1939-1945)
-        if (!mb_strpos(':', $strTitle) && preg_match('#.{6,} ?- ?[^0-9)]{6,}#', $strTitle) > 0) {
-            $strTitle = preg_replace('#(.{6,}) - ([^0-9)]{6,})#', '$1 : $2', $strTitle);
+        // Replace ' - ' or ' / ' (spaced!) by ' : ' if no ':' and no numbers after (as PHP 7.3 or 1939-1945)
+        if (!mb_strpos(':', $strTitle) && preg_match('#.{6,} ?[-/] ?[^0-9)]{6,}#', $strTitle) > 0) {
+            $strTitle = preg_replace('#(.{6,}) [-/] ([^0-9)]{6,})#', '$1 : $2', $strTitle);
         }
 
         // international typo style " : " (first occurrence)
