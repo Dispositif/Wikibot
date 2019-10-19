@@ -71,7 +71,7 @@ class OuvrageOptimize
      */
     private function processAuthors()
     {
-//        $this->multipleAuthors(); // desactived: too many errors
+        //        $this->multipleAuthors(); // desactived: too many errors
         $this->fusionFirstNameAndName();
     }
 
@@ -100,6 +100,7 @@ class OuvrageOptimize
 
     /**
      * Todo: implement better
+     *
      * @throws Exception
      */
     private function multipleAuthors()
@@ -335,7 +336,6 @@ class OuvrageOptimize
      * @param $name
      *
      * @return string|null
-     *
      * @throws Exception
      */
     private function getParam(string $name): ?string
@@ -485,7 +485,7 @@ class OuvrageOptimize
         // todo detect duplication ouvrage/plume dans externalTemplate ?
         if (!empty($this->getParam('plume'))) {
             $plumeValue = $this->getParam('plume');
-            $this->ouvrage->externalTemplates[] = (object) [
+            $this->ouvrage->externalTemplates[] = (object)[
                 'template' => 'plume',
                 '1' => $plumeValue,
                 'raw' => '{{plume}}',
@@ -500,7 +500,7 @@ class OuvrageOptimize
             // todo bug {{citation bloc}} si "=" ou "|" dans texte de citation
             // Legacy : use {{début citation}} ... {{fin citation}}
             if (preg_match('#[=|]#', $extrait) > 0) {
-                $this->ouvrage->externalTemplates[] = (object) [
+                $this->ouvrage->externalTemplates[] = (object)[
                     'template' => 'début citation',
                     '1' => '',
                     'raw' => '{{début citation}}'.$extrait.'{{fin citation}}',
@@ -508,7 +508,7 @@ class OuvrageOptimize
                 $this->log('+{{début citation}}');
             } else {
                 // StdClass
-                $this->ouvrage->externalTemplates[] = (object) [
+                $this->ouvrage->externalTemplates[] = (object)[
                     'template' => 'citation bloc',
                     '1' => $extrait,
                     'raw' => '{{extrait|'.$extrait.'}}',
@@ -522,7 +522,7 @@ class OuvrageOptimize
         // "commentaire=bla" => {{Commentaire biblio|1=bla}}
         if (!empty($this->getParam('commentaire'))) {
             $commentaire = $this->getParam('commentaire');
-            $this->ouvrage->externalTemplates[] = (object) [
+            $this->ouvrage->externalTemplates[] = (object)[
                 'template' => 'commentaire biblio',
                 '1' => $commentaire,
                 'raw' => '{{commentaire biblio|'.$commentaire.'}}',
@@ -582,7 +582,6 @@ class OuvrageOptimize
 
     /**
      * @return bool
-     *
      * @throws Exception
      */
     public function checkMajorEdit(): bool

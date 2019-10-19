@@ -18,15 +18,73 @@ class OuvrageCompleteTest extends TestCase
     public function testGetResult()
     {
         $origin = new OuvrageTemplate();
-        $origin->hydrateFromText('{{Ouvrage |id =Bonneton|nom1=Collectif | titre = Loiret : un département à l\'élégance naturelle | éditeur = Christine Bonneton | lieu = Paris | année = 2 septembre 1998 | isbn = 978-2-86253-234-9| pages totales = 319}}');
+        $origin->hydrateFromText(
+            '{{Ouvrage |id =Bonneton|nom1=Collectif | titre = Loiret : un département à l\'élégance naturelle | éditeur = Christine Bonneton | lieu = Paris | année = 2 septembre 1998 | isbn = 978-2-86253-234-9| pages totales = 319}}'
+        );
 
         $google = new OuvrageClean();
-        $google->hydrateFromText('{{ouvrage|langue=fr|auteur1=Clément Borgal|titre=Loiret|année=1998|pages totales=319|isbn=9782862532349}}');
+        $google->hydrateFromText(
+            '{{ouvrage|langue=fr|auteur1=Clément Borgal|titre=Loiret|année=1998|pages totales=319|isbn=9782862532349}}'
+        );
 
         $comp = new OuvrageComplete($origin, $google);
         $this::assertEquals(
             '{{Ouvrage |identifiant=Bonneton |nom1=Collectif |titre=Loiret : un département à l\'élégance naturelle |éditeur=Christine Bonneton |lieu=Paris |année=2 septembre 1998 |isbn=978-2-86253-234-9 |pages totales=319 |langue=fr}}',
             $comp->getResult()->serialize()
         );
+    }
+
+    /**
+     * @dataProvider provideProcessSousTitre
+     */
+    public function testProcessSousTitre(string $originStr, string $onlineStr, string $expected)
+    {
+        $origin = new OuvrageTemplate();
+        $origin->hydrateFromText($originStr);
+
+        $online = new OuvrageClean();
+        $online->hydrateFromText($onlineStr);
+
+        $comp = new OuvrageComplete($origin, $online);
+        $this::assertEquals(
+            $expected,
+            $comp->getResult()->serialize(true)
+        );
+    }
+
+    public function provideProcessSousTitre()
+    {
+        return [
+            // titres identiques mais sous-titre manquant
+            [
+                '{{Ouvrage|titre = Loiret Joli}}',
+                '{{Ouvrage|titre = Loiret Joli|sous-titre=un département}}',
+                '{{Ouvrage|titre=Loiret Joli|sous-titre=un département}}',
+            ],
+            // punctuation titre différente, sous-titre manquant
+            [
+                '{{Ouvrage|titre = Loiret Joli !!!!}}',
+                '{{Ouvrage|titre = Loiret Joli|sous-titre=un département}}',
+                '{{Ouvrage|titre=Loiret Joli !!!!|sous-titre=un département}}',
+            ],
+            // sous-titre inclus dans titre original
+            [
+                '{{Ouvrage|titre = Loiret Joli : un département}}',
+                '{{Ouvrage|titre = Loiret Joli|sous-titre=un département}}',
+                '{{Ouvrage|titre=Loiret Joli|sous-titre=un département}}',
+            ],
+            // sous-titre absent online
+            [
+                '{{Ouvrage|titre = Loiret Joli|sous-titre=un département}}',
+                '{{Ouvrage|titre = Loiret Joli}}',
+                '{{Ouvrage|titre=Loiret Joli|sous-titre=un département}}',
+            ],
+            // titre absent online
+            [
+                '{{Ouvrage|auteur1=bla|titre = Loiret Joli}}',
+                '{{Ouvrage|auteur1=bla}}',
+                '{{Ouvrage|auteur1=bla|titre=Loiret Joli}}',
+            ],
+        ];
     }
 }

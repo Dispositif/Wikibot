@@ -44,7 +44,6 @@ class OuvrageComplete
 
     /**
      * @return OuvrageTemplate
-     *
      * @throws Exception
      */
     public function getResult()
@@ -56,7 +55,6 @@ class OuvrageComplete
 
     /**
      * @return bool
-     *
      * @throws Exception
      */
     private function complete()
@@ -68,7 +66,7 @@ class OuvrageComplete
             return false;
         }
 
-        $skipAuthorParam = [
+        $skipParam = [
             'auteurs',
             'auteur1',
             'prénom1',
@@ -82,20 +80,17 @@ class OuvrageComplete
             'auteur4',
             'prénom4',
             'nom4',
+            'lire en ligne',
+            'présentation en ligne',
+            'année',
+            'date',
+            'sous-titre',
         ];
+
         // completion automatique
         foreach ($this->book->toArray() as $param => $value) {
             if (empty($this->origin->getParam($param))) {
-                //Todo: completion auteurs
-                if (in_array($param, $skipAuthorParam)) {
-                    continue;
-                }
-
-                //                // champs gérés dans GoogleBookProcess
-                if (in_array($param, ['lire en ligne', 'présentation en ligne'])) {
-                    continue;
-                }
-                if (in_array($param, ['année', 'date'])) {
+                if (in_array($param, $skipParam)) {
                     continue;
                 }
 
@@ -106,10 +101,19 @@ class OuvrageComplete
             }
         }
 
-        $this->dateComplete();
+        //        $this->dateComplete();
         $this->googleBookProcess();
+        $this->processSousTitre();
 
         return true;
+    }
+
+    private function log(string $string): void
+    {
+        if (!empty($string)) {
+            ;
+        }
+        $this->log[] = trim($string);
     }
 
     private function dateComplete()
@@ -118,8 +122,9 @@ class OuvrageComplete
     }
 
     /**
+     * todo: test + refactor dirty logic/duplicate.
+     * todo: bistro specs
      * Gestion doublon et accessibilité document Google Book.
-     * todo: test + refactor logic/duplicate.
      *
      * @throws Exception
      */
@@ -182,7 +187,6 @@ class OuvrageComplete
 
     /**
      * @return bool
-     *
      * @throws Exception
      */
     private function predictSameBook()
@@ -199,12 +203,11 @@ class OuvrageComplete
 
     /**
      * @return bool
-     *
      * @throws Exception
      */
     private function hasSameAuthors(): bool
     {
-        // todo: distance 1/2 (variante typo)
+        // todo: distance 1/2 (variante typo) ?
         if ($this->authorsFromBook($this->origin) === $this->authorsFromBook($this->book)) {
             return true;
         }
@@ -220,7 +223,6 @@ class OuvrageComplete
      * @param OuvrageTemplate $ouv
      *
      * @return string
-     *
      * @throws Exception
      */
     private function authorsFromBook(OuvrageTemplate $ouv)
@@ -254,7 +256,6 @@ class OuvrageComplete
 
     /**
      * @return bool
-     *
      * @throws Exception
      */
     private function hasSameISBN(): bool
@@ -273,8 +274,41 @@ class OuvrageComplete
     }
 
     /**
-     * @return bool
+     * Add or extract subtitle like in second book.
      *
+     * @throws Exception
+     */
+    private function processSousTitre()
+    {
+        if (empty($this->book->getParam('sous-titre'))) {
+            return;
+        }
+
+        $this->origin->getParam('titre');
+
+        // simple : titres identiques mais sous-titre manquant
+        if ($this->stripAll($this->origin->getParam('titre')) === $this->stripAll($this->book->getParam('titre'))) {
+            // même titre mais sous-titre manquant
+            if (empty($this->origin->getParam('sous-titre'))) {
+                $this->origin->setParam('sous-titre', $this->book->getParam('sous-titre'));
+                $this->log('+sous-titre');
+
+                return;
+            }
+        }
+
+        // compliqué : sous-titre inclus dans titre original => on copie titre/sous-titre de book
+        if ($this->charsFromBigTitle($this->origin) === $this->charsFromBigTitle($this->book)) {
+            if (empty($this->origin->getParam('sous-titre'))) {
+                $this->origin->setParam('titre', $this->book->getParam('titre'));
+                $this->origin->setParam('sous-titre', $this->book->getParam('sous-titre'));
+                $this->log('>titre/sous-titre');
+            }
+        }
+    }
+
+    /**
+     * @return bool
      * @throws Exception
      */
     private function hasSameBookTitles(): bool
@@ -323,7 +357,6 @@ class OuvrageComplete
      * @param OuvrageTemplate $ouvrage
      *
      * @return string
-     *
      * @throws Exception
      */
     private function charsFromBigTitle(OuvrageTemplate $ouvrage): string
