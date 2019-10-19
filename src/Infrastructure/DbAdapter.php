@@ -24,6 +24,8 @@ class DbAdapter implements QueueInterface
 {
     private $db;
 
+    private $validDate = '2019-10-19 12:00:00';
+
     public function __construct()
     {
         $pdo = new PDOConnector(
@@ -37,7 +39,6 @@ class DbAdapter implements QueueInterface
      * @param $datas
      *
      * @return int|null
-     *
      * @throws Exception
      */
     public function insertTempRawOpti($datas)
@@ -52,7 +53,12 @@ class DbAdapter implements QueueInterface
         $raw = null;
 
         try {
-            $raw = $this->db->fetchColumn('SELECT raw FROM TempRawOpti WHERE optidate IS NULL', []);
+            $raw = $this->db->fetchColumn(
+                'SELECT raw FROM TempRawOpti WHERE (optidate IS NULL OR optidate < :validDate )',
+                [
+                    'validDate' => $this->validDate,
+                ]
+            );
         } catch (Throwable $e) {
             echo "SQL : No more queue to process \n";
         }

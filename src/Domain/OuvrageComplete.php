@@ -111,7 +111,7 @@ class OuvrageComplete
     private function log(string $string): void
     {
         if (!empty($string)) {
-            ;
+            return;
         }
         $this->log[] = trim($string);
     }

@@ -27,9 +27,11 @@ class GoogleBooksAdapter extends AbstractBookApiAdapter implements BookApiInterf
     public function __construct()
     {
         $api = new GoogleBooks(
-            ['key' => getenv('GOOGLE_BOOKS_API_KEY'),
-             'maxResults' => 5,
-             'country' => 'US']
+            [
+                'key' => getenv('GOOGLE_BOOKS_API_KEY'),
+                'maxResults' => 5,
+                'country' => 'US',
+            ]
         );
         // 'country' => 'FR' (ISO-3166 Country Codes?)
         $this->api = $api;
