@@ -31,6 +31,21 @@ class OuvrageOptimizeTest extends TestCase
         );
     }
 
+    public function testProcessIsbnLangFromISBN()
+    {
+        $raw
+            = '{{Ouvrage|isbn=2600028846}}';
+
+        $parse = TemplateParser::parseAllTemplateByName('ouvrage', $raw);
+        $origin = $parse['ouvrage'][0]['model'];
+
+        $optimized = (new OuvrageOptimize($origin))->doTasks()->getOuvrage();
+        $this::assertSame(
+            '{{Ouvrage|langue=fr|titre=|isbn=978-2-600-02884-4|isbn10=2600028846}}',
+            $optimized->serialize(true)
+        );
+    }
+
     /**
      * @dataProvider provideProcessTitle
      *
@@ -57,7 +72,10 @@ class OuvrageOptimizeTest extends TestCase
             [['title' => 'Toponymie'], '{{Ouvrage|titre=Toponymie}}'],
             [['title' => 'Toponymie. France'], '{{Ouvrage|titre=Toponymie|sous-titre=France}}'], // explode
             [['title' => 'Vive PHP 7.3 en short'], '{{Ouvrage|titre=Vive PHP 7.3 en short}}'], //inchangé (numbers)
-            [['title' => 'Ils ont osé... Les maires de Saint-Camille'], '{{Ouvrage|titre=Ils ont osé... Les maires de Saint-Camille}}'],
+            [
+                ['title' => 'Ils ont osé... Les maires de Saint-Camille'],
+                '{{Ouvrage|titre=Ils ont osé... Les maires de Saint-Camille}}',
+            ],
             [['title' => 'Toponymie - France'], '{{Ouvrage|titre=Toponymie|sous-titre=France}}'], // explode (- spaced)
             [['title' => 'Toponymie / France'], '{{Ouvrage|titre=Toponymie|sous-titre=France}}'], // explode (/ spaced)
             [['title' => 'Toponymie Jean-Pierre France'], '{{Ouvrage|titre=Toponymie Jean-Pierre France}}'], // inchangé

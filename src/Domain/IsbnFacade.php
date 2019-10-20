@@ -23,8 +23,34 @@ class IsbnFacade extends Isbn
 
     const ERROR_INVALID_COUNTRY_CODE = 'code pays inconnu';
 
+    // Todo complete array.
+    const ISBN_LANGUAGE_CODES
+        = [
+            '0' => 'en',
+            '1' => 'en',
+            '2' => 'fr',
+            '3' => 'de',
+            '4' => 'ja',
+            '5' => 'ru',
+            '88' => 'it',
+        ];
+
     public static function isbn2ean(string $isbn)
     {
         return preg_replace('#[^0-9X]#i', '', $isbn);
+    }
+
+    public function getCountryShortName(): ?string
+    {
+        $langCode = $this->getCountry() ?? '';
+        if (empty($langCode)) {
+            return null;
+        }
+
+        if (array_key_exists($langCode, self::ISBN_LANGUAGE_CODES)) {
+            return self::ISBN_LANGUAGE_CODES[$langCode];
+        }
+
+        return null;
     }
 }

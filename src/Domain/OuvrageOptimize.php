@@ -148,21 +148,25 @@ class OuvrageOptimize
      */
     private function processIsbn()
     {
-        if (empty($this->getParam('isbn'))) {
-            // no isbn
+        $isbn = $this->getParam('isbn') ?? '';
+
+        if (empty($isbn)) {
             return;
         }
-        $isbn = $this->getParam('isbn');
-        $isbnMachine = new IsbnFacade($isbn);
 
+        $isbnMachine = new IsbnFacade($isbn);
         try {
             $isbnMachine->validate();
             $isbn13 = $isbnMachine->format('ISBN-13');
         } catch (Throwable $e) {
             // ISBN not validated
             // TODO : bot ISBN invalide (queue, message PD...)
-            $note = ($this->getParam('note')) ?? '';
-            $this->setParam('note', trim($note.' ISBN non valide'));
+            $note = sprintf(
+                '%s ISBN non valide : %s',
+                $this->getParam('note') ?? '',
+                $e->getMessage() ?? ''
+            );
+            $this->setParam('note', trim($note));
             $this->log(
                 sprintf(
                     'ISBN invalide: %s',
@@ -171,7 +175,15 @@ class OuvrageOptimize
             );
             $this->notCosmetic = true;
 
+            // TODO log file ISBNinvalide
             return;
+        }
+
+        $langFromIsbn = $isbnMachine->getCountryShortName();
+        if ($langFromIsbn && empty($this->getParam('langue'))) {
+            $this->setParam('langue', $langFromIsbn);
+            $this->log('+langue='.$langFromIsbn);
+            $this->notCosmetic = true;
         }
 
         // ISBN 10 ?
@@ -275,7 +287,7 @@ class OuvrageOptimize
             $this->log('°titre');
             if (empty($this->getParam('langue'))) {
                 $this->setParam('langue', $lang);
-                $this->log('+lang='.$lang);
+                $this->log('+langue='.$lang);
             }
         }
     }
@@ -575,6 +587,7 @@ class OuvrageOptimize
                 $this->setParam('format livre', $value);
                 $this->unsetParam('format');
                 $this->log('format:livre?');
+                $this->notCosmetic = true;
             }
             // Certainement 'format électronique'...
         }
