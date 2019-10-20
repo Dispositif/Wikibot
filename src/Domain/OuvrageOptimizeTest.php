@@ -76,7 +76,7 @@ class OuvrageOptimizeTest extends TestCase
                 ['title' => 'Ils ont osé... Les maires de Saint-Camille'],
                 '{{Ouvrage|titre=Ils ont osé... Les maires de Saint-Camille}}',
             ],
-            [['title' => 'Toponymie - France'], '{{Ouvrage|titre=Toponymie|sous-titre=France}}'], // explode (- spaced)
+            [['title' => 'Toponymie - france'], '{{Ouvrage|titre=Toponymie|sous-titre=France}}'], // explode (- spaced)
             [['title' => 'Toponymie / France'], '{{Ouvrage|titre=Toponymie|sous-titre=France}}'], // explode (/ spaced)
             [['title' => 'Toponymie Jean-Pierre France'], '{{Ouvrage|titre=Toponymie Jean-Pierre France}}'], // inchangé
             [['title' => 'Toponymie 1914-1918 super'], '{{Ouvrage|titre=Toponymie 1914-1918 super}}'], // inchangé

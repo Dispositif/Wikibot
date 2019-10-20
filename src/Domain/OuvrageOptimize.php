@@ -213,6 +213,8 @@ class OuvrageOptimize
         // todo :extract sous-titre
         $this->extractSubTitle();
 
+        $this->upperCaseFirstLetter('sous-titre');
+
         if ($this->getParam('titre') !== $oldtitre) {
             $this->log('±titre');
         }
@@ -405,11 +407,6 @@ class OuvrageOptimize
         }
         $newValue = TextUtil::mb_ucfirst(trim($this->getParam($param)));
         $this->setParam($param, $newValue);
-
-        // Typo : sous-titre précédé de " : "
-        // provoque bug regex détection lien externe http://
-        //        $titre = preg_replace('#[ ]*\:[ ]*#', ' : ', $titre);
-        // todo typo : déplacer sous-titre dans [sous-titre]
     }
 
     /**
