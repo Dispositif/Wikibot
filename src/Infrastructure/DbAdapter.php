@@ -24,7 +24,7 @@ class DbAdapter implements QueueInterface
 {
     private $db;
 
-    private $validDate = '2019-10-19 12:00:00';
+    private $newRawValidDate = '2019-10-20 11:30:00'; // valid domain code date
 
     public function __construct()
     {
@@ -56,7 +56,7 @@ class DbAdapter implements QueueInterface
             $raw = $this->db->fetchColumn(
                 'SELECT raw FROM TempRawOpti WHERE (optidate IS NULL OR optidate < :validDate )',
                 [
-                    'validDate' => $this->validDate,
+                    'validDate' => $this->newRawValidDate,
                 ]
             );
         } catch (Throwable $e) {

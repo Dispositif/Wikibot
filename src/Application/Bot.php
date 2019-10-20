@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Application;
 
 use App\Infrastructure\ServiceFactory;
+use Bluora\LaravelGitInfo\GitInfo;
 
 /**
  * Define wiki configuration of the bot
@@ -17,7 +18,7 @@ use App\Infrastructure\ServiceFactory;
  */
 class Bot
 {
-    const WORKER_ID = '[test]';
+    const WORKER_ID = 'Test';
 
     const TASK_DESC = 'Correction bibliographique';
 
@@ -40,6 +41,53 @@ class Bot
     public function __construct()
     {
         ini_set('user_agent', getenv('USER_AGENT'));
+    }
+
+    /**
+     * Return start of wiki edit commentary.
+     *
+     * @return string
+     */
+    public function getCommentary(): string
+    {
+        return sprintf(
+            '[%s %s] %s',
+            self::WORKER_ID,
+            $this->getGitVersion(),
+            self::TASK_DESC
+        );
+    }
+
+    /**
+     * Return last version (tag) from Git.
+     *
+     * @return string|null
+     */
+    public function getGitVersion(): ?string
+    {
+        $git = new GitInfo();
+        $raw = $git->version();
+        if (preg_match('#^(v[0-9.a-e]+)#', $raw, $matches) > 0) {
+            return $matches[1];
+        }
+
+        return null;
+    }
+
+    /**
+     * Return start of last commit id.
+     *
+     * @return string|null
+     */
+    public function getCommitId(): ?string
+    {
+        $git = new GitInfo();
+        $raw = $git->version();
+        if (preg_match('#g([0-9a-f]+)#', $raw, $matches) > 0) {
+            return $matches[1];
+        }
+
+        return null;
     }
 
     /**
@@ -98,7 +146,7 @@ class Bot
     {
         $time = $this->getTimestamp($title);  // 2011-09-02T16:31:13Z
 
-        return (int) round((time() - strtotime($time)) / 60);
+        return (int)round((time() - strtotime($time)) / 60);
     }
 
     /**
