@@ -67,12 +67,46 @@ class WikiPageAction
     }
 
     /**
+     * todo Move to WikiTextUtil ?
+     * Hack to replace template serialized and manage {{en}}
+     * @param string $text
+     * @param string $tplOrigin
+     * @param string $tplReplace
+     *
+     * @return string|null
+     */
+    public static function replaceTemplateInText(string $text, string $tplOrigin, string $tplReplace): ?string
+    {
+        // hack // todo: autres patterns {{en}} ?
+        if (preg_match_all('#(?<langTemp>{{(?<lang>[a-z][a-z])}} *)?'.preg_quote($tplOrigin, '#').'#i', $text, $matches)
+            > 0
+        ) {
+            foreach ($matches[0] as $num => $mention) {
+                $lang = $matches['lang'][$num] ?? '';
+                if (!empty($lang) && !preg_match('#lang(ue)?='.$lang.'#i', $tplReplace)) {
+                    echo sprintf(
+                        "prefix %s incompatible avec langue de %s",
+                        $matches['langTemp'][$num],
+                        $tplReplace
+                    );
+
+                    return null;
+                }
+                $text = str_replace($mention, $tplReplace, $text);
+                $text = str_replace($matches['langTemp'][$num].$tplReplace, $tplReplace, $text); // si 1er replace global sans
+                // {{en}}
+            }
+        }
+
+        return $text;
+    }
+
+    /**
      * Extract <ref> data from text.
      *
      * @param $text string
      *
      * @return array
-     *
      * @throws Exception
      */
     public function extractRefFromText(string $text): ?array
@@ -80,7 +114,7 @@ class WikiPageAction
         $parser = new TagParser(); // todo ParserFactory
         $refs = $parser->importHtml($text)->getRefValues(); // []
 
-        return (array) $refs;
+        return (array)$refs;
     }
 
     /**
