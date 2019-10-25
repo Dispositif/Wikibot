@@ -47,6 +47,30 @@ class WikiPageAction
     }
 
     /**
+     * Check if a frwiki disambiguation page.
+     *
+     * @return bool
+     */
+    public function isPageHomonymie(): bool
+    {
+        return stristr($this->getText(), '{{homonymie');
+    }
+
+    /**
+     * Get redirection page title or null.
+     *
+     * @return string|null
+     */
+    public function getRedirect(): ?string
+    {
+        if (preg_match('/^#REDIRECT(?:ION)? ?\[\[([^]]+)]]/i', $this->getText(), $matches)) {
+            return (string)trim($matches[1]);
+        }
+
+        return null;
+    }
+
+    /**
      * Edit the page with new text.
      * Opti : EditInfo optional param ?
      *
@@ -94,7 +118,11 @@ class WikiPageAction
                     return null;
                 }
                 $text = str_replace($mention, $tplReplace, $text);
-                $text = str_replace($matches['langTemp'][$num].$tplReplace, $tplReplace, $text); // si 1er replace global sans
+                $text = str_replace(
+                    $matches['langTemp'][$num].$tplReplace,
+                    $tplReplace,
+                    $text
+                ); // si 1er replace global sans
                 // {{en}}
             }
         }
@@ -108,7 +136,6 @@ class WikiPageAction
      * @param $text string
      *
      * @return array
-     *
      * @throws Exception
      */
     public function extractRefFromText(string $text): ?array
@@ -116,7 +143,7 @@ class WikiPageAction
         $parser = new TagParser(); // todo ParserFactory
         $refs = $parser->importHtml($text)->getRefValues(); // []
 
-        return (array) $refs;
+        return (array)$refs;
     }
 
     /**
