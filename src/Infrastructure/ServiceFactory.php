@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure;
 
+use App\Domain\PredictLienAuteur;
 use Exception;
 use Mediawiki\Api\ApiUser;
 use Mediawiki\Api\MediawikiApi;
@@ -117,5 +118,10 @@ class ServiceFactory
         self::$dbConnection = new DbAdapter();
 
         return self::$dbConnection;
+    }
+
+    public static function PredictAuthor(): PredictLienAuteur
+    {
+        return new PredictLienAuteur(self::wikiApi());
     }
 }
