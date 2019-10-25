@@ -207,10 +207,17 @@ class OuvrageComplete
      */
     private function hasSameAuthors(): bool
     {
-        // todo: distance 1/2 (variante typo) ?
         if ($this->authorsFromBook($this->origin) === $this->authorsFromBook($this->book)) {
             return true;
         }
+
+        // if there is only 2 char of difference (i.e. typo error)
+        if (levenshtein($this->authorsFromBook($this->origin), $this->authorsFromBook($this->book)) <= 2) {
+            $this->log('typo auteurs?');
+            return true;
+        }
+
+
         // Si auteur manquant sur wikipedia
         if (empty($this->authorsFromBook($this->origin))) {
             return true;
@@ -313,14 +320,21 @@ class OuvrageComplete
      */
     private function hasSameBookTitles(): bool
     {
-        // todo distance 1 ou 2
         if ($this->charsFromBigTitle($this->origin) === $this->charsFromBigTitle($this->book)) {
             return true;
         }
+
+        // if there is only 2 chars of difference (i.e. typo error)
+        if (levenshtein($this->charsFromBigTitle($this->origin), $this->charsFromBigTitle($this->book)) <= 2) {
+            $this->log('typo titre?');
+            return true;
+        }
+
         // si l'un des ouvrages ne comporte pas le sous-titre
         if ($this->stripAll($this->origin->getParam('titre')) === $this->stripAll($this->book->getParam('titre'))) {
             return true;
         }
+
         // sous-titre inclus dans le titre
         // "Loiret : un département à l'élégance naturelle" <=> "Loiret"
         if ($this->stripAll($this->mainBookTitle($this->origin->getParam('titre'))) === $this->stripAll(
