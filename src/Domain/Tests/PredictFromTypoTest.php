@@ -7,8 +7,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain;
+namespace App\Domain\Tests;
 
+use App\Domain\PredictFromTypo;
 use App\Infrastructure\CorpusAdapter;
 use PHPUnit\Framework\TestCase;
 

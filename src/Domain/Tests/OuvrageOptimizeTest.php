@@ -7,9 +7,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain;
+namespace App\Domain\Tests;
 
 use App\Domain\Models\Wiki\OuvrageTemplate;
+use App\Domain\OuvrageOptimize;
 use App\Domain\Utils\TemplateParser;
 use Exception;
 use PHPUnit\Framework\TestCase;

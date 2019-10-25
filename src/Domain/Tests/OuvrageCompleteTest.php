@@ -7,10 +7,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain;
+namespace App\Domain\Tests;
 
 use App\Domain\Models\Wiki\OuvrageClean;
 use App\Domain\Models\Wiki\OuvrageTemplate;
+use App\Domain\OuvrageComplete;
 use PHPUnit\Framework\TestCase;
 
 class OuvrageCompleteTest extends TestCase
