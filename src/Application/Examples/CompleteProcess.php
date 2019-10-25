@@ -55,7 +55,9 @@ class CompleteProcess
         while (true) {
             $this->raw = $this->getNewRaw();
 
-            echo sprintf("-------------------------------\n\n%s\n", $this->raw);
+            echo sprintf("-------------------------------\n%s\n\n%s\n",
+                date("Y-m-d H:i:s"),
+                $this->raw);
 
             // initialise variables
             $this->log = [];
@@ -78,7 +80,9 @@ class CompleteProcess
                 continue;
             }
 
-            $optimizer = (new OuvrageOptimize($origin))->doTasks();
+            // Final optimizing (with online predictions)
+            $optimizer = new OuvrageOptimize($origin, null, true);
+            $optimizer->doTasks();
             $this->ouvrage = $optimizer->getOuvrage();
             $this->log = array_merge($this->log, $optimizer->getLog());
             $this->notCosmetic = ($optimizer->notCosmetic || $this->notCosmetic);
@@ -113,6 +117,7 @@ class CompleteProcess
 
     private function onlineIsbnSearch(string $isbn)
     {
+        online:
         sleep(40);
 
         try {
@@ -121,6 +126,8 @@ class CompleteProcess
             $this->completeOuvrage($googleOuvrage);
         } catch (Throwable $e) {
             echo "*** ERREUR GOOGLE ".$e->getMessage()."\n";
+            sleep(60*10);
+            goto online;
         }
 
 
@@ -155,12 +162,12 @@ class CompleteProcess
 
     private function completeOuvrage(OuvrageTemplate $onlineOuvrage)
     {
+        dump($onlineOuvrage->serialize(true));
         $optimizer = new OuvrageOptimize($onlineOuvrage);
         $onlineOptimized = ($optimizer)->doTasks()->getOuvrage();
 
         $completer = new OuvrageComplete($this->ouvrage, $onlineOptimized);
         $this->ouvrage = $completer->getResult();
-        dump($this->ouvrage->serialize(false));
         dump($completer->getLog());
         if ($completer->major) {
             $this->major = true;
@@ -186,6 +193,6 @@ class CompleteProcess
         dump($finalData);
         // Json ?
         $result = $this->queueAdapter->sendCompletedData($finalData);
-        dump('send result:', $result); // bool
+        dump($result); // bool
     }
 }

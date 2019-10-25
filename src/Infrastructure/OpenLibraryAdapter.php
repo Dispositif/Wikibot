@@ -11,9 +11,10 @@ namespace App\Infrastructure;
 
 use App\Domain\Publisher\BookApiInterface;
 use App\Domain\Publisher\OpenLibraryMapper;
+use Exception;
+use GuzzleHttp\Client;
 
 /**
- * Todo : refac with Guzzle.
  * Doc : https://openlibrary.org/dev/docs/api/books
  * Class OpenLibraryAdapter.
  */
@@ -23,15 +24,19 @@ class OpenLibraryAdapter extends AbstractBookApiAdapter implements BookApiInterf
 
     protected $mapper;
 
+    protected $client;
+
     public function __construct()
     {
         $this->mapper = new OpenLibraryMapper();
+        $this->client = new Client(['timeout' => 5,]);
     }
 
     /**
      * @param string $isbn
      *
      * @return array|null
+     * @throws Exception
      */
     public function getDataByIsbn(string $isbn): ?array
     {
@@ -45,7 +50,12 @@ class OpenLibraryAdapter extends AbstractBookApiAdapter implements BookApiInterf
                 ]
             );
 
-        $json = file_get_contents($url);
+        $response = $this->client->get($url);
+
+        if (200 !== $response->getStatusCode()) {
+            throw new Exception('response error '.$response->getStatusCode());
+        }
+        $json = $response->getBody()->getContents();
 
         if (empty($json)) {
             return null;

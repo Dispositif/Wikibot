@@ -35,15 +35,24 @@ class WikiPageAction
     public function __construct(MediawikiFactory $wiki, string $title)
     {
         $this->wiki = $wiki;
-        $this->page = $wiki->newPageGetter()->getFromTitle($title);
+        try{
+            $this->page = $wiki->newPageGetter()->getFromTitle($title);
+        }catch (\Throwable $e){
+            dump($e);
+        }
+
     }
 
     /**
+     * Get wiki text from the page
+     *
      * @return string|null
      */
     public function getText(): ?string
     {
-        return $this->page->getRevisions()->getLatest()->getContent()->getData();
+        $latest = $this->page->getRevisions()->getLatest();
+
+        return ($latest) ? $latest->getContent()->getData() : null;
     }
 
     /**
