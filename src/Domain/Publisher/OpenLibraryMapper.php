@@ -22,12 +22,13 @@ class OpenLibraryMapper implements MapperInterface
      */
     public function process($data): array
     {
+        // authors : see also 'contributions'
         return [
             'auteur1' => $data['authors'][0]['name'] ?? null,
             'auteur2' => $data['authors'][1]['name'] ?? null,
             'auteur3' => $data['authors'][2]['name'] ?? null,
             'titre' => $data['title'] ?? null,
-            'sous-titre' => '',
+            'sous-titre' => $data['subtitle'] ?? null,
             'éditeur' => $data['publishers'][0]['name'] ?? null,
             'année' => $this->convertDate2Year($data),
             'lieu' => ($data['publish_places'][0]['name']) ?? null,
@@ -41,7 +42,7 @@ class OpenLibraryMapper implements MapperInterface
             return null;
         }
         if (preg_match('/[^0-9]?([12][0-9]{3})[^0-9]?/', $data['publish_date'], $matches) > 0) {
-            return (string) $matches[1];
+            return (string)$matches[1];
         }
 
         return null;
