@@ -161,12 +161,14 @@ class OuvrageOptimize
         } catch (Throwable $e) {
             // ISBN not validated
             // TODO : bot ISBN invalide (queue, message PD...)
-            $note = sprintf(
-                '%s ISBN non valide : %s',
-                $this->getParam('note') ?? '',
-                $e->getMessage() ?? ''
+            $this->setParam(
+                'isbn invalide',
+                sprintf(
+                    '%s %s',
+                    $isbn,
+                    $e->getMessage() ?? ''
+                )
             );
-            $this->setParam('note', trim($note));
             $this->log(
                 sprintf(
                     'ISBN invalide: %s',

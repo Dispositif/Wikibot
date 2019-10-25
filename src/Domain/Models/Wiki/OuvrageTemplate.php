@@ -328,6 +328,7 @@ class OuvrageTemplate extends AbstractWikiTemplate
             'isbn2',
             'isbn3',
             'isbn erroné',
+            'isbn invalide', // not official // pour bot
             'issn',
             'issn2',
             'issn3',
