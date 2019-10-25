@@ -425,6 +425,7 @@ class OuvrageOptimize
         if (empty($origin)) {
             return;
         }
+        $origin = TextUtil::replaceNonBreakingSpaces($origin);
 
         $strTitle = $origin;
         // CORRECTING TYPO FANTASY OF SUBTITLE

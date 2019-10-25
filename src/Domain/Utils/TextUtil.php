@@ -14,9 +14,27 @@ namespace App\Domain\Utils;
  */
 abstract class TextUtil
 {
+    const NO_BREAK_SPACE      = "\xC2\xA0"; // &#160;
+    const NO_BREAK_THIN_SPACE = "\xE2\x80\xAF"; // &#8239;
+    //    const ELLIPSIS = '…';
+    //    const LAQUO = '«'; // &laquo;
+    //    const RAQUO = '»'; // &raquo;
+    //    const RSQUO = '’'; // &rsquo;
+    //    const TIMES = '×'; // &times;
+    //    const NDASH = '–'; // &ndash; or &#x2013;
+    //    const MDASH = '—'; // &mdash; or &#x2014;
+    //    const LDQUO = '“'; // &ldquo; or &#8220;
+    //    const RDQUO = '”'; // &rdquo; or &#8221;
+    //    const BDQUO = '„'; // &bdquo; or &#8222;
+    //    const SHY = "\xC2\xAD"; // &shy;
+    //    const TRADE = '™'; // &trade;
+    //    const REG = '®'; // &reg;
+    //    const COPY = '©'; // &copy;
+    const ALL_SPACES = "\xE2\x80\xAF|\xC2\xAD|\xC2\xA0|\\s"; // Used in regexps. Better than \s
+
     /**
-     * TODO : vérifier !
      * UTF8 first letter in upper case.
+     * "économie" => "Économie"
      *
      * @param string      $str
      * @param string|null $e
@@ -32,16 +50,38 @@ abstract class TextUtil
     }
 
     /**
+     * @param string $text
+     *
+     * @return mixed
+     */
+    public static function replaceNonBreakingSpaces(string $text)
+    {
+        return str_replace([self::NO_BREAK_SPACE, self::NO_BREAK_THIN_SPACE], ' ', $text);
+    }
+
+    /**
+     * Trim also non-breaking space and carriage return.
+     *
+     * @param string $string
+     *
+     * @return string
+     */
+    public static function trim(string $string)
+    {
+        return trim($string, self::NO_BREAK_SPACE.self::NO_BREAK_THIN_SPACE."\n\t\r");
+    }
+
+    /**
      * Todo verify/correct.
      *
      * @param string $str
      *
      * @return bool
      */
-//    static public function containsNonLatinCharacters(string $str): bool
-//    {
-//        return preg_match('/[^\\p{Common}\\p{Latin}]/u', $str);
-//    }
+    //    static public function containsNonLatinCharacters(string $str): bool
+    //    {
+    //        return preg_match('/[^\\p{Common}\\p{Latin}]/u', $str);
+    //    }
 
     /**
      * Simplest levenshtein distance prediction of the correct param name.
@@ -51,7 +91,7 @@ abstract class TextUtil
      *
      * @param string $str
      * @param array  $names
-     * @param int    $max   Maximum number of permutation/add/subtraction)
+     * @param int    $max Maximum number of permutation/add/subtraction)
      *
      * @return string|null
      */
