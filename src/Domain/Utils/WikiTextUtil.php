@@ -47,6 +47,23 @@ class WikiTextUtil extends TextUtil
     }
 
     /**
+     * Get page titles from wiki encoded links.
+     * (but not others projects links like [[wikt:bla]]
+     *
+     * @param string $text
+     *
+     * @return array|null
+     */
+    public static function getWikilinkPages(string $text): ?array
+    {
+        if (preg_match_all('#\[\[([^:|\]]+)(?:\|[^|\]]*)?]]#', $text, $matches) > 0) {
+            return $matches[1];
+        }
+
+        return null;
+    }
+
+    /**
      * @param string $text
      *
      * @return bool

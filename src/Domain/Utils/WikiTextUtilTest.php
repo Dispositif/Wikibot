@@ -13,6 +13,16 @@ use PHPUnit\Framework\TestCase;
 
 class WikiTextUtilTest extends TestCase
 {
+    public function testGetWikilinkPages()
+    {
+        $text = 'bla [[fu|bar]] et [[back]] mais pas [[wikt:toto|bou]]';
+
+        $this::assertSame(
+            ['fu','back'],
+            WikiTextUtil::getWikilinkPages($text)
+        );
+    }
+
     public function testRemoveHTMLcomments()
     {
         $text = 'blabla<!-- sdfqfqs 
