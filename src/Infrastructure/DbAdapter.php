@@ -39,6 +39,7 @@ class DbAdapter implements QueueInterface
      * @param $datas
      *
      * @return int|null
+     *
      * @throws Exception
      */
     public function insertTempRawOpti($datas)

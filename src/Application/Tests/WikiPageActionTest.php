@@ -17,7 +17,6 @@ use PHPUnit\Framework\TestCase;
 
 class WikiPageActionTest extends TestCase
 {
-
     public function testReplaceTemplateInText()
     {
         $text = 'zzzzzzz {{Ouvrage|titre=bla}} zzzz {{en}} {{Ouvrage|titre=bla}} zerqsdfqs';
@@ -43,5 +42,4 @@ class WikiPageActionTest extends TestCase
 //        $this::assertInstanceOf('App\Application\WikiPageAction', $page);
 ////        dump($page);
 //    }
-
 }

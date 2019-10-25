@@ -15,7 +15,7 @@ use App\Domain\Publisher\OpenLibraryMapper;
 /**
  * Todo : refac with Guzzle.
  * Doc : https://openlibrary.org/dev/docs/api/books
- * Class OpenLibraryAdapter
+ * Class OpenLibraryAdapter.
  */
 class OpenLibraryAdapter extends AbstractBookApiAdapter implements BookApiInterface
 {

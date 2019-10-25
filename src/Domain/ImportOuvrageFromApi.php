@@ -47,6 +47,7 @@ class ImportOuvrageFromApi
      * @param string $isbn
      *
      * @return OuvrageTemplate
+     *
      * @throws Exception
      */
     public function hydrateFromIsbn(string $isbn): OuvrageTemplate

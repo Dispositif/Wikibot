@@ -29,7 +29,6 @@ class TextUtilTest extends TestCase
             'Économie galante',
             TextUtil::mb_ucfirst('économie galante')
         );
-
     }
 
     public function testStripPunctuation()
@@ -52,8 +51,7 @@ class TextUtilTest extends TestCase
     {
         $this::assertSame(
             'auteur',
-            TextUtil::predictCorrectParam('autuer', ['auteur','bla','hautour'])
+            TextUtil::predictCorrectParam('autuer', ['auteur', 'bla', 'hautour'])
         );
-
     }
 }

@@ -14,8 +14,11 @@ namespace App\Domain\Utils;
  */
 abstract class TextUtil
 {
-    const NO_BREAK_SPACE      = "\xC2\xA0"; // &#160;
-    const NO_BREAK_THIN_SPACE = "\xE2\x80\xAF"; // &#8239;
+    const NO_BREAK_SPACE = "\xC2\xA0"; // &#160;
+
+    const NO_BREAK_THIN_SPACE = "\xE2\x80\xAF";
+
+    // &#8239;
     //    const ELLIPSIS = '…';
     //    const LAQUO = '«'; // &laquo;
     //    const RAQUO = '»'; // &raquo;
@@ -34,7 +37,7 @@ abstract class TextUtil
 
     /**
      * UTF8 first letter in upper case.
-     * "économie" => "Économie"
+     * "économie" => "Économie".
      *
      * @param string      $str
      * @param string|null $e
@@ -91,7 +94,7 @@ abstract class TextUtil
      *
      * @param string $str
      * @param array  $names
-     * @param int    $max Maximum number of permutation/add/subtraction)
+     * @param int    $max   Maximum number of permutation/add/subtraction)
      *
      * @return string|null
      */

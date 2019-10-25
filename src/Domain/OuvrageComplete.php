@@ -44,6 +44,7 @@ class OuvrageComplete
 
     /**
      * @return OuvrageTemplate
+     *
      * @throws Exception
      */
     public function getResult()
@@ -55,6 +56,7 @@ class OuvrageComplete
 
     /**
      * @return bool
+     *
      * @throws Exception
      */
     private function complete()
@@ -187,6 +189,7 @@ class OuvrageComplete
 
     /**
      * @return bool
+     *
      * @throws Exception
      */
     private function predictSameBook()
@@ -203,6 +206,7 @@ class OuvrageComplete
 
     /**
      * @return bool
+     *
      * @throws Exception
      */
     private function hasSameAuthors(): bool
@@ -214,9 +218,9 @@ class OuvrageComplete
         // if there is only 2 char of difference (i.e. typo error)
         if (levenshtein($this->authorsFromBook($this->origin), $this->authorsFromBook($this->book)) <= 2) {
             $this->log('typo auteurs?');
+
             return true;
         }
-
 
         // Si auteur manquant sur wikipedia
         if (empty($this->authorsFromBook($this->origin))) {
@@ -230,6 +234,7 @@ class OuvrageComplete
      * @param OuvrageTemplate $ouv
      *
      * @return string
+     *
      * @throws Exception
      */
     private function authorsFromBook(OuvrageTemplate $ouv)
@@ -263,6 +268,7 @@ class OuvrageComplete
 
     /**
      * @return bool
+     *
      * @throws Exception
      */
     private function hasSameISBN(): bool
@@ -316,6 +322,7 @@ class OuvrageComplete
 
     /**
      * @return bool
+     *
      * @throws Exception
      */
     private function hasSameBookTitles(): bool
@@ -327,6 +334,7 @@ class OuvrageComplete
         // if there is only 2 chars of difference (i.e. typo error)
         if (levenshtein($this->charsFromBigTitle($this->origin), $this->charsFromBigTitle($this->book)) <= 2) {
             $this->log('typo titre?');
+
             return true;
         }
 
@@ -371,6 +379,7 @@ class OuvrageComplete
      * @param OuvrageTemplate $ouvrage
      *
      * @return string
+     *
      * @throws Exception
      */
     private function charsFromBigTitle(OuvrageTemplate $ouvrage): string
