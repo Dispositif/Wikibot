@@ -7,14 +7,13 @@ Correction syntaxique des paramètres :
 * {{fait}} conversion des paramètres enwiki ({{m|cite book}}) [cosmétique]
 * {{fait}} correction de paramètres inconnus (prédiction) : erreur de frappe
 * {{attendre}} {{pas fait}}  signalement paramètre inconnu : commentaire HTML, note=, liste, catégorie ?
-* {{fait}} extraction paramètres obsolètes (plume,extrait,commentaire) vers {{m|plume}}, {{m|citation bloc}},
-{{m|commentaire biblio}}, {{m|début citation}}... [cosmétique]
+* {{fait}} extraction paramètres obsolètes (plume,extrait,commentaire) vers {{m|plume}}, {{m|citation bloc}}, {{m|commentaire biblio}}, {{m|début citation}}... [cosmétique]
 
 Style : {{attendre}} conservation du style rédactionnel du modèle (ordre des paramètres, espacement)
 
 Complètement de données d'après des bases bibliographiques :
 * recherche par {{fait}}ISBN, {{pas fait}} lien Google, {{pas fait}}  titre de livre, etc
-* Bases interrogées : {{fait}}Google Books, {{fait}}OpenLibrary, {{attendre}} Worldcat, {{pas fait}}Wikidata, {{pas fait}}Amazon
+* Bases interrogées : {{fait}}Google Books, {{fait}}OpenLibrary, {{attendre}} Worldcat, {{pas fait}}Wikidata
 * todo: décrire fiabilité données
 * {{fait}} comparaison titre/auteur pour fiabilité infos
 
@@ -44,10 +43,9 @@ Editeur :
 * {{pas fait}} {{3/4}} prédiction du wikilien éditeur
 
 ISBN :
-* {{fait}} conversion EAN (sans tiret) et ISBN-10 => ISBN-13 ([https://fr.wikipedia.org/w/index
-.php?title=Montigny-l%C3%A8s-Cormeilles&diff=prev&oldid=163545321])
+* {{fait}} conversion EAN (sans tiret) et ISBN-10 => ISBN-13 ([https://fr.wikipedia.org/w/index.php?title=Montigny-l%C3%A8s-Cormeilles&diff=prev&oldid=163545321])
 * {{fait}} ISBN-10 archivé dans 'isbn10' (invisible)
-* {{attendre}} signalement ISBN invalide (checksum, code pays/product) : commentaire HTML, isbn invalide=, liste, catégorie ?
+* {{pas fait}} signalement ISBN invalide (checksum, code pays/product) : commentaire HTML, isbn invalide=, liste, catégorie ?
 * {{pas fait}} contrôle des ISBN multiples
 
 Dates :
@@ -59,15 +57,12 @@ Format :
 * {{fait}} prédiction 'format livre' ou 'format électronique'
 
 Lien Google Books :
-* [[https://fr.wikipedia.org/wiki/]Wikip%C3%A9dia:Le_Bistro/15_octobre_2019#Liens_Google_Livres Bistro]]
-* {{fait}} simplification d'URL : {{fait}}suppression des paramètres non nécessaires
-(infos de tracking) : conservation id, pg (page), dq (requête/surlignage) qui permettent d'obtenir la même interface.
-'q'?. [cosmétique??]
+* [[Wikip%C3%A9dia:Le_Bistro/15_octobre_2019#Liens_Google_Livres Bistro]]
+* {{fait}} simplification d'URL : {{fait}}suppression des paramètres non nécessaires (infos de tracking) : conservation id, pg (page), dq (requête/surlignage) qui permettent d'obtenir la même interface.[cosmétique??]
 * {{attendre}} Suppression lien invalide (id manquant)
 * {{fait}} dans {{m|Ouvrage}} : correction 'lire en ligne'/'présentation en ligne' selon accessibilité totale ou partielle du document.
 * {{attendre}} Suppression lien si accès impossible.
-* {{attendre}}{{fait}} conversion en {{m|Google Livres}} [https://fr.wikipedia.org/w/index
-.php?title=Montigny-l%C3%A8s-Metz&diff=prev&oldid=163546081]
+* {{attendre}}{{fait}} conversion en {{m|Google Livres}} [https://fr.wikipedia.org/w/index.php?title=Montigny-l%C3%A8s-Metz&diff=prev&oldid=163546081]
 * {{fait}} ajout 'présentation en ligne' si livre d'accès partiel.
 * {{attendre}} ajout 'lire en ligne' si livre d'accès complet.
 
@@ -80,6 +75,7 @@ Fonctionnement du bot :
 * {{pas fait}} page de log détaillé quotidien
 
 Sur page globale :
+* {{fait}} déplacement de la mention langue à l'intérieur du modèle [https://fr.wikipedia.org/w/index.php?title=Sailor_Jupiter&diff=prev&oldid=163845237]
 * {{pas fait}}  analyse des {fr}, {en} pour ajout {fr} si ouvrages étrangers > 50%
 * {{pas fait}}  Message en PD pour ISBN invalide, suggestion de correctifs, etc. Par le passé, succès/efficacité.
 * {{pas fait}}  un seul wikilien par page
@@ -89,8 +85,7 @@ Durée tâche (/limitations API) :
 * 9 mois pour {ouvrage} avec ISBN (~200 edits/j, 10/h) 170'000
 * 2 ans pour {ouvrage} sans ISBN / 920'000 inclusions
 
-Dans sa version précédente (2012), suite aux édits du bot, y'avait environ 1% de modification humaine des citations. Les
- 2/3 portant sur la correction d'ISBN ou titres signalés erronés par le bot (genre message en PD).
+Dans sa version précédente (2012), suite aux édits du bot, y'avait environ 1% de modification humaine des citations. Les 2/3 portant sur la correction d'ISBN ou titres signalés erronés par le bot (genre message en PD).
 
 === Mentions libres de biblio ===
 * {{attendre}} simplification d'URL Google Livres (paramètres de tracking)

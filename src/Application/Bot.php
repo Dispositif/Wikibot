@@ -18,9 +18,9 @@ use Bluora\LaravelGitInfo\GitInfo;
  */
 class Bot
 {
-    const WORKER_ID = 'Test';
+    public $workerId = 'Bot';
 
-    const TASK_DESC = 'Correction bibliographique';
+    public $taskName = 'Correction bibliographique';
 
     const BOT_FLAG = false;
 
@@ -51,10 +51,9 @@ class Bot
     public function getCommentary(): string
     {
         return sprintf(
-            '[%s %s] %s',
-            self::WORKER_ID,
+            '[%s] %s : ',
             $this->getGitVersion(),
-            self::TASK_DESC
+            $this->taskName
         );
     }
 
@@ -146,7 +145,7 @@ class Bot
     {
         $time = $this->getTimestamp($title);  // 2011-09-02T16:31:13Z
 
-        return (int) round((time() - strtotime($time)) / 60);
+        return (int)round((time() - strtotime($time)) / 60);
     }
 
     /**

@@ -17,7 +17,7 @@ use Simplon\Mysql\PDOConnector;
 use Throwable;
 
 /**
- * Temporary SQL play. https://packagist.org/packages/simplon/mysql.
+ * Temporary SQL play. https://github.com/fightbulc/simplon_mysql .
  * Class DbAdapter.
  */
 class DbAdapter implements QueueInterface
@@ -39,7 +39,6 @@ class DbAdapter implements QueueInterface
      * @param $datas
      *
      * @return int|null
-     *
      * @throws Exception
      */
     public function insertTempRawOpti($datas)
@@ -51,6 +50,7 @@ class DbAdapter implements QueueInterface
 
     /**
      * Get new raw text (template) to process
+     *
      * @return string|null
      */
     public function getNewRaw(): ?string
@@ -59,7 +59,7 @@ class DbAdapter implements QueueInterface
 
         try {
             $raw = $this->db->fetchColumn(
-                'SELECT raw FROM TempRawOpti WHERE (optidate IS NULL OR optidate < :validDate )',
+                'SELECT raw FROM TempRawOpti WHERE (optidate IS NULL OR optidate < :validDate ) AND edited IS NULL',
                 [
                     'validDate' => $this->newRawValidDate,
                 ]
@@ -87,4 +87,74 @@ class DbAdapter implements QueueInterface
 
         return !empty($result);
     }
+
+    /**
+     * Get new raw text (template) to process
+     *
+     * @return string|null
+     */
+    public function getCompletedData(): ?string
+    {
+        $json = null;
+
+        try {
+            $data = $this->db->fetchRow(
+                'SELECT * FROM TempRawOpti WHERE (optidate > :validDate AND notcosmetic=1) ORDER BY RAND() LIMIT 1',
+                [
+                    'validDate' => $this->newRawValidDate,
+                ]
+            );
+            $json = json_encode($data);
+        } catch (Throwable $e) {
+            echo "SQL : No more queue to process \n";
+        }
+
+        return $json;
+    }
+
+    public function sendEditedData(array $data): bool
+    {
+        try {
+            $result = $this->db->update(
+                'TempRawOpti',
+                ['id' => $data['id']], // condition
+                ['edited' => 1]
+            );
+        } catch (MysqlException $e) {
+            dump($e);
+
+            return false;
+        }
+
+        return !empty($result);
+    }
+
+    /**
+     * Get all lines from an article.
+     *
+     * @param string $pageTitle
+     *
+     * @return string|null
+     */
+    public function getPageRows(string $pageTitle): ?string
+    {
+        $json = null;
+
+        try {
+            $data = $this->db->fetchRowMany(
+                'SELECT * FROM TempRawOpti WHERE optidate > :validDate AND edited IS NULL AND page = :page LIMIT 5',
+                [
+                    'validDate' => $this->newRawValidDate,
+                    'page' => $pageTitle
+                ]
+            );
+            $json = json_encode($data);
+        } catch (Throwable $e) {
+            echo "SQL : No more queue to process \n";
+        }
+
+        return $json;
+    }
+
+
 }
