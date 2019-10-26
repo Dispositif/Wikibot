@@ -14,7 +14,6 @@ namespace App\Domain\Models\Wiki;
  * Raw datas : Value are not normalized (see rather OuvrageClean class for optimized values)
  * Note : Avec serialization(), extraction de plume=,extrait=,commentaire= (obsolètes)
  * sur {{plume}}, {{citationbloc}},{{commentaire biblio}}...
- *
  * Class OuvrageTemplate
  */
 class OuvrageTemplate extends AbstractWikiTemplate
@@ -22,13 +21,15 @@ class OuvrageTemplate extends AbstractWikiTemplate
     const MODEL_NAME = 'Ouvrage'; // todo
 
     const REQUIRED_PARAMETERS
-                     = [
-            //        'auteur1' => '',
+        = [
+            'langue' => '',
+//            'auteur1' => '', // duplicate with prénom1/nom1
             'titre' => '', // obligatoire
-            //        'éditeur' => '',
-            //        'année'=>'',
-            //        'pages totales' => '',
-            //        'isbn' => ''
+            'éditeur' => '',
+            'année' => '',
+            'pages totales' => '',
+            'passage' => '',
+            'isbn' => '',
         ];
 
     /**

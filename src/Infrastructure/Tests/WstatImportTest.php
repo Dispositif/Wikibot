@@ -19,6 +19,7 @@ class WstatImportTest extends TestCase
 {
     public function testGetData()
     {
+        $this::markTestSkipped('long time test (delayed http request');
         // 2 sets by json string
         $json
             = '["Alexandre S. Giffard|{{Ouvrage|pr\u00e9nom1=Karel,|isbn=2763772358|isbn2=9782763772356}}","Alexandre Saint-Yves d\'Alveydre|{{Ouvrage|nom1= Saunier|titre= La Synarchie}}", "<!-- + -->"]';

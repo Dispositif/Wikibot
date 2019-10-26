@@ -27,7 +27,7 @@ class OuvrageOptimizeTest extends TestCase
 
         $optimized = (new OuvrageOptimize($origin))->doTasks()->getOuvrage();
         $this::assertSame(
-            '{{Ouvrage|id=ZE|langue=fr|auteur1=Ernest Nègre|titre=Toponymie|sous-titre=France|tome=3|isbn=978-2-600-02884-4|isbn10=2600028846|passage=15-27}}',
+            '{{Ouvrage|id=ZE|langue=fr|prénom1=Ernest|nom1=Nègre|titre=Toponymie|sous-titre=France|tome=3|éditeur=|année=|pages totales=|isbn=978-2-600-02884-4|isbn10=2600028846|passage=15-27}}',
             $optimized->serialize(true)
         );
     }
@@ -42,7 +42,7 @@ class OuvrageOptimizeTest extends TestCase
 
         $optimized = (new OuvrageOptimize($origin))->doTasks()->getOuvrage();
         $this::assertSame(
-            '{{Ouvrage|langue=fr|titre=|isbn=978-2-600-02884-4|isbn10=2600028846}}',
+            '{{Ouvrage|langue=fr|titre=|éditeur=|année=|pages totales=|isbn=978-2-600-02884-4|isbn10=2600028846|passage=}}',
             $optimized->serialize(true)
         );
     }
@@ -70,17 +70,17 @@ class OuvrageOptimizeTest extends TestCase
     public function provideProcessTitle()
     {
         return [
-            [['title' => 'Toponymie'], '{{Ouvrage|titre=Toponymie}}'],
-            [['title' => 'Toponymie. France'], '{{Ouvrage|titre=Toponymie|sous-titre=France}}'], // explode
-            [['title' => 'Vive PHP 7.3 en short'], '{{Ouvrage|titre=Vive PHP 7.3 en short}}'], //inchangé (numbers)
+            [['title' => 'Toponymie'], '{{Ouvrage|langue=|titre=Toponymie|éditeur=|année=|pages totales=|isbn=|passage=}}'],
+            [['title' => 'Toponymie. France'], '{{Ouvrage|langue=|titre=Toponymie|sous-titre=France|éditeur=|année=|pages totales=|isbn=|passage=}}'], // explode
+            [['title' => 'Vive PHP 7.3 en short'], '{{Ouvrage|langue=|titre=Vive PHP 7.3 en short|éditeur=|année=|pages totales=|isbn=|passage=}}'], //inchangé (numbers)
             [
                 ['title' => 'Ils ont osé... Les maires de Saint-Camille'],
-                '{{Ouvrage|titre=Ils ont osé... Les maires de Saint-Camille}}',
+                '{{Ouvrage|langue=|titre=Ils ont osé... Les maires de Saint-Camille|éditeur=|année=|pages totales=|isbn=|passage=}}',
             ],
-            [['title' => 'Toponymie - france'], '{{Ouvrage|titre=Toponymie|sous-titre=France}}'], // explode (- spaced)
-            [['title' => 'Toponymie / France'], '{{Ouvrage|titre=Toponymie|sous-titre=France}}'], // explode (/ spaced)
-            [['title' => 'Toponymie Jean-Pierre France'], '{{Ouvrage|titre=Toponymie Jean-Pierre France}}'], // inchangé
-            [['title' => 'Toponymie 1914-1918 super'], '{{Ouvrage|titre=Toponymie 1914-1918 super}}'], // inchangé
+            [['title' => 'Toponymie - france'], '{{Ouvrage|langue=|titre=Toponymie|sous-titre=France|éditeur=|année=|pages totales=|isbn=|passage=}}'], // explode (- spaced)
+            [['title' => 'Toponymie / France'], '{{Ouvrage|langue=|titre=Toponymie|sous-titre=France|éditeur=|année=|pages totales=|isbn=|passage=}}'], // explode (/ spaced)
+            [['title' => 'Toponymie Jean-Pierre France'], '{{Ouvrage|langue=|titre=Toponymie Jean-Pierre France|éditeur=|année=|pages totales=|isbn=|passage=}}'], // inchangé
+            [['title' => 'Toponymie 1914-1918 super'], '{{Ouvrage|langue=|titre=Toponymie 1914-1918 super|éditeur=|année=|pages totales=|isbn=|passage=}}'], // inchangé
         ];
     }
 }
