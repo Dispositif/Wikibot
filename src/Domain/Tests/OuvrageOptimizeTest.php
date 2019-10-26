@@ -32,21 +32,6 @@ class OuvrageOptimizeTest extends TestCase
         );
     }
 
-    public function testProcessIsbnLangFromISBN()
-    {
-        $raw
-            = '{{Ouvrage|isbn=2600028846}}';
-
-        $parse = TemplateParser::parseAllTemplateByName('ouvrage', $raw);
-        $origin = $parse['ouvrage'][0]['model'];
-
-        $optimized = (new OuvrageOptimize($origin))->doTasks()->getOuvrage();
-        $this::assertSame(
-            '{{Ouvrage|langue=fr|titre=|éditeur=|année=|pages totales=|isbn=978-2-600-02884-4|isbn10=2600028846|passage=}}',
-            $optimized->serialize(true)
-        );
-    }
-
     /**
      * @dataProvider provideProcessTitle
      *

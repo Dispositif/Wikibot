@@ -182,13 +182,6 @@ class OuvrageOptimize
             return;
         }
 
-        $langFromIsbn = $isbnMachine->getCountryShortName();
-        if ($langFromIsbn && empty($this->getParam('langue'))) {
-            $this->setParam('langue', $langFromIsbn);
-            $this->log('+langue='.$langFromIsbn);
-            $this->notCosmetic = true;
-        }
-
         // ISBN 10 ?
         if (10 === strlen(str_replace('-', '', $isbn)) && !$this->getParam('isbn10')) {
             $this->setParam('isbn10', $isbn);
