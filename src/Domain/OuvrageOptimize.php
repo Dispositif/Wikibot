@@ -92,7 +92,7 @@ class OuvrageOptimize
                     $this->setParam('auteur'.$i, sprintf('%s %s', $prenom, $nom));
                     $this->unsetParam('prénom'.$i);
                     $this->unsetParam('nom'.$i);
-                    $this->log('>auteur'.$i); // cosmétique
+//                    $this->log('>auteur'.$i); // cosmétique
                 }
             }
         }
@@ -192,14 +192,14 @@ class OuvrageOptimize
         // ISBN 10 ?
         if (10 === strlen(str_replace('-', '', $isbn)) && !$this->getParam('isbn10')) {
             $this->setParam('isbn10', $isbn);
-            $this->log('+isbn10');
+            $this->log('isbn10');
             $this->notCosmetic = true;
         }
 
         // ISBN correction
         if ($isbn13 !== $isbn) {
             $this->setParam('isbn', $isbn13);
-            $this->log('±ISBN');
+            $this->log('ISBN');
             $this->notCosmetic = true;
         }
     }
