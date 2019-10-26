@@ -7,8 +7,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Models\Wiki;
+namespace App\Domain\Models;
 
+use App\Domain\Models\Wiki\OuvrageTemplate;
 use Exception;
 use PHPUnit\Framework\TestCase;
 
