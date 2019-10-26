@@ -24,7 +24,7 @@ class DbAdapter implements QueueInterface
 {
     private $db;
 
-    private $newRawValidDate = '2019-10-25 16:16:18'; // valid domain code date
+    private $newRawValidDate = '2019-10-26 12:12:18'; // valid domain code date
 
     public function __construct()
     {

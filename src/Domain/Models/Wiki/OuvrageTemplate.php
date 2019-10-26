@@ -133,7 +133,6 @@ class OuvrageTemplate extends AbstractWikiTemplate
             'date' => 'date',
             'month' => 'mois',
             'language' => 'langue',
-            'id' => 'identifiant',
             'trans_chapter' => 'titre chapitre traduit',
             'quote' => 'extrait',
             /* END {{cite book}} to {{ouvrage}} convertion */
