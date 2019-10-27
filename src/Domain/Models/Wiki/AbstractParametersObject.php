@@ -47,13 +47,13 @@ abstract class AbstractParametersObject
     }
 
     /**
-     * todo useless ?
+     * todo clean empty value ??
      *
      * @return array
      */
     final public function toArray(): array
     {
-        return $this->parametersValues;
+        return $this->deleteEmptyValueArray($this->parametersValues);
     }
 
     /**

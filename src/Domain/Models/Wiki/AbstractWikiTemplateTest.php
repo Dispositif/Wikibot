@@ -66,7 +66,6 @@ class AbstractWikiTemplateTest extends TestCase
                 'auteur1' => 'Bob',
                 'date' => '2010-11-25',
                 'titre' => 'Foo bar',
-                'consulté le' => '',
             ],
             $lienWeb->toArray()
         );

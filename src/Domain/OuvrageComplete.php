@@ -97,7 +97,7 @@ class OuvrageComplete
                 }
 
                 $this->origin->setParam($param, $value);
-                $this->log[] = '+'.$param;
+                $this->log[] = '++'.$param;
                 $this->major = true;
                 $this->notCosmetic = true;
             }
@@ -189,7 +189,6 @@ class OuvrageComplete
 
     /**
      * @return bool
-     *
      * @throws Exception
      */
     private function predictSameBook()
@@ -206,7 +205,6 @@ class OuvrageComplete
 
     /**
      * @return bool
-     *
      * @throws Exception
      */
     private function hasSameAuthors(): bool
@@ -234,7 +232,6 @@ class OuvrageComplete
      * @param OuvrageTemplate $ouv
      *
      * @return string
-     *
      * @throws Exception
      */
     private function authorsFromBook(OuvrageTemplate $ouv)
@@ -268,7 +265,6 @@ class OuvrageComplete
 
     /**
      * @return bool
-     *
      * @throws Exception
      */
     private function hasSameISBN(): bool
