@@ -182,6 +182,14 @@ class OuvrageOptimize
             return;
         }
 
+        // Langue d'après ISBN : restreint à 'fr' pour fiabilité frwiki
+        $langFromIsbn = $isbnMachine->getCountryShortName();
+        if ($langFromIsbn && empty($this->getParam('langue')) && 'fr' === $langFromIsbn) {
+            $this->setParam('langue', $langFromIsbn);
+            $this->log('+langue:'.$langFromIsbn);
+            $this->notCosmetic = true;
+        }
+
         // ISBN 10 ?
         if (10 === strlen(str_replace('-', '', $isbn)) && !$this->getParam('isbn10')) {
             $this->setParam('isbn10', $isbn);
