@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Domain;
 
+use App\Domain\Utils\TextUtil;
 use App\Domain\Utils\WikiTextUtil;
 
 /**
@@ -28,88 +29,6 @@ class PredictFromTypo
     public function __construct(?CorpusInterface $corpus = null)
     {
         $this->corpusAdapter = $corpus;
-    }
-
-    /**
-     * Determine name and firstname from a string where both are mixed or abbreviated
-     * Prediction from typo pattern, statistical analysis and list of famous firstnames.
-     *
-     * @param string $author
-     *
-     * @return array
-     */
-    public function predictNameFirstName(string $author): array
-    {
-        // multiple authors // todo? explode authors
-        if (self::hasManyAuthors($author)) {
-            return ['fail' => '2+ authors in string'];
-        }
-
-        // ALLUPPER, FIRSTUPPER, ALLLOWER, MIXED, INITIAL, ALLNUMBER, WITHNUMBER, DASHNUMBER, URL, ITALIC, BIBABREV,
-        // AND, VIRGULE, PUNCTUATION
-        $typoPattern = $this->typoPatternFromAuthor($author);
-        $tokenAuthor = preg_split('#[ ]+#', $author);
-
-        if ('FIRSTUPPER FIRSTUPPER' === $typoPattern && !empty($tokenAuthor[1])) {
-            // Paul Durand
-            if ($this->checkFirstname($tokenAuthor[0], true) && !$this->checkFirstname($tokenAuthor[1])) {
-                return ['firstname' => $tokenAuthor[0], 'name' => $tokenAuthor[1]];
-            }
-            // Durand Paul
-            if ($this->checkFirstname($tokenAuthor[1]) && !$this->checkFirstname($tokenAuthor[0])) {
-                return ['firstname' => $tokenAuthor[1], 'name' => $tokenAuthor[0]];
-            }
-
-            // Pierre Paul
-            if ($this->checkFirstname($tokenAuthor[1]) && $this->checkFirstname($tokenAuthor[0])) {
-                return ['fail' => 'both names in the firstnames corpus'];
-            }
-
-            return ['fail' => 'firstname not in corpus'];
-        }
-
-        // Jean-Pierre Durand
-        if ('MIXED FIRSTUPPER' === $typoPattern && !empty($tokenAuthor[0]) && !empty($tokenAuthor[1])) {
-            // Jean-Pierre Durand
-            if ($this->checkFirstname($tokenAuthor[0], true) && !$this->checkFirstname($tokenAuthor[1])) {
-                return ['firstname' => $tokenAuthor[0], 'name' => $tokenAuthor[1]];
-            }
-            // Ducroz-Lacroix Pierre
-            if ($this->checkFirstname($tokenAuthor[1]) && !$this->checkFirstname($tokenAuthor[0])) {
-                return ['firstname' => $tokenAuthor[1], 'name' => $tokenAuthor[0]];
-            }
-            // Luc-Zorglub Durand
-            $pos = mb_strpos($tokenAuthor[0], '-');
-            $firstnamePart = mb_substr($tokenAuthor[0], 0, $pos);
-            if ($pos > 0 && $this->checkFirstname($firstnamePart)) {
-                return ['firstname' => $tokenAuthor[0], 'name' => $tokenAuthor[1]];
-            }
-
-            return ['fail' => 'firstname MIXED not in corpus'];
-        }
-
-        // A. Durand
-        if ('INITIAL FIRSTUPPER' === $typoPattern && !empty($tokenAuthor[0]) && !empty($tokenAuthor[1])) {
-            // get last "." position (compatible with "A. B. Durand")
-            $pos = mb_strrpos($author, '.');
-
-            return [
-                'firstname' => substr($author, 0, $pos + 1),
-                'name' => trim(substr($author, $pos + 1)),
-            ];
-        }
-
-        // Durand, P.
-        if ('FIRSTUPPER VIRGULE INITIAL' === $typoPattern && !empty($tokenAuthor[0]) && !empty($tokenAuthor[1])) {
-            $name = trim(str_replace(',', '', $tokenAuthor[0]));
-
-            return ['firstname' => $tokenAuthor[1], 'name' => $name];
-        }
-
-        return [
-            'fail' => 'unknown typo pattern',
-            'pattern' => $typoPattern,
-        ];
     }
 
     /**
@@ -134,13 +53,20 @@ class PredictFromTypo
 
     /**
      * todo legacy : refac with array+trim
-     * Tokenize for typographic analysis
+     * Tokenize into typographic pattern.
      * See studies by CLÉO : http://bilbo.hypotheses.org/193 et http://bilbo.hypotheses.org/133 /111
      * ALLUPPER, FIRSTUPPER, ALLLOWER, MIXED, INITIAL, ALLNUMBER, WITHNUMBER, DASHNUMBER, URL, ITALIC, BIBABREV, AND,
-     * VIRGULE, PUNCTUATION,
-     * Process order : unWikify > URL > BIBABREV > VIRGULE / POINT / ITALIQUE / GUILLEMET > PUNCTUATION > split? > ...
+     * COMMA, PUNCTUATION,
+     * Process order : unWikify > URL > BIBABREV > COMMA / POINT / ITALIQUE / GUILLEMET > PUNCTUATION > split? > ...
      * BIBABREV = "dir.", "trad." ("Jr." = INITIAL)
-     * Current version 2 : Tokenize all the space " ". Initials first funds. VIRGULE, PUNCTUATION.
+     * Current version 2 : Tokenize all the space " ". Initials first funds. COMMA, PUNCTUATION.
+     *
+     * pattern => 'ALLUPPER ALLUPPER COMMA'
+     * tokens => [
+     *      0 => 'Bob',
+     *      1 => 'Martin',
+     *      2 => ','
+     * ]
      *
      * @param $text
      *
@@ -148,9 +74,10 @@ class PredictFromTypo
      */
     public function typoPatternFromAuthor(string $text): string
     {
-        // todo : unWikify? (pour ref biblio faudrait garder italique)
+        // unWikify or not ?
+        $text = WikiTextUtil::unWikify($text);
 
-        // URL = adresse web
+        // URL
         $text = preg_replace('#\bhttps?://[^ ]+#i', ' URL ', $text);
         //$text = preg_replace( '#https?\:\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+\#]*[\w\-\@?^=%&amp;/~\+#])?#', ' URL ', $text);
 
@@ -161,82 +88,31 @@ class PredictFromTypo
             $text
         );
 
-        // VIRGULE = ,
-        $text = str_replace(',', ' VIRGULE ', $text);
+        // COMMA = ,
+        $text = str_replace(',', ' COMMA ', $text);
 
-        // INITIAL +Junior +Senior // problème "L'Ardoise"
-        $text = str_replace(
-            "'",
-            '',
-            $text
-        ); // strip apostrophe : L'Ardoise => LArdoise
+        // INITIAL
+        // 1) strip apostrophe : L'Ardoise => LArdoise
+        $text = str_replace("'", '', $text);
+        // 2) convert letter ("A.") or junior ("Jr.") or senior ("Sr.")
         $text = preg_replace(
             "#\b([A-Z]\.|[A-Z]\b|Jr\.|Jr\b|Sr\.|Sr\b)(?!=')#",
             ' INITIAL ',
             $text
         );
 
-        // BIBABREV = abréviations bibliographiques : dir. trad. aussi [dir] (dir.)
+        // BIBABREV = abréviations bibliographiques : dir. trad. [dir] (dir.)
+        // TODO : optimize regex
         $text = preg_replace(
             '#\b[(\[]?(dir|trad)\.[)\]]?#i',
             ' BIBABREV ',
             $text
-        ); // TODO : compléter regex
+        );
 
         // PUNCTUATION : sans virgule, sans &, sans point, sans tiret petit '-'
         // don't use str_split() which cuts on 1 byte length (≠ multibytes chars)
         $text = str_replace(
-            [
-                '!',
-                '"',
-                '«',
-                '»',
-                '#',
-                '$',
-                '%',
-                "'",
-                '’',
-                '´',
-                '`',
-                '^',
-                '…',
-                '‽',
-                '(',
-                ')',
-                '*',
-                '⁂',
-                '+',
-                '–',
-                '—',
-                '/',
-                ':',
-                ';',
-                '?',
-                '@',
-                '[',
-                '\\',
-                ']',
-                '_',
-                '`',
-                '{',
-                '|',
-                '¦',
-                '}',
-                '~',
-                '<',
-                '>',
-                '№',
-                '©',
-                '®',
-                '°',
-                '†',
-                '§',
-                '∴',
-                '∵',
-                '¶',
-                '•',
-                '+',
-            ],
+            TextUtil::ALL_PUNCTUATION,
             ' PUNCTUATION ',
             $text
         );
@@ -248,9 +124,10 @@ class PredictFromTypo
                 continue;
             }
 
-            if (preg_match('#^(INITIAL|URL|AND|VIRGULE|BIBABREV|PUNCTUATION)$#', $tok) > 0) {
+            if (preg_match('#^(INITIAL|URL|AND|COMMA|BIBABREV|PUNCTUATION)$#', $tok) > 0) {
                 $res .= ' '.$tok;
                 //"J. R . R." => INITIAL (1 seule fois)
+                // todo : or not ?
                 $res = str_replace('INITIAL INITIAL', 'INITIAL', $res);
             } elseif (preg_match('#^[0-9]+$#', $tok) > 0) {
                 $res .= ' ALLNUMBER';
@@ -307,4 +184,87 @@ class PredictFromTypo
 
         return false;
     }
+
+    /**
+     * Determine name and firstname from a string where both are mixed or abbreviated
+     * Prediction from typo pattern, statistical analysis and list of famous firstnames.
+     *
+     * @param string $author
+     *
+     * @return array
+     */
+    public function predictNameFirstName(string $author): array
+    {
+        // multiple authors // todo? explode authors
+        if (self::hasManyAuthors($author)) {
+            return ['fail' => '2+ authors in string'];
+        }
+
+        // ALLUPPER, FIRSTUPPER, ALLLOWER, MIXED, INITIAL, ALLNUMBER, WITHNUMBER, DASHNUMBER, URL, ITALIC, BIBABREV,
+        // AND, COMMA, PUNCTUATION
+        $typoPattern = $this->typoPatternFromAuthor($author);
+        $tokenAuthor = preg_split('#[ ]+#', $author);
+
+        if ('FIRSTUPPER FIRSTUPPER' === $typoPattern && !empty($tokenAuthor[1])) {
+            // Paul Durand
+            if ($this->checkFirstname($tokenAuthor[0], true) && !$this->checkFirstname($tokenAuthor[1])) {
+                return ['firstname' => $tokenAuthor[0], 'name' => $tokenAuthor[1]];
+            }
+            // Durand Paul
+            if ($this->checkFirstname($tokenAuthor[1]) && !$this->checkFirstname($tokenAuthor[0])) {
+                return ['firstname' => $tokenAuthor[1], 'name' => $tokenAuthor[0]];
+            }
+
+            // Pierre Paul
+            if ($this->checkFirstname($tokenAuthor[1]) && $this->checkFirstname($tokenAuthor[0])) {
+                return ['fail' => 'both names in the firstnames corpus'];
+            }
+
+            return ['fail' => 'firstname not in corpus'];
+        }
+
+        // Jean-Pierre Durand
+        if ('MIXED FIRSTUPPER' === $typoPattern && !empty($tokenAuthor[0]) && !empty($tokenAuthor[1])) {
+            // Jean-Pierre Durand
+            if ($this->checkFirstname($tokenAuthor[0], true) && !$this->checkFirstname($tokenAuthor[1])) {
+                return ['firstname' => $tokenAuthor[0], 'name' => $tokenAuthor[1]];
+            }
+            // Ducroz-Lacroix Pierre
+            if ($this->checkFirstname($tokenAuthor[1]) && !$this->checkFirstname($tokenAuthor[0])) {
+                return ['firstname' => $tokenAuthor[1], 'name' => $tokenAuthor[0]];
+            }
+            // Luc-Zorglub Durand
+            $pos = mb_strpos($tokenAuthor[0], '-');
+            $firstnamePart = mb_substr($tokenAuthor[0], 0, $pos);
+            if ($pos > 0 && $this->checkFirstname($firstnamePart)) {
+                return ['firstname' => $tokenAuthor[0], 'name' => $tokenAuthor[1]];
+            }
+
+            return ['fail' => 'firstname MIXED not in corpus'];
+        }
+
+        // A. Durand
+        if ('INITIAL FIRSTUPPER' === $typoPattern && !empty($tokenAuthor[0]) && !empty($tokenAuthor[1])) {
+            // get last "." position (compatible with "A. B. Durand")
+            $pos = mb_strrpos($author, '.');
+
+            return [
+                'firstname' => substr($author, 0, $pos + 1),
+                'name' => trim(substr($author, $pos + 1)),
+            ];
+        }
+
+        // Durand, P.
+        if ('FIRSTUPPER COMMA INITIAL' === $typoPattern && !empty($tokenAuthor[0]) && !empty($tokenAuthor[1])) {
+            $name = trim(str_replace(',', '', $tokenAuthor[0]));
+
+            return ['firstname' => $tokenAuthor[1], 'name' => $name];
+        }
+
+        return [
+            'fail' => 'unknown typo pattern',
+            'pattern' => $typoPattern,
+        ];
+    }
+
 }
