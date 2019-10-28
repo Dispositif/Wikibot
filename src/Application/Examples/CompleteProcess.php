@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Application\Examples;
 
+use App\Application\Bot;
 use App\Application\QueueInterface;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\OuvrageComplete;
@@ -55,8 +56,9 @@ class CompleteProcess
         while (true) {
             $this->raw = $this->getNewRaw();
 
-            echo sprintf("-------------------------------\n%s\n\n%s\n",
+            echo sprintf("-------------------------------\n%s [%s]\n\n%s\n",
                 date("Y-m-d H:i:s"),
+                Bot::getGitVersion() ?? '',
                 $this->raw);
 
             // initialise variables
@@ -189,6 +191,7 @@ class CompleteProcess
             'notcosmetic' => ($this->notCosmetic) ? 1 : 0,
             'major' => ($this->major) ? 1 : 0,
             'isbn' => $isbn13,
+            'version' => Bot::getGitVersion() ?? null
         ];
         dump($finalData);
         // Json ?
