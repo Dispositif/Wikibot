@@ -14,7 +14,8 @@ use App\Infrastructure\ServiceFactory;
 use Bluora\LaravelGitInfo\GitInfo;
 
 /**
- * Define wiki configuration of the bot
+ * Define wiki configuration of the bot.
+ * See also .env file for parameters.
  * Class Bot.
  */
 class Bot
@@ -155,6 +156,7 @@ class Bot
 
     /**
      * Detect {{nobots}}, {{bots|deny=all}}, {{bots|deny=MyBot,BobBot}}.
+     * Relevant out of the "main" wiki-namespace (talk pages, etc).
      *
      * @param string      $text
      * @param string|null $botName
