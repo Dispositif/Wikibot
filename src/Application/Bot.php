@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Application;
 
+use App\Domain\Exceptions\ConfigException;
 use App\Infrastructure\ServiceFactory;
 use Bluora\LaravelGitInfo\GitInfo;
 
@@ -18,25 +19,17 @@ use Bluora\LaravelGitInfo\GitInfo;
  */
 class Bot
 {
-    public $workerId = 'Bot';
+    const WATCHPAGE_FILENAME      = __DIR__.'/resources/watch_pages.json';
+    const EXIT_ON_CHECK_WATCHPAGE = true;
+    const BOT_FLAG                = false;
+    const MODE_AUTO               = false;
+    const EXIT_ON_WIKIMESSAGE     = true;
+    const EDIT_LAPS               = 20;
+    const EDIT_LAPS_MANUAL        = 20;
+    const EDIT_LAPS_AUTOBOT       = 60;
+    const EDIT_LAPS_FLAGBOT       = 8;
 
     public $taskName = 'Correction bibliographique';
-
-    const BOT_FLAG = false;
-
-    const MODE_AUTO = false;
-
-    const EXIT_ON_WIKIMESSAGE = true;
-
-    const EDIT_LAPS = 20;
-
-    const EDIT_LAPS_MANUAL = 20;
-
-    const EDIT_LAPS_AUTOBOT = 60;
-
-    const EDIT_LAPS_FLAGBOT = 8;
-
-    const EXIT_ON_CHECK_WATCHPAGE = true;
 
     public function __construct()
     {
@@ -52,7 +45,7 @@ class Bot
     {
         return sprintf(
             '[%s] %s : ',
-            $this->getGitVersion(),
+            str_replace('v', '', self::getGitVersion()),
             $this->taskName
         );
     }
@@ -62,7 +55,7 @@ class Bot
      *
      * @return string|null
      */
-    public function getGitVersion(): ?string
+    public static function getGitVersion(): ?string
     {
         $git = new GitInfo();
         $raw = $git->version();
@@ -78,7 +71,7 @@ class Bot
      *
      * @return string|null
      */
-    public function getCommitId(): ?string
+    public static function getCommitId(): ?string
     {
         $git = new GitInfo();
         $raw = $git->version();
@@ -92,25 +85,18 @@ class Bot
     /**
      * Is there a new message on the discussion page of the bot (or owner) ?
      * Stop on new message ?
+     *
+     * @throws ConfigException
      */
     public function checkWatchPages()
     {
-        $filename = __DIR__.'/resources/watch_pages.json';
-        if (!file_exists($filename)) {
-            dump("no file $filename");
-
-            return;
-        }
-        $json = file_get_contents($filename);
-        $watchPages = json_decode($json, true);
-
-        foreach ($watchPages as $title => $lastTime) {
+        foreach ($this->getWatchPages() as $title => $lastTime) {
             $pageTime = $this->getTimestamp($title);
 
             // the page has been edited since last check ?
             if ($pageTime !== $lastTime) {
                 echo sprintf(
-                    "WATCHPAGE '%s' has been edited since %s\n",
+                    "WATCHPAGE '%s' has been edited since %s.\n",
                     $title,
                     $lastTime
                 );
@@ -119,11 +105,30 @@ class Bot
                 echo "Replace with $title => '$pageTime'";
 
                 if (self::EXIT_ON_CHECK_WATCHPAGE) {
-                    echo "\nSTOP on checkWatchPages\n";
+                    echo "\nSTOP on checkWatchPages.\n";
                     exit();
                 }
             }
         }
+    }
+
+    /**
+     * @return array
+     * @throws ConfigException
+     */
+    protected function getWatchPages(): array
+    {
+        if (!file_exists(static::WATCHPAGE_FILENAME)) {
+            throw new FConfigException("No watchpage file found.");
+        }
+        try {
+            $json = file_get_contents(static::WATCHPAGE_FILENAME);
+            $array = json_decode($json, true);
+        } catch (\Throwable $e) {
+            throw new ConfigException('Watchpage file malformed.');
+        }
+
+        return $array;
     }
 
     private function getTimestamp(string $title): string
@@ -139,7 +144,7 @@ class Bot
      *
      * @param string $title
      *
-     * @return int
+     * @return int minutes
      */
     public function minutesSinceLastEdit(string $title): int
     {
@@ -156,8 +161,9 @@ class Bot
      *
      * @return bool
      */
-    public static function isNoBotTag(string $text, string $botName = 'ZiziBot'): bool
+    public static function isNoBotTag(string $text, ?string $botName = null): bool
     {
+        $botName = ($botName) ? $botName : getenv('BOT_NAME');
         $denyReg = (!is_null($botName)) ? '|\{\{bots ?\| ?deny\=[^\}]*'.preg_quote($botName, '#').'[^\}]*\}\}' : '';
 
         if (preg_match('#({{nobots}}|{{bots ?\| ?(optout|deny) ?= ?all ?}}'.$denyReg.')#i', $text) > 0) {
@@ -166,4 +172,5 @@ class Bot
 
         return false;
     }
+
 }
