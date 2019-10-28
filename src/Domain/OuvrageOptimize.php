@@ -145,6 +145,7 @@ class OuvrageOptimize
                 $this->setParam(sprintf('auteur%s', $i + 1), $res[$i]);
             }
             $this->log('distinction des auteurs');
+            $this->notCosmetic = true;
         }
     }
 
