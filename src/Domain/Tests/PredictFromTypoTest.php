@@ -15,30 +15,35 @@ use PHPUnit\Framework\TestCase;
 
 class PredictFromTypoTest extends TestCase
 {
+
+
     /**
      * For TDD.
      *
      * @dataProvider patternProvider
      *
-     * @param string $author
+     * @param string $text
      * @param string $pattern
      */
-    public function testTokenizeAuthor(string $author, string $pattern)
+    public function testTokenizeAuthor(string $text, string $pattern)
     {
         $predict = new PredictFromTypo();
+        $tokenize = $predict->typoPatternFromAuthor($text);
         $this::assertEquals(
             $pattern,
-            $predict->typoPatternFromAuthor($author)
+            $tokenize['pattern']
         );
     }
 
     public function patternProvider()
     {
         return [
-            ['Paul Penaud', 'FIRSTUPPER FIRSTUPPER'],
-            ['Jean-Pierre Penaud', 'MIXED FIRSTUPPER'],
+            ['B. Marc dir. et Pierre BERGER', 'INITIAL FIRSTUPPER BIBABREV AND FIRSTUPPER ALLUPPER'],
+            ["Jean-Pierre L'Ardoise", 'MIXED MIXED'],
+            ['Penaud, Jean-Pierre', 'FIRSTUPPER COMMA MIXED'],
             ['J. Penaud', 'INITIAL FIRSTUPPER'],
-            ['A. B. Penaud', 'INITIAL FIRSTUPPER'],
+            ['A. B. Penaud', 'INITIAL INITIAL FIRSTUPPER'],
+//            ['A. B. Penaud', 'INITIAL FIRSTUPPER'],
         ];
     }
 
@@ -77,7 +82,7 @@ class PredictFromTypoTest extends TestCase
             ['J. Penaud', ['firstname' => 'J.', 'name' => 'Penaud']],
             ['Penaud, J.', ['firstname' => 'J.', 'name' => 'Penaud']],
             ['A. Durand', ['firstname' => 'A.', 'name' => 'Durand']],
-            ['A. B. Durand', ['firstname' => 'A. B.', 'name' => 'Durand']],
+            ['A. B. Durand', ['fail' => 'unknown typo pattern', 'pattern' => 'INITIAL INITIAL FIRSTUPPER']],
             ['Pierre Durand, Paul Marchal', ['fail' => '2+ authors in string']],
             ['Babar Elephant', ['fail' => 'firstname not in corpus']],
         ];

@@ -22,6 +22,8 @@ class PredictFromTypo
      */
     private $corpusAdapter;
 
+    private $tokenValue = [];
+
     private $unknownCorpusName = 'corpus_unknow_firstname'; // temp refac
 
     private $firstnameCorpusName = 'firstname'; // temp refac
@@ -29,6 +31,149 @@ class PredictFromTypo
     public function __construct(?CorpusInterface $corpus = null)
     {
         $this->corpusAdapter = $corpus;
+    }
+
+    /**
+     * Tokenize into typographic pattern.
+     * See studies from CLÉO : http://bilbo.hypotheses.org/193 et http://bilbo.hypotheses.org/133 /111
+     * ALLUPPER, FIRSTUPPER, ALLLOWER, MIXED, INITIAL, ALLNUMBER, WITHNUMBER, DASHNUMBER, URL, ITALIC, BIBABREV, AND,
+     * COMMA, PUNCTUATION,
+     * Example of the returned array :
+     * string => 'Penaud, Jean-Pierre'
+     * pattern => 'FIRSTUPPER COMMA MIXED'
+     * tokens => [ 0 => 'Penaud', 1 => ',', 2 => 'Jean-Pierre']
+     *
+     * @param string $text
+     *
+     * @return array (see example)
+     */
+    public function typoPatternFromAuthor(string $text): array
+    {
+        $res['string'] = $text;
+        $modText = TextUtil::replaceNonBreakingSpaces($text);
+
+        // unWikify or not ? remove wikilinks and bold/italic wikicode
+        $modText = WikiTextUtil::unWikify($modText);
+
+        /**
+         * Pre-process : add spaces between relevant typographic items
+         */
+        $this->tokenValue = [];
+        $modText = $this->preprocessTypoPattern($modText);
+
+
+        // PUNCTUATION conversion
+        $punctuationColl = array_filter(
+            TextUtil::ALL_PUNCTUATION,
+            function ($value) {
+                // skip punctuation chars from mixed names (example : "Pierre-Marie L'Anglois")
+                return (!in_array($value, ["'", '-', '-']));
+            }
+        );
+        // don't use str_split() which cuts on 1 byte length (≠ multibytes chars)
+        $modText = str_replace($punctuationColl, ' PUNCTUATION ', $modText);
+
+        // Split the string
+        $tokens = preg_split('#[ ]+#', $modText);
+        $res['pattern'] = '';
+        foreach ($tokens as $tok) {
+            if (empty($tok)) {
+                continue;
+            }
+            if (preg_match('#^(INITIAL|URL|AND|COMMA|BIBABREV|PUNCTUATION)$#', $tok, $matches) > 0) {
+                $res['pattern'] .= ' '.$tok;
+                if (in_array($matches[1], ['COMMA', 'PUNCTUATION']) || empty($matches[1])) {
+                    $res['value'][] = '*';
+                } else {
+                    $res['value'][] = current($this->tokenValue[$matches[1]]);
+                    next($this->tokenValue[$matches[1]]);
+                }
+                //"J. R . R." => INITIAL (1 seule fois)
+                // $res = str_replace('INITIAL INITIAL', 'INITIAL', $res);
+            } elseif (preg_match('#^[0-9]+$#', $tok) > 0) {
+                $res['pattern'] .= ' ALLNUMBER';
+                $res['value'][] = $tok;
+            } elseif (preg_match('#^[0-9\-]+$#', $tok) > 0) {
+                $res['pattern'] .= ' DASHNUMBER';
+                $res['value'][] = $tok;
+            } elseif (preg_match('#[0-9]#', $tok) > 0) {
+                $res['pattern'] .= ' WITHNUMBER';
+                $res['value'][] = $tok;
+            } elseif (mb_strtolower($tok, 'UTF-8') === $tok) {
+                $res['pattern'] .= ' ALLLOWER';
+                $res['value'][] = $tok;
+            } elseif (mb_strtoupper($tok, 'UTF-8') === $tok) {
+                $res['pattern'] .= ' ALLUPPER';
+                $res['value'][] = $tok;
+            } elseif (mb_strtoupper(substr($tok, 0, 1), 'UTF-8') === substr($tok, 0, 1)
+                && mb_strtolower(substr($tok, 1), 'UTF-8') === substr($tok, 1)
+            ) {
+                $res['pattern'] .= ' FIRSTUPPER';
+                $res['value'][] = $tok;
+            } elseif (preg_match('#[a-zA-Zàéù]#', $tok) > 0) {
+                $res['pattern'] .= ' MIXED';
+                $res['value'][] = $tok;
+            } else {
+                $res['pattern'] .= ' UNKNOW';
+                $res['value'][] = $tok;
+            }
+        }
+
+        $res['pattern'] = trim($res['pattern']);
+
+        return $res;
+    }
+
+    /**
+     * Pre-process text : add spaces between relevant typographic items.
+     * Save values by types in $tokenValue.
+     *
+     * @param string $modText
+     *
+     * @return string
+     */
+    private function preprocessTypoPattern(string $modText): string
+    {
+        $modText = preg_replace_callback_array(
+            [
+                // URL
+                '#\bhttps?://[^ \]]+#i' => function ($match) {
+                    // '#https?\:\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+\#]*[\w\-\@?^=%&amp;/~\+#])?#'
+                    $this->tokenValue['URL'][] = $match[0];
+
+                    return ' URL ';
+                },
+                // BIBABREV : "dir.", "trad.", "(dir.)", "[dir.]", etc.
+                '#\b[(\[]?(dir|trad)\.[)\]]?#i' => function ($match) {
+                    $this->tokenValue['BIBABREV'][] = $match[0]; // [1] = dir
+
+                    return ' BIBABREV ';
+                },
+                // AND
+                '# (et|and|$|with|avec) #' => function ($match) {
+                    $this->tokenValue['AND'][] = $match[1];
+
+                    return ' AND ';
+                },
+                // COMMA
+                '#,#' => function ($match) {
+                    return ' COMMA ';
+                },
+                // INITIAL : 2) convert letter ("A.") or junior ("Jr.") or senior ("Sr.")
+                // extract initial before "." converted in PUNCTUATION
+                // Note : \b word boundary match between "L" and "'Amour" in "L'Amour"  (for [A-Z]\b)
+                // \b([A-Z]\. |[A-Z] |JR|Jr\.|Jr\b|Sr\.|Sr\b)+ for grouping "A. B." in same INITIAL ?
+                "#\b([A-Z]\.|[A-Z] |JR|Jr\.|Jr\b|Sr\.|Sr\b)#" => function ($match) {
+                    $this->tokenValue['INITIAL'][] = $match[0];
+
+                    return ' INITIAL ';
+                },
+            ],
+            $modText,
+            40
+        );
+
+        return $modText;
     }
 
     /**
@@ -49,111 +194,6 @@ class PredictFromTypo
         }
 
         return false;
-    }
-
-    /**
-     * todo legacy : refac with array+trim
-     * Tokenize into typographic pattern.
-     * See studies by CLÉO : http://bilbo.hypotheses.org/193 et http://bilbo.hypotheses.org/133 /111
-     * ALLUPPER, FIRSTUPPER, ALLLOWER, MIXED, INITIAL, ALLNUMBER, WITHNUMBER, DASHNUMBER, URL, ITALIC, BIBABREV, AND,
-     * COMMA, PUNCTUATION,
-     * Process order : unWikify > URL > BIBABREV > COMMA / POINT / ITALIQUE / GUILLEMET > PUNCTUATION > split? > ...
-     * BIBABREV = "dir.", "trad." ("Jr." = INITIAL)
-     * Current version 2 : Tokenize all the space " ". Initials first funds. COMMA, PUNCTUATION.
-     *
-     * pattern => 'ALLUPPER ALLUPPER COMMA'
-     * tokens => [
-     *      0 => 'Bob',
-     *      1 => 'Martin',
-     *      2 => ','
-     * ]
-     *
-     * @param $text
-     *
-     * @return string
-     */
-    public function typoPatternFromAuthor(string $text): string
-    {
-        // unWikify or not ?
-        $text = WikiTextUtil::unWikify($text);
-
-        // URL
-        $text = preg_replace('#\bhttps?://[^ ]+#i', ' URL ', $text);
-        //$text = preg_replace( '#https?\:\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+\#]*[\w\-\@?^=%&amp;/~\+#])?#', ' URL ', $text);
-
-        // AND = and, et, &, with, avec
-        $text = str_replace(
-            [' et ', ' and ', ' & ', ' with ', ' avec '],
-            ' AND ',
-            $text
-        );
-
-        // COMMA = ,
-        $text = str_replace(',', ' COMMA ', $text);
-
-        // INITIAL
-        // 1) strip apostrophe : L'Ardoise => LArdoise
-        $text = str_replace("'", '', $text);
-        // 2) convert letter ("A.") or junior ("Jr.") or senior ("Sr.")
-        $text = preg_replace(
-            "#\b([A-Z]\.|[A-Z]\b|Jr\.|Jr\b|Sr\.|Sr\b)(?!=')#",
-            ' INITIAL ',
-            $text
-        );
-
-        // BIBABREV = abréviations bibliographiques : dir. trad. [dir] (dir.)
-        // TODO : optimize regex
-        $text = preg_replace(
-            '#\b[(\[]?(dir|trad)\.[)\]]?#i',
-            ' BIBABREV ',
-            $text
-        );
-
-        // PUNCTUATION : sans virgule, sans &, sans point, sans tiret petit '-'
-        // don't use str_split() which cuts on 1 byte length (≠ multibytes chars)
-        $text = str_replace(
-            TextUtil::ALL_PUNCTUATION,
-            ' PUNCTUATION ',
-            $text
-        );
-        $tokens = preg_split('#[ ]#', $text);
-
-        $res = '';
-        foreach ($tokens as $tok) {
-            if (empty($tok)) {
-                continue;
-            }
-
-            if (preg_match('#^(INITIAL|URL|AND|COMMA|BIBABREV|PUNCTUATION)$#', $tok) > 0) {
-                $res .= ' '.$tok;
-                //"J. R . R." => INITIAL (1 seule fois)
-                // todo : or not ?
-                $res = str_replace('INITIAL INITIAL', 'INITIAL', $res);
-            } elseif (preg_match('#^[0-9]+$#', $tok) > 0) {
-                $res .= ' ALLNUMBER';
-            } elseif (preg_match('#^[0-9\-]+$#', $tok) > 0) {
-                $res .= ' DASHNUMBER';
-            } elseif (preg_match('#[0-9]#', $tok) > 0) {
-                $res .= ' WITHNUMBER';
-            } elseif (mb_strtolower($tok, 'UTF-8') === $tok) {
-                $res .= ' ALLLOWER';
-            } elseif (mb_strtoupper($tok, 'UTF-8') === $tok) {
-                $res .= ' ALLUPPER';
-            } elseif (mb_strtoupper(substr($tok, 0, 1), 'UTF-8') === substr(
-                    $tok,
-                    0,
-                    1
-                ) and mb_strtolower(substr($tok, 1), 'UTF-8') === substr($tok, 1)
-            ) {
-                $res .= ' FIRSTUPPER';
-            } elseif (preg_match('#[a-zA-Zàéù]#', $tok) > 0) {
-                $res .= ' MIXED';
-            } else {
-                $res .= ' UNKNOW';
-            }
-        }
-
-        return trim($res);
     }
 
     /**
@@ -186,6 +226,7 @@ class PredictFromTypo
     }
 
     /**
+     * todo Legacy.
      * Determine name and firstname from a string where both are mixed or abbreviated
      * Prediction from typo pattern, statistical analysis and list of famous firstnames.
      *
@@ -202,7 +243,7 @@ class PredictFromTypo
 
         // ALLUPPER, FIRSTUPPER, ALLLOWER, MIXED, INITIAL, ALLNUMBER, WITHNUMBER, DASHNUMBER, URL, ITALIC, BIBABREV,
         // AND, COMMA, PUNCTUATION
-        $typoPattern = $this->typoPatternFromAuthor($author);
+        $typoPattern = $this->typoPatternFromAuthor($author)['pattern'];
         $tokenAuthor = preg_split('#[ ]+#', $author);
 
         if ('FIRSTUPPER FIRSTUPPER' === $typoPattern && !empty($tokenAuthor[1])) {
