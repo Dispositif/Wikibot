@@ -9,13 +9,13 @@ declare(strict_types=1);
 
 namespace App\Domain\Tests;
 
+use App\Domain\PredictAuteur;
 use App\Domain\PredictFromTypo;
 use App\Infrastructure\CorpusAdapter;
 use PHPUnit\Framework\TestCase;
 
 class PredictFromTypoTest extends TestCase
 {
-
 
     /**
      * For TDD.
@@ -39,11 +39,39 @@ class PredictFromTypoTest extends TestCase
     {
         return [
             ['B. Marc dir. et Pierre BERGER', 'INITIAL FIRSTUPPER BIBABREV AND FIRSTUPPER ALLUPPER'],
+            ['Renée & Michel Paquet', 'FIRSTUPPER AND FIRSTUPPER FIRSTUPPER'],
             ["Jean-Pierre L'Ardoise", 'MIXED MIXED'],
             ['Penaud, Jean-Pierre', 'FIRSTUPPER COMMA MIXED'],
             ['J. Penaud', 'INITIAL FIRSTUPPER'],
             ['A. B. Penaud', 'INITIAL INITIAL FIRSTUPPER'],
-//            ['A. B. Penaud', 'INITIAL FIRSTUPPER'],
+            //            ['A. B. Penaud', 'INITIAL FIRSTUPPER'],
+        ];
+    }
+
+    /**
+     * @dataProvider provideAuthorNames
+     */
+    public function testPredictAuthorNames($string, $expected)
+    {
+        $predic = new PredictAuteur();
+
+        $this::assertSame(
+            $expected,
+            $predic->predictAuthorNames($string)
+        );
+    }
+
+    public function provideAuthorNames()
+    {
+        return [
+            ['Marc Durand et Pierre Berger', [0 => 'Marc Durand', 1 => 'Pierre Berger']],
+            [
+                'Marie-Paul Du Breil de Pontbriand',
+                [0 => 'Marie-Paul Du Breil de Pontbriand'],
+            ],
+            ['Renée et Michel Paquet', [0 => 'Renée Paquet', 1 => 'Michel Paquet']],
+            ['Francine Musquère et Jean-Michel Mure', [0 => 'Francine Musquère', 1 => 'Jean-Michel Mure']],
+            ['Didier Du Castel, Claude Estebe', [0 => 'Didier Du Castel', 1 => 'Claude Estebe']],
         ];
     }
 
