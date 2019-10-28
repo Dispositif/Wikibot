@@ -71,48 +71,80 @@ class OuvrageOptimize
      */
     private function processAuthors()
     {
-        //        $this->multipleAuthors(); // desactived: too many errors
-        //        $this->fusionFirstNameAndName(); // desactived : no consensus
-    }
-
-    private function fusionFirstNameAndName()
-    {
-        // Fusion prénom+nom -> auteur, si :
-        // (prénom simple ou prénom avec initiale) ET nom simple
-        // cosmétique
-        for ($i = 1; $i < 5; ++$i) {
-            $prenom = $this->getParam('prénom'.$i) ?? false;
-            $nom = $this->getParam('nom'.$i) ?? false;
-            if ($prenom && $nom) {
-                // prénom constitué de "mot A." ?
-                $initialePrenom = preg_match('#^[^ .]+ [A-Z]\.$#', $prenom);
-
-                // fusion prénom1+nom1 => auteur1
-                if (($initialePrenom || !strpos($prenom, ' ')) && !strpos($nom, ' ')) {
-                    $this->setParam('auteur'.$i, sprintf('%s %s', $prenom, $nom));
-                    $this->unsetParam('prénom'.$i);
-                    $this->unsetParam('nom'.$i);
-                    //                    $this->log('>auteur'.$i); // cosmétique
-                }
-            }
-        }
+        $this->distinguishAuthors();
+        //$this->fusionFirstNameAndName(); // desactived : no consensus
     }
 
     /**
-     * Todo: implement better.
+     * desactived (no consensus)
+     */
+//    private function fusionFirstNameAndName()
+//    {
+        //        // Fusion prénom+nom -> auteur, si :
+        //        // (prénom simple ou prénom avec initiale) ET nom simple
+        //        // cosmétique
+        //        for ($i = 1; $i < 5; ++$i) {
+        //            $prenom = $this->getParam('prénom'.$i) ?? false;
+        //            $nom = $this->getParam('nom'.$i) ?? false;
+        //            if ($prenom && $nom) {
+        //                // prénom constitué de "mot A." ?
+        //                $initialePrenom = preg_match('#^[^ .]+ [A-Z]\.$#', $prenom);
+        //
+        //                // fusion prénom1+nom1 => auteur1
+        //                if (($initialePrenom || !strpos($prenom, ' ')) && !strpos($nom, ' ')) {
+        //                    $this->setParam('auteur'.$i, sprintf('%s %s', $prenom, $nom));
+        //                    $this->unsetParam('prénom'.$i);
+        //                    $this->unsetParam('nom'.$i);
+        //                    //                    $this->log('>auteur'.$i); // cosmétique
+        //                }
+        //            }
+        //        }
+//    }
+
+    /**
+     * Detect and correct multiple authors in same parameter.
+     * Like "auteurs=J. M. Waller, M. Bigger, R. J. Hillocks"
      *
      * @throws Exception
      */
-    private function multipleAuthors()
+    private function distinguishAuthors()
     {
-        // todo explode auteurs multiples // check auteur1 ?
-        $auteur = $this->getParam('auteur') ?? false;
-        if ($auteur && PredictFromTypo::hasManyAuthors($auteur)) {
-            $this->setParam('auteurs', $auteur);
-            $this->unsetParam('auteur');
-            $this->log('>auteurS'); // cosmétique
+        // merge params of author 1
+        $auteur1 = $this->getParam('auteur') ?? '';
+        $auteur1 .= $this->getParam('auteurs') ?? '';
+        $auteur1 .= $this->getParam('prénom1') ?? '';
+        $auteur1 .= $this->getParam('nom1') ?? '';
+        // of authors 2
+        $auteur2 = $this->getParam('auteur2') ?? '';
+        $auteur2 .= $this->getParam('prénom2') ?? '';
+        $auteur2 .= $this->getParam('nom2') ?? '';
 
+        // skip if wikilink in author
+        if (empty($auteur1) || WikiTextUtil::isWikify($auteur1)) {
             return;
+        }
+
+        $machine = new PredictAuteur();
+        $res = $machine->predictAuthorNames($auteur1);
+
+        if (count($res) === 1) {
+            // auteurs->auteur?
+            return;
+        }
+        // Many authors... and empty "auteur2"
+        if (count($res) >= 2 && empty($auteur2)) {
+            // delete author-params
+            array_map(
+                function ($param) {
+                    $this->unsetParam($param);
+                },
+                ['auteur', 'auteurs', 'prénom1', 'nom1']
+            );
+            // iterate and edit new values
+            for ($i = 0; $i < count($res); $i++) {
+                $this->setParam(sprintf('auteur%s', $i + 1), $res[$i]);
+            }
+            $this->log('distinction des auteurs');
         }
     }
 

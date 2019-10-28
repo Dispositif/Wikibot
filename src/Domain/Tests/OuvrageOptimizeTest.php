@@ -104,4 +104,18 @@ class OuvrageOptimizeTest extends TestCase
             $optimized->serialize(true)
         );
     }
+
+    public function testDistinguishAuthors()
+    {
+        $ouvrage = new OuvrageTemplate();
+        $ouvrage->hydrateFromText('{{ouvrage|auteur=Marie Durand, Pierre Berger, Francois Morgand|titre=Bla}}');
+
+        $optimizer = (new OuvrageOptimize($ouvrage))->doTasks();
+        $final = $optimizer->getOuvrage();
+
+        $this::assertSame(
+            '{{Ouvrage|langue=|auteur1=Marie Durand|auteur2=Pierre Berger|auteur3=Francois Morgand|titre=Bla|éditeur=|année=|pages totales=|isbn=|passage=}}',
+            $final->serialize(true)
+        );
+    }
 }

@@ -144,13 +144,14 @@ class PredictFromTypo
                     return ' URL ';
                 },
                 // BIBABREV : "dir.", "trad.", "(dir.)", "[dir.]", etc.
-                '#\b[(\[]?(dir|trad)\.[)\]]?#i' => function ($match) {
+                '#\b[(\[]?(collectif|coll\.|dir\.|trad\.|coord\.|ill\.)[)\]]?#i' => function ($match) {
                     $this->tokenValue['BIBABREV'][] = $match[0]; // [1] = dir
 
                     return ' BIBABREV ';
                 },
+                // collectif
                 // AND
-                '# (et|and|$|with|avec) #' => function ($match) {
+                '# (et|and|&|with|avec) #' => function ($match) {
                     $this->tokenValue['AND'][] = $match[1];
 
                     return ' AND ';
@@ -226,6 +227,7 @@ class PredictFromTypo
     }
 
     /**
+     * todo Refactor with new typoPatternFromAuthor() :)
      * todo Legacy.
      * Determine name and firstname from a string where both are mixed or abbreviated
      * Prediction from typo pattern, statistical analysis and list of famous firstnames.
