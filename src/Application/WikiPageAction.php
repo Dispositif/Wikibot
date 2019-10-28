@@ -101,6 +101,22 @@ class WikiPageAction
     }
 
     /**
+     * Add text to the bottom of the article.
+     *
+     * @param string   $addText
+     * @param EditInfo $editInfo
+     *
+     * @return bool
+     */
+    public function addToBottomOfThePage(string $addText, EditInfo $editInfo): bool
+    {
+        $oldText = $this->getText();
+        $newText = $oldText."/n".$addText;
+
+        return $this->editPage($newText, $editInfo);
+    }
+
+    /**
      * todo Move to WikiTextUtil ?
      * Replace serialized template and manage {{en}} prefix.
      * Don't delete {{fr}} on frwiki.
