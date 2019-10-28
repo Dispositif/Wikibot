@@ -19,6 +19,8 @@ use Mediawiki\DataModel\Revision;
 
 class WikiPageAction
 {
+    const SKIP_LANG_INDICATOR = 'fr'; // skip {{fr}} before template
+
     /**
      * @var Page
      */
@@ -35,12 +37,11 @@ class WikiPageAction
     public function __construct(MediawikiFactory $wiki, string $title)
     {
         $this->wiki = $wiki;
-        try{
+        try {
             $this->page = $wiki->newPageGetter()->getFromTitle($title);
-        }catch (\Throwable $e){
+        } catch (\Throwable $e) {
             dump($e);
         }
-
     }
 
     /**
@@ -101,31 +102,49 @@ class WikiPageAction
 
     /**
      * todo Move to WikiTextUtil ?
-     * Hack to replace template serialized and manage {{en}}.
+     * Replace serialized template and manage {{en}} prefix.
+     * Don't delete {{fr}} on frwiki.
      *
-     * @param string $text
-     * @param string $tplOrigin
-     * @param string $tplReplace
+     * @param string $text       wikitext of the page
+     * @param string $tplOrigin  template text to replace
+     * @param string $tplReplace new template text
      *
      * @return string|null
      */
-    public static function replaceTemplateInText(string $text, string $tplOrigin, string $tplReplace): ?string
+    public static function replaceTemplateInText(string $text, string $tplOrigin, string $tplReplace): string
     {
         // hack // todo: autres patterns {{en}} ?
         if (preg_match_all('#(?<langTemp>{{(?<lang>[a-z][a-z])}} *)?'.preg_quote($tplOrigin, '#').'#i', $text, $matches)
             > 0
         ) {
             foreach ($matches[0] as $num => $mention) {
-                $lang = $matches['lang'][$num] ?? '';
-                if (!empty($lang) && !preg_match('#lang(ue)?='.$lang.'#i', $tplReplace)) {
+                $lang = $matches['lang'][$num] ?? ''; // todo: convert lang to ISO
+
+                // detect inconsistency between lang indicator and lang param
+                // example : {{en}} {{template|lang=ru}}
+                if (!empty($lang) && self::SKIP_LANG_INDICATOR !== $lang
+                    && !preg_match(
+                        '#lang(ue)?='.$lang.'#i',
+                        $tplReplace
+                    )
+                ) {
                     echo sprintf(
                         'prefix %s incompatible avec langue de %s',
                         $matches['langTemp'][$num],
                         $tplReplace
                     );
 
-                    return null;
+                    // skip all the replacements of that template
+                    return $text; // return null ?
                 }
+
+                // don't delete {{fr}} before {template} on frwiki
+                if (self::SKIP_LANG_INDICATOR === $lang) {
+                    $text = str_replace($tplOrigin, $tplReplace, $text);
+                    continue;
+                }
+
+                // replace {template} and {{lang}} {template}
                 $text = str_replace($mention, $tplReplace, $text);
                 $text = str_replace(
                     $matches['langTemp'][$num].$tplReplace,

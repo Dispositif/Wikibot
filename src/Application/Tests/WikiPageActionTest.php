@@ -10,36 +10,63 @@ declare(strict_types=1);
 namespace App\Application\Tests;
 
 use App\Application\WikiPageAction;
-use Mediawiki\Api\MediawikiApi;
-use Mediawiki\Api\MediawikiFactory;
-use Mediawiki\Api\Test\Integration\TestEnvironment;
 use PHPUnit\Framework\TestCase;
 
 class WikiPageActionTest extends TestCase
 {
-    public function testReplaceTemplateInText()
+    /**
+     * @dataProvider provideReplaceTemplateInText
+     */
+    public function testReplaceTemplateInText(string $text, string $origin, string $replace, string $expected)
     {
-        $text = 'zzzzzzz {{Ouvrage|titre=bla}} zzzz {{en}} {{Ouvrage|titre=bla}} zerqsdfqs';
-        $origin = '{{Ouvrage|titre=bla}}';
-        $replace = '{{Ouvrage|lang=en|titre=BLO}}';
-
         $this::assertSame(
-            'zzzzzzz {{Ouvrage|lang=en|titre=BLO}} zzzz {{Ouvrage|lang=en|titre=BLO}} zerqsdfqs',
+            $expected,
             WikiPageAction::replaceTemplateInText($text, $origin, $replace)
         );
     }
 
-//    public function testIntegration()
-//    {
-//        // Mediawiki namespace not PSR-4
-//        require_once __DIR__.'/../../../vendor/addwiki/mediawiki-api-base/tests/Integration/TestEnvironment.php';
-//        putenv('ADDWIKI_MW_API=http://localhost:8888/api.php');
-//
-////        $api = MediawikiApi::newFromPage( TestEnvironment::newInstance()->getPageUrl() );
-////        $this::assertInstanceOf( 'Mediawiki\Api\MediawikiApi', $api );
-//        $api = TestEnvironment::newInstance()->getApi();
-//        $page = new WikiPageAction(new MediawikiFactory($api), 'test');
-//        $this::assertInstanceOf('App\Application\WikiPageAction', $page);
-////        dump($page);
-//    }
+    public function provideReplaceTemplateInText()
+    {
+        return [
+            [
+                'zzzzzzz {{Ouvrage|titre=bla}} zzzz {{en}} {{Ouvrage|titre=bla}} zerqsdfqs',
+                '{{Ouvrage|titre=bla}}',
+                '{{Ouvrage|lang=en|titre=BLO}}',
+                'zzzzzzz {{Ouvrage|lang=en|titre=BLO}} zzzz {{Ouvrage|lang=en|titre=BLO}} zerqsdfqs',
+            ],
+            [
+                'zzzzzzz {{Ouvrage|titre=bla}} zzzz {{fr}} {{Ouvrage|titre=bla}} zerqsdfqs',
+                '{{Ouvrage|titre=bla}}',
+                '{{Ouvrage|titre=BLO}}',
+                'zzzzzzz {{Ouvrage|titre=BLO}} zzzz {{fr}} {{Ouvrage|titre=BLO}} zerqsdfqs',
+            ],
+            [
+                'zzzzzzz {{Ouvrage|titre=bla}} zzzz {{fr}} {{Ouvrage|titre=bla}} zerqsdfqs',
+                '{{Ouvrage|titre=bla}}',
+                '{{Ouvrage|langue=fr|titre=BLO}}',
+                'zzzzzzz {{Ouvrage|langue=fr|titre=BLO}} zzzz {{fr}} {{Ouvrage|langue=fr|titre=BLO}} zerqsdfqs',
+            ],
+            [
+                'zzzzzzz {{Ouvrage|langue=fr|titre=bla}} zzzz {{fr}} {{Ouvrage|langue=fr|titre=bla}} zerqsdfqs',
+                '{{Ouvrage|langue=fr|titre=bla}}',
+                '{{Ouvrage|langue=fr|titre=BLO}}',
+                'zzzzzzz {{Ouvrage|langue=fr|titre=BLO}} zzzz {{fr}} {{Ouvrage|langue=fr|titre=BLO}} zerqsdfqs',
+            ],
+
+        ];
+    }
+
+    //    public function testIntegration()
+    //    {
+    //        // Mediawiki namespace not PSR-4
+    //        require_once __DIR__.'/../../../vendor/addwiki/mediawiki-api-base/tests/Integration/TestEnvironment.php';
+    //        putenv('ADDWIKI_MW_API=http://localhost:8888/api.php');
+    //
+    ////        $api = MediawikiApi::newFromPage( TestEnvironment::newInstance()->getPageUrl() );
+    ////        $this::assertInstanceOf( 'Mediawiki\Api\MediawikiApi', $api );
+    //        $api = TestEnvironment::newInstance()->getApi();
+    //        $page = new WikiPageAction(new MediawikiFactory($api), 'test');
+    //        $this::assertInstanceOf('App\Application\WikiPageAction', $page);
+    ////        dump($page);
+    //    }
 }
