@@ -295,6 +295,8 @@ class OuvrageComplete
             if (empty($this->origin->getParam('sous-titre'))) {
                 $this->origin->setParam('sous-titre', $this->book->getParam('sous-titre'));
                 $this->log('++sous-titre');
+                $this->major=true;
+                $this->notCosmetic=true;
 
                 return;
             }
@@ -305,7 +307,7 @@ class OuvrageComplete
             if (empty($this->origin->getParam('sous-titre'))) {
                 $this->origin->setParam('titre', $this->book->getParam('titre'));
                 $this->origin->setParam('sous-titre', $this->book->getParam('sous-titre'));
-                $this->log('>titre/sous-titre');
+                $this->log('>titre>sous-titre');
             }
         }
     }
