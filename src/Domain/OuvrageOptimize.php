@@ -402,9 +402,11 @@ class OuvrageOptimize
         }
     }
 
-    public function log(string $text)
+    private function log(string $string): void
     {
-        $this->log[] = $text;
+        if (!empty($string)) {
+            $this->log[] = trim($string);
+        }
     }
 
     /**

@@ -27,9 +27,11 @@ class OuvragesInPageOptimize
         $this->ouvrages = $ouvrages;
     }
 
-    public function log($str)
+    private function log(string $string): void
     {
-        $this->log[] = $str;
+        if (!empty($string)) {
+            $this->log[] = trim($string);
+        }
     }
 
     /**
