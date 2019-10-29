@@ -129,6 +129,12 @@ class WikiPageAction
      */
     public static function replaceTemplateInText(string $text, string $tplOrigin, string $tplReplace): string
     {
+        if (preg_match_all('#(?<langTemp>{{[a-z][a-z]}} ?{{[a-z][a-z]}}) ?'.preg_quote($tplOrigin, '#').'#i', $text, $matches)) {
+            // Skip double lang prefix (like in "{{fr}} {{en}} {template}")
+            echo "SKIP ! double lang prefix !";
+            return $text;
+        }
+
         // hack // todo: autres patterns {{en}} ?
         if (preg_match_all('#(?<langTemp>{{(?<lang>[a-z][a-z])}} *)?'.preg_quote($tplOrigin, '#').'#i', $text, $matches)
             > 0
