@@ -28,7 +28,7 @@ class OuvrageTemplate extends AbstractWikiTemplate
             'éditeur' => '',
             'année' => '',
             'pages totales' => '',
-            'passage' => '',
+//            'passage' => '', // pas pertinent sur biblio et liste oeuvres
             'isbn' => '',
         ];
 

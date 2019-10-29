@@ -57,35 +57,35 @@ class OuvrageOptimizeTest extends TestCase
         return [
             [
                 ['title' => 'Toponymie'],
-                '{{Ouvrage|langue=|titre=Toponymie|éditeur=|année=|pages totales=|isbn=|passage=}}',
+                '{{Ouvrage|langue=|titre=Toponymie|éditeur=|année=|pages totales=|isbn=}}',
             ],
             [
                 ['title' => 'Toponymie. France'],
-                '{{Ouvrage|langue=|titre=Toponymie|sous-titre=France|éditeur=|année=|pages totales=|isbn=|passage=}}',
+                '{{Ouvrage|langue=|titre=Toponymie|sous-titre=France|éditeur=|année=|pages totales=|isbn=}}',
             ], // explode
             [
                 ['title' => 'Vive PHP 7.3 en short'],
-                '{{Ouvrage|langue=|titre=Vive PHP 7.3 en short|éditeur=|année=|pages totales=|isbn=|passage=}}',
+                '{{Ouvrage|langue=|titre=Vive PHP 7.3 en short|éditeur=|année=|pages totales=|isbn=}}',
             ], //inchangé (numbers)
             [
                 ['title' => 'Ils ont osé... Les maires de Saint-Camille'],
-                '{{Ouvrage|langue=|titre=Ils ont osé... Les maires de Saint-Camille|éditeur=|année=|pages totales=|isbn=|passage=}}',
+                '{{Ouvrage|langue=|titre=Ils ont osé... Les maires de Saint-Camille|éditeur=|année=|pages totales=|isbn=}}',
             ],
             [
                 ['title' => 'Toponymie - france'],
-                '{{Ouvrage|langue=|titre=Toponymie|sous-titre=France|éditeur=|année=|pages totales=|isbn=|passage=}}',
+                '{{Ouvrage|langue=|titre=Toponymie|sous-titre=France|éditeur=|année=|pages totales=|isbn=}}',
             ], // explode (- spaced)
             [
                 ['title' => 'Toponymie / France'],
-                '{{Ouvrage|langue=|titre=Toponymie|sous-titre=France|éditeur=|année=|pages totales=|isbn=|passage=}}',
+                '{{Ouvrage|langue=|titre=Toponymie|sous-titre=France|éditeur=|année=|pages totales=|isbn=}}',
             ], // explode (/ spaced)
             [
                 ['title' => 'Toponymie Jean-Pierre France'],
-                '{{Ouvrage|langue=|titre=Toponymie Jean-Pierre France|éditeur=|année=|pages totales=|isbn=|passage=}}',
+                '{{Ouvrage|langue=|titre=Toponymie Jean-Pierre France|éditeur=|année=|pages totales=|isbn=}}',
             ], // inchangé
             [
                 ['title' => 'Toponymie 1914-1918 super'],
-                '{{Ouvrage|langue=|titre=Toponymie 1914-1918 super|éditeur=|année=|pages totales=|isbn=|passage=}}',
+                '{{Ouvrage|langue=|titre=Toponymie 1914-1918 super|éditeur=|année=|pages totales=|isbn=}}',
             ], // inchangé
         ];
     }
@@ -100,7 +100,7 @@ class OuvrageOptimizeTest extends TestCase
 
         $optimized = (new OuvrageOptimize($origin))->doTasks()->getOuvrage();
         $this::assertSame(
-            '{{Ouvrage|langue=fr|titre=|éditeur=|année=|pages totales=|isbn=978-2-600-02884-4|isbn10=2600028846|passage=}}',
+            '{{Ouvrage|langue=fr|titre=|éditeur=|année=|pages totales=|isbn=978-2-600-02884-4|isbn10=2600028846}}',
             $optimized->serialize(true)
         );
     }
@@ -114,7 +114,7 @@ class OuvrageOptimizeTest extends TestCase
         $final = $optimizer->getOuvrage();
 
         $this::assertSame(
-            '{{Ouvrage|langue=|auteur1=Marie Durand|auteur2=Pierre Berger|auteur3=Francois Morgand|titre=Bla|éditeur=|année=|pages totales=|isbn=|passage=}}',
+            '{{Ouvrage|langue=|auteur1=Marie Durand|auteur2=Pierre Berger|auteur3=Francois Morgand|titre=Bla|éditeur=|année=|pages totales=|isbn=}}',
             $final->serialize(true)
         );
     }
