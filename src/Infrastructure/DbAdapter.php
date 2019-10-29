@@ -24,7 +24,7 @@ class DbAdapter implements QueueInterface
 {
     private $db;
 
-    private $newRawValidDate = '2019-10-26 12:12:18'; // valid domain code date
+    private $newRawValidDate = '2019-10-29 12:00:00'; // valid domain code date
 
     public function __construct()
     {
@@ -49,7 +49,7 @@ class DbAdapter implements QueueInterface
     }
 
     /**
-     * Get new raw text (template) to process
+     * Get new raw text (template) to complete
      *
      * @return string|null
      */
@@ -89,7 +89,7 @@ class DbAdapter implements QueueInterface
     }
 
     /**
-     * Get new raw text (template) to process
+     * Get new raw text (template) for wiki edition
      *
      * @return string|null
      */
@@ -99,7 +99,7 @@ class DbAdapter implements QueueInterface
 
         try {
             $data = $this->db->fetchRow(
-                'SELECT * FROM TempRawOpti WHERE (optidate > :validDate AND notcosmetic=1) ORDER BY RAND() LIMIT 1',
+                'SELECT * FROM TempRawOpti WHERE (optidate > :validDate AND edited IS NULL AND version IS NOT NULL AND major=1) ORDER BY RAND() LIMIT 1',
                 [
                     'validDate' => $this->newRawValidDate,
                 ]
