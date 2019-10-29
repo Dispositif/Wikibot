@@ -138,11 +138,10 @@ class WikiPageAction
 
                 // detect inconsistency between lang indicator and lang param
                 // example : {{en}} {{template|lang=ru}}
+                // BUG: prefix {{de}}  incompatible avec langue de {{Ouvrage |langue= |prénom1=Hartmut |nom1=Atsma
                 if (!empty($lang) && self::SKIP_LANG_INDICATOR !== $lang
-                    && !preg_match(
-                        '#lang(ue)?='.$lang.'#i',
-                        $tplReplace
-                    )
+                    && !preg_match('#lang(ue)?='.$lang.'#i', $tplReplace)
+                    && !preg_match('#\| ?langue= ?\|#', $tplReplace)
                 ) {
                     echo sprintf(
                         'prefix %s incompatible avec langue de %s',
@@ -152,6 +151,14 @@ class WikiPageAction
 
                     // skip all the replacements of that template
                     return $text; // return null ?
+                }
+
+                // FIX dirty : {{en}} mais pas de langue sur template...
+                if( $lang && preg_match('#\| ?langue= ?\|#', $tplReplace) > 0){
+
+                    $previousTpl = $tplReplace;
+                    $tplReplace = str_replace('langue=', 'langue='.$lang, $tplReplace);
+                    $text = str_replace($previousTpl, $tplReplace, $text);
                 }
 
                 // don't delete {{fr}} before {template} on frwiki

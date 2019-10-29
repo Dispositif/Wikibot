@@ -29,6 +29,12 @@ class WikiPageActionTest extends TestCase
     {
         return [
             [
+                'zzzzzzz {{Ouvrage|langue=|titre=bla}} zzzz {{de}} {{Ouvrage|langue=|titre=bla}} zerqsdfqs',
+                '{{Ouvrage|langue=|titre=bla}}',
+                '{{Ouvrage|langue=|titre=BLO}}',
+                'zzzzzzz {{Ouvrage|langue=de|titre=BLO}} zzzz {{Ouvrage|langue=de|titre=BLO}} zerqsdfqs',
+            ],
+            [
                 'zzzzzzz {{Ouvrage|titre=bla}} zzzz {{en}} {{Ouvrage|titre=bla}} zerqsdfqs',
                 '{{Ouvrage|titre=bla}}',
                 '{{Ouvrage|lang=en|titre=BLO}}',
