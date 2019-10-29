@@ -37,7 +37,7 @@ class OuvrageComplete
         $this->book = $book;
     }
 
-    public function getLog()
+    public function getLog():array
     {
         return $this->log;
     }
@@ -97,7 +97,7 @@ class OuvrageComplete
                 }
 
                 $this->origin->setParam($param, $value);
-                $this->log[] = '++'.$param;
+                $this->log('++'.$param);
                 $this->major = true;
                 $this->notCosmetic = true;
             }
@@ -116,11 +116,6 @@ class OuvrageComplete
             return;
         }
         $this->log[] = trim($string);
-    }
-
-    private function dateComplete()
-    {
-        //todo: doublon date/année
     }
 
     /**
@@ -142,7 +137,7 @@ class OuvrageComplete
                 // on déplace sur présentation
                 $this->origin->setParam('présentation en ligne', $lire);
                 $this->origin->unsetParam('lire en ligne');
-                $this->log[] = 'Google partiel';
+                $this->log('Google partiel');
                 $this->notCosmetic = true;
 
                 return; // ?
@@ -150,15 +145,15 @@ class OuvrageComplete
             if (empty($this->book->getParam('lire en ligne'))) {
                 // todo : delete lire en ligne ?
                 // $this->major = true;
-                $this->log[] = 'non accessible sur Google!';
-                $this->notCosmetic = true;
+//                $this->log('non accessible sur Google!');
+//                $this->notCosmetic = true;
             }
         }
         // completion basique
         $booklire = $this->book->getParam('lire en ligne');
         if (empty($lire) && !empty($booklire)) {
             $this->origin->setParam('lire en ligne', $booklire);
-            $this->log[] = '+lire en ligne';
+            $this->log('+lire en ligne');
             $this->notCosmetic = true;
             $this->major = true;
         }
@@ -174,12 +169,12 @@ class OuvrageComplete
                 // on déplace sur lire en ligne
                 $this->origin->setParam('lire en ligne', $presentation);
                 $this->origin->unsetParam('présentation en ligne');
-                $this->log[] = 'Google accessible';
+                $this->log('Google accessible');
                 $this->notCosmetic = true;
             }
             if (empty($this->book->getParam('présentation en ligne'))) {
                 // todo: delete présentation en ligne ?
-                $this->log[] = 'non accessible sur Google!';
+//                $this->log('non accessible sur Google!');
             }
         }
         // todo: completion pertinente si consultation partielle ??
@@ -300,7 +295,7 @@ class OuvrageComplete
             // même titre mais sous-titre manquant
             if (empty($this->origin->getParam('sous-titre'))) {
                 $this->origin->setParam('sous-titre', $this->book->getParam('sous-titre'));
-                $this->log('+sous-titre');
+                $this->log('++sous-titre');
 
                 return;
             }

@@ -64,7 +64,6 @@ class CompleteProcess
             // initialise variables
             $this->log = [];
             $this->ouvrage = null;
-            $this->log = [];
             $this->notCosmetic = false;
             $this->major = false;
 
@@ -98,6 +97,9 @@ class CompleteProcess
             }
 
             $this->sendCompleted();
+            unset($optimizer);
+            unset($parse);
+            unset($origin);
         } // END WHILE
     }
 
@@ -176,6 +178,8 @@ class CompleteProcess
         }
         $this->notCosmetic = ($completer->notCosmetic || $this->notCosmetic);
         $this->log = array_merge($this->log, $completer->getLog());
+        unset($optimizer);
+        unset($completer);
     }
 
     private function sendCompleted()
