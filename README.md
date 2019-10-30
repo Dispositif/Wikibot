@@ -8,12 +8,12 @@
 
 
 
-PHP CLI app for my wikipedian bot*
+PHP CLI app for my wikipedian bot.
 
-Correction and completion of bibliographic references (books, articles) on fr-wikipedia, using my legacy
+Correction and completion of bibliographic references (books, articles) on fr-Wikipedia, using my legacy
  code and importing open data (GoogleBooks, OpenLibrary...). 
  
- * See https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Bot or https://en.wikipedia.org/wiki/WP:Bot
+  * See https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Bot or https://en.wikipedia.org/wiki/WP:Bot
  
  ----
  
@@ -22,11 +22,9 @@ Technos : RabbitMQ, MySQL, Symfony Components, addwiki/mediawiki-api, etc.
 List of console commands : ```php src/console list```
 
 Special thanks to
-* addshore (addwiki)
-* biblys/isbn
-* php-amqplib
+* addshore (wiki API)
+* biblys (ISBN formating)
+* cloudamqp.com (AMQP server)
 
 Memo :
  * addwiki doc http://addwiki.readthedocs.io/
-
-- [x] bla

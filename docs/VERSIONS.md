@@ -1,7 +1,7 @@
-## VERSIONS ##
+## Versions des règles de corrections/complètement ##
 
-Domain rules version :
-
+0.15 : n'ajoute pas 'passage' si vide
+0.14 : bug commentaire d'édition (ajouts manquants)
 0.13 : détection/gestion auteurs multiples
 0.12 : langue=fr from ISBN
 0.11 : sur frwiki : {{fr}} {ouvrage} -> {{fr}} {ouvrage}
