@@ -11,6 +11,10 @@ composer.phar
 *.cache
 tests/build/
 .idea/
+/src/Infrastructure/frwiki-latest-all-titles-in-ns0.txt
+/coverage.xml
+/src/Application/resources/typo_patterns/
+
 
 # Created by https://www.gitignore.io/api/osx,phpstorm
 # Edit at https://www.gitignore.io/?templates=osx,phpstorm
@@ -125,5 +129,3 @@ fabric.properties
 .idea/sonarlint
 
 # End of https://www.gitignore.io/api/osx,phpstorm
-/src/Infrastructure/frwiki-latest-all-titles-in-ns0.txt
-/coverage.xml
