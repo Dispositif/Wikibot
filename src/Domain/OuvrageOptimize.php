@@ -124,7 +124,7 @@ class OuvrageOptimize
             return;
         }
 
-        $machine = new PredictAuteur();
+        $machine = new PredictAuthors();
         $res = $machine->predictAuthorNames($auteur1);
 
         if (count($res) === 1) {

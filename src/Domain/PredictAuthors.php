@@ -10,22 +10,24 @@ declare(strict_types=1);
 
 namespace App\Domain;
 
+use App\Domain\Utils\WikiTextUtil;
 
-class PredictAuteur
+/**
+ * Prediction around many authors in same string.
+ * Class PredictAuthors
+ */
+class PredictAuthors
 {
     private $typoPredict;
 
-    /**
-     * PredictAuteur constructor.
-     */
     public function __construct()
     {
-        $this->typoPredict = new PredictFromTypo();
+        $this->typoPredict = new TypoTokenizer();
     }
 
     /**
-     * Explode authors from string based on typo pattern recognition
-     * See analysis_pattern_auteurs
+     * Explode authors from string based on typo pattern recognition.
+     * See analysis_pattern_auteurs.php for stats and corpus generation.
      *
      * @param string $string
      *
@@ -46,7 +48,7 @@ class PredictAuteur
             case 'INITIAL FIRSTUPPER': // Christian Le Boutellier
             case 'FIRSTUPPER MIXED':
             case 'FIRSTUPPER FIRSTUPPER BIBABREV':
-            case 'FIRSTUPPER FIRSTUPPER PUNCTUATION BIBABREV': // todo
+            case 'FIRSTUPPER FIRSTUPPER PUNCTUATION BIBABREV':
                 return [0 => $val[0].' '.$val[1]];
 
             case 'FIRSTUPPER FIRSTUPPER FIRSTUPPER':
@@ -169,6 +171,26 @@ class PredictAuteur
         }
 
         return [];
+    }
+
+    /**
+     * From underTwoAuthors() by MartinS@Wikipedia
+     * Return true if 0 or 1 author in $author; false otherwise.
+     *
+     * @param $author
+     *
+     * @return bool
+     */
+    public static function hasManyAuthors(string $author): bool
+    {
+        $author = WikiTextUtil::unWikify($author);
+        $chars = count_chars(trim($author));
+        // todo : "et" + "and" ?
+        if ($chars[ord('&')] > 0 || $chars[ord(';')] > 0 || $chars[ord(' ')] >= 3 || $chars[ord(',')] > 1) {
+            return true;
+        }
+
+        return false;
     }
 
 }
