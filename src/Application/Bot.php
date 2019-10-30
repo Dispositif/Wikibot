@@ -175,4 +175,17 @@ class Bot
         return false;
     }
 
+    /**
+     * Detect wiki-templates restricting the edition on a frwiki page.
+     * @param string $text
+     *
+     * @return bool
+     */
+    public static function isEditionRestricted(string $text): bool
+    {
+        if(preg_match('#{{Protection#i', $text) > 0 ) {
+            return true;
+        }
+    }
+
 }

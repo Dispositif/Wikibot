@@ -59,7 +59,7 @@ class DbAdapter implements QueueInterface
 
         try {
             $raw = $this->db->fetchColumn(
-                'SELECT raw FROM TempRawOpti WHERE (optidate IS NULL OR optidate < :validDate ) AND edited IS NULL',
+                'SELECT raw FROM TempRawOpti WHERE (optidate IS NULL OR optidate < :validDate ) AND edited IS NULL ORDER BY optidate,id',
                 [
                     'validDate' => $this->newRawValidDate,
                 ]
@@ -132,20 +132,22 @@ class DbAdapter implements QueueInterface
     /**
      * Get all lines from an article.
      *
-     * @param string $pageTitle
+     * @param string   $pageTitle
+     * @param int|null $limit
      *
      * @return string|null
      */
-    public function getPageRows(string $pageTitle): ?string
+    public function getPageRows(string $pageTitle, ?int $limit = 20): ?string
     {
         $json = null;
 
         try {
             $data = $this->db->fetchRowMany(
-                'SELECT * FROM TempRawOpti WHERE optidate > :validDate AND edited IS NULL AND page = :page LIMIT 5',
+                'SELECT * FROM TempRawOpti WHERE optidate > :validDate AND edited IS NULL AND page = :page LIMIT :limit',
                 [
                     'validDate' => $this->newRawValidDate,
-                    'page' => $pageTitle
+                    'page' => $pageTitle,
+                    'limit' => $limit,
                 ]
             );
             $json = json_encode($data);
@@ -155,6 +157,5 @@ class DbAdapter implements QueueInterface
 
         return $json;
     }
-
 
 }
