@@ -20,6 +20,8 @@ class PredictAuthors
 {
     private $typoPredict;
 
+    private $authors = [];
+
     public function __construct()
     {
         $this->typoPredict = new TypoTokenizer();
@@ -36,12 +38,20 @@ class PredictAuthors
     public function predictAuthorNames(string $string): ?array
     {
         $pattern = $this->typoPredict->typoPatternFromAuthor($string);
-        $val = $pattern['value'];
 
+        $this->patternAndValueToAuthors($pattern);
+
+        return $this->authors;
+    }
+
+    private function patternAndValueToAuthors(array $pattern): void
+    {
+        $val = $pattern['value'];
         switch ($pattern['pattern']) {
             case 'FIRSTUPPER':
             case 'ALLUPPER':
-                return [0 => $val[0]];
+                $this->authors = [0 => $val[0]];
+                break;
 
             case 'FIRSTUPPER FIRSTUPPER': // Laurent Croizier
             case 'MIXED FIRSTUPPER': // Jean-Paul Marchand
@@ -49,19 +59,22 @@ class PredictAuthors
             case 'FIRSTUPPER MIXED':
             case 'FIRSTUPPER FIRSTUPPER BIBABREV':
             case 'FIRSTUPPER FIRSTUPPER PUNCTUATION BIBABREV':
-                return [0 => $val[0].' '.$val[1]];
+                $this->authors = [0 => $val[0].' '.$val[1]];
+                break;
 
             case 'FIRSTUPPER FIRSTUPPER FIRSTUPPER':
             case 'FIRSTUPPER INITIAL FIRSTUPPER':
             case 'INITIAL INITIAL FIRSTUPPER':
             case 'FIRSTUPPER ALLLOWER FIRSTUPPER':
-                return [0 => $val[0].' '.$val[1].' '.$val[2]];
+                $this->authors = [0 => $val[0].' '.$val[1].' '.$val[2]];
+                break;
 
             case 'FIRSTUPPER FIRSTUPPER FIRSTUPPER FIRSTUPPER':
                 // [[Jean Julien Michel Savary]]
             case 'FIRSTUPPER FIRSTUPPER ALLLOWER FIRSTUPPER': // Abbé Guillotin de Corson
             case 'FIRSTUPPER INITIAL INITIAL FIRSTUPPER':
-                return [0 => $val[0].' '.$val[1].' '.$val[2].' '.$val[3]];
+                $this->authors = [0 => $val[0].' '.$val[1].' '.$val[2].' '.$val[3]];
+                break;
 
             // NOBLESSE
             case 'FIRSTUPPER FIRSTUPPER FIRSTUPPER ALLLOWER FIRSTUPPER':
@@ -76,7 +89,8 @@ class PredictAuthors
                 // Marie-Paul du Breil de Pontbriand
             case 'FIRSTUPPER FIRSTUPPER FIRSTUPPER FIRSTUPPER FIRSTUPPER':
                 // Mohamed El Aziz Ben Achour
-                return [0 => $val[0].' '.$val[1].' '.$val[2].' '.$val[3].' '.$val[4]];
+                $this->authors = [0 => $val[0].' '.$val[1].' '.$val[2].' '.$val[3].' '.$val[4]];
+                break;
 
             /**
              *  2 authors
@@ -94,27 +108,30 @@ class PredictAuthors
             case 'MIXED FIRSTUPPER COMMA FIRSTUPPER FIRSTUPPER':
             case 'INITIAL FIRSTUPPER COMMA INITIAL FIRSTUPPER':
             case 'FIRSTUPPER MIXED AND FIRSTUPPER FIRSTUPPER':
-                return [
+                $this->authors = [
                     0 => $val[0].' '.$val[1],
                     1 => $val[3].' '.$val[4],
                 ];
+                break;
 
             // COUPLE
             case 'FIRSTUPPER AND FIRSTUPPER FIRSTUPPER':
                 // Renée & Michel Paquet
-                return [
+                $this->authors = [
                     0 => $val[0].' '.$val[3],
                     1 => $val[2].' '.$val[3],
                 ];
+                break;
 
             case 'FIRSTUPPER FIRSTUPPER FIRSTUPPER COMMA FIRSTUPPER FIRSTUPPER':
             case 'FIRSTUPPER FIRSTUPPER FIRSTUPPER AND FIRSTUPPER FIRSTUPPER':
                 // Didier Du Castel, Claude Estebe
             case 'FIRSTUPPER INITIAL FIRSTUPPER COMMA FIRSTUPPER FIRSTUPPER':
-                return [
+                $this->authors = [
                     0 => $val[0].' '.$val[1].' '.$val[2],
                     1 => $val[4].' '.$val[5],
                 ];
+                break;
 
             case 'FIRSTUPPER FIRSTUPPER COMMA FIRSTUPPER FIRSTUPPER FIRSTUPPER':
                 // Armin Vit, Bryony Gomez Palacio
@@ -123,10 +140,11 @@ class PredictAuthors
             case 'FIRSTUPPER FIRSTUPPER COMMA FIRSTUPPER ALLLOWER MIXED':
             case 'FIRSTUPPER FIRSTUPPER AND FIRSTUPPER INITIAL FIRSTUPPER':
                 // François Clément, Viton de Saint-Allais
-                return [
+                $this->authors = [
                     0 => $val[0].' '.$val[1],
                     1 => $val[3].' '.$val[4].' '.$val[5],
                 ];
+                break;
 
             case 'FIRSTUPPER INITIAL FIRSTUPPER COMMA FIRSTUPPER INITIAL FIRSTUPPER':
             case 'INITIAL INITIAL FIRSTUPPER COMMA INITIAL INITIAL FIRSTUPPER':
@@ -135,10 +153,11 @@ class PredictAuthors
                 // H. Trevor Clifford, Peter D. Bostock
             case 'FIRSTUPPER INITIAL FIRSTUPPER AND FIRSTUPPER INITIAL FIRSTUPPER':
             case 'INITIAL INITIAL FIRSTUPPER AND INITIAL INITIAL FIRSTUPPER':
-                return [
+                $this->authors = [
                     0 => $val[0].' '.$val[1].' '.$val[2],
                     1 => $val[4].' '.$val[5].' '.$val[6],
                 ];
+                break;
 
             /**
              *  3 authors
@@ -150,11 +169,12 @@ class PredictAuthors
             case 'FIRSTUPPER FIRSTUPPER COMMA FIRSTUPPER FIRSTUPPER AND FIRSTUPPER FIRSTUPPER':
                 // [[Arnaud Bédat]], Gilles Bouleau et Bernard Nicolas
             case 'FIRSTUPPER FIRSTUPPER COMMA MIXED FIRSTUPPER COMMA FIRSTUPPER FIRSTUPPER':
-                return [
+                $this->authors = [
                     0 => $val[0].' '.$val[1],
                     1 => $val[3].' '.$val[4],
                     2 => $val[6].' '.$val[7],
                 ];
+                break;
 
             /**
              * 4 authors
@@ -162,15 +182,14 @@ class PredictAuthors
 
             case 'FIRSTUPPER FIRSTUPPER COMMA MIXED FIRSTUPPER COMMA MIXED FIRSTUPPER COMMA FIRSTUPPER FIRSTUPPER':
             case 'FIRSTUPPER FIRSTUPPER COMMA FIRSTUPPER FIRSTUPPER COMMA FIRSTUPPER FIRSTUPPER COMMA FIRSTUPPER FIRSTUPPER':
-                return [
+                $this->authors = [
                     0 => $val[0].' '.$val[1],
                     1 => $val[3].' '.$val[4],
                     2 => $val[6].' '.$val[7],
                     3 => $val[9].' '.$val[10],
                 ];
+                break;
         }
-
-        return [];
     }
 
     /**
