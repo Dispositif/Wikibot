@@ -120,7 +120,7 @@ class Bot
     protected function getWatchPages(): array
     {
         if (!file_exists(static::WATCHPAGE_FILENAME)) {
-            throw new FConfigException("No watchpage file found.");
+            throw new ConfigException("No watchpage file found.");
         }
         try {
             $json = file_get_contents(static::WATCHPAGE_FILENAME);

@@ -78,28 +78,28 @@ class OuvrageOptimize
     /**
      * desactived (no consensus)
      */
-//    private function fusionFirstNameAndName()
-//    {
-        //        // Fusion prénom+nom -> auteur, si :
-        //        // (prénom simple ou prénom avec initiale) ET nom simple
-        //        // cosmétique
-        //        for ($i = 1; $i < 5; ++$i) {
-        //            $prenom = $this->getParam('prénom'.$i) ?? false;
-        //            $nom = $this->getParam('nom'.$i) ?? false;
-        //            if ($prenom && $nom) {
-        //                // prénom constitué de "mot A." ?
-        //                $initialePrenom = preg_match('#^[^ .]+ [A-Z]\.$#', $prenom);
-        //
-        //                // fusion prénom1+nom1 => auteur1
-        //                if (($initialePrenom || !strpos($prenom, ' ')) && !strpos($nom, ' ')) {
-        //                    $this->setParam('auteur'.$i, sprintf('%s %s', $prenom, $nom));
-        //                    $this->unsetParam('prénom'.$i);
-        //                    $this->unsetParam('nom'.$i);
-        //                    //                    $this->log('>auteur'.$i); // cosmétique
-        //                }
-        //            }
-        //        }
-//    }
+    //    private function fusionFirstNameAndName()
+    //    {
+    //        // Fusion prénom+nom -> auteur, si :
+    //        // (prénom simple ou prénom avec initiale) ET nom simple
+    //        // cosmétique
+    //        for ($i = 1; $i < 5; ++$i) {
+    //            $prenom = $this->getParam('prénom'.$i) ?? false;
+    //            $nom = $this->getParam('nom'.$i) ?? false;
+    //            if ($prenom && $nom) {
+    //                // prénom constitué de "mot A." ?
+    //                $initialePrenom = preg_match('#^[^ .]+ [A-Z]\.$#', $prenom);
+    //
+    //                // fusion prénom1+nom1 => auteur1
+    //                if (($initialePrenom || !strpos($prenom, ' ')) && !strpos($nom, ' ')) {
+    //                    $this->setParam('auteur'.$i, sprintf('%s %s', $prenom, $nom));
+    //                    $this->unsetParam('prénom'.$i);
+    //                    $this->unsetParam('nom'.$i);
+    //                    //                    $this->log('>auteur'.$i); // cosmétique
+    //                }
+    //            }
+    //        }
+    //    }
 
     /**
      * Detect and correct multiple authors in same parameter.
@@ -163,8 +163,8 @@ class OuvrageOptimize
         }
         if ($lang) {
             $lang2 = str_ireplace(
-                ['français', 'anglais', 'japonais', 'allemand', 'espagnol'],
-                ['fr', 'en', 'ja', 'de', 'es'],
+                ['française', 'français', 'anglaise', 'anglais', 'japonais', 'allemand', 'espagnol'],
+                ['fr', 'fr', 'en', 'en', 'ja', 'de', 'es'],
                 $lang
             );
             if ($lang !== $lang2) {

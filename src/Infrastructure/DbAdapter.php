@@ -99,7 +99,7 @@ class DbAdapter implements QueueInterface
 
         try {
             $data = $this->db->fetchRow(
-                'SELECT * FROM TempRawOpti WHERE (optidate > :validDate AND edited IS NULL AND version IS NOT NULL AND major=1) ORDER BY RAND() LIMIT 1',
+                'SELECT * FROM TempRawOpti WHERE (optidate > :validDate AND edited IS NULL AND version IS NOT NULL AND notcosmetic=1) ORDER BY RAND() LIMIT 1',
                 [
                     'validDate' => $this->newRawValidDate,
                 ]
@@ -143,7 +143,7 @@ class DbAdapter implements QueueInterface
 
         try {
             $data = $this->db->fetchRowMany(
-                'SELECT * FROM TempRawOpti WHERE optidate > :validDate AND edited IS NULL AND page = :page LIMIT :limit',
+                'SELECT * FROM TempRawOpti WHERE optidate > :validDate AND edited IS NULL AND notcosmetic=1 AND page = :page LIMIT :limit',
                 [
                     'validDate' => $this->newRawValidDate,
                     'page' => $pageTitle,
