@@ -9,7 +9,7 @@ Correction syntaxique des paramètres :
 * {{fait}}  signalement paramètre inconnu : commentaire HTML. {{pas fait}} liste, catégorie
 * {{fait}} extraction paramètres obsolètes (plume,extrait,commentaire) vers {{m|plume}}, {{m|citation bloc}}, {{m|commentaire biblio}}, {{m|début citation}}... [cosmétique]
 
-Style : {{attendre}} conservation du style rédactionnel du modèle : {{pas fait}} ordre des paramètres, {{fait}} style espacement, {{pas fait}} noms
+Style : {{attendre}} conservation du style rédactionnel du modèle : {{pas fait}} ordre des paramètres, {{fait}} espacement, {{pas fait}} noms de paramètre. [https://fr.wikipedia.org/w/index.php?title=Alexandre_Fourny&diff=prev&oldid=164412824]
 
 Complètement de données d'après des bases bibliographiques :
 * recherche par {{fait}}ISBN, {{pas fait}} lien Google, {{pas fait}}  titre de livre, etc
@@ -32,9 +32,10 @@ Autres :
 * {{fait}}correction des confusions 'numéro chapitre'/'titre chapitre', etc
 
 Auteur :
-* {{pas fait}} Prénom1+Nom1=>Auteur1 (si prénom/nom uniques ou prénom avec initiale) [cosmétique]
+* {{attendre}} Prénom1+Nom1=>Auteur1 (si prénom/nom uniques ou prénom avec initiale) [cosmétique]
 * {{attendre}} distinction prénom/nom si 2 prénoms (ancrage).
-* {{fait}}  détection/gestion auteurs multiples [https://fr.wikipedia.org/w/index.php?title=Sains_(Ille-et-Vilaine)&diff=prev&oldid=163949271]
+* {{fait}}  distinction auteurs multiples [https://fr.wikipedia.org/w/index.php?title=Sains_(Ille-et-Vilaine)
+&diff=prev&oldid=163949271]
 * {{pas fait}} {{3/4}}  prédiction wikilien page d'auteur
 
 Editeur :
