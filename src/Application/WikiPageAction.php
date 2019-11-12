@@ -68,6 +68,15 @@ class WikiPageAction
     }
 
     /**
+     * Is it page with a redirection link ?
+     * @return bool
+     */
+    public function isRedirect() : bool
+    {
+        return !empty($this->getRedirect());
+    }
+
+    /**
      * Get redirection page title or null.
      *
      * @return string|null
