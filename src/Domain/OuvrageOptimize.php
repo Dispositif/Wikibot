@@ -136,11 +136,13 @@ class OuvrageOptimize
         $auteur1 = $this->getParam('auteur') ?? '';
         $auteur1 .= $this->getParam('auteurs') ?? '';
         $auteur1 .= $this->getParam('prénom1') ?? '';
-        $auteur1 .= $this->getParam('nom1') ?? '';
+        $auteur1 .= ' '. $this->getParam('nom1') ?? '';
+        $auteur1 = trim($auteur1);
         // of authors 2
         $auteur2 = $this->getParam('auteur2') ?? '';
         $auteur2 .= $this->getParam('prénom2') ?? '';
-        $auteur2 .= $this->getParam('nom2') ?? '';
+        $auteur2 .= ' '.$this->getParam('nom2') ?? '';
+        $auteur2 = trim($auteur2);
 
         // skip if wikilink in author
         if (empty($auteur1) || WikiTextUtil::isWikify($auteur1)) {
