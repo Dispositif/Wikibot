@@ -167,7 +167,7 @@ class OuvrageOptimize
             for ($i = 0; $i < count($res); ++$i) {
                 $this->setParam(sprintf('auteur%s', $i + 1), $res[$i]);
             }
-            $this->log('distinction des auteurs');
+            $this->log('distinction auteurs');
             $this->notCosmetic = true;
         }
     }
@@ -564,7 +564,7 @@ class OuvrageOptimize
                 'raw' => '{{plume}}',
             ];
             $this->unsetParam('plume');
-            $this->log('+{{plume}}');
+            $this->log('{plume}');
         }
 
         // "extrait=bla" => {{citation bloc|bla}}
@@ -578,7 +578,7 @@ class OuvrageOptimize
                     '1' => '',
                     'raw' => '{{début citation}}'.$extrait.'{{fin citation}}',
                 ];
-                $this->log('+{{début citation}}');
+                $this->log('{début citation}');
             } else {
                 // StdClass
                 $this->ouvrage->externalTemplates[] = (object) [
@@ -586,7 +586,7 @@ class OuvrageOptimize
                     '1' => $extrait,
                     'raw' => '{{extrait|'.$extrait.'}}',
                 ];
-                $this->log('+{{extrait}}');
+                $this->log('{extrait}');
             }
 
             $this->unsetParam('extrait');
@@ -601,7 +601,7 @@ class OuvrageOptimize
                 'raw' => '{{commentaire biblio|'.$commentaire.'}}',
             ];
             $this->unsetParam('commentaire');
-            $this->log('+{{commentaire}}');
+            $this->log('{commentaire}');
         }
     }
 
@@ -621,7 +621,7 @@ class OuvrageOptimize
             if (preg_match('#^-?[12][0-9][0-9][0-9]$#', $date)) {
                 $this->setParam('année', $date);
                 $this->unsetParam('date');
-                $this->log('date->année');
+                $this->log('>année');
             }
         }
     }
