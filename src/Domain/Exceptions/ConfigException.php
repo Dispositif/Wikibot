@@ -9,7 +9,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Exceptions;
 
-class ConfigException extends \Exception
+use Exception;
+
+class ConfigException extends Exception
 {
     protected $message = 'Exception of configuration';
 }

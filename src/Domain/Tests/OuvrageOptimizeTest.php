@@ -19,6 +19,11 @@ class OuvrageOptimizeTest extends TestCase
 {
     /**
      * @dataProvider provideLocation
+     *
+     * @param $data
+     * @param $expected
+     *
+     * @throws Exception
      */
     public function testLocation($data, $expected)
     {

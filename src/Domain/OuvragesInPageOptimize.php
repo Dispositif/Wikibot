@@ -20,6 +20,10 @@ class OuvragesInPageOptimize
     private $ouvrages;
 
     private $page;
+    /**
+     * @var array
+     */
+    private $log;
 
     public function __construct(string $page, array $ouvrages)
     {

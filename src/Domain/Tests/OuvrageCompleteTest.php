@@ -37,6 +37,12 @@ class OuvrageCompleteTest extends TestCase
 
     /**
      * @dataProvider provideProcessSousTitre
+     *
+     * @param string $originStr
+     * @param string $onlineStr
+     * @param string $expected
+     *
+     * @throws \Exception
      */
     public function testProcessSousTitre(string $originStr, string $onlineStr, string $expected)
     {

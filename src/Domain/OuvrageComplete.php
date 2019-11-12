@@ -128,9 +128,9 @@ class OuvrageComplete
     {
         $lire = $this->origin->getParam('lire en ligne') ?? false;
         if (!empty($lire) && GoogleLivresTemplate::isGoogleBookValue($lire)) {
-            if (!empty($this->book->getParam('lire en ligne'))) {
-                // idem
-            }
+//            if (!empty($this->book->getParam('lire en ligne'))) {
+//                // idem
+//            }
             if (!empty($this->book->getParam('présentation en ligne'))) {
                 // PARTIAL
                 // on déplace sur présentation
@@ -141,12 +141,12 @@ class OuvrageComplete
 
                 return; // ?
             }
-            if (empty($this->book->getParam('lire en ligne'))) {
-                // todo : delete lire en ligne ?
-                // $this->major = true;
-//                $this->log('non accessible sur Google!');
-//                $this->notCosmetic = true;
-            }
+//            if (empty($this->book->getParam('lire en ligne'))) {
+//                // todo : delete lire en ligne ?
+//                // $this->major = true;
+////                $this->log('non accessible sur Google!');
+////                $this->notCosmetic = true;
+//            }
         }
         // completion basique
         $booklire = $this->book->getParam('lire en ligne');
@@ -160,9 +160,9 @@ class OuvrageComplete
 
         $presentation = $this->origin->getParam('présentation en ligne') ?? false;
         if (!empty($presentation) && GoogleLivresTemplate::isGoogleBookValue($presentation)) {
-            if (!empty($this->book->getParam('présentation en ligne'))) {
-                // idem
-            }
+//            if (!empty($this->book->getParam('présentation en ligne'))) {
+//                // idem
+//            }
             if (!empty($this->book->getParam('lire en ligne'))) {
                 // TOTAL
                 // on déplace sur lire en ligne
@@ -171,10 +171,10 @@ class OuvrageComplete
                 $this->log('Google accessible');
                 $this->notCosmetic = true;
             }
-            if (empty($this->book->getParam('présentation en ligne'))) {
-                // todo: delete présentation en ligne ?
-//                $this->log('non accessible sur Google!');
-            }
+//            if (empty($this->book->getParam('présentation en ligne'))) {
+//                // todo: delete présentation en ligne ?
+////                $this->log('non accessible sur Google!');
+//            }
         }
         // todo: completion pertinente si consultation partielle ??
         // completion basique

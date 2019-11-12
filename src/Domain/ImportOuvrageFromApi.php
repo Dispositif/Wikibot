@@ -80,7 +80,7 @@ class ImportOuvrageFromApi
             return [];
         }
         /**
-         * @var MapperInterface
+         * @var $mapper MapperInterface
          */
         $data = $mapper->process($volume);
 

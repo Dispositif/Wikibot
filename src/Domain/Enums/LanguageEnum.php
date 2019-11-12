@@ -69,6 +69,9 @@ class LanguageEnum extends Enum
     public function getFrLangText(): string
     {
         // todo Refactor
+        /**
+         * @var $frlang_to_french array
+         */
         require_once 'languageData.php';
         if (!array_key_exists($this->frlang, $frlang_to_french)) {
             throw new Exception('unknow language '.$this->frlang);
