@@ -17,6 +17,35 @@ use PHPUnit\Framework\TestCase;
 
 class OuvrageOptimizeTest extends TestCase
 {
+    /**
+     * @dataProvider provideLocation
+     */
+    public function testLocation($data, $expected)
+    {
+        $ouvrage = new OuvrageTemplate();
+        $ouvrage->hydrate($data);
+
+        $optimized = (new OuvrageOptimize($ouvrage))->doTasks()->getOuvrage();
+        $this::assertSame(
+            $expected,
+            $optimized->serialize(true)
+        );
+    }
+
+    public function provideLocation()
+    {
+        return [
+            [
+                ['lieu' => 'London'],
+                '{{Ouvrage|langue=|titre=|lieu=Londres|éditeur=|année=|pages totales=|isbn=}}',
+            ],
+            [
+                ['lieu' => 'Fu'],
+                '{{Ouvrage|langue=|titre=|lieu=Fu|éditeur=|année=|pages totales=|isbn=}}',
+            ],
+        ];
+    }
+
     public function testGetOuvrage()
     {
         $raw

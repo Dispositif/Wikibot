@@ -1,7 +1,4 @@
-# See also https://fr.wikipedia.org/wiki/Liste_des_noms_fran%C3%A7ais_des_villes_europ%C3%A9ennes
-
-# Royaume-Uni
-
+#Royaume-Uni,
 Dover,Douvres
 Edinburgh,Édimbourg
 Lancaster,Lancastre
@@ -9,9 +6,7 @@ London,Londres
 Newcastle upon Tyne,Newcastle
 Saint Helier,Saint-Hélier
 
-
-# Allemagne
-
+# Allemagne,
 Aachen,Aix-la-Chapelle
 Altenburg,Altenbourg
 Aschaffenburg,Aschaffenbourg
@@ -82,13 +77,11 @@ Wallerfangen,Vaudrevange
 Würzburg,Wurtzbourg
 Zweibrücken,Deux-Ponts
 
-# Danemark
-
+# Danemark,
 Helsingør,Elseneur
 København,Copenhague
 
-# Belgique/flamand
-
+# Belgique/flamand,
 Aalst,Alost
 Adinkerke,Adinkerque
 Aartrijke,Aertrycke
@@ -148,8 +141,7 @@ Walshoutem,Houtain-l'Évêque
 Zeebrugge,Zeebruges
 Zoutleeuw,Léau
 
-# ESPAGNE : catalan/espagnol
-
+# ESPAGNE : catalan/espagnol,
 A Coruña,La Corogne
 Alacant,Alicante
 Algeciras,Algésiras
@@ -191,9 +183,7 @@ València,Valence
 Valencia,Valence
 Zaragoza,Saragosse
 
-
-# Italie
-
+#Italie,
 Alessandria,Alexandrie
 Ancona,Ancône
 Aquileia,Aquilée
@@ -325,25 +315,23 @@ Verona,Vérone
 Vicenza,Vicence
 Viterbo,Viterbe
 
-#Portugal
+#Portugal,
 Bragança,Bragance
 Lisboa,Lisbonne
 
-# Autriche
+# Autriche,
 Bregenz,Brégence
 Greifenburg,Greifenbourg
 Salzburg,Salzbourg
 Wien,Vienne
 
-# Suisse TODO
-
+# Suisse TODO,
 Basel,Bâle
 Bern,Berne
 Zürich,Zurich
 
 
-# AUTRES
-
+# AUTRES,
 Città del Vaticano,Cité du Vatican
 İstambul,Istanbul
 İzmir,Izmir
@@ -390,4 +378,3 @@ Santo Domingo,Saint-Domingue
 San Salvador,Saint-Sauveur
 Port of Spain,Port-d'Espagne
 Montevideo,Montévidéo
-

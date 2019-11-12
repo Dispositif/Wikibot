@@ -1,5 +1,6 @@
 ## Versions des règles de corrections/complètement ##
 
+0.16 : francisation lieu (London->Londres)
 0.15 : n'ajoute pas 'passage' si vide
 0.14 : bug commentaire d'édition (ajouts manquants)
 0.13 : détection/gestion auteurs multiples
