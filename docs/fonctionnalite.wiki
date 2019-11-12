@@ -44,6 +44,9 @@ Editeur :
 * {{fait}} forme brève : Éd. de La Gourde => [[Éditions de La Gourde|La Gourde]], mais 'Éditions de Minuit' inchangé
 * {{pas fait}} {{3/4}} prédiction du wikilien éditeur
 
+Lieu :
+* {{fait}} francisation des villes (London->Londres)
+
 ISBN :
 * {{fait}} conversion EAN (sans tiret) et ISBN-10 => ISBN-13 ([https://fr.wikipedia.org/w/index.php?title=Montigny-l%C3%A8s-Cormeilles&diff=prev&oldid=163545321])
 * {{fait}} ISBN-10 archivé dans 'isbn10' (invisible)
