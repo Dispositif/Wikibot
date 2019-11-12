@@ -58,7 +58,6 @@ class WikiPageActionTest extends TestCase
                 '{{Ouvrage|langue=fr|titre=BLO}}',
                 'zzzzzzz {{Ouvrage|langue=fr|titre=BLO}} zzzz {{fr}} {{Ouvrage|langue=fr|titre=BLO}} zerqsdfqs',
             ],
-
         ];
     }
 

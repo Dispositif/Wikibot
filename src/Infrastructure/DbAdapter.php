@@ -39,6 +39,7 @@ class DbAdapter implements QueueInterface
      * @param $datas
      *
      * @return int|null
+     *
      * @throws Exception
      */
     public function insertTempRawOpti($datas)
@@ -49,7 +50,7 @@ class DbAdapter implements QueueInterface
     }
 
     /**
-     * Get new raw text (template) to complete
+     * Get new raw text (template) to complete.
      *
      * @return string|null
      */
@@ -89,7 +90,7 @@ class DbAdapter implements QueueInterface
     }
 
     /**
-     * Get new raw text (template) for wiki edition
+     * Get new raw text (template) for wiki edition.
      *
      * @return string|null
      */
@@ -157,5 +158,4 @@ class DbAdapter implements QueueInterface
 
         return $json;
     }
-
 }

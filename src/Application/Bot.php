@@ -20,15 +20,23 @@ use Bluora\LaravelGitInfo\GitInfo;
  */
 class Bot
 {
-    const WATCHPAGE_FILENAME      = __DIR__.'/resources/watch_pages.json';
+    const WATCHPAGE_FILENAME = __DIR__.'/resources/watch_pages.json';
+
     const EXIT_ON_CHECK_WATCHPAGE = true;
-    const BOT_FLAG                = false;
-    const MODE_AUTO               = false;
-    const EXIT_ON_WIKIMESSAGE     = true;
-    const EDIT_LAPS               = 20;
-    const EDIT_LAPS_MANUAL        = 20;
-    const EDIT_LAPS_AUTOBOT       = 60;
-    const EDIT_LAPS_FLAGBOT       = 8;
+
+    const BOT_FLAG = false;
+
+    const MODE_AUTO = false;
+
+    const EXIT_ON_WIKIMESSAGE = true;
+
+    const EDIT_LAPS = 20;
+
+    const EDIT_LAPS_MANUAL = 20;
+
+    const EDIT_LAPS_AUTOBOT = 60;
+
+    const EDIT_LAPS_FLAGBOT = 8;
 
     public $taskName = 'Correction bibliographique';
 
@@ -115,13 +123,15 @@ class Bot
 
     /**
      * @return array
+     *
      * @throws ConfigException
      */
     protected function getWatchPages(): array
     {
         if (!file_exists(static::WATCHPAGE_FILENAME)) {
-            throw new ConfigException("No watchpage file found.");
+            throw new ConfigException('No watchpage file found.');
         }
+
         try {
             $json = file_get_contents(static::WATCHPAGE_FILENAME);
             $array = json_decode($json, true);
@@ -151,7 +161,7 @@ class Bot
     {
         $time = $this->getTimestamp($title);  // 2011-09-02T16:31:13Z
 
-        return (int)round((time() - strtotime($time)) / 60);
+        return (int) round((time() - strtotime($time)) / 60);
     }
 
     /**
@@ -177,15 +187,15 @@ class Bot
 
     /**
      * Detect wiki-templates restricting the edition on a frwiki page.
+     *
      * @param string $text
      *
      * @return bool
      */
     public static function isEditionRestricted(string $text): bool
     {
-        if(preg_match('#{{Protection#i', $text) > 0 ) {
+        if (preg_match('#{{Protection#i', $text) > 0) {
             return true;
         }
     }
-
 }

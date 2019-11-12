@@ -46,17 +46,18 @@ class WikiTextUtil extends TextUtil
         return $text;
     }
 
-    public static function isWikify(string $text):bool
+    public static function isWikify(string $text): bool
     {
-        if(self::unWikify($text) !== $text) {
+        if (self::unWikify($text) !== $text) {
             return true;
         }
+
         return false;
     }
 
     /**
      * Get page titles from wiki encoded links.
-     * (but not others projects links like [[wikt:bla]]
+     * (but not others projects links like [[wikt:bla]].
      *
      * @param string $text
      *

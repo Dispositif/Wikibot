@@ -69,19 +69,20 @@ class OuvrageOptimize
     }
 
     /**
-     * Todo: injection dep
+     * Todo: injection dep.
+     *
      * @throws Exception
      */
     private function processLocation()
     {
         $location = $this->getParam('lieu');
-        if(empty($location)){
+        if (empty($location)) {
             return;
         }
         // opti : case insensitive ?
         $manager = new FileManager();
         $row = $manager->findCSVline(__DIR__.'/resources/traduction_ville.csv', $location);
-        if(empty($row)){
+        if (empty($row)) {
             return;
         }
         $this->setParam('lieu', $row[1]);
@@ -98,7 +99,7 @@ class OuvrageOptimize
     }
 
     /**
-     * desactived (no consensus)
+     * desactived (no consensus).
      */
     //    private function fusionFirstNameAndName()
     //    {
@@ -125,7 +126,7 @@ class OuvrageOptimize
 
     /**
      * Detect and correct multiple authors in same parameter.
-     * Like "auteurs=J. M. Waller, M. Bigger, R. J. Hillocks"
+     * Like "auteurs=J. M. Waller, M. Bigger, R. J. Hillocks".
      *
      * @throws Exception
      */
@@ -149,7 +150,7 @@ class OuvrageOptimize
         $machine = new PredictAuthors();
         $res = $machine->predictAuthorNames($auteur1);
 
-        if (count($res) === 1) {
+        if (1 === count($res)) {
             // auteurs->auteur?
             return;
         }
@@ -163,7 +164,7 @@ class OuvrageOptimize
                 ['auteur', 'auteurs', 'prénom1', 'nom1']
             );
             // iterate and edit new values
-            for ($i = 0; $i < count($res); $i++) {
+            for ($i = 0; $i < count($res); ++$i) {
                 $this->setParam(sprintf('auteur%s', $i + 1), $res[$i]);
             }
             $this->log('distinction des auteurs');
@@ -409,6 +410,7 @@ class OuvrageOptimize
      * @param $name
      *
      * @return string|null
+     *
      * @throws Exception
      */
     private function getParam(string $name): ?string
@@ -556,7 +558,7 @@ class OuvrageOptimize
         // todo detect duplication ouvrage/plume dans externalTemplate ?
         if (!empty($this->getParam('plume'))) {
             $plumeValue = $this->getParam('plume');
-            $this->ouvrage->externalTemplates[] = (object)[
+            $this->ouvrage->externalTemplates[] = (object) [
                 'template' => 'plume',
                 '1' => $plumeValue,
                 'raw' => '{{plume}}',
@@ -571,7 +573,7 @@ class OuvrageOptimize
             // todo bug {{citation bloc}} si "=" ou "|" dans texte de citation
             // Legacy : use {{début citation}} ... {{fin citation}}
             if (preg_match('#[=|]#', $extrait) > 0) {
-                $this->ouvrage->externalTemplates[] = (object)[
+                $this->ouvrage->externalTemplates[] = (object) [
                     'template' => 'début citation',
                     '1' => '',
                     'raw' => '{{début citation}}'.$extrait.'{{fin citation}}',
@@ -579,7 +581,7 @@ class OuvrageOptimize
                 $this->log('+{{début citation}}');
             } else {
                 // StdClass
-                $this->ouvrage->externalTemplates[] = (object)[
+                $this->ouvrage->externalTemplates[] = (object) [
                     'template' => 'citation bloc',
                     '1' => $extrait,
                     'raw' => '{{extrait|'.$extrait.'}}',
@@ -593,7 +595,7 @@ class OuvrageOptimize
         // "commentaire=bla" => {{Commentaire biblio|1=bla}}
         if (!empty($this->getParam('commentaire'))) {
             $commentaire = $this->getParam('commentaire');
-            $this->ouvrage->externalTemplates[] = (object)[
+            $this->ouvrage->externalTemplates[] = (object) [
                 'template' => 'commentaire biblio',
                 '1' => $commentaire,
                 'raw' => '{{commentaire biblio|'.$commentaire.'}}',
@@ -654,6 +656,7 @@ class OuvrageOptimize
 
     /**
      * @return bool
+     *
      * @throws Exception
      */
     public function checkMajorEdit(): bool

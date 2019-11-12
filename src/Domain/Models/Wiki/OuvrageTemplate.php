@@ -14,7 +14,7 @@ namespace App\Domain\Models\Wiki;
  * Raw datas : Value are not normalized (see rather OuvrageClean class for optimized values)
  * Note : Avec serialization(), extraction de plume=,extrait=,commentaire= (obsolètes)
  * sur {{plume}}, {{citationbloc}},{{commentaire biblio}}...
- * Class OuvrageTemplate
+ * Class OuvrageTemplate.
  */
 class OuvrageTemplate extends AbstractWikiTemplate
 {

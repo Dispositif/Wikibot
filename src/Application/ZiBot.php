@@ -14,7 +14,7 @@ use Mediawiki\DataModel\EditInfo;
 
 /**
  * Freaky customization of Bot class
- * Class ZiBot
+ * Class ZiBot.
  */
 class ZiBot extends Bot
 {
@@ -24,6 +24,7 @@ class ZiBot extends Bot
      * Add a freaky response in the bottom of the talk page.
      *
      * @return bool
+     *
      * @throws \Mediawiki\Api\UsageException
      */
     protected function botTalk(): bool
@@ -41,9 +42,9 @@ class ZiBot extends Bot
 
         $allSentences = explode("\n", file_get_contents(__DIR__.'/resources/phrases_bot.csv'));
         @shuffle($allSentences);
-        $sentence = (string)ucfirst($allSentences[0]);
+        $sentence = (string) ucfirst($allSentences[0]);
         $contrib = sprintf(
-            ":@%s : %s —~~~~",
+            ':@%s : %s —~~~~',
             $sentence,
             $last->getUser()
         );

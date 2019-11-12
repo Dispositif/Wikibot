@@ -29,13 +29,14 @@ class OpenLibraryAdapter extends AbstractBookApiAdapter implements BookApiInterf
     public function __construct()
     {
         $this->mapper = new OpenLibraryMapper();
-        $this->client = new Client(['timeout' => 5,]);
+        $this->client = new Client(['timeout' => 5]);
     }
 
     /**
      * @param string $isbn
      *
      * @return array|null
+     *
      * @throws Exception
      */
     public function getDataByIsbn(string $isbn): ?array

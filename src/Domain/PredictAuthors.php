@@ -7,14 +7,13 @@
 
 declare(strict_types=1);
 
-
 namespace App\Domain;
 
 use App\Domain\Utils\WikiTextUtil;
 
 /**
  * Prediction around many authors in same string.
- * Class PredictAuthors
+ * Class PredictAuthors.
  */
 class PredictAuthors
 {
@@ -51,6 +50,7 @@ class PredictAuthors
             case 'FIRSTUPPER':
             case 'ALLUPPER':
                 $this->authors = [0 => $val[0]];
+
                 break;
 
             case 'FIRSTUPPER FIRSTUPPER': // Laurent Croizier
@@ -60,6 +60,7 @@ class PredictAuthors
             case 'FIRSTUPPER FIRSTUPPER BIBABREV':
             case 'FIRSTUPPER FIRSTUPPER PUNCTUATION BIBABREV':
                 $this->authors = [0 => $val[0].' '.$val[1]];
+
                 break;
 
             case 'FIRSTUPPER FIRSTUPPER FIRSTUPPER':
@@ -67,6 +68,7 @@ class PredictAuthors
             case 'INITIAL INITIAL FIRSTUPPER':
             case 'FIRSTUPPER ALLLOWER FIRSTUPPER':
                 $this->authors = [0 => $val[0].' '.$val[1].' '.$val[2]];
+
                 break;
 
             case 'FIRSTUPPER FIRSTUPPER FIRSTUPPER FIRSTUPPER':
@@ -74,6 +76,7 @@ class PredictAuthors
             case 'FIRSTUPPER FIRSTUPPER ALLLOWER FIRSTUPPER': // Abbé Guillotin de Corson
             case 'FIRSTUPPER INITIAL INITIAL FIRSTUPPER':
                 $this->authors = [0 => $val[0].' '.$val[1].' '.$val[2].' '.$val[3]];
+
                 break;
 
             // NOBLESSE
@@ -90,9 +93,10 @@ class PredictAuthors
             case 'FIRSTUPPER FIRSTUPPER FIRSTUPPER FIRSTUPPER FIRSTUPPER':
                 // Mohamed El Aziz Ben Achour
                 $this->authors = [0 => $val[0].' '.$val[1].' '.$val[2].' '.$val[3].' '.$val[4]];
+
                 break;
 
-            /**
+            /*
              *  2 authors
              */
 
@@ -112,6 +116,7 @@ class PredictAuthors
                     0 => $val[0].' '.$val[1],
                     1 => $val[3].' '.$val[4],
                 ];
+
                 break;
 
             // COUPLE
@@ -121,6 +126,7 @@ class PredictAuthors
                     0 => $val[0].' '.$val[3],
                     1 => $val[2].' '.$val[3],
                 ];
+
                 break;
 
             case 'FIRSTUPPER FIRSTUPPER FIRSTUPPER COMMA FIRSTUPPER FIRSTUPPER':
@@ -131,6 +137,7 @@ class PredictAuthors
                     0 => $val[0].' '.$val[1].' '.$val[2],
                     1 => $val[4].' '.$val[5],
                 ];
+
                 break;
 
             case 'FIRSTUPPER FIRSTUPPER COMMA FIRSTUPPER FIRSTUPPER FIRSTUPPER':
@@ -144,6 +151,7 @@ class PredictAuthors
                     0 => $val[0].' '.$val[1],
                     1 => $val[3].' '.$val[4].' '.$val[5],
                 ];
+
                 break;
 
             case 'FIRSTUPPER INITIAL FIRSTUPPER COMMA FIRSTUPPER INITIAL FIRSTUPPER':
@@ -157,9 +165,10 @@ class PredictAuthors
                     0 => $val[0].' '.$val[1].' '.$val[2],
                     1 => $val[4].' '.$val[5].' '.$val[6],
                 ];
+
                 break;
 
-            /**
+            /*
              *  3 authors
              */
 
@@ -174,9 +183,10 @@ class PredictAuthors
                     1 => $val[3].' '.$val[4],
                     2 => $val[6].' '.$val[7],
                 ];
+
                 break;
 
-            /**
+            /*
              * 4 authors
              */
 
@@ -188,6 +198,7 @@ class PredictAuthors
                     2 => $val[6].' '.$val[7],
                     3 => $val[9].' '.$val[10],
                 ];
+
                 break;
         }
     }
@@ -211,6 +222,4 @@ class PredictAuthors
 
         return false;
     }
-
 }
-

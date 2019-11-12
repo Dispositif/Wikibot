@@ -125,13 +125,7 @@ class WstatImport
     {
         $response = $this->client->get($url);
         if (200 !== $response->getStatusCode()) {
-            throw new Exception(
-                sprintf(
-                    'Error code: %s reason: %s',
-                    $response->getStatusCode(),
-                    $response->getReasonPhrase()
-                )
-            );
+            throw new Exception(sprintf('Error code: %s reason: %s', $response->getStatusCode(), $response->getReasonPhrase()));
         }
 
         return $response->getBody()->getContents();

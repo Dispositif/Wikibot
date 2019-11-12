@@ -18,7 +18,7 @@ class WikiTextUtilTest extends TestCase
         $text = 'bla [[fu|bar]] et [[back]] mais pas [[wikt:toto|bou]]';
 
         $this::assertSame(
-            ['fu','back'],
+            ['fu', 'back'],
             WikiTextUtil::getWikilinkPages($text)
         );
     }

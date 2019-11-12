@@ -43,11 +43,11 @@ class TypoTokenizerTest extends TestCase
             ['J. Penaud', 'INITIAL FIRSTUPPER'],
             ['A. B. Penaud', 'INITIAL INITIAL FIRSTUPPER'],
             ['123-234-34323 AC234EF 1234 @', 'DASHNUMBER WITHNUMBER ALLNUMBER PUNCTUATION'],
-            ['bla http://google.fr 123','ALLLOWER URL ALLNUMBER'],
+            ['bla http://google.fr 123', 'ALLLOWER URL ALLNUMBER'],
                         ['A. B. Penaud', 'INITIAL INITIAL FIRSTUPPER'],
             ['Jean Truc-Machine', 'FIRSTUPPER MIXED'],
             ['Armin Vit, Bryony Gomez Palacio', 'FIRSTUPPER FIRSTUPPER COMMA FIRSTUPPER FIRSTUPPER FIRSTUPPER'],
-            ['H. Trevor Clifford, Peter D. Bostock', 'INITIAL FIRSTUPPER FIRSTUPPER COMMA FIRSTUPPER INITIAL FIRSTUPPER']
+            ['H. Trevor Clifford, Peter D. Bostock', 'INITIAL FIRSTUPPER FIRSTUPPER COMMA FIRSTUPPER INITIAL FIRSTUPPER'],
         ];
     }
 

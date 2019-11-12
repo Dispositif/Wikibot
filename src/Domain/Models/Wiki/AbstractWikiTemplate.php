@@ -54,12 +54,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     public function __construct()
     {
         if (empty(static::REQUIRED_PARAMETERS)) {
-            throw new Exception(
-                sprintf(
-                    'REQUIRED_PARAMETERS not configured in "%s"',
-                     get_called_class()
-                )
-            );
+            throw new Exception(sprintf('REQUIRED_PARAMETERS not configured in "%s"', get_called_class()));
         }
         $this->parametersValues = static::REQUIRED_PARAMETERS;
 
@@ -116,9 +111,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
 
         // keyNum parameter ?
         //        if (!in_array($name, ['1', '2', '3', '4'])) {
-        throw new Exception(
-            sprintf('no parameter "%s" in template "%s"', $name, get_called_class())
-        );
+        throw new Exception(sprintf('no parameter "%s" in template "%s"', $name, get_called_class()));
     }
 
     /**

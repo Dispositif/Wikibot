@@ -29,7 +29,7 @@ class TypoTokenizer
      * Example of the returned array :
      * string => 'Penaud, Jean-Pierre'
      * pattern => 'FIRSTUPPER COMMA MIXED'
-     * tokens => [ 0 => 'Penaud', 1 => ',', 2 => 'Jean-Pierre']
+     * tokens => [ 0 => 'Penaud', 1 => ',', 2 => 'Jean-Pierre'].
      *
      * @param string $text
      *
@@ -43,19 +43,18 @@ class TypoTokenizer
         // unWikify or not ? remove wikilinks and bold/italic wikicode
         $modText = WikiTextUtil::unWikify($modText);
 
-        /**
+        /*
          * Pre-process : add spaces between relevant typographic items
          */
         $this->tokenValue = [];
         $modText = $this->preprocessTypoPattern($modText);
-
 
         // PUNCTUATION conversion
         $punctuationColl = array_filter(
             TextUtil::ALL_PUNCTUATION,
             function ($value) {
                 // skip punctuation chars from mixed names (example : "Pierre-Marie L'Anglois")
-                return (!in_array($value, ["'", '-', '-']));
+                return !in_array($value, ["'", '-', '-']);
             }
         );
         // don't use str_split() which cuts on 1 byte length (≠ multibytes chars)
@@ -164,5 +163,4 @@ class TypoTokenizer
 
         return $modText;
     }
-
 }

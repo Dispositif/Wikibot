@@ -11,7 +11,7 @@ namespace App\Domain\Utils;
 
 /**
  * see TYPO https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:AutoWikiBrowser/Typos#Dates
- * Class DateUtil
+ * Class DateUtil.
  */
 class DateUtil
 {

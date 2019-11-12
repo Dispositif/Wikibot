@@ -118,5 +118,4 @@ class ServiceFactory
 
         return self::$dbConnection;
     }
-
 }

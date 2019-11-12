@@ -7,12 +7,11 @@
 
 declare(strict_types=1);
 
-
 namespace App\Domain;
 
 /**
  * todo Legacy to refac
- * Class PredictNameFirstName
+ * Class PredictNameFirstName.
  */
 class PredictNameFirstName
 {

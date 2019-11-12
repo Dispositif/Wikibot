@@ -14,7 +14,6 @@ use PHPUnit\Framework\TestCase;
 
 class PredictNameFirstNameTest extends TestCase
 {
-
     /**
      * @dataProvider authorProvider
      *

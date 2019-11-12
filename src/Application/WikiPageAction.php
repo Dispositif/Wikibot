@@ -37,6 +37,7 @@ class WikiPageAction
     public function __construct(MediawikiFactory $wiki, string $title)
     {
         $this->wiki = $wiki;
+
         try {
             $this->page = $wiki->newPageGetter()->getFromTitle($title);
         } catch (\Throwable $e) {
@@ -45,7 +46,7 @@ class WikiPageAction
     }
 
     /**
-     * Get wiki text from the page
+     * Get wiki text from the page.
      *
      * @return string|null
      */
@@ -74,7 +75,7 @@ class WikiPageAction
     public function getRedirect(): ?string
     {
         if (preg_match('/^#REDIRECT(?:ION)? ?\[\[([^]]+)]]/i', $this->getText(), $matches)) {
-            return (string)trim($matches[1]);
+            return (string) trim($matches[1]);
         }
 
         return null;
@@ -111,7 +112,7 @@ class WikiPageAction
     public function addToBottomOfThePage(string $addText, EditInfo $editInfo): bool
     {
         $oldText = $this->getText();
-        $newText = $oldText."/n".$addText;
+        $newText = $oldText.'/n'.$addText;
 
         return $this->editPage($newText, $editInfo);
     }
@@ -131,7 +132,8 @@ class WikiPageAction
     {
         if (preg_match_all('#(?<langTemp>{{[a-z][a-z]}} ?{{[a-z][a-z]}}) ?'.preg_quote($tplOrigin, '#').'#i', $text, $matches)) {
             // Skip double lang prefix (like in "{{fr}} {{en}} {template}")
-            echo "SKIP ! double lang prefix !";
+            echo 'SKIP ! double lang prefix !';
+
             return $text;
         }
 
@@ -160,8 +162,7 @@ class WikiPageAction
                 }
 
                 // FIX dirty : {{en}} mais pas de langue sur template...
-                if( $lang && preg_match('#\| ?langue= ?\|#', $tplReplace) > 0){
-
+                if ($lang && preg_match('#\| ?langue= ?\|#', $tplReplace) > 0) {
                     $previousTpl = $tplReplace;
                     $tplReplace = str_replace('langue=', 'langue='.$lang, $tplReplace);
                     $text = str_replace($previousTpl, $tplReplace, $text);
@@ -170,6 +171,7 @@ class WikiPageAction
                 // don't delete {{fr}} before {template} on frwiki
                 if (self::SKIP_LANG_INDICATOR === $lang) {
                     $text = str_replace($tplOrigin, $tplReplace, $text);
+
                     continue;
                 }
 
@@ -193,6 +195,7 @@ class WikiPageAction
      * @param $text string
      *
      * @return array
+     *
      * @throws Exception
      */
     public function extractRefFromText(string $text): ?array
@@ -200,7 +203,7 @@ class WikiPageAction
         $parser = new TagParser(); // todo ParserFactory
         $refs = $parser->importHtml($text)->getRefValues(); // []
 
-        return (array)$refs;
+        return (array) $refs;
     }
 
     /**

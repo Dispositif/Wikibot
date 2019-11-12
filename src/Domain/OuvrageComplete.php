@@ -37,7 +37,7 @@ class OuvrageComplete
         $this->book = $book;
     }
 
-    public function getLog():array
+    public function getLog(): array
     {
         return $this->log;
     }
@@ -183,6 +183,7 @@ class OuvrageComplete
 
     /**
      * @return bool
+     *
      * @throws Exception
      */
     private function predictSameBook()
@@ -199,6 +200,7 @@ class OuvrageComplete
 
     /**
      * @return bool
+     *
      * @throws Exception
      */
     private function hasSameAuthors(): bool
@@ -226,6 +228,7 @@ class OuvrageComplete
      * @param OuvrageTemplate $ouv
      *
      * @return string
+     *
      * @throws Exception
      */
     private function authorsFromBook(OuvrageTemplate $ouv)
@@ -259,6 +262,7 @@ class OuvrageComplete
 
     /**
      * @return bool
+     *
      * @throws Exception
      */
     private function hasSameISBN(): bool
@@ -295,8 +299,8 @@ class OuvrageComplete
             if (empty($this->origin->getParam('sous-titre'))) {
                 $this->origin->setParam('sous-titre', $this->book->getParam('sous-titre'));
                 $this->log('++sous-titre');
-                $this->major=true;
-                $this->notCosmetic=true;
+                $this->major = true;
+                $this->notCosmetic = true;
 
                 return;
             }
