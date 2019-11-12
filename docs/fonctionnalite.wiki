@@ -34,8 +34,7 @@ Autres :
 Auteur :
 * {{attendre}} Prénom1+Nom1=>Auteur1 (si prénom/nom uniques ou prénom avec initiale) [cosmétique]
 * {{attendre}} distinction prénom/nom si 2 prénoms (ancrage).
-* {{fait}}  distinction auteurs multiples [https://fr.wikipedia.org/w/index.php?title=Sains_(Ille-et-Vilaine)
-&diff=prev&oldid=163949271]
+* {{fait}}  distinction auteurs multiples [https://fr.wikipedia.org/w/index.php?title=Sains_(Ille-et-Vilaine)&diff=prev&oldid=163949271]
 * {{pas fait}} {{3/4}}  prédiction wikilien page d'auteur
 
 Editeur :
