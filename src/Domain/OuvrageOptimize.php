@@ -13,6 +13,7 @@ use App\Domain\Models\Wiki\GoogleLivresTemplate;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\Utils\TextUtil;
 use App\Domain\Utils\WikiTextUtil;
+use App\Infrastructure\FileManager;
 use Exception;
 use Throwable;
 
@@ -59,11 +60,32 @@ class OuvrageOptimize
 
         $this->processIsbn();
         $this->processLang();
+        $this->processLocation();
 
         $this->GoogleBookURL('lire en ligne');
         $this->GoogleBookURL('présentation en ligne');
 
         return $this;
+    }
+
+    /**
+     * Todo: injection dep
+     * @throws Exception
+     */
+    private function processLocation()
+    {
+        $location = $this->getParam('lieu');
+        if(empty($location)){
+            return;
+        }
+        // opti : case insensitive ?
+        $manager = new FileManager();
+        $row = $manager->findCSVline(__DIR__.'/resources/traduction_ville.csv', $location);
+        if(empty($row)){
+            return;
+        }
+        $this->setParam('lieu', $row[1]);
+        $this->log('lieu francisé');
     }
 
     /**
