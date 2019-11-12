@@ -131,20 +131,20 @@ class TypoTokenizer
                     return ' URL ';
                 },
                 // BIBABREV : "dir.", "trad.", "(dir.)", "[dir.]", etc.
+                // TODO: regex flaw : "(" not evaluated in BIBABREV. Example : "(dir.)"
                 '#\b[(\[]?(collectif|coll\.|dir\.|trad\.|coord\.|ill\.)[)\]]?#i' => function ($match) {
                     $this->tokenValue['BIBABREV'][] = $match[0]; // [1] = dir
 
                     return ' BIBABREV ';
                 },
-                // collectif
                 // AND
-                '# (et|and|&|with|avec) #' => function ($match) {
+                '# (et|and|&|with|avec|e) #' => function ($match) {
                     $this->tokenValue['AND'][] = $match[1];
 
                     return ' AND ';
                 },
                 // COMMA
-                '#,#' => function ($match) {
+                '#,#' => function () {
                     return ' COMMA ';
                 },
                 // INITIAL : 2) convert letter ("A.") or junior ("Jr.") or senior ("Sr.")
