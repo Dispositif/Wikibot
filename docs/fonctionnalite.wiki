@@ -74,6 +74,7 @@ Fonctionnement du bot :
 * {{fait}}{{2/4}} si ajout de données (auteur,éditeur...) : édit sans bot flag (à fréquence lente)
 * {{fait}} arrêt si modification page discussion du bot/dresseur
 * {{fait}} arrêt si modèle avec commentaire HTML
+* respecte les limitations {{m|nobots}} et {{m|bots}}
 * {{pas fait}}  suivi des reverts
 * {{pas fait}} page de log détaillé quotidien
 
