@@ -36,6 +36,7 @@ env:
   global:
     - WIKIBOT_VERSION="1" DB=msql
     - CC_TEST_REPORTER_ID=25d4303381ccd84d954db71d8266c613d4de417dfa543b123e508d0f2bd48d63
+    - GIT_COMMITTED_AT=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then git log -1 --pretty=format:%ct; else git log -1 --skip 1 --pretty=format:%ct; fi)
 
 # Update composer
 before-install:
@@ -58,9 +59,10 @@ before_script:
   - ./cc-test-reporter before-build     # codeclimate cover
 
 script:
-  - vendor/bin/phpunit --coverage-clover=coverage.xml
+  - vendor/bin/phpunit --coverage-clover=clover.xml
 
 after_script:
+  - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then ./cc-test-reporter after-build  -t clover --exit-code $TRAVIS_TEST_RESULT; fi
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT # codeclimate cover
 
 after_success:
