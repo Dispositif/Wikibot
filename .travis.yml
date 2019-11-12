@@ -33,7 +33,9 @@ matrix:
 
 # Define an environment variable
 env:
-  - WIKIBOT_VERSION="1" DB=msql
+  global:
+    - WIKIBOT_VERSION="1" DB=msql
+    - CC_TEST_REPORTER_ID=25d4303381ccd84d954db71d8266c613d4de417dfa543b123e508d0f2bd48d63
 
 # Update composer
 before-install:
@@ -51,9 +53,15 @@ install:
 before_script:
   - composer install --dev --quiet --no-interaction
   - echo 'date.timezone = "Europe/Paris"' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter  # codeclimate cover
+  - chmod +x ./cc-test-reporter         # codeclimate cover
+  - ./cc-test-reporter before-build     # codeclimate cover
 
 script:
   - vendor/bin/phpunit --coverage-clover=coverage.xml
+
+after_script:
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT # codeclimate cover
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
