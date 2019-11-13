@@ -60,7 +60,7 @@ class OuvrageOptimize
 
         $this->processIsbn();
         $this->processLang();
-        $this->processLocation();
+        $this->processLocation(); // 'lieu'
 
         $this->GoogleBookURL('lire en ligne');
         $this->GoogleBookURL('présentation en ligne');
@@ -79,14 +79,26 @@ class OuvrageOptimize
         if (empty($location)) {
             return;
         }
-        // opti : case insensitive ?
+
+        // typo and unwikify
+        $memo = $location;
+        $location = WikiTextUtil::unWikify($location);
+        $location = TextUtil::mb_ucfirst($location);
+        if($memo !== $location){
+            $this->setParam('lieu', $location);
+            $this->log('±lieu');
+            $this->notCosmetic = true;
+        }
+
+        // french translation : "London"->"Londres"
         $manager = new FileManager();
         $row = $manager->findCSVline(__DIR__.'/resources/traduction_ville.csv', $location);
-        if (empty($row)) {
-            return;
+        if (!empty($row) || !empty($row[1])) {
+            $this->setParam('lieu', $row[1]);
+            $this->log('lieu francisé');
+            $this->notCosmetic = true;
         }
-        $this->setParam('lieu', $row[1]);
-        $this->log('lieu francisé');
+
     }
 
     /**
@@ -170,6 +182,7 @@ class OuvrageOptimize
                 $this->setParam(sprintf('auteur%s', $i + 1), $res[$i]);
             }
             $this->log('distinction auteurs');
+            $this->major=true;
             $this->notCosmetic = true;
         }
     }

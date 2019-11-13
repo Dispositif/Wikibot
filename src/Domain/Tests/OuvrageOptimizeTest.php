@@ -41,6 +41,10 @@ class OuvrageOptimizeTest extends TestCase
     {
         return [
             [
+                ['lieu' => '[[paris]]'],
+                '{{Ouvrage|langue=|titre=|lieu=Paris|éditeur=|année=|pages totales=|isbn=}}',
+            ],
+            [
                 ['lieu' => 'London'],
                 '{{Ouvrage|langue=|titre=|lieu=Londres|éditeur=|année=|pages totales=|isbn=}}',
             ],
