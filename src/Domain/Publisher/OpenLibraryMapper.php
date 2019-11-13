@@ -22,34 +22,61 @@ class OpenLibraryMapper implements MapperInterface
      */
     public function process($data): array
     {
+        $details = $data['details'];
         // authors : see also 'contributions'
         return [
-            'auteur1' => $data['authors'][0]['name'] ?? null,
-            'auteur2' => $data['authors'][1]['name'] ?? null,
-            'auteur3' => $data['authors'][2]['name'] ?? null,
-            'titre' => $data['title'] ?? null,
-            'sous-titre' => $data['subtitle'] ?? null,
-            'éditeur' => $data['publishers'][0]['name'] ?? null,
-            'année' => $this->convertDate2Year($data),
-            'lieu' => ($data['publish_places'][0]['name']) ?? null,
-            'pages totales' => $this->nbPages($data),
+            'auteur1' => $details['authors'][0]['name'] ?? null,
+            'auteur2' => $details['authors'][1]['name'] ?? null,
+            'auteur3' => $details['authors'][2]['name'] ?? null,
+            'titre' => $details['title'] ?? null,
+            'sous-titre' => $details['subtitle'] ?? null,
+            'éditeur' => $details['publishers'][0]['name'] ?? null,
+            'année' => $this->convertDate2Year($details),
+            'lieu' => ($details['publish_places'][0]['name']) ?? null,
+            'pages totales' => $this->nbPages($details),
+            'lire en ligne' => $this->readOnline($data),
+//            'présentation en ligne' => $this->previewOnline($data), // pour livre en prêt Internet Archive
         ];
     }
 
-    private function convertDate2Year($data)
+    /**
+     * TODO : lire en ligne !
+     * preview : Preview state - either "noview" or "full".
+     * preview_url : A URL to the preview of the book.
+     * This links to the archive.org page when a readable version of the book is available, otherwise it links to the book page on openlibrary.org.
+     * Please note that the preview_url is always provided even if there is no readable version available. The preview property should be used to test if a book is readable.
+     */
+    private function readOnline($data): ?string
     {
-        if (!isset($data['publish_date'])) {
+        if (!empty($data['preview_url']) && 'full' === $data['preview']) {
+            return $data['preview_url'];
+        }
+        return null;
+    }
+
+    // Emprunt en ligne
+    private function previewOnline($data): ?string
+    {
+        if (!empty($data['preview_url']) && 'borrow' === $data['preview']) {
+            return $data['preview_url'];
+        }
+        return null;
+    }
+
+    private function convertDate2Year($details)
+    {
+        if (!isset($details['publish_date'])) {
             return null;
         }
-        if (preg_match('/[^0-9]?([12][0-9]{3})[^0-9]?/', $data['publish_date'], $matches) > 0) {
-            return (string) $matches[1];
+        if (preg_match('/[^0-9]?([12][0-9]{3})[^0-9]?/', $details['publish_date'], $matches) > 0) {
+            return (string)$matches[1];
         }
 
         return null;
     }
 
-    private function nbPages($data)
+    private function nbPages($details)
     {
-        return (isset($data['number_of_pages'])) ? (intval($data['number_of_pages'])) : null;
+        return (isset($details['number_of_pages'])) ? (intval($details['number_of_pages'])) : null;
     }
 }
