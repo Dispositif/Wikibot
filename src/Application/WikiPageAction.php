@@ -57,6 +57,13 @@ class WikiPageAction
         return ($latest) ? $latest->getContent()->getData() : null;
     }
 
+    public function getLastEditor(): ?string
+    {
+        $latest = $this->page->getRevisions()->getLatest();
+
+        return ($latest) ? $latest->getUser() : null;
+    }
+
     /**
      * Check if a frwiki disambiguation page.
      *
@@ -69,9 +76,10 @@ class WikiPageAction
 
     /**
      * Is it page with a redirection link ?
+     *
      * @return bool
      */
-    public function isRedirect() : bool
+    public function isRedirect(): bool
     {
         return !empty($this->getRedirect());
     }
@@ -121,7 +129,7 @@ class WikiPageAction
     public function addToBottomOfThePage(string $addText, EditInfo $editInfo): bool
     {
         $oldText = $this->getText();
-        $newText = $oldText.'/n'.$addText;
+        $newText = $oldText."\n".$addText;
 
         return $this->editPage($newText, $editInfo);
     }
