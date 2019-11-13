@@ -35,7 +35,7 @@ class OpenLibraryMapper implements MapperInterface
             'lieu' => ($details['publish_places'][0]['name']) ?? null,
             'pages totales' => $this->nbPages($details),
             'lire en ligne' => $this->readOnline($data),
-//            'présentation en ligne' => $this->previewOnline($data), // pour livre en prêt Internet Archive
+            'présentation en ligne' => $this->previewOnline($data),
         ];
     }
 
@@ -48,16 +48,16 @@ class OpenLibraryMapper implements MapperInterface
      */
     private function readOnline($data): ?string
     {
-        if (!empty($data['preview_url']) && 'full' === $data['preview']) {
+        if (!empty($data['preview_url']) && isset($data['preview']) && 'full' === $data['preview']) {
             return $data['preview_url'];
         }
         return null;
     }
 
-    // Emprunt en ligne
+    // Emprunt en ligne Internet Archive
     private function previewOnline($data): ?string
     {
-        if (!empty($data['preview_url']) && 'borrow' === $data['preview']) {
+        if (!empty($data['preview_url']) && isset($data['preview']) && 'borrow' === $data['preview']) {
             return $data['preview_url'];
         }
         return null;
