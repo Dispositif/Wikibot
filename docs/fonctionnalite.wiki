@@ -6,7 +6,7 @@ Correction syntaxique des paramètres :
 * {{fait}} correction des alias [cosmétique]
 * {{fait}} conversion des paramètres enwiki ({{m|cite book}}) [cosmétique]
 * {{fait}} correction de paramètres inconnus (prédiction) : erreur de frappe [https://fr.wikipedia.org/w/index.php?title=Saint_Fran%C3%A7ois_recevant_les_stigmates_(van_Eyck)&diff=prev&oldid=163864610]
-* {{fait}}  signalement paramètre inconnu : commentaire HTML [https://fr.wikipedia.org/w/index.php?title=Algorithme_de_Clenshaw&diff=prev&oldid=164480569] {{pas fait}} liste, catégorie
+* {{fait}}  signalement paramètre inconnu : commentaire HTML [https://fr.wikipedia.org/w/index.php?title=Algorithme_de_Clenshaw&diff=prev&oldid=164480569] {{fait}} message en page discussion [https://fr.wikipedia.org/w/index.php?title=Discussion:Alfred_Jarry&diff=164501575&oldid=158959440]
 * {{fait}} extraction paramètres obsolètes (plume,extrait,commentaire) vers {{m|plume}}, {{m|citation bloc}}, {{m|commentaire biblio}}, {{m|début citation}}... [cosmétique]
 
 Style : conservation partielle du style rédactionnel du modèle : {{pas fait}} ordre des paramètres, {{fait}}
