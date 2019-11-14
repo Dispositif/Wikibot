@@ -32,8 +32,9 @@ $process->run();
  */
 class ArticleEditProcess
 {
-    const DELAY_IN_SECONDS   = 300;
-    const ERROR_MSG_TEMPLATE = __DIR__.'/../templates/message_errors.txt';
+    const DELAY_BOTFLAG_SECONDS  = 60;
+    const DELAY_NOBOT_IN_SECONDS = 300;
+    const ERROR_MSG_TEMPLATE     = __DIR__.'/../templates/message_errors.txt';
 
     private $db;
     private $bot;
@@ -152,8 +153,13 @@ class ArticleEditProcess
                 $this->db->sendEditedData(['id' => $dat['id']]);
             }
 
-            echo "sleep ".self::DELAY_IN_SECONDS."\n";
-            sleep(self::DELAY_IN_SECONDS);
+            if(!$this->botFlag) {
+                sleep(self::DELAY_NOBOT_IN_SECONDS);
+                echo "sleep ".self::DELAY_NOBOT_IN_SECONDS."\n";
+                return;
+            }
+            echo "sleep ".self::DELAY_BOTFLAG_SECONDS."\n";
+            sleep(self::DELAY_BOTFLAG_SECONDS);
         }
 
         try {
@@ -217,6 +223,12 @@ class ArticleEditProcess
     {
         // paramètre inconnu
         if (preg_match("#\|[^|]+<!-- ?(PARAMETRE [^>]+ N'EXISTE PAS) ?-->#", $data['opti'], $matches) > 0) {
+            $this->errorWarning[$data['page']][] = $matches[0];
+            $this->botFlag = false;
+        }
+
+        // ISBN invalide
+        if (preg_match("#isbn invalide ?=[^|}]+#i", $data['opti'], $matches) > 0) {
             $this->errorWarning[$data['page']][] = $matches[0];
             $this->botFlag = false;
         }
