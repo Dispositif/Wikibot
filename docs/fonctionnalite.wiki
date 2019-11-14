@@ -6,17 +6,18 @@ Correction syntaxique des paramètres :
 * {{fait}} correction des alias [cosmétique]
 * {{fait}} conversion des paramètres enwiki ({{m|cite book}}) [cosmétique]
 * {{fait}} correction de paramètres inconnus (prédiction) : erreur de frappe [https://fr.wikipedia.org/w/index.php?title=Saint_Fran%C3%A7ois_recevant_les_stigmates_(van_Eyck)&diff=prev&oldid=163864610]
-* {{fait}}  signalement paramètre inconnu : commentaire HTML. {{pas fait}} liste, catégorie
+* {{fait}}  signalement paramètre inconnu : commentaire HTML [https://fr.wikipedia.org/w/index.php?title=Algorithme_de_Clenshaw&diff=prev&oldid=164480569] {{pas fait}} liste, catégorie
 * {{fait}} extraction paramètres obsolètes (plume,extrait,commentaire) vers {{m|plume}}, {{m|citation bloc}}, {{m|commentaire biblio}}, {{m|début citation}}... [cosmétique]
 
-Style : {{attendre}} conservation du style rédactionnel du modèle : {{pas fait}} ordre des paramètres, {{fait}} espacement, {{pas fait}} noms de paramètre. [https://fr.wikipedia.org/w/index.php?title=Alexandre_Fourny&diff=prev&oldid=164412824]
+Style : conservation partielle du style rédactionnel du modèle : {{pas fait}} ordre des paramètres, {{fait}}
+espacement/retour ligne, {{pas fait}} noms de paramètre. [https://fr.wikipedia.org/w/index.php?title=Alfred_de_Schamphela%C3%ABre&diff=prev&oldid=164495257]
 
 Complètement de données d'après des bases bibliographiques :
 * recherche par {{fait}}ISBN, {{pas fait}} lien Google, {{pas fait}}  titre de livre, etc
 * Bases interrogées : {{fait}}Google Books, {{fait}}OpenLibrary, {{attendre}} Worldcat, {{pas fait}}Wikidata
 * todo: décrire fiabilité données
 * {{fait}} comparaison titre/auteur pour fiabilité infos
-* Exemple : [https://fr.wikipedia.org/w/index.php?title=Saint_Jean-Baptiste_dans_le_d%C3%A9sert_(Le_Caravage)&diff=prev&oldid=163955808 ajout sous-titre]
+* Exemple : [https://fr.wikipedia.org/w/index.php?title=Andr%C3%A9_Navarra&diff=prev&oldid=164482867]
 
 Améliorations typographiques :
 
