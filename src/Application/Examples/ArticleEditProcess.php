@@ -59,7 +59,7 @@ class ArticleEditProcess
     {
         while (true) {
             echo "\n-------------------------------------\n\n";
-            echo date("Y-m-d H:i:s")."\n";
+            echo date("Y-m-d H:i")."\n";
 
             $this->pageProcess();
         }
@@ -109,6 +109,11 @@ class ArticleEditProcess
         // foreach line : $this->dataProcess($data)
         $changed = false;
         foreach ($data as $dat) {
+            // hack pour éviter articles dont CompleteProcess incomplet
+            if(empty($dat['optidate'])) {
+                echo "SKIP : Complètement incomplet de l'article \n";
+                return false;
+            }
             $success = $this->dataProcess($dat);
             $changed = ($success) ? true : $changed;
         }

@@ -39,7 +39,6 @@ class DbAdapter implements QueueInterface
      * @param $datas
      *
      * @return int|null
-     *
      * @throws Exception
      */
     public function insertTempRawOpti($datas)
@@ -144,9 +143,10 @@ class DbAdapter implements QueueInterface
 
         try {
             $data = $this->db->fetchRowMany(
-                'SELECT * FROM TempRawOpti WHERE optidate > :validDate AND edited IS NULL AND notcosmetic=1 AND page = :page LIMIT :limit',
+            // optidate > :validDate (pour vérification que Article entièrement analysé
+                'SELECT * FROM TempRawOpti WHERE edited IS NULL AND notcosmetic=1 AND page = :page LIMIT :limit',
                 [
-                    'validDate' => $this->newRawValidDate,
+                    //                    'validDate' => $this->newRawValidDate,
                     'page' => $pageTitle,
                     'limit' => $limit,
                 ]
