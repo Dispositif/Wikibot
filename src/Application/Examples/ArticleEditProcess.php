@@ -34,7 +34,7 @@ class ArticleEditProcess
 {
     const DELAY_BOTFLAG_SECONDS  = 60;
     const DELAY_NOBOT_IN_SECONDS = 300;
-    const ERROR_MSG_TEMPLATE     = __DIR__.'/../templates/message_errors.txt';
+    const ERROR_MSG_TEMPLATE     = __DIR__.'/../templates/message_errors.wiki';
 
     private $db;
     private $bot;
