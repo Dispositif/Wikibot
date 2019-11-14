@@ -16,6 +16,7 @@ use Mediawiki\DataModel\Content;
 use Mediawiki\DataModel\EditInfo;
 use Mediawiki\DataModel\Page;
 use Mediawiki\DataModel\Revision;
+use Throwable;
 
 class WikiPageAction
 {
@@ -33,6 +34,8 @@ class WikiPageAction
      *
      * @param MediawikiFactory $wiki
      * @param string           $title
+     *
+     * @throws Exception
      */
     public function __construct(MediawikiFactory $wiki, string $title)
     {
@@ -40,8 +43,8 @@ class WikiPageAction
 
         try {
             $this->page = $wiki->newPageGetter()->getFromTitle($title);
-        } catch (\Throwable $e) {
-            dump($e);
+        } catch (Throwable $e) {
+            throw new Exception('Erreur construct WikiPageAction '. $e->getMessage());
         }
     }
 

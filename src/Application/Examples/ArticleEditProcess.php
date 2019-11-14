@@ -267,9 +267,14 @@ class ArticleEditProcess
         $errorMessage = str_replace('##ERROR LIST##', trim($errorList), $errorMessage);
 
         // Edit wiki talk page
-        $talkPage = new WikiPageAction($this->wiki, 'Discussion:'.$rows[0]['page']);
-        $editInfo = new EditInfo('Signalement erreur {ouvrage}', false, false);
-        $talkPage->addToBottomOfThePage($errorMessage, $editInfo);
+        try{
+            $talkPage = new WikiPageAction($this->wiki, 'Discussion:'.$rows[0]['page']);
+            $editInfo = new EditInfo('Signalement erreur {ouvrage}', false, false);
+            $talkPage->addToBottomOfThePage($errorMessage, $editInfo);
+        }catch (\Throwable $e){
+            unset($e);
+        }
+
     }
 
     private function initialize(): void
