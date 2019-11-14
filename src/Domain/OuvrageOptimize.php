@@ -339,6 +339,7 @@ class OuvrageOptimize
             if (is_object($goo)) {
                 $this->setParam($param, $goo->serialize());
                 $this->log('{Google}');
+                $this->notCosmetic = true;
             }
         }
     }
