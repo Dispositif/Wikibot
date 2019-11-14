@@ -74,7 +74,7 @@ class ArticleEditProcess
         $data = json_decode($json, true);
 
         if (empty($data)) {
-            dump('no data');
+            echo "no data\n";
 
             return false;
         }
@@ -86,7 +86,7 @@ class ArticleEditProcess
         $this->wikiText = $page->getText();
 
         if ($this->bot->minutesSinceLastEdit($title) < 15) {
-            dump('SKIP : édition humaine dans les dernières 15 minutes.');
+            echo "SKIP : édition humaine dans les dernières 15 minutes.\n";
 
             return false;
         }
@@ -94,13 +94,13 @@ class ArticleEditProcess
         // GET all article lines from db
         $json = $this->db->getPageRows($title);
         if (empty($json)) {
-            dump('SKIP no rows to process');
+            echo "SKIP no rows to process.\n";
 
             return false;
         }
         $data = json_decode($json, true);
         if (empty($data)) {
-            dump('SKIP : empty data');
+            echo "SKIP : empty data.\n";
 
             return false;
         }
@@ -112,8 +112,6 @@ class ArticleEditProcess
             $success = $this->dataProcess($dat);
             $changed = ($success) ? true : $changed;
         }
-
-
         if (!$changed) {
             echo "Rien à changer...\n\n";
 
@@ -140,7 +138,8 @@ class ArticleEditProcess
         sleep(30);
         $editInfo = new EditInfo($this->pageSummary, $this->minorFlag, $this->botFlag);
         $success = $page->editPage($this->wikiText, $editInfo);
-        dump('result', $success);
+
+        echo ($success) ? "Ok\n" : "Erreur edit\n";
 
         if ($success) {
             // updata DB
@@ -169,7 +168,7 @@ class ArticleEditProcess
         dump($origin, $completed, $data['modifs']);
 
         if (WikiTextUtil::isCommented($origin)) {
-            dump('SKIP: template avec commentaire HTML');
+            echo "SKIP: template avec commentaire HTML\n";
 
             return false;
         }
@@ -211,8 +210,9 @@ class ArticleEditProcess
      */
     private function checkErrorWarning(array $data): void
     {
-        if (preg_match('#<!-- ?(PARAMETRE [>]+ N\'EXISTE PAS) ?-->#i', $data['opti'], $matches) > 0) {
-            $this->errorWarning[$data['page']][] = $matches[1];
+        // paramètre inconnu
+        if (preg_match("#\|[^|]+<!-- ?(PARAMETRE [^>]+ N'EXISTE PAS) ?-->#", $data['opti'], $matches) > 0) {
+            $this->errorWarning[$data['page']][] = $matches[0];
             $this->botFlag = false;
         }
 
@@ -229,22 +229,26 @@ class ArticleEditProcess
         }
     }
 
-    private function sendErrorMessage(array $data): void
+    /**
+     * @param array $rows Collection of citations
+     */
+    private function sendErrorMessage(array $rows): void
     {
-        if (empty($this->errorWarning[$data['page']])) {
+        if (empty($this->errorWarning[$rows[0]['page']])) {
             return;
         }
+        echo "** Send Error Message on talk page ** \n";
 
         // format wiki message
         $errorList = '';
-        foreach ($this->errorWarning[$data['page']] as $error) {
+        foreach ($this->errorWarning[$rows[0]['page']] as $error) {
             $errorList .= sprintf("* <nowiki>%s</nowiki> \n", $error);
         }
         $errorMessage = file_get_contents(self::ERROR_MSG_TEMPLATE);
-        $errorMessage = str_replace('##ERROR LIST##', $errorList, $errorMessage);
+        $errorMessage = str_replace('##ERROR LIST##', trim($errorList), $errorMessage);
 
         // Edit wiki talk page
-        $talkPage = new WikiPageAction($this->wiki, 'Talk:'.$data['page']);
+        $talkPage = new WikiPageAction($this->wiki, 'Talk:'.$rows[0]['page']);
         $editInfo = new EditInfo('Signalement erreur {ouvrage}', false, false);
         $talkPage->addToBottomOfThePage($errorMessage, $editInfo);
     }
