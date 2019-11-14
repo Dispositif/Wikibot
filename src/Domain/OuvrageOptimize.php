@@ -33,6 +33,7 @@ class OuvrageOptimize
     private $log = [];
 
     public $notCosmetic = false;
+    public $major = false;
 
     private $ouvrage;
 
@@ -411,7 +412,7 @@ class OuvrageOptimize
                 if (empty($this->getParam($predName))) {
                     $this->setParam($predName, $value);
                     $predName = $this->ouvrage->getAliasParam($predName);
-                    $this->log("$name => $predName");
+                    $this->log(sprintf('%s=>%s ?', $name,$predName));
                     $this->notCosmetic = true;
                     unset($this->ouvrage->parametersErrorFromHydrate[$name]);
                 }
