@@ -111,8 +111,9 @@ class ArticleEditProcess
         $changed = false;
         foreach ($data as $dat) {
             // hack pour éviter articles dont CompleteProcess incomplet
-            if(empty($dat['optidate'])) {
+            if (empty($dat['optidate'])) {
                 echo "SKIP : Complètement incomplet de l'article \n";
+
                 return false;
             }
             $success = $this->dataProcess($dat);
@@ -137,6 +138,7 @@ class ArticleEditProcess
         if (!empty($this->errorWarning)) {
             $this->pageSummary = sprintf('/!\ %s', $this->pageSummary);
             echo "** ERROR WARNING **\n";
+            dump($this->errorWarning);
         }
 
         echo "Edition ?\n".$this->pageSummary."\n\n";
@@ -153,19 +155,19 @@ class ArticleEditProcess
                 $this->db->sendEditedData(['id' => $dat['id']]);
             }
 
-            if(!$this->botFlag) {
-                sleep(self::DELAY_NOBOT_IN_SECONDS);
+            try {
+                $this->sendErrorMessage($data);
+            } catch (Throwable $e) {
+                dump($e);
+                unset($e);
+            }
+
+            if (!$this->botFlag) {
                 echo "sleep ".self::DELAY_NOBOT_IN_SECONDS."\n";
-                return;
+                sleep(self::DELAY_NOBOT_IN_SECONDS);
             }
             echo "sleep ".self::DELAY_BOTFLAG_SECONDS."\n";
             sleep(self::DELAY_BOTFLAG_SECONDS);
-        }
-
-        try {
-            $this->sendErrorMessage($data);
-        } catch (Throwable $e) {
-            dump($e);
         }
 
         return $success;
@@ -201,14 +203,13 @@ class ArticleEditProcess
             $data['modifs']
         );
         if (!$newText || $newText === $this->wikiText) {
-            // todo log
+            echo "newText error\n";
+
             return false;
         }
 
         $this->wikiText = $newText;
 
-        // If major edit => no botflag
-        //        $this->botFlag = ('1' === $data['major'] ) ? false : $this->botFlag;
         $this->minorFlag = ('1' === $data['major']) ? false : $this->minorFlag;
 
         return true;
@@ -254,18 +255,19 @@ class ArticleEditProcess
         if (empty($this->errorWarning[$rows[0]['page']])) {
             return;
         }
-        echo "** Send Error Message on talk page ** \n";
+        echo "** Send Error Message on talk page. Wait 10... \n";
+        sleep(10);
 
         // format wiki message
         $errorList = '';
         foreach ($this->errorWarning[$rows[0]['page']] as $error) {
-            $errorList .= sprintf("* <nowiki>%s</nowiki> \n", $error);
+            $errorList .= sprintf("* <span style=\"background:#FCDFE8\"><nowiki>%s</nowiki></span> \n", $error);
         }
         $errorMessage = file_get_contents(self::ERROR_MSG_TEMPLATE);
         $errorMessage = str_replace('##ERROR LIST##', trim($errorList), $errorMessage);
 
         // Edit wiki talk page
-        $talkPage = new WikiPageAction($this->wiki, 'Talk:'.$rows[0]['page']);
+        $talkPage = new WikiPageAction($this->wiki, 'Discussion:'.$rows[0]['page']);
         $editInfo = new EditInfo('Signalement erreur {ouvrage}', false, false);
         $talkPage->addToBottomOfThePage($errorMessage, $editInfo);
     }
