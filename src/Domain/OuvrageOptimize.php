@@ -400,6 +400,13 @@ class OuvrageOptimize
                 // example : 1 => "ouvrage collectif" from |ouvrage collectif|
                 continue;
             }
+
+            // delete error parameter if no value
+            if(empty($value)){
+                unset($this->ouvrage->parametersErrorFromHydrate[$name]);
+                continue;
+            }
+
             $maxDistance = 1;
             if (strlen($name) >= 4) {
                 $maxDistance = 2;
@@ -411,8 +418,8 @@ class OuvrageOptimize
             $predName = TextUtil::predictCorrectParam($name, $allParamsAndAlias, $maxDistance);
             if ($predName && strlen($name) >= 4) {
                 if (empty($this->getParam($predName))) {
-                    $this->setParam($predName, $value);
                     $predName = $this->ouvrage->getAliasParam($predName);
+                    $this->setParam($predName, $value);
                     $this->log(sprintf('%s=>%s ?', $name,$predName));
                     $this->notCosmetic = true;
                     unset($this->ouvrage->parametersErrorFromHydrate[$name]);
