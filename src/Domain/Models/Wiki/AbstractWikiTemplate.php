@@ -325,6 +325,10 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
             }
             $string .= $paramValue;
         }
+        // expanded model -> "\n}}"
+        if($this->userSeparator && strpos($this->userSeparator,"\n") !== false ) {
+            $string .= "\n";
+        }
         $string .= '}}';
 
         return $string;
