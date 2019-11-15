@@ -31,7 +31,7 @@ class GoogleBookMapper implements MapperInterface
             'auteur2' => $volume->authors[1] ?? null,
             'auteur3' => $volume->authors[2] ?? null,
             'titre' => $volume->title,
-            'sous-titre' => $this->filterSubtitle($volume->subtitle),
+            'sous-titre' => $this->filterSubtitle($volume),
             'année' => $this->convertDate2Year($volume->publishedDate),
             'pages totales' => (string) $volume->pageCount,
             'isbn' => $this->isbn($volume),
@@ -40,13 +40,13 @@ class GoogleBookMapper implements MapperInterface
         ];
     }
 
-    private function filterSubtitle(?string $data=null): ?string
+    private function filterSubtitle($volume): ?string
     {
-        if ('roman' === mb_strtolower($data)) {
+        if (empty($volume->subtitle) || 'roman' === mb_strtolower($volume->subtitle)) {
             return null;
         }
 
-        return $data;
+        return $volume->subtitle;
     }
 
     private function convertDate2Year($data)
