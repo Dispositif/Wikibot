@@ -1,5 +1,7 @@
 ## Versions des règles de corrections/complètement ##
 
+0.26 : bug de la conservation style (retour ligne)
+0.25 : import données BnF
 0.24 : filtre sous-titre=Roman (pertinent?)
 0.23 : améliore commentaire d'édition
 0.21 : signalements en page discussion
