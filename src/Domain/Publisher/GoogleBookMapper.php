@@ -31,13 +31,22 @@ class GoogleBookMapper implements MapperInterface
             'auteur2' => $volume->authors[1] ?? null,
             'auteur3' => $volume->authors[2] ?? null,
             'titre' => $volume->title,
-            'sous-titre' => $volume->subtitle,
+            'sous-titre' => $this->filterSubtitle($volume->subtitle),
             'année' => $this->convertDate2Year($volume->publishedDate),
             'pages totales' => (string) $volume->pageCount,
             'isbn' => $this->isbn($volume),
             'présentation en ligne' => $this->presentationEnLigne($volume),
             'lire en ligne' => $this->lireEnLigne($volume),
         ];
+    }
+
+    private function filterSubtitle(?string $data=null): ?string
+    {
+        if ('roman' === mb_strtolower($data)) {
+            return null;
+        }
+
+        return $data;
     }
 
     private function convertDate2Year($data)

@@ -23,13 +23,14 @@ class OpenLibraryMapper implements MapperInterface
     public function process($data): array
     {
         $details = $data['details'];
+
         // authors : see also 'contributions'
         return [
             'auteur1' => $details['authors'][0]['name'] ?? null,
             'auteur2' => $details['authors'][1]['name'] ?? null,
             'auteur3' => $details['authors'][2]['name'] ?? null,
             'titre' => $details['title'] ?? null,
-            'sous-titre' => $details['subtitle'] ?? null,
+            'sous-titre' => $this->filterSubtitle($details),
             'éditeur' => $details['publishers'][0]['name'] ?? null,
             'année' => $this->convertDate2Year($details),
             'lieu' => ($details['publish_places'][0]['name']) ?? null,
@@ -37,6 +38,15 @@ class OpenLibraryMapper implements MapperInterface
             'lire en ligne' => $this->readOnline($data),
             'présentation en ligne' => $this->previewOnline($data),
         ];
+    }
+
+    private function filterSubtitle(array $details): ?string
+    {
+        if ('roman' === mb_strtolower($details['subtitle'])) {
+            return null;
+        }
+
+        return $details['subtitle'];
     }
 
     /**
@@ -51,6 +61,7 @@ class OpenLibraryMapper implements MapperInterface
         if (!empty($data['preview_url']) && isset($data['preview']) && 'full' === $data['preview']) {
             return $data['preview_url'];
         }
+
         return null;
     }
 
@@ -60,6 +71,7 @@ class OpenLibraryMapper implements MapperInterface
         if (!empty($data['preview_url']) && isset($data['preview']) && 'borrow' === $data['preview']) {
             return $data['preview_url'];
         }
+
         return null;
     }
 
