@@ -13,7 +13,7 @@ namespace App\Domain\Publisher;
  * https://openlibrary.org/dev/docs/api/books
  * Class OpenLibraryMapper.
  */
-class OpenLibraryMapper implements MapperInterface
+class OpenLibraryMapper extends AbstractBookMapper implements MapperInterface
 {
     /**
      * @param $data array

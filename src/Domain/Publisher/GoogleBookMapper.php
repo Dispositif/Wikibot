@@ -16,7 +16,7 @@ use Scriptotek\GoogleBooks\Volume;
  * Doc : https://developers.google.com/books/docs/v1/reference/volumes
  * Class GoogleBookMapper.
  */
-class GoogleBookMapper implements MapperInterface
+class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
 {
     /**
      * @param $volume Volume
