@@ -11,6 +11,7 @@ namespace App\Domain;
 
 use App\Domain\Models\Wiki\OuvrageClean;
 use App\Domain\Models\Wiki\OuvrageTemplate;
+use App\Infrastructure\BnfAdapter;
 use App\Infrastructure\GoogleBooksAdapter;
 use App\Infrastructure\OpenLibraryAdapter;
 
@@ -31,6 +32,14 @@ class OuvrageFactory
     public static function GoogleFromIsbn(string $isbn): OuvrageTemplate
     {
         $import = new ImportOuvrageFromApi(new OuvrageClean(), new GoogleBooksAdapter());
+        $import->hydrateFromIsbn($isbn);
+
+        return $import->getOuvrage();
+    }
+
+    public static function BnfFromIsbn(string $isbn): OuvrageTemplate
+    {
+        $import = new ImportOuvrageFromApi(new OuvrageClean(), new BnfAdapter());
         $import->hydrateFromIsbn($isbn);
 
         return $import->getOuvrage();

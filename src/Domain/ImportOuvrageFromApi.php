@@ -14,6 +14,7 @@ use App\Domain\Publisher\BookApiInterface;
 use App\Domain\Publisher\MapperInterface;
 use Exception;
 use Scriptotek\GoogleBooks\Volume;
+use SimpleXMLElement;
 
 class ImportOuvrageFromApi
 {
@@ -76,9 +77,11 @@ class ImportOuvrageFromApi
     {
         $mapper = $this->adapter->getMapper();
 
-        if (empty($volume)) {
+        // FIXED : empty(SimpleXmlElement) => false !!
+        if (empty($volume) && !$volume instanceof SimpleXMLElement) {
             return [];
         }
+
         /**
          * @var $mapper MapperInterface
          */
