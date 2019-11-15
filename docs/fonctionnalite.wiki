@@ -14,7 +14,7 @@ espacement/retour ligne, {{pas fait}} noms de paramètre. [https://fr.wikipedia.
 
 Complètement de données d'après des bases bibliographiques :
 * recherche par {{fait}}ISBN, {{pas fait}} lien Google, {{pas fait}}  auteur+titre
-* Bases interrogées : {{fait}} [[Google Books]], {{fait}} [[Open Library]], {{pas fait}}[[BnF]], {{mort}}[[WorldCat]], {{pas fait}}[[WikiData]]
+* Bases interrogées : {{fait}} [[Google Books]], {{fait}} [[Open Library]], {{fait}}[[BnF]], {{mort}}[[WorldCat]],{{pas fait}}[[WikiData]]
 * todo: décrire fiabilité données
 * {{fait}} comparaison titre/auteur pour fiabilité infos
 * Exemple : [https://fr.wikipedia.org/w/index.php?title=Andr%C3%A9_Navarra&diff=prev&oldid=164482867]
