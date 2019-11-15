@@ -53,7 +53,7 @@ class Bot
     public function getCommentary(): string
     {
         return sprintf(
-            '[%s] %s : ',
+            '[%s] %s',
             str_replace('v', '', self::getGitVersion()),
             $this->taskName
         );

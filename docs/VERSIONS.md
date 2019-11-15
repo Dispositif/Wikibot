@@ -1,5 +1,6 @@
 ## Versions des règles de corrections/complètement ##
 
+0.23 : améliore commentaire d'édition
 0.21 : signalements en page discussion
 0.19 : bug wikification 'lieu'
 0.18 : liens vers livre numérisé sur Internet Archive 

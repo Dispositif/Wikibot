@@ -42,6 +42,8 @@ class ArticleEditProcess
     private $wikiText;
     private $pageSummary;
     private $errorWarning = [];
+    private $importantSummary = [];
+    private $nbRows;
 
     // Minor flag on edit
     private $minorFlag = true;
@@ -109,6 +111,7 @@ class ArticleEditProcess
 
         // foreach line : $this->dataProcess($data)
         $changed = false;
+        $this->nbRows = count($data);
         foreach ($data as $dat) {
             // hack pour éviter articles dont CompleteProcess incomplet
             if (empty($dat['optidate'])) {
@@ -130,21 +133,40 @@ class ArticleEditProcess
             return false;
         }
 
+        // MINI SUMMARY
+        $miniSummary = substr($this->pageSummary, 0, 80);
+        if(strlen($this->pageSummary) > 80 ) {
+            $miniSummary = $miniSummary.'...';
+        }
+
+        // NEW SUMMARY
+        if(!empty($this->importantSummary)) {
+            $miniSummary = sprintf(
+                '%s [%s] : %s...',
+                $this->bot->getCommentary(),
+                $this->nbRows,
+                implode(',', $this->importantSummary)
+            );
+        }
+
         // Start summary with "Bot" when using botflag
         if ($this->botFlag) {
-            $this->pageSummary = sprintf('bot %s', $this->pageSummary);
+            $miniSummary = sprintf('bot %s', $miniSummary);
         }
         // Start summary with "/!\" when errorWarning
         if (!empty($this->errorWarning)) {
-            $this->pageSummary = sprintf('/!\ %s', $this->pageSummary);
+            $miniSummary = sprintf('/!\ %s', $miniSummary);
             echo "** ERROR WARNING **\n";
             dump($this->errorWarning);
         }
 
-        echo "Edition ?\n".$this->pageSummary."\n\n";
+
+        echo "Edition ?\n".$miniSummary."\n\n";
+
         echo "sleep 30...\n";
         sleep(30);
-        $editInfo = new EditInfo($this->pageSummary, $this->minorFlag, $this->botFlag);
+
+        $editInfo = new EditInfo($miniSummary, $this->minorFlag, $this->botFlag);
         $success = $page->editPage($this->wikiText, $editInfo);
 
         echo ($success) ? "Ok\n" : "Erreur edit\n";
@@ -198,8 +220,7 @@ class ArticleEditProcess
         // Replace text
         $newText = WikiPageAction::replaceTemplateInText($this->wikiText, $origin, $completed);
         $this->pageSummary .= sprintf(
-            '[%s] %s ',
-            $data['id'],
+            '%s / ',
             $data['modifs']
         );
         if (!$newText || $newText === $this->wikiText) {
@@ -226,24 +247,43 @@ class ArticleEditProcess
         if (preg_match("#\|[^|]+<!-- ?(PARAMETRE [^>]+ N'EXISTE PAS) ?-->#", $data['opti'], $matches) > 0) {
             $this->errorWarning[$data['page']][] = $matches[0];
             $this->botFlag = false;
+            $this->addSummaryTag('paramètre non corrigé');
         }
 
         // ISBN invalide
         if (preg_match("#isbn invalide ?=[^|}]+#i", $data['opti'], $matches) > 0) {
             $this->errorWarning[$data['page']][] = $matches[0];
             $this->botFlag = false;
+            $this->addSummaryTag('ISBN invalide');
         }
 
         // Edits avec ajout conséquent de donnée
         if (preg_match('#distinction des auteurs#', $data['modifs']) > 0) {
             $this->botFlag = false;
+            $this->addSummaryTag('distinction des auteurs');
         }
         // prédiction paramètre correct
-        if (preg_match('# => #', $data['modifs']) > 0) {
+        if (preg_match('#[^,]+ => [^,]+#', $data['modifs'],$matches) > 0) {
             $this->botFlag = false;
+            $this->addSummaryTag(sprintf('%s ?',$matches[0]));
         }
         if (preg_match('#\+\+sous-titre#', $data['modifs']) > 0) {
             $this->botFlag = false;
+            $this->addSummaryTag('+sous-titre');
+        }
+        if (preg_match('#\+langue#', $data['modifs']) > 0) {
+            $this->addSummaryTag('+langue');
+        }
+    }
+
+    /**
+     * For substantive or ambiguous modifications done.
+     * @param string $tag
+     */
+    private function addSummaryTag(string $tag)
+    {
+        if(!in_array($tag, $this->importantSummary)) {
+            $this->importantSummary[] = $tag;
         }
     }
 
@@ -283,7 +323,7 @@ class ArticleEditProcess
         $this->botFlag = true;
         $this->errorWarning = [];
         $this->wikiText = null;
-        $this->pageSummary = $this->bot->getCommentary();
+        $this->pageSummary = $this->bot->getCommentary().': ';
         $this->minorFlag = true;
 
         $this->bot->checkWatchPages();
