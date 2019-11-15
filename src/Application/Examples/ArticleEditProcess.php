@@ -145,7 +145,7 @@ class ArticleEditProcess
                 '%s [%s] : %s...',
                 $this->bot->getCommentary(),
                 $this->nbRows,
-                implode(',', $this->importantSummary)
+                implode(', ', $this->importantSummary)
             );
         }
 
@@ -155,7 +155,7 @@ class ArticleEditProcess
         }
         // Start summary with "/!\" when errorWarning
         if (!empty($this->errorWarning)) {
-            $miniSummary = sprintf('/!\ %s', $miniSummary);
+            $miniSummary = sprintf('!! %s', $miniSummary);
             echo "** ERROR WARNING **\n";
             dump($this->errorWarning);
         }
@@ -263,7 +263,7 @@ class ArticleEditProcess
             $this->addSummaryTag('distinction des auteurs');
         }
         // prédiction paramètre correct
-        if (preg_match('#[^,]+ => [^,]+#', $data['modifs'],$matches) > 0) {
+        if (preg_match('#[^,]+=>[^,]+#', $data['modifs'],$matches) > 0) {
             $this->botFlag = false;
             $this->addSummaryTag(sprintf('%s ?',$matches[0]));
         }
@@ -305,6 +305,7 @@ class ArticleEditProcess
         }
         $errorMessage = file_get_contents(self::ERROR_MSG_TEMPLATE);
         $errorMessage = str_replace('##ERROR LIST##', trim($errorList), $errorMessage);
+        $errorMessage = str_replace('##ARTICLE##', $rows[0]['page'], $errorMessage);
 
         // Edit wiki talk page
         try{
@@ -325,6 +326,8 @@ class ArticleEditProcess
         $this->wikiText = null;
         $this->pageSummary = $this->bot->getCommentary().': ';
         $this->minorFlag = true;
+        $this->importantSummary = [];
+        $this->nbRows = 0;
 
         $this->bot->checkWatchPages();
     }

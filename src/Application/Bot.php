@@ -20,6 +20,7 @@ use Bluora\LaravelGitInfo\GitInfo;
  */
 class Bot
 {
+    const WIKI_STATE_FILENAME = __DIR__.'/resources/wiki_state.json';
     const WATCHPAGE_FILENAME = __DIR__.'/resources/watch_pages.json';
 
     const EXIT_ON_CHECK_WATCHPAGE = true;
@@ -38,7 +39,7 @@ class Bot
 
     const EDIT_LAPS_FLAGBOT = 8;
 
-    public $taskName = 'Correction bibliographique';
+    public $taskName = 'Améliorations bibliographiques';
 
     public function __construct()
     {
