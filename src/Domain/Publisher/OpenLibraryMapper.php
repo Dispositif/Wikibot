@@ -42,7 +42,7 @@ class OpenLibraryMapper extends AbstractBookMapper implements MapperInterface
 
     private function filterSubtitle(array $details): ?string
     {
-        if ('roman' === mb_strtolower($details['subtitle'])) {
+        if (!isset($details['subtitle']) || 'roman' === mb_strtolower($details['subtitle'])) {
             return null;
         }
 

@@ -75,6 +75,12 @@ class BnfAdapter extends AbstractBookApiAdapter implements BookApiInterface
             return null;
         }
 
+        $nbResults = (int)$xml->xpath('//srw:numberOfRecords[1]')[0] ?? 0;
+
+        if (0 === $nbResults) {
+            return null;
+        }
+
         return $xml;
     }
 }
