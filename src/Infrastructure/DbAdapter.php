@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Infrastructure;
 
 use App\Application\QueueInterface;
+use App\Infrastructure\entities\DbEditedPage;
 use Exception;
 use Simplon\Mysql\Mysql;
 use Simplon\Mysql\MysqlException;
@@ -99,7 +100,7 @@ class DbAdapter implements QueueInterface
 
         try {
             $data = $this->db->fetchRow(
-                'SELECT * FROM TempRawOpti WHERE (optidate > :validDate AND edited IS NULL AND version IS NOT NULL AND notcosmetic=1) ORDER BY RAND() LIMIT 1',
+                'SELECT * FROM TempRawOpti WHERE (optidate > :validDate AND edited IS NULL AND version IS NOT NULL AND notcosmetic=1) ORDER BY priority DESC,RAND() LIMIT 1',
                 [
                     'validDate' => $this->newRawValidDate,
                 ]
@@ -157,5 +158,60 @@ class DbAdapter implements QueueInterface
         }
 
         return $json;
+    }
+
+    /**
+     * Dirty naive ORM.
+     *
+     * @param object $object
+     *
+     * @return array|bool
+     */
+    public function saveEntity(object $object)
+    {
+        if ($object instanceof DbEditedPage) {
+            /**
+             * @var $object DbEditedPage
+             */
+            try {
+                $id = $this->db->replace('editedpages', $object->getVars());
+
+                return $id;
+            } catch (MysqlException $e) {
+                unset($e);
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Dirty naive ORM.
+     *
+     * @param $table
+     * @param $primary
+     *
+     * @return object|null
+     */
+    public function findEntity($table, $primary): ?object
+    {
+        if ('editedpages' === $table) {
+            /**
+             * @var $object DbEditedPage
+             */
+            try {
+                $res = $this->db->fetchRow('SELECT * FROM editedpages WHERE title = :title', ['title' => $primary]);
+                $obj = new DbEditedPage($this);
+                $obj->setTitle($primary);
+                $obj->setCompleted($res['completed']);
+                $obj->setEdited($res['edited']);
+
+                return $obj;
+            } catch (MysqlException $e) {
+                unset($e);
+            }
+        }
+
+        return null;
     }
 }

@@ -1,4 +1,4 @@
-Légende : {{fait}} module activé / {{pas fait}} module pas activé / {{attendre}}
+Légende : {{fait}} module activé / {{pas fait}} module pas activé / {{attendre}} (consensus)
 
 === Traitement modèle {Ouvrage} ===
 
@@ -6,15 +6,15 @@ Correction syntaxique des paramètres :
 * {{fait}} correction des alias [cosmétique]
 * {{fait}} conversion des paramètres enwiki ({{m|cite book}}) [cosmétique]
 * {{fait}} correction de paramètres inconnus (prédiction) : erreur de frappe [https://fr.wikipedia.org/w/index.php?title=Saint_Fran%C3%A7ois_recevant_les_stigmates_(van_Eyck)&diff=prev&oldid=163864610]
-* {{fait}}  signalement paramètre inconnu : commentaire HTML [https://fr.wikipedia.org/w/index.php?title=Algorithme_de_Clenshaw&diff=prev&oldid=164480569] {{fait}} message en page discussion [https://fr.wikipedia.org/w/index.php?title=Discussion:Anna_Lubiw&oldid=164512270]
+* {{fait}}  signalement paramètre inconnu : commentaire HTML [https://fr.wikipedia.org/w/index.php?title=Algorithme_de_Clenshaw&diff=prev&oldid=164480569] {{fait}} message en page discussion [https://fr.wikipedia.org/w/index.php?title=Discussion:Alfred_Jarry&diff=164501575&oldid=158959440]
 * {{fait}} extraction paramètres obsolètes (plume,extrait,commentaire) vers {{m|plume}}, {{m|citation bloc}}, {{m|commentaire biblio}}, {{m|début citation}}... [cosmétique]
 
 Style : conservation partielle du style rédactionnel du modèle : {{pas fait}} ordre des paramètres, {{fait}}
 espacement/retour ligne, {{pas fait}} noms de paramètre. [https://fr.wikipedia.org/w/index.php?title=Alfred_de_Schamphela%C3%ABre&diff=prev&oldid=164495257]
 
 Complètement de données d'après des bases bibliographiques :
-* recherche par {{fait}}ISBN, {{pas fait}} lien Google, {{pas fait}}  titre de livre, etc
-* Bases interrogées : {{fait}}Google Books, {{fait}}OpenLibrary, {{attendre}} Worldcat, {{pas fait}}Wikidata
+* recherche par {{fait}}ISBN, {{pas fait}} lien Google, {{pas fait}}  auteur+titre
+* Bases interrogées : {{fait}} [[Google Books]], {{fait}} [[Open Library]], {{pas fait}}[[BnF]], {{mort}}[[WorldCat]], {{pas fait}}[[WikiData]]
 * todo: décrire fiabilité données
 * {{fait}} comparaison titre/auteur pour fiabilité infos
 * Exemple : [https://fr.wikipedia.org/w/index.php?title=Andr%C3%A9_Navarra&diff=prev&oldid=164482867]
@@ -36,7 +36,7 @@ Auteur :
 * {{attendre}} Prénom1+Nom1=>Auteur1 (si prénom/nom uniques ou prénom avec initiale) [cosmétique]
 * {{attendre}} distinction prénom/nom si 2 prénoms (ancrage).
 * {{fait}}  distinction auteurs multiples [https://fr.wikipedia.org/w/index.php?title=Sains_(Ille-et-Vilaine)&diff=prev&oldid=163949271]
-* {{pas fait}} {{3/4}}  prédiction wikilien page d'auteur
+* {{pas fait}} prédiction wikilien page d'auteur
 
 Editeur :
 * {{fait}} 'lien éditeur' retiré (obsolète), remplacé par wikilien [cosmétique]
@@ -50,18 +50,18 @@ Lieu :
 ISBN :
 * {{fait}} conversion EAN (sans tiret) et ISBN-10 => ISBN-13 ([https://fr.wikipedia.org/w/index.php?title=Montigny-l%C3%A8s-Cormeilles&diff=prev&oldid=163545321])
 * {{fait}} ISBN-10 archivé dans 'isbn10' (invisible)
-* {{fait}} signalement ISBN invalide (checksum, code pays/product) : commentaire HTML, isbn invalide= {{pas fait}} liste, catégorie ?
-* {{pas fait}} contrôle des ISBN multiples
+* {{fait}} signalement ISBN invalide (checksum, code pays/product) : commentaire HTML et 'isbn invalide=' + message PD
+* {{pas fait}} contrôle des ISBN multiples (isbn2, isbn3)
 
 Dates :
 * {{fait}} confusion date/année [cosmétique]
-* {{pas fait}}  conversions dates américaines
+* {{pas fait}}  typo et conversions dates américaines
 * {{attendre}} Avec LUA plus besoin d'exploser la date en jour/mois/année. Faut-il convertir vers 'date' ?
 
 Format :
 * {{fait}} prédiction 'format livre' ou 'format électronique'
 
-Lien Google Books :
+Lien vers Google Books :
 * [[Wikip%C3%A9dia:Le_Bistro/15_octobre_2019#Liens_Google_Livres Bistro]]
 * {{fait}} simplification d'URL : {{fait}}suppression des paramètres non nécessaires (infos de tracking) : conservation id, pg (page), dq (requête/surlignage) qui permettent d'obtenir la même interface.[cosmétique??]
 * {{attendre}} Suppression lien invalide (id manquant)
@@ -70,21 +70,25 @@ Lien Google Books :
 * {{fait}} ajout lien Google si livre d'accès complet.
 * {{attendre}} ajout 'présentation en ligne' si livre d'accès partiel.
 
+Lien vers Internet Archive :
+* {{fait}} ajout 'lire en ligne' vers livre numérisé (accès libre ou empruntable)
+* {{pas fait}} privilégier lien vers IA plutôt que Google
+
 Fonctionnement du bot :
-* {{fait}} n'édite pas si modifications seulement cosmétiques (sur la page) ? (%erreur?)
-* {{fait}}{{2/4}} si ajout de données (auteur,éditeur...) : édit sans bot flag (à fréquence lente)
-* {{fait}} arrêt si modification page discussion du bot/dresseur
-* {{fait}} arrêt si modèle avec commentaire HTML
+* {{fait}} n'édite pas si correction invisible
+* {{fait}} si ajout de donnée substanciel (auteur,sous-titre...) ou prédiction : édit sans bot flag
+* {{fait}} arrêt si modification page discussion du bot
+* {{fait}} ne traite pas les modèles contenant du commentaire HTML <nowiki><!-- blabla -->
 * respecte les limitations {{m|nobots}} et {{m|bots}}
-* {{pas fait}}  suivi des reverts
+* {{pas fait}} suivi des reverts (apprentissage)
 * {{pas fait}} page de log détaillé quotidien
 
 Sur page globale :
 * {{fait}} déplacement de la mention langue à l'intérieur du modèle [https://fr.wikipedia.org/w/index.php?title=Sailor_Jupiter&diff=prev&oldid=163845237]
 * {{fait}} pas d'intervention si édition humaine y'a moins de 15 minutes
 * {{pas fait}}  analyse des {fr}, {en} pour ajout {fr} si ouvrages étrangers > 50%
-* {{pas fait}}  Message en PD pour ISBN invalide, suggestion de correctifs, etc. Par le passé, succès/efficacité.
-* {{pas fait}}  un seul wikilien par page
+* {{fait}}  Message en PD pour ISBN invalide, suggestion de correctifs, etc. Par le passé, succès/efficacité.
+* {{pas fait}} un seul wikilien identique par page
 
 === Estimation ===
 Durée tâche :
@@ -94,8 +98,9 @@ Durée tâche :
 
 Dans sa version précédente (2012), suite aux édits du bot, y'avait environ 1% de modification humaine des citations. Les 2/3 portant sur la correction d'ISBN ou titres signalés erronés par le bot (genre message en PD).
 
-=== Mentions libres de biblio ===
+=== Mentions libres de biblio (hors modèles) ===
+
 * {{attendre}} simplification d'URL Google Livres (paramètres de tracking)
-* {{attendre}} possibilité de conversion en {{m|Google Livres}} mais pas de consensus. Ça apporte belle présentation.
+* {{attendre}} possibilité de conversion en {{m|Google Livres}} mais pas de consensus.
 * {{pas fait}}  conversion en {{m|ouvrage}}
 * {{pas fait}}  ajouts de données d'après bases biblio
