@@ -275,7 +275,11 @@ abstract class TemplateParser extends WikiTextUtil
      */
     public static function findUserStyleSeparator(string $tplText): string
     {
-        // {{fu | bar}} (duplicate : because [^\}\|\n]+ allows final space...)
+        // Fixed : {{fu\n    | bar}}
+        if (preg_match('#{{[^}|]+\n +\|( ?)[^}]+}}#i', $tplText, $matches) > 0) {
+            return "\n |".$matches[1];
+        }
+        // {{fu | bar}} (duplicate : because [^}|\n]+ allows final space...)
         if (preg_match('#{{[^}|\n]+([ \n]\|[ \n]?)[^}]+}}#i', $tplText, $matches) > 0) {
             return $matches[1];
         }
@@ -284,6 +288,6 @@ abstract class TemplateParser extends WikiTextUtil
             return $matches[1];
         }
 
-        return '|';
+        return ' |';
     }
 }

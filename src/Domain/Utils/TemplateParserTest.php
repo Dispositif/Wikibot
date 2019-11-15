@@ -42,6 +42,19 @@ class TemplateParserTest extends TestCase
 }}',
                 "\n|",
             ],
+            ['{{Ouvrage
+  |langue=fr
+  |prénom1=Ernest
+  |nom1=Nègre
+  |titre=Toponymie
+}}',
+                "\n |",
+            ],
+            ['{{Ouvrage
+  | langue=fr
+}}',
+             "\n | ",
+            ],
         ];
     }
 
