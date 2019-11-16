@@ -300,6 +300,7 @@ class OuvrageTemplate extends AbstractWikiTemplate
             'champ libre',
             'titre',
             'sous-titre',
+            'lien titre',
             'titre original',
             'traduction titre',
             'volume',
