@@ -53,8 +53,14 @@ class OpenLibraryMapper extends AbstractBookMapper implements MapperInterface
      * TODO : lire en ligne !
      * preview : Preview state - either "noview" or "full".
      * preview_url : A URL to the preview of the book.
-     * This links to the archive.org page when a readable version of the book is available, otherwise it links to the book page on openlibrary.org.
-     * Please note that the preview_url is always provided even if there is no readable version available. The preview property should be used to test if a book is readable.
+     * This links to the archive.org page when a readable version of the book is available, otherwise it links to the
+     * book page on openlibrary.org.
+     * Please note that the preview_url is always provided even if there is no readable version available. The preview
+     * property should be used to test if a book is readable.
+     *
+     * @param $data
+     *
+     * @return string|null
      */
     private function readOnline($data): ?string
     {

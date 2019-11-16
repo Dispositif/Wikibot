@@ -19,11 +19,16 @@ use SimpleXMLElement;
  */
 class BnfMapper extends AbstractBookMapper implements MapperInterface
 {
-
+    /**
+     * @var SimpleXMLElement
+     */
     private $xml;
 
     /**
-     * @param $data array
+     * XML in UniMarc format.
+     * See http://api.bnf.fr/formats-bibliographiques-intermarc-unimarc
+     *
+     * @param $xml
      *
      * @return array
      */
@@ -34,11 +39,6 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
         }
         $this->xml = $xml;
 
-        /**
-         * XML in Marc format
-         *
-         * @var $data SimpleXMLElement
-         */
         return [
             'bnf' => $this->convertBnfIdent(),
             'isbn' => $this->xpath2string('//mxc:datafield[@tag="010"]/mxc:subfield[@code="a"]'),

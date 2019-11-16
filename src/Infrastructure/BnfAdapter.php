@@ -26,8 +26,6 @@ class BnfAdapter extends AbstractBookApiAdapter implements BookApiInterface
 {
     const API_URL = 'http://catalogue.bnf.fr/api/SRU?';
 
-    protected $api;
-
     protected $mapper;
 
     protected $client;
@@ -41,7 +39,7 @@ class BnfAdapter extends AbstractBookApiAdapter implements BookApiInterface
     /**
      * @param string $isbn
      *
-     * @return array|null
+     * @return SimpleXMLElement|null
      * @throws Exception
      */
     public function getDataByIsbn(string $isbn): ?SimpleXMLElement

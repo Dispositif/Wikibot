@@ -60,7 +60,7 @@ class DbAdapter implements QueueInterface
 
         try {
             $raw = $this->db->fetchColumn(
-                'SELECT raw FROM TempRawOpti WHERE (optidate IS NULL OR optidate < :validDate ) AND edited IS NULL ORDER BY optidate,id',
+                'SELECT raw FROM TempRawOpti WHERE (opti IS NULL OR optidate IS NULL OR optidate < :validDate ) AND edited IS NULL ORDER BY priority DESC,optidate,id',
                 [
                     'validDate' => $this->newRawValidDate,
                 ]

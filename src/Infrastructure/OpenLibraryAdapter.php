@@ -20,8 +20,6 @@ use GuzzleHttp\Client;
  */
 class OpenLibraryAdapter extends AbstractBookApiAdapter implements BookApiInterface
 {
-    protected $api;
-
     protected $mapper;
 
     protected $client;
@@ -36,7 +34,6 @@ class OpenLibraryAdapter extends AbstractBookApiAdapter implements BookApiInterf
      * @param string $isbn
      *
      * @return array|null
-     *
      * @throws Exception
      */
     public function getDataByIsbn(string $isbn): ?array

@@ -13,8 +13,10 @@ use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\Publisher\BookApiInterface;
 use App\Domain\Publisher\MapperInterface;
 use Exception;
+use LogicException;
 use Scriptotek\GoogleBooks\Volume;
 use SimpleXMLElement;
+use Throwable;
 
 class ImportOuvrageFromApi
 {
@@ -48,7 +50,6 @@ class ImportOuvrageFromApi
      * @param string $isbn
      *
      * @return OuvrageTemplate
-     *
      * @throws Exception
      */
     public function hydrateFromIsbn(string $isbn): OuvrageTemplate
@@ -61,8 +62,8 @@ class ImportOuvrageFromApi
 
         try {
             $this->ouvrage->hydrate($data);
-        } catch (Exception $e) {
-            throw new Exception($e);
+        } catch (Throwable $e) {
+            throw new LogicException('Hydratation error '.$e->getMessage());
         }
 
         return $this->ouvrage;
