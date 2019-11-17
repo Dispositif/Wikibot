@@ -27,6 +27,7 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
     /**
      * XML in UniMarc format.
      * See http://api.bnf.fr/formats-bibliographiques-intermarc-unimarc
+     * https://www.transition-bibliographique.fr/systemes-et-donnees/manuel-unimarc-format-bibliographique/
      *
      * @param $xml
      *
@@ -39,30 +40,48 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
         }
         $this->xml = $xml;
 
+
         return [
             'bnf' => $this->convertBnfIdent(),
             'isbn' => $this->xpath2string('//mxc:datafield[@tag="010"]/mxc:subfield[@code="a"]'),
 
-            'titre' => (string)$xml->xpath('//mxc:datafield[@tag="200"]/mxc:subfield[@code="a"]')[0],
+            // Langue
+            'langue' => $this->lang2wiki($this->xpath2string('//mxc:datafield[@tag="101"]/mxc:subfield[@code="a"]')),
+            // c : Langue de l’œuvre originale
+            'langue originale' => $this->lang2wiki(
+                $this->xpath2string('//mxc:datafield[@tag="101"]/mxc:subfield[@code="c"]')
+            ),
+            // g : Langue du titre propre (si différent)
+            'langue titre' => $this->lang2wiki(
+                $this->xpath2string('//mxc:datafield[@tag="101"]/mxc:subfield[@code="g"]')
+            ),
 
-            // "Pierre Durand, Paul Dupond" (XML de dingue pour ça...)
+            // Bloc 200
+            // a : Titre propre
+            'titre' => $this->xpath2string('//mxc:datafield[@tag="200"]/mxc:subfield[@code="a"]'),
+            // e : Complément du titre
+            'sous-titre' => $this->xpath2string('//mxc:datafield[@tag="200"]/mxc:subfield[@code="e"]'),
+            // f : responsabilité principale "Pierre Durand, Paul Dupond" (XML de dingue pour ça...)
             'auteur1' => $this->xpath2string('//mxc:datafield[@tag="200"]/mxc:subfield[@code="f"]'),
+            // g : Mention de responsabilité suivante
+            'auteur2' => $this->xpath2string('//mxc:datafield[@tag="200"]/mxc:subfield[@code="g"]'),
+            // h : Numéro de partie
+            //            'volume' => $this->xpath2string('//mxc:datafield[@tag="200"]/mxc:subfield[@code="h"]'),
+            // i : Titre de partie
+            // v : numéro de volume
+            'volume' => $this->xpath2string('//mxc:datafield[@tag="200"]/mxc:subfield[@code="v"]'),
 
-            'lieu' => $this->xpath2string('//mxc:datafield[@tag="219"]/mxc:subfield[@code="a"]'),
-            'éditeur' => $this->xpath2string('//mxc:datafield[@tag="219"]/mxc:subfield[@code="c"]'),
+            // 410 : collection
+            'collection' => $this->xpath2string('//mxc:datafield[@tag="410"]/mxc:subfield[@code="a"]'),
 
-            //  <mxc:subfield code="d">DL 2017</mxc:subfield>
+            // Auteur : voir plutôt 7XX
+            //  https://www.transition-bibliographique.fr/wp-content/uploads/2018/07/B7XX-6-2011.pdf
 
-            //            <mxc:datafield tag="101" ind1="0" ind2=" ">
-            //<mxc:subfield code="a">fre</mxc:subfield>
-            //</mxc:datafield>
-            //<mxc:datafield tag="102" ind1=" " ind2=" ">
-            //<mxc:subfield code="a">FR</mxc:subfield>
+            // multi-zones
+            'lieu' => $this->getLocation(),
+            'éditeur' => $this->getPublisher(),
+            'date' => $this->getPublishDate(),
 
-            //            <srw:extraRecordData>
-            //<ixm:attr name="CreationDate">20010330</ixm:attr>
-            //<ixm:attr name="LastModificationDate">20190919</ixm:attr>
-            //<mn:score>7.336276</mn:score>
         ];
     }
 
@@ -71,6 +90,81 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
         $element = $this->xml->xpath($path);
         if (isset($element[0]) && $element[0] instanceof SimpleXMLElement) {
             return (string)$element[0];
+        }
+
+        return null;
+    }
+
+    /**
+     * todo refac and move.
+     * ISO 639-1 http://www.loc.gov/standards/iso639-2/php/French_list.php
+     *
+     * @param string|null $lang
+     *
+     * @return string|null
+     */
+    private function lang2wiki(?string $lang = null): ?string
+    {
+        $iso2b_to_french = [];
+        $french_to_frlang = [];
+        require_once __DIR__.'/../Enums/languageData.php';
+
+        if ($lang && isset($iso2b_to_french[$lang])) {
+            $french = $iso2b_to_french[$lang];
+            if (isset($french_to_frlang[$french])) {
+                return $french_to_frlang[$french];
+            }
+        }
+
+        return null;
+    }
+
+    private function getPublisher(): ?string
+    {
+        // zone 210
+        if ($tac = $this->xpath2string('//mxc:datafield[@tag="210"]/mxc:subfield[@code="c"]')) {
+            return $tac;
+        }
+        // 214 : nouvelle zone 2019
+        if ($tac = $this->xpath2string('//mxc:datafield[@tag="214"]/mxc:subfield[@code="c"]')) {
+            return $tac;
+        }
+
+        // 219 ancienne zone ?
+        if ($tac = $this->xpath2string('//mxc:datafield[@tag="219"]/mxc:subfield[@code="c"]')) {
+            return $tac;
+        }
+
+        return null;
+    }
+
+    private function getLocation(): ?string
+    {
+        // zone 210
+        if ($tac = $this->xpath2string('//mxc:datafield[@tag="210"]/mxc:subfield[@code="a"]')) {
+            return $tac;
+        }
+        // 214 : nouvelle zone 2019
+        if ($tac = $this->xpath2string('//mxc:datafield[@tag="214"]/mxc:subfield[@code="a"]')) {
+            return $tac;
+        }
+        // ancienne zone ?
+        if ($tac = $this->xpath2string('//mxc:datafield[@tag="219"]/mxc:subfield[@code="a"]')) {
+            return $tac;
+        }
+
+        return null;
+    }
+
+    private function getPublishDate(): ?string
+    {
+        // zone 210 d : Date de publication, de diffusion, etc.
+        if ($tac = $this->xpath2string('//mxc:datafield[@tag="210"]/mxc:subfield[@code="d"]')) {
+            return $tac;
+        }
+        // 214 : nouvelle zone 2019
+        if ($tac = $this->xpath2string('//mxc:datafield[@tag="214"]/mxc:subfield[@code="d"]')) {
+            return $tac;
         }
 
         return null;
