@@ -76,6 +76,11 @@ class OuvrageOptimizeTest extends TestCase
                 ['date' => '[[1995]]'],
                 '{{Ouvrage|langue=|titre=|éditeur=|année=1995|pages totales=|isbn=}}',
             ],
+            // bnf
+            [
+                ['bnf' => 'FRBNF30279779'],
+                '{{Ouvrage|langue=|titre=|éditeur=|année=|pages totales=|isbn=|bnf=30279779}}',
+            ],
         ];
     }
 

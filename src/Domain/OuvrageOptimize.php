@@ -60,6 +60,8 @@ class OuvrageOptimize
         $this->predictFormatByPattern();
 
         $this->processIsbn();
+        $this->processBnf();
+
         $this->processLang();
         $this->processLocation(); // 'lieu'
 
@@ -85,7 +87,7 @@ class OuvrageOptimize
         $memo = $location;
         $location = WikiTextUtil::unWikify($location);
         $location = TextUtil::mb_ucfirst($location);
-        if($memo !== $location){
+        if ($memo !== $location) {
             $this->setParam('lieu', $location);
             $this->log('±lieu');
             $this->notCosmetic = true;
@@ -99,7 +101,16 @@ class OuvrageOptimize
             $this->log('lieu francisé');
             $this->notCosmetic = true;
         }
+    }
 
+    private function processBnf()
+    {
+        $bnf = $this->getParam('bnf');
+        if (!$bnf) {
+            return;
+        }
+        $bnf = str_ireplace('FRBNF', '', $bnf);
+        $this->setParam('bnf', $bnf);
     }
 
     /**
@@ -149,7 +160,7 @@ class OuvrageOptimize
         $auteur1 = $this->getParam('auteur') ?? '';
         $auteur1 .= $this->getParam('auteurs') ?? '';
         $auteur1 .= $this->getParam('prénom1') ?? '';
-        $auteur1 .= ' '. $this->getParam('nom1') ?? '';
+        $auteur1 .= ' '.$this->getParam('nom1') ?? '';
         $auteur1 = trim($auteur1);
         // of authors 2
         $auteur2 = $this->getParam('auteur2') ?? '';
@@ -183,7 +194,7 @@ class OuvrageOptimize
                 $this->setParam(sprintf('auteur%s', $i + 1), $res[$i]);
             }
             $this->log('distinction auteurs');
-            $this->major=true;
+            $this->major = true;
             $this->notCosmetic = true;
         }
     }
@@ -375,8 +386,8 @@ class OuvrageOptimize
     {
         // dewikification
         $params = ['date', 'année', 'mois', 'jour'];
-        foreach($params as $param) {
-            if(WikiTextUtil::isWikify(' '.$this->getParam($param))){
+        foreach ($params as $param) {
+            if (WikiTextUtil::isWikify(' '.$this->getParam($param))) {
                 $this->setParam($param, WikiTextUtil::unWikify($this->getParam($param)));
             }
         }
@@ -386,7 +397,6 @@ class OuvrageOptimize
         } catch (Exception $e) {
             dump($e);
         }
-
     }
 
     /**
@@ -409,7 +419,7 @@ class OuvrageOptimize
             }
 
             // delete error parameter if no value
-            if(empty($value)){
+            if (empty($value)) {
                 unset($this->ouvrage->parametersErrorFromHydrate[$name]);
                 continue;
             }
@@ -427,7 +437,7 @@ class OuvrageOptimize
                 if (empty($this->getParam($predName))) {
                     $predName = $this->ouvrage->getAliasParam($predName);
                     $this->setParam($predName, $value);
-                    $this->log(sprintf('%s=>%s ?', $name,$predName));
+                    $this->log(sprintf('%s=>%s ?', $name, $predName));
                     $this->notCosmetic = true;
                     unset($this->ouvrage->parametersErrorFromHydrate[$name]);
                 }
@@ -441,7 +451,6 @@ class OuvrageOptimize
      * @param $name
      *
      * @return string|null
-     *
      * @throws Exception
      */
     private function getParam(string $name): ?string
@@ -589,7 +598,7 @@ class OuvrageOptimize
         // todo detect duplication ouvrage/plume dans externalTemplate ?
         if (!empty($this->getParam('plume'))) {
             $plumeValue = $this->getParam('plume');
-            $this->ouvrage->externalTemplates[] = (object) [
+            $this->ouvrage->externalTemplates[] = (object)[
                 'template' => 'plume',
                 '1' => $plumeValue,
                 'raw' => '{{plume}}',
@@ -604,7 +613,7 @@ class OuvrageOptimize
             // todo bug {{citation bloc}} si "=" ou "|" dans texte de citation
             // Legacy : use {{début citation}} ... {{fin citation}}
             if (preg_match('#[=|]#', $extrait) > 0) {
-                $this->ouvrage->externalTemplates[] = (object) [
+                $this->ouvrage->externalTemplates[] = (object)[
                     'template' => 'début citation',
                     '1' => '',
                     'raw' => '{{début citation}}'.$extrait.'{{fin citation}}',
@@ -612,7 +621,7 @@ class OuvrageOptimize
                 $this->log('{début citation}');
             } else {
                 // StdClass
-                $this->ouvrage->externalTemplates[] = (object) [
+                $this->ouvrage->externalTemplates[] = (object)[
                     'template' => 'citation bloc',
                     '1' => $extrait,
                     'raw' => '{{extrait|'.$extrait.'}}',
@@ -626,7 +635,7 @@ class OuvrageOptimize
         // "commentaire=bla" => {{Commentaire biblio|1=bla}}
         if (!empty($this->getParam('commentaire'))) {
             $commentaire = $this->getParam('commentaire');
-            $this->ouvrage->externalTemplates[] = (object) [
+            $this->ouvrage->externalTemplates[] = (object)[
                 'template' => 'commentaire biblio',
                 '1' => $commentaire,
                 'raw' => '{{commentaire biblio|'.$commentaire.'}}',
@@ -687,7 +696,6 @@ class OuvrageOptimize
 
     /**
      * @return bool
-     *
      * @throws Exception
      */
     public function checkMajorEdit(): bool
@@ -787,7 +795,7 @@ class OuvrageOptimize
             $this->unsetParam('lien éditeur');
         }
 
-        if(isset($editeurUrl)){
+        if (isset($editeurUrl)) {
             $editeurUrl = TextUtil::mb_ucfirst($editeurUrl);
         }
         $newEditeur = $editeurStr;
