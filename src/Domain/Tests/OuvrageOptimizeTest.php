@@ -17,15 +17,11 @@ use PHPUnit\Framework\TestCase;
 
 class OuvrageOptimizeTest extends TestCase
 {
+
     /**
-     * @dataProvider provideLocation
-     *
-     * @param $data
-     * @param $expected
-     *
-     * @throws Exception
+     * @dataProvider provideSomeParam
      */
-    public function testLocation($data, $expected)
+    public function testSomeParam($data, $expected)
     {
         $ouvrage = new OuvrageTemplate();
         $ouvrage->hydrate($data);
@@ -37,9 +33,32 @@ class OuvrageOptimizeTest extends TestCase
         );
     }
 
-    public function provideLocation()
+    public function provideSomeParam()
     {
         return [
+            // Editeur
+            [
+                ['éditeur' => 'Éd. de La Ville'],
+                '{{Ouvrage|langue=|titre=|éditeur=La Ville|année=|pages totales=|isbn=}}',
+            ],
+            [
+                ['éditeur' => '[[Fu]]'],
+                '{{Ouvrage|langue=|titre=|éditeur=[[Fu]]|année=|pages totales=|isbn=}}',
+            ],
+            [
+                ['éditeur' => '[[Fu|Bar]] bla'],
+                '{{Ouvrage|langue=|titre=|éditeur=[[Fu|Bar]] bla|année=|pages totales=|isbn=}}',
+            ],
+            [
+                ['éditeur' => 'bar','lien éditeur'=>'fu'],
+                '{{Ouvrage|langue=|titre=|éditeur=[[Fu|Bar]]|année=|pages totales=|isbn=}}',
+            ],
+            [
+                ['éditeur' => '[[Fu]] [[Bar]]'],
+                '{{Ouvrage|langue=|titre=|éditeur=[[Fu]] [[Bar]]|année=|pages totales=|isbn=}}',
+            ],
+
+            // Lieu
             [
                 ['lieu' => '[[paris]]'],
                 '{{Ouvrage|langue=|titre=|lieu=Paris|éditeur=|année=|pages totales=|isbn=}}',
@@ -51,6 +70,11 @@ class OuvrageOptimizeTest extends TestCase
             [
                 ['lieu' => 'Fu'],
                 '{{Ouvrage|langue=|titre=|lieu=Fu|éditeur=|année=|pages totales=|isbn=}}',
+            ],
+            // date
+            [
+                ['date' => '[[1995]]'],
+                '{{Ouvrage|langue=|titre=|éditeur=|année=1995|pages totales=|isbn=}}',
             ],
         ];
     }

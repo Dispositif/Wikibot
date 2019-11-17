@@ -373,13 +373,20 @@ class OuvrageOptimize
 
     private function processDates()
     {
+        // dewikification
+        $params = ['date', 'année', 'mois', 'jour'];
+        foreach($params as $param) {
+            if(WikiTextUtil::isWikify(' '.$this->getParam($param))){
+                $this->setParam($param, WikiTextUtil::unWikify($this->getParam($param)));
+            }
+        }
+
         try {
             $this->dateIsYear();
         } catch (Exception $e) {
             dump($e);
         }
-        // dewikification TODO
-        $params = ['date', 'année', 'mois', 'jour'];
+
     }
 
     /**
@@ -732,9 +739,17 @@ class OuvrageOptimize
      */
     private function processEditeur()
     {
-        $this->currentTask = 'start';
         $editeur = $this->getParam('éditeur');
         if (empty($editeur)) {
+            return;
+        }
+
+        // FIX bug "GEO Art ([[Prisma Media]]) ; [[Le Monde]]"
+        if (preg_match('#\[.*\[.*\[#', $editeur) > 0) {
+            return;
+        }
+        // FIX bug "[[Fu|Bar]] bla" => [[Fu|Bar bla]]
+        if (preg_match('#(.+\[\[|\]\].+)#', $editeur) > 0) {
             return;
         }
 
@@ -762,15 +777,19 @@ class OuvrageOptimize
             $editeurStr = str_replace($matches[1], '', $editeurStr);
         }
 
+        $editeurStr = TextUtil::mb_ucfirst($editeurStr);
+
         // Déconseillé : 'lien éditeur' (obsolete 2019)
         if (!empty($this->getParam('lien éditeur'))) {
             if (empty($editeurUrl)) {
                 $editeurUrl = $this->getParam('lien éditeur');
             }
-            $this->log('-lien éditeur');
             $this->unsetParam('lien éditeur');
         }
 
+        if(isset($editeurUrl)){
+            $editeurUrl = TextUtil::mb_ucfirst($editeurUrl);
+        }
         $newEditeur = $editeurStr;
         if (isset($editeurUrl) && $editeurUrl !== $editeurStr) {
             $newEditeur = '[['.$editeurUrl.'|'.$editeurStr.']]';
