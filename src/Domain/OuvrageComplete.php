@@ -285,8 +285,10 @@ class OuvrageComplete
             return;
         }
 
-        // Skip pour éviter conflit entre 'sous-titre' et 'titre volume'
-        if (!empty($this->origin->getParam('titre volume'))) {
+        // Skip pour éviter conflit entre 'sous-titre' et 'collection' ou 'titre volume'
+        if (!empty($this->origin->getParam('titre volume'))
+            || !empty($this->origin->getParam('collection'))
+        ) {
             return;
         }
 

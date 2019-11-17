@@ -98,6 +98,11 @@ class OuvrageCompleteTest extends TestCase
                 '{{Ouvrage|titre = Loiret Joli|sous-titre=Fubar}}',
                 '{{Ouvrage|langue=|titre=Loiret Joli|titre volume=Bla|éditeur=|année=|pages totales=|isbn=}}',
             ],
+            [
+                '{{Ouvrage|titre = Loiret Joli|collection=Bla}}',
+                '{{Ouvrage|titre = Loiret Joli|sous-titre=Fubar}}',
+                '{{Ouvrage|langue=|titre=Loiret Joli|éditeur=|collection=Bla|année=|pages totales=|isbn=}}',
+            ],
         ];
     }
 }
