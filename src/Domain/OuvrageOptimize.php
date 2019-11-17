@@ -772,13 +772,22 @@ class OuvrageOptimize
 
         // abréviations communes
         $editeurStr = WikiTextUtil::unWikify($editeur);
-        $editeurStr = trim(
-            str_ireplace(
-                ['éd. de ', 'éd.', 'ed.', 'Éd. de ', 'Éd.', 'édit.', 'Édit.', '(éd.)', '(ed.)', 'Ltd.'],
-                '',
-                $editeurStr
-            )
-        );
+        // ed. du Machin -> Le Machin
+        // TODO à tester/vérifier
+//        $editeurStr = trim(
+//            str_ireplace(
+//                ['éd. du ', 'Éd. du '],
+//                'Le ',
+//                $editeurStr
+//            )
+//        );
+//        $editeurStr = trim(
+//            str_ireplace(
+//                ['éd. de ', 'éd. du ', 'éd.', 'ed.', 'Éd. de ', 'Éd.', 'édit.', 'Édit.', '(éd.)', '(ed.)', 'Ltd.'],
+//                '',
+//                $editeurStr
+//            )
+//        );
 
         // "Éditions de la Louve" => "La Louve"
         if (preg_match('#([EeÉé]ditions? de )(la|le|l\')#iu', $editeurStr, $matches) > 0) {

@@ -37,10 +37,10 @@ class OuvrageOptimizeTest extends TestCase
     {
         return [
             // Editeur
-            [
-                ['éditeur' => 'Éd. de La Ville'],
-                '{{Ouvrage|langue=|titre=|éditeur=La Ville|année=|pages totales=|isbn=}}',
-            ],
+//            [
+//                ['éditeur' => 'Éd. de La Ville'],
+//                '{{Ouvrage|langue=|titre=|éditeur=La Ville|année=|pages totales=|isbn=}}',
+//            ],
             [
                 ['éditeur' => '[[Fu]]'],
                 '{{Ouvrage|langue=|titre=|éditeur=[[Fu]]|année=|pages totales=|isbn=}}',
