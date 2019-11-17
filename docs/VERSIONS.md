@@ -1,9 +1,11 @@
 ## Versions des règles de corrections/complètement ##
 
+0.30 : conflit complétion entre sous-titre et 'titre volume'
+0.28 : bug éditeur avec 2 wikiliens
 0.27 : bug 'lien titre' n'existe pas (@Evynrhud)
 0.26 : bug de la conservation style indenté (@HG)
 0.25 : import données BnF
-0.24 : filtre sous-titre=Roman (pertinent?)
+0.24 : filtre sous-titre=Roman
 0.23 : améliore commentaire d'édition (@Ypirétis)
 0.21 : signalements en page discussion
 0.19 : bug wikification 'lieu'
