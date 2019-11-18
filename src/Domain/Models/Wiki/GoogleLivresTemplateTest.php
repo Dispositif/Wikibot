@@ -39,7 +39,7 @@ class GoogleLivresTemplateTest extends TestCase
         return [
             [
                 'https://books.google.fr/books?id=pbspjvZst5UC',
-                '{{Google Livres|pbspjvZst5UC}}'
+                '{{Google Livres|pbspjvZst5UC}}',
             ],
             [
                 // partial book and cover
@@ -72,5 +72,17 @@ class GoogleLivresTemplateTest extends TestCase
                 '{{Google Livres|pbspjvZst5UC|page=395|surligne=D%C3%A9cret-Loi+10+septembre+1926}}',
             ],
         ];
+    }
+
+    public function testCreateFromUrlWithTitle()
+    {
+        $url = 'https://books.google.fr/books?id=pbspjvZst5UC';
+        $google = GoogleLivresTemplate::createFromURL($url);
+        $google->setParam('titre', 'Hello');
+
+        $this::assertEquals(
+            '{{Google Livres|pbspjvZst5UC|Hello}}',
+            $google->serialize()
+        );
     }
 }
