@@ -11,6 +11,8 @@ namespace App\Application;
 
 use App\Domain\Utils\TextUtil;
 use App\Infrastructure\ServiceFactory;
+use Exception;
+use Mediawiki\Api\UsageException;
 use Mediawiki\DataModel\EditInfo;
 
 /**
@@ -26,24 +28,25 @@ class ZiziBot extends Bot
      * Add a freaky response in the bottom of the talk page.
      *
      * @return bool
-     * @throws \Mediawiki\Api\UsageException
+     * @throws UsageException
+     * @throws Exception
      */
     public function botTalk(): bool
     {
         // ugly dependency
         $wiki = ServiceFactory::wikiApi();
-        $page = new WikiPageAction($wiki, getenv('BOT_USER_PAGE'));
+        $page = new WikiPageAction($wiki, 'Discussion utilisateur:'.getenv('BOT_NAME'));
         $last = $page->page->getRevisions()->getLatest();
 
         // No response if the last edition from bot or bot owner
-        if (in_array($last->getUser(), [getenv('BOT_NAME'), getenv('BOT_OWNER')])) {
+        if (!$last->getUser() || in_array($last->getUser(), [getenv('BOT_NAME'), getenv('BOT_OWNER')])) {
             // compare with timestamp
             return false;
         }
 
         $addText = $this->generateTalkText($last->getUser());
 
-        echo "Prepare to talk...\n";
+        echo "Prepare to talk. Sleep 60...\n";
         echo sprintf("-> %s \n", $addText);
         sleep(60);
 
@@ -55,7 +58,7 @@ class ZiziBot extends Bot
 
     private function generateTalkText(?string $toEditor = null, ?string $identation = ':')
     {
-        $to = ($toEditor) ? sprintf('@%s : ', $toEditor) : ''; // {{notif}}
+        $to = ($toEditor) ? sprintf('@[[User:%s|%s]] : ', $toEditor, $toEditor) : ''; // {{notif}}
         $sentence = TextUtil::mb_ucfirst($this->getRandomSentence());
         $addText = sprintf('%s%s%s --~~~~', $identation, $to, $sentence);
 
