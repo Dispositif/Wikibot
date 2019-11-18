@@ -151,9 +151,15 @@ class OuvrageOptimizeTest extends TestCase
                 ['title' => 'Toponymie'],
                 '{{Ouvrage|langue=|titre=Toponymie|éditeur=|année=|pages totales=|isbn=}}',
             ],
+//            [
+//                // Transform desactived
+//                ['title' => 'Toponymie. France'],
+//                '{{Ouvrage|langue=|titre=Toponymie|sous-titre=France|éditeur=|année=|pages totales=|isbn=}}',
+//            ],
             [
-                ['title' => 'Toponymie. France'],
-                '{{Ouvrage|langue=|titre=Toponymie|sous-titre=France|éditeur=|année=|pages totales=|isbn=}}',
+                // Extraits des mémoires de M. le duc de Rovigo
+                ['title' => 'Extraits des mémoires de M. le duc de Rovigo'],
+                '{{Ouvrage|langue=|titre=Extraits des mémoires de M. le duc de Rovigo|éditeur=|année=|pages totales=|isbn=}}',
             ],
             [
                 // inchangé (numbers)

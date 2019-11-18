@@ -338,8 +338,8 @@ class OuvrageOptimize
             return;
         }
 
-        // titre>3 and sous-titre>5
-        if (preg_match('#^(?<titre>[^:]{3,}):(?<st>.{5,})$#', $this->getParam('titre'), $matches) > 0) {
+        // titre>5 and sous-titre>5 and sous-titre<40
+        if (preg_match('#^(?<titre>[^:]{5,}):(?<st>.{5,40})$#', $this->getParam('titre'), $matches) > 0) {
             $this->setParam('titre', trim($matches['titre']));
             $this->setParam('sous-titre', trim($matches['st']));
             $this->log('>sous-titre');
@@ -541,14 +541,17 @@ class OuvrageOptimize
         $origin = TextUtil::replaceNonBreakingSpaces($origin);
 
         $strTitle = $origin;
+
         // CORRECTING TYPO FANTASY OF SUBTITLE
 
         // Replace first '.' by ':' if no ': ' and no numbers around (as PHP 7.3)
         // exlude pattern "blabla... blabla"
-        if (!mb_strpos(':', $strTitle) && preg_match('#[^0-9.]{5,}\. ?[^0-9.]{5,}#', $strTitle) > 0) {
-            $strTitle = preg_replace('#([^0-9]{5,})\. ?([^0-9)]{5,})#', '$1 : $2', $strTitle);
-            // opti : replace all '.' ?
-        }
+        // DESACTIVED : bug with "Extraits des mémoires de M. le duc de Rovigo"
+        // TODO: statistics
+//        if (!mb_strpos(':', $strTitle) && preg_match('#[^0-9.]{5,}\. ?[^0-9.]{5,}#', $strTitle) > 0) {
+//            $strTitle = preg_replace('#([^0-9]{5,})\. ?([^0-9)]{5,})#', '$1 : $2', $strTitle);
+//            // opti : replace all '.' ?
+//        }
 
         // Replace ' - ' or ' / ' (spaced!) by ' : ' if no ':' and no numbers after (as PHP 7.3 or 1939-1945)
         if (!mb_strpos(':', $strTitle) && preg_match('#.{6,} ?[-/] ?[^0-9)]{6,}#', $strTitle) > 0) {
