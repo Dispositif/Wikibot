@@ -32,6 +32,7 @@ $process->run();
  */
 class ArticleEditProcess
 {
+    const CITATION_LIMIT = 100;
     const DELAY_BOTFLAG_SECONDS  = 60;
     const DELAY_NOBOT_IN_SECONDS = 300;
     const ERROR_MSG_TEMPLATE     = __DIR__.'/../templates/message_errors.wiki';
@@ -94,8 +95,14 @@ class ArticleEditProcess
             return false;
         }
 
+        // Skip AdQ
+        if (preg_match('#{{ ?En-tête label#i', $this->wikiText) > 0) {
+            echo "SKIP : AdQ ou BA.\n";
+            return false;
+        }
+
         // GET all article lines from db
-        $json = $this->db->getPageRows($title);
+        $json = $this->db->getPageRows($title, self::CITATION_LIMIT);
         if (empty($json)) {
             echo "SKIP no rows to process.\n";
 
@@ -114,7 +121,7 @@ class ArticleEditProcess
         $this->nbRows = count($data);
         foreach ($data as $dat) {
             // hack pour éviter articles dont CompleteProcess incomplet
-            if (empty($dat['optidate'])) {
+            if (empty($dat['opti']) || empty($dat['optidate'])) {
                 echo "SKIP : Complètement incomplet de l'article \n";
 
                 return false;
@@ -135,12 +142,12 @@ class ArticleEditProcess
 
         // MINI SUMMARY
         $miniSummary = substr($this->pageSummary, 0, 80);
-        if(strlen($this->pageSummary) > 80 ) {
+        if (strlen($this->pageSummary) > 80) {
             $miniSummary = $miniSummary.'...';
         }
 
         // NEW SUMMARY
-        if(!empty($this->importantSummary)) {
+        if (!empty($this->importantSummary)) {
             $miniSummary = sprintf(
                 '%s [%s] : %s...',
                 $this->bot->getCommentary(),
@@ -240,11 +247,22 @@ class ArticleEditProcess
      * Vérifie alerte d'erreurs humaines.
      *
      * @param array $data
+     *
+     * @throws \Exception
      */
     private function checkErrorWarning(array $data): void
     {
+        if (!isset($data['opti'])) {
+            throw new \LogicException('Opti NULL');
+        }
+
         // paramètre inconnu
-        if (preg_match("#\|[^|]+<!-- ?(PARAMETRE [^>]+ N'EXISTE PAS) ?-->#", $data['opti'], $matches) > 0) {
+        if (preg_match(
+                "#\|[^|]+<!-- ?(PARAMETRE [^>]+ N'EXISTE PAS) ?-->#",
+                $data['opti'],
+                $matches
+            ) > 0
+        ) {
             $this->errorWarning[$data['page']][] = $matches[0];
             $this->botFlag = false;
             $this->addSummaryTag('paramètre non corrigé');
@@ -263,26 +281,35 @@ class ArticleEditProcess
             $this->addSummaryTag('distinction des auteurs');
         }
         // prédiction paramètre correct
-        if (preg_match('#[^,]+=>[^,]+#', $data['modifs'],$matches) > 0) {
+        if (preg_match('#[^,]+=>[^,]+#', $data['modifs'], $matches) > 0) {
             $this->botFlag = false;
-            $this->addSummaryTag(sprintf('%s ?',$matches[0]));
+            $this->addSummaryTag(sprintf('%s', $matches[0]));
         }
         if (preg_match('#\+\+sous-titre#', $data['modifs']) > 0) {
             $this->botFlag = false;
             $this->addSummaryTag('+sous-titre');
         }
+        if (preg_match('#\+lieu#', $data['modifs']) > 0) {
+            $this->addSummaryTag('+lieu');
+        }
         if (preg_match('#\+langue#', $data['modifs']) > 0) {
             $this->addSummaryTag('+langue');
+        }
+
+        // mention BnF si ajout donnée + ajout identifiant bnf=
+        if (!empty($this->importantSummary) && preg_match('#\+bnf#i', $data['modifs'], $matches) > 0) {
+            $this->addSummaryTag('[[BnF]]');
         }
     }
 
     /**
      * For substantive or ambiguous modifications done.
+     *
      * @param string $tag
      */
     private function addSummaryTag(string $tag)
     {
-        if(!in_array($tag, $this->importantSummary)) {
+        if (!in_array($tag, $this->importantSummary)) {
             $this->importantSummary[] = $tag;
         }
     }
@@ -308,14 +335,13 @@ class ArticleEditProcess
         $errorMessage = str_replace('##ARTICLE##', $rows[0]['page'], $errorMessage);
 
         // Edit wiki talk page
-        try{
+        try {
             $talkPage = new WikiPageAction($this->wiki, 'Discussion:'.$rows[0]['page']);
             $editInfo = new EditInfo('Signalement erreur {ouvrage}', false, false);
             $talkPage->addToBottomOfThePage($errorMessage, $editInfo);
-        }catch (\Throwable $e){
+        } catch (\Throwable $e) {
             unset($e);
         }
-
     }
 
     private function initialize(): void

@@ -50,7 +50,7 @@ class DbAdapter implements QueueInterface
     }
 
     /**
-     * Get new raw text (template) to complete.
+     * Get one new raw text (template) to complete.
      *
      * @return string|null
      */
@@ -60,7 +60,9 @@ class DbAdapter implements QueueInterface
 
         try {
             $raw = $this->db->fetchColumn(
-                'SELECT raw FROM TempRawOpti WHERE (opti IS NULL OR optidate IS NULL OR optidate < :validDate ) AND edited IS NULL ORDER BY priority DESC,optidate,id',
+                'SELECT raw FROM TempRawOpti 
+                WHERE (opti IS NULL OR opti = "" OR optidate IS NULL OR optidate < :validDate ) AND edited IS NULL 
+                ORDER BY priority DESC,optidate,id',
                 [
                     'validDate' => $this->newRawValidDate,
                 ]
@@ -90,7 +92,7 @@ class DbAdapter implements QueueInterface
     }
 
     /**
-     * Get new raw text (template) for wiki edition.
+     * Get one new raw text (template) for edit process.
      *
      * @return string|null
      */
@@ -100,7 +102,10 @@ class DbAdapter implements QueueInterface
 
         try {
             $data = $this->db->fetchRow(
-                'SELECT * FROM TempRawOpti WHERE (optidate > :validDate AND edited IS NULL AND version IS NOT NULL AND notcosmetic=1) ORDER BY priority DESC,RAND() LIMIT 1',
+                'SELECT * FROM TempRawOpti 
+                WHERE (opti IS NOT NULL AND opti <> "" AND optidate > :validDate AND edited IS NULL AND version IS NOT NULL AND notcosmetic=1) 
+                ORDER BY priority DESC,RAND() 
+                LIMIT 1',
                 [
                     'validDate' => $this->newRawValidDate,
                 ]
@@ -131,23 +136,26 @@ class DbAdapter implements QueueInterface
     }
 
     /**
-     * Get all lines from an article.
+     * Get all lines from article for edit process.
      *
      * @param string   $pageTitle
      * @param int|null $limit
      *
      * @return string|null
      */
-    public function getPageRows(string $pageTitle, ?int $limit = 20): ?string
+    public function getPageRows(string $pageTitle, ?int $limit = 40): ?string
     {
         $json = null;
 
         try {
             $data = $this->db->fetchRowMany(
             // optidate > :validDate (pour vérification que Article entièrement analysé
-                'SELECT * FROM TempRawOpti WHERE edited IS NULL AND notcosmetic=1 AND page = :page LIMIT :limit',
+            // retirer "AND notcosmetic=1" pour homogenisation citations
+                'SELECT * FROM TempRawOpti 
+                        WHERE OPTI IS NOT NULL AND OPTI <> "" AND edited IS NULL AND notcosmetic=1 AND page = :page AND optidate > :validDate
+                        LIMIT :limit',
                 [
-                    //                    'validDate' => $this->newRawValidDate,
+                    'validDate' => $this->newRawValidDate,
                     'page' => $pageTitle,
                     'limit' => $limit,
                 ]
