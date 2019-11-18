@@ -122,7 +122,18 @@ class CompleteProcess
     private function onlineIsbnSearch(string $isbn)
     {
         online:
+        echo "sleep 40...\n";
         sleep(40);
+
+        try {
+            dump('BIBLIO NAT FRANCE...');
+            $bnfOuvrage = OuvrageFactory::BnfFromIsbn($isbn);
+            $this->completeOuvrage($bnfOuvrage);
+        } catch (Throwable $e) {
+            echo "*** ERREUR BnF ".$e->getMessage()."\n";
+            sleep(60*10);
+            goto online;
+        }
 
         try {
             dump('GOOGLE...');
@@ -130,7 +141,7 @@ class CompleteProcess
             $this->completeOuvrage($googleOuvrage);
         } catch (Throwable $e) {
             echo "*** ERREUR GOOGLE ".$e->getMessage()."\n";
-            sleep(60*10);
+            sleep(60*60);
             goto online;
         }
 
@@ -148,6 +159,7 @@ class CompleteProcess
 
     private function onlineQuerySearch(string $query)
     {
+        echo "sleep 40...";
         sleep(40);
 
 
