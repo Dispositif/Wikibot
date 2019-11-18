@@ -65,6 +65,11 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
         }
         $dat['id'] = $gooDat['id'];
 
+        // Affichage couverture plutôt que présentation livre
+        if(isset($gooDat['printsec']) && 'frontcover' ===$gooDat['printsec'] ) {
+            $dat['couv'] = '1';
+        }
+
         // pages
         if (!empty($gooDat['pg'])) {
             $dat['page autre'] = $gooDat['pg'];
@@ -77,7 +82,7 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
             //  pg=PRx => "page=x|romain=1"
             if (preg_match('/^PR([0-9]+)$/', $gooDat['pg'], $toc) > 0) {
                 $dat['page'] = $toc[1];
-                $dat['romain'] = 1;
+                $dat['romain'] = '1';
                 unset($dat['page autre']);
             }
         }
