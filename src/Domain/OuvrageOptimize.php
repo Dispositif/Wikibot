@@ -297,7 +297,7 @@ class OuvrageOptimize
         $this->deWikifyExternalLink('titre');
         $this->upperCaseFirstLetter('titre');
         $this->typoDeuxPoints('titre');
-        // todo :extract sous-titre
+
         $this->extractSubTitle();
 
         $this->upperCaseFirstLetter('sous-titre');
@@ -325,6 +325,11 @@ class OuvrageOptimize
 
     private function extractSubTitle(): void
     {
+        // FIXED bug [[fu:bar]]
+        if (WikiTextUtil::isWikify($this->getParam('titre'))) {
+            return;
+        }
+
         if (!$this->detectColon('titre')) {
             return;
         }
@@ -528,6 +533,11 @@ class OuvrageOptimize
         if (empty($origin)) {
             return;
         }
+        // FIXED bug [[fu:bar]]
+        if (WikiTextUtil::isWikify($origin)) {
+            return;
+        }
+
         $origin = TextUtil::replaceNonBreakingSpaces($origin);
 
         $strTitle = $origin;
@@ -774,20 +784,20 @@ class OuvrageOptimize
         $editeurStr = WikiTextUtil::unWikify($editeur);
         // ed. du Machin -> Le Machin
         // TODO à tester/vérifier
-//        $editeurStr = trim(
-//            str_ireplace(
-//                ['éd. du ', 'Éd. du '],
-//                'Le ',
-//                $editeurStr
-//            )
-//        );
-//        $editeurStr = trim(
-//            str_ireplace(
-//                ['éd. de ', 'éd. du ', 'éd.', 'ed.', 'Éd. de ', 'Éd.', 'édit.', 'Édit.', '(éd.)', '(ed.)', 'Ltd.'],
-//                '',
-//                $editeurStr
-//            )
-//        );
+        //        $editeurStr = trim(
+        //            str_ireplace(
+        //                ['éd. du ', 'Éd. du '],
+        //                'Le ',
+        //                $editeurStr
+        //            )
+        //        );
+        //        $editeurStr = trim(
+        //            str_ireplace(
+        //                ['éd. de ', 'éd. du ', 'éd.', 'ed.', 'Éd. de ', 'Éd.', 'édit.', 'Édit.', '(éd.)', '(ed.)', 'Ltd.'],
+        //                '',
+        //                $editeurStr
+        //            )
+        //        );
 
         // "Éditions de la Louve" => "La Louve"
         if (preg_match('#([EeÉé]ditions? de )(la|le|l\')#iu', $editeurStr, $matches) > 0) {

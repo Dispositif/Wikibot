@@ -37,10 +37,10 @@ class OuvrageOptimizeTest extends TestCase
     {
         return [
             // Editeur
-//            [
-//                ['éditeur' => 'Éd. de La Ville'],
-//                '{{Ouvrage|langue=|titre=|éditeur=La Ville|année=|pages totales=|isbn=}}',
-//            ],
+            //            [
+            //                ['éditeur' => 'Éd. de La Ville'],
+            //                '{{Ouvrage|langue=|titre=|éditeur=La Ville|année=|pages totales=|isbn=}}',
+            //            ],
             [
                 ['éditeur' => '[[Fu]]'],
                 '{{Ouvrage|langue=|titre=|éditeur=[[Fu]]|année=|pages totales=|isbn=}}',
@@ -50,7 +50,7 @@ class OuvrageOptimizeTest extends TestCase
                 '{{Ouvrage|langue=|titre=|éditeur=[[Fu|Bar]] bla|année=|pages totales=|isbn=}}',
             ],
             [
-                ['éditeur' => 'bar','lien éditeur'=>'fu'],
+                ['éditeur' => 'bar', 'lien éditeur' => 'fu'],
                 '{{Ouvrage|langue=|titre=|éditeur=[[Fu|Bar]]|année=|pages totales=|isbn=}}',
             ],
             [
@@ -123,37 +123,67 @@ class OuvrageOptimizeTest extends TestCase
     {
         return [
             [
+                // bug 17 nov [[titre:sous-titre]]
+                ['title' => '[[Fu:bar]]'],
+                '{{Ouvrage|langue=|titre=[[Fu:bar]]|éditeur=|année=|pages totales=|isbn=}}',
+            ],
+            [
+                // [[titre]]
+                ['title' => '[[Fubar]]'],
+                '{{Ouvrage|langue=|titre=[[Fubar]]|éditeur=|année=|pages totales=|isbn=}}',
+            ],
+            [
+                // {{lang}} + [[ ]]
+                ['title' => '{{lang|en|[[Fubar]]}}'],
+                '{{Ouvrage|langue=en|titre=[[Fubar]]|éditeur=|année=|pages totales=|isbn=}}',
+            ],
+            [
+                // {{lang}}
+                ['title' => '{{lang|en|fubar}}'],
+                '{{Ouvrage|langue=en|titre=Fubar|éditeur=|année=|pages totales=|isbn=}}',
+            ],
+            [
+                // lien externe -> déplacé
+                ['title' => '[http://google.fr/bla Fubar]'],
+                '{{Ouvrage|langue=|titre=Fubar|éditeur=|année=|pages totales=|isbn=|lire en ligne=http://google.fr/bla}}',
+            ],
+            [
                 ['title' => 'Toponymie'],
                 '{{Ouvrage|langue=|titre=Toponymie|éditeur=|année=|pages totales=|isbn=}}',
             ],
             [
                 ['title' => 'Toponymie. France'],
                 '{{Ouvrage|langue=|titre=Toponymie|sous-titre=France|éditeur=|année=|pages totales=|isbn=}}',
-            ], // explode
+            ],
             [
+                // inchangé (numbers)
                 ['title' => 'Vive PHP 7.3 en short'],
                 '{{Ouvrage|langue=|titre=Vive PHP 7.3 en short|éditeur=|année=|pages totales=|isbn=}}',
-            ], //inchangé (numbers)
+            ],
             [
                 ['title' => 'Ils ont osé... Les maires de Saint-Camille'],
                 '{{Ouvrage|langue=|titre=Ils ont osé... Les maires de Saint-Camille|éditeur=|année=|pages totales=|isbn=}}',
             ],
             [
+                // explode "-" spaced)
                 ['title' => 'Toponymie - france'],
                 '{{Ouvrage|langue=|titre=Toponymie|sous-titre=France|éditeur=|année=|pages totales=|isbn=}}',
-            ], // explode (- spaced)
+            ],
             [
+                // explode "/" spaced)
                 ['title' => 'Toponymie / France'],
                 '{{Ouvrage|langue=|titre=Toponymie|sous-titre=France|éditeur=|année=|pages totales=|isbn=}}',
-            ], // explode (/ spaced)
+            ],
             [
+                // inchangé
                 ['title' => 'Toponymie Jean-Pierre France'],
                 '{{Ouvrage|langue=|titre=Toponymie Jean-Pierre France|éditeur=|année=|pages totales=|isbn=}}',
-            ], // inchangé
+            ],
             [
+                // inchangé
                 ['title' => 'Toponymie 1914-1918 super'],
                 '{{Ouvrage|langue=|titre=Toponymie 1914-1918 super|éditeur=|année=|pages totales=|isbn=}}',
-            ], // inchangé
+            ],
         ];
     }
 

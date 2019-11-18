@@ -1,5 +1,7 @@
 ## Versions des règles de corrections/complètement ##
 
+0.32 : bug <nowiki>[[titre:sous-titre]]</nowiki>
+0.31 : améliore données BnF
 0.30 : conflit complétion entre sous-titre et 'titre volume'
 0.28 : bug éditeur avec 2 wikiliens
 0.27 : bug 'lien titre' n'existe pas (@Evynrhud)
