@@ -13,6 +13,22 @@ use PHPUnit\Framework\TestCase;
 
 class WikiTextUtilTest extends TestCase
 {
+    public function testUpperfirst()
+    {
+        $this::assertSame(
+            'Économie',
+            WikiTextUtil::mb_ucfirst('économie')
+        );
+    }
+
+    public function testLowerfirst()
+    {
+        $this::assertSame(
+            'économie',
+            WikiTextUtil::mb_lowerfirst('Économie')
+        );
+    }
+
     public function testGetWikilinkPages()
     {
         $text = 'bla [[fu|bar]] et [[back]] mais pas [[wikt:toto|bou]]';

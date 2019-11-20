@@ -55,6 +55,23 @@ abstract class TextUtil
     }
 
     /**
+     * UTF8 first letter in lower case.
+     * "Économie" => "économie".
+     *
+     * @param string      $str
+     * @param string|null $e
+     *
+     * @return string
+     */
+    public static function mb_lowerfirst(string $str, ?string $e = 'UTF-8'): string
+    {
+        $first = mb_strtolower(mb_substr($str, 0, 1, $e), $e);
+        $rest = mb_substr($str, 1, mb_strlen($str, $e), $e);
+
+        return $first.$rest;
+    }
+
+    /**
      * @param string $text
      *
      * @return mixed
