@@ -25,7 +25,7 @@ class DbAdapter implements QueueInterface
 {
     private $db;
 
-    private $newRawValidDate = '2019-11-10 12:00:00'; // valid domain code date
+    private $newRawValidDate = '2019-11-20 14:00:00'; // v.34 sous-titre sans maj
 
     public function __construct()
     {
@@ -61,7 +61,7 @@ class DbAdapter implements QueueInterface
         try {
             $raw = $this->db->fetchColumn(
                 'SELECT raw FROM TempRawOpti 
-                WHERE (opti IS NULL OR opti = "" OR optidate IS NULL OR optidate < :validDate ) AND edited IS NULL 
+                WHERE (opti = "" OR optidate IS NULL OR optidate < :validDate ) AND (edited IS NULL)
                 ORDER BY priority DESC,optidate,id',
                 [
                     'validDate' => $this->newRawValidDate,
@@ -118,13 +118,20 @@ class DbAdapter implements QueueInterface
         return $json;
     }
 
+    /**
+     * Update DB after wiki edition.
+     *
+     * @param array $data
+     *
+     * @return bool
+     */
     public function sendEditedData(array $data): bool
     {
         try {
             $result = $this->db->update(
                 'TempRawOpti',
                 ['id' => $data['id']], // condition
-                ['edited' => 1]
+                ['edited' => date("Y-m-d H:i:s")]
             );
         } catch (MysqlException $e) {
             dump($e);
