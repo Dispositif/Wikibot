@@ -73,6 +73,7 @@ class OuvrageOptimize
 
     /**
      * Todo: injection dep.
+     * Todo : "[s. l.]" sans lieu "s.l.n.d." sans lieu ni date
      *
      * @throws Exception
      */
@@ -300,7 +301,7 @@ class OuvrageOptimize
 
         $this->extractSubTitle();
 
-        $this->upperCaseFirstLetter('sous-titre');
+        // 20-11-2019 : Retiré majuscule à sous-titre
 
         if ($this->getParam('titre') !== $oldtitre) {
             $this->log('±titre');
@@ -784,29 +785,9 @@ class OuvrageOptimize
         }
 
         // abréviations communes
+        // ['éd. de ', 'éd. du ', 'éd.', 'ed.', 'Éd. de ', 'Éd.', 'édit.', 'Édit.', '(éd.)', '(ed.)', 'Ltd.']
+
         $editeurStr = WikiTextUtil::unWikify($editeur);
-        // ed. du Machin -> Le Machin
-        // TODO à tester/vérifier
-        //        $editeurStr = trim(
-        //            str_ireplace(
-        //                ['éd. du ', 'Éd. du '],
-        //                'Le ',
-        //                $editeurStr
-        //            )
-        //        );
-        //        $editeurStr = trim(
-        //            str_ireplace(
-        //                ['éd. de ', 'éd. du ', 'éd.', 'ed.', 'Éd. de ', 'Éd.', 'édit.', 'Édit.', '(éd.)', '(ed.)', 'Ltd.'],
-        //                '',
-        //                $editeurStr
-        //            )
-        //        );
-
-        // "Éditions de la Louve" => "La Louve"
-        if (preg_match('#([EeÉé]ditions? de )(la|le|l\')#iu', $editeurStr, $matches) > 0) {
-            $editeurStr = str_replace($matches[1], '', $editeurStr);
-        }
-
         $editeurStr = TextUtil::mb_ucfirst($editeurStr);
 
         // Déconseillé : 'lien éditeur' (obsolete 2019)

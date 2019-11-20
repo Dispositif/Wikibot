@@ -173,7 +173,7 @@ class OuvrageOptimizeTest extends TestCase
             [
                 // explode "-" spaced)
                 ['title' => 'Toponymie - france'],
-                '{{Ouvrage|langue=|titre=Toponymie|sous-titre=France|éditeur=|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|langue=|titre=Toponymie|sous-titre=france|éditeur=|année=|pages totales=|isbn=}}',
             ],
             [
                 // explode "/" spaced)
