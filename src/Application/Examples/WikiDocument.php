@@ -31,10 +31,10 @@ try{
 
 // Put content on wiki
 $title = 'Utilisateur:ZiziBot/features';
-$summary = 'Update from Github';
+$summary = 'bot : Update from Github';
 
 $wiki = ServiceFactory::wikiApi();
-$page = new WikiPageAction($wiki, $title);
+$page = new WikiPageAction($wiki, $title, true, true);
 
 $success = $page->editPage($newText, new EditInfo($summary));
 dump($success);

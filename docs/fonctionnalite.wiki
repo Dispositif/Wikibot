@@ -67,7 +67,7 @@ Lien vers Google Books :
 * {{fait}} simplification d'URL : {{fait}}suppression des paramètres non nécessaires (infos de tracking) : conservation id, pg (page), dq (requête/surlignage) qui permettent d'obtenir la même interface.[cosmétique??]
 * {{attendre}} Suppression lien invalide (id manquant)
 * {{fait}} dans {{m|Ouvrage}} : correction 'lire en ligne'/'présentation en ligne' selon accessibilité totale ou partielle du document. [https://fr.wikipedia.org/w/index.php?title=Sahelanthropus_tchadensis&diff=163859267&oldid=163858241]
-* {{fait}} conversion en {{m|Google Livres}} [https://fr.wikipedia.org/w/index.php?title=Montigny-l%C3%A8s-Metz&diff=prev&oldid=163546081]
+* {{fait}} conversion en {{m|Google Livres}} [https://fr.wikipedia.org/w/index.php?title=Alexandrinisme&diff=prev&oldid=164635139]
 * {{fait}} ajout lien Google si livre d'accès complet.
 * {{attendre}} ajout 'présentation en ligne' si livre d'accès partiel.
 
