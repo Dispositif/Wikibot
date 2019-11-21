@@ -115,6 +115,11 @@ class Bot
                 echo "Replace with $title => '$pageTime'";
 
                 if (self::EXIT_ON_CHECK_WATCHPAGE) {
+
+                    if( class_exists(ZiziBot::class)) {
+                        (new ZiziBot())->botTalk();
+                    }
+
                     echo "\nSTOP on checkWatchPages.\n";
                     exit();
                 }
