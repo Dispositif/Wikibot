@@ -17,7 +17,6 @@ use App\Domain\OuvrageComplete;
 use App\Domain\OuvrageFactory;
 use App\Domain\OuvrageOptimize;
 use App\Domain\Utils\TemplateParser;
-use App\Infrastructure\DbAdapter;
 use App\Infrastructure\GoogleBooksAdapter;
 use Throwable;
 
@@ -46,23 +45,27 @@ class CompleteProcess
      * @var OuvrageTemplate
      */
     private $ouvrage;
+    private $continue = true;
 
     public function __construct(QueueInterface $queueAdapter)
     {
         $this->queueAdapter = $queueAdapter;
     }
 
-    public function run()
+    public function run(?int $limit = 10000)
     {
         $memory = new Memory();
-        while (true) {
+        while ($limit > 0) {
+            $limit--;
             sleep(1);
             $this->raw = $this->getNewRaw();
 
-            echo sprintf("-------------------------------\n%s [%s]\n\n%s\n",
+            echo sprintf(
+                "-------------------------------\n%s [%s]\n\n%s\n",
                 date("Y-m-d H:i:s"),
                 Bot::getGitVersion() ?? '',
-                $this->raw);
+                $this->raw
+            );
             $memory->echoMemory(true);
 
             // initialise variables
@@ -105,6 +108,8 @@ class CompleteProcess
             unset($parse);
             unset($origin);
         } // END WHILE
+
+        return true;
     }
 
     /**
@@ -135,7 +140,7 @@ class CompleteProcess
             $this->completeOuvrage($bnfOuvrage);
         } catch (Throwable $e) {
             echo "*** ERREUR BnF ".$e->getMessage()."\n";
-            sleep(60*5);
+            sleep(60 * 5);
             goto online;
         }
 
@@ -145,7 +150,7 @@ class CompleteProcess
             $this->completeOuvrage($googleOuvrage);
         } catch (Throwable $e) {
             echo "*** ERREUR GOOGLE ".$e->getMessage()."\n";
-            sleep(60*60);
+            sleep(60 * 60);
             goto online;
         }
 
@@ -169,12 +174,13 @@ class CompleteProcess
 
         try {
             dump('GOOGLE SEARCH...');
-//            $googleOuvrage = OuvrageFactory::GoogleFromIsbn($isbn);
+            //            $googleOuvrage = OuvrageFactory::GoogleFromIsbn($isbn);
             $adapter = new GoogleBooksAdapter();
             $data = $adapter->search('blabla');
-            dump($data);die;
-//            return $import->getOuvrage();
-//            $this->completeOuvrage($googleOuvrage);
+            dump($data);
+            die;
+            //            return $import->getOuvrage();
+            //            $this->completeOuvrage($googleOuvrage);
         } catch (Throwable $e) {
             echo "*** ERREUR GOOGLE ".$e->getMessage()."\n";
         }
@@ -211,7 +217,7 @@ class CompleteProcess
             'notcosmetic' => ($this->notCosmetic) ? 1 : 0,
             'major' => ($this->major) ? 1 : 0,
             'isbn' => $isbn13,
-            'version' => Bot::getGitVersion() ?? null
+            'version' => Bot::getGitVersion() ?? null,
         ];
         dump($finalData);
         // Json ?

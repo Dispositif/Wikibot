@@ -20,6 +20,12 @@
             </exclude>
         </whitelist>
     </filter>
+    <groups>
+        <exclude>
+            <group>integration</group>
+        </exclude>
+    </groups>
+
     <logging>
         <!--&lt;!&ndash;<log type="tap" target="tests/build/report.tap"/>&ndash;&gt;-->
         <!--<log type="junit" target="tests/build/report.junit.xml"/>-->
