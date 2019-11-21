@@ -42,6 +42,7 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
 
     private function filterSubtitle($volume): ?string
     {
+        // "biographie" ?
         if (empty($volume->subtitle) || 'roman' === mb_strtolower($volume->subtitle)) {
             return null;
         }
