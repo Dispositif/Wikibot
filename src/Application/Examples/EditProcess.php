@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Application\Examples;
 
 use App\Application\Bot;
+use App\Application\Memory;
 use App\Application\WikiPageAction;
 use App\Domain\Utils\WikiTextUtil;
 use App\Infrastructure\DbAdapter;
@@ -21,20 +22,20 @@ use Throwable;
 
 include __DIR__.'/../myBootstrap.php';
 
-$process = new ArticleEditProcess();
+$process = new EditProcess();
 $process->run();
 
 /**
  * TODO refac
- * Class ArticleEditProcess
+ * Class EditProcess
  *
  * @package App\Application\Examples
  */
-class ArticleEditProcess
+class EditProcess
 {
     const CITATION_LIMIT = 100;
-    const DELAY_BOTFLAG_SECONDS  = 60;
-    const DELAY_NOBOT_IN_SECONDS = 300;
+    const DELAY_BOTFLAG_SECONDS  = 30;
+    const DELAY_NOBOT_IN_SECONDS = 150;
     const ERROR_MSG_TEMPLATE     = __DIR__.'/../templates/message_errors.wiki';
 
     private $db;
@@ -61,9 +62,11 @@ class ArticleEditProcess
 
     public function run()
     {
+        $memory = new Memory();
         while (true) {
             echo "\n-------------------------------------\n\n";
             echo date("Y-m-d H:i")."\n";
+            $memory->echoMemory(true);
 
             $this->pageProcess();
         }
@@ -337,7 +340,7 @@ class ArticleEditProcess
         // Edit wiki talk page
         try {
             $talkPage = new WikiPageAction($this->wiki, 'Discussion:'.$rows[0]['page']);
-            $editInfo = new EditInfo('Signalement erreur {ouvrage}', false, false);
+            $editInfo = new EditInfo('Signalement erreur {ouvrage}', false, false, 5);
             $talkPage->addToBottomOfThePage($errorMessage, $editInfo);
         } catch (\Throwable $e) {
             unset($e);
