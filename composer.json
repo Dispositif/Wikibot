@@ -18,7 +18,8 @@
     "rollbar/rollbar": "~1.5",
     "biblys/isbn": "^2.1.1",
     "ext-libxml": "*",
-    "hnhdigital-os/laravel-git-info": "^1.0"
+    "hnhdigital-os/laravel-git-info": "^1.0",
+    "ext-intl": "*"
   },
   "autoload": {
     "psr-4": {

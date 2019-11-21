@@ -33,7 +33,7 @@ $process->run();
  */
 class EditProcess
 {
-    const CITATION_LIMIT = 100;
+    const CITATION_LIMIT         = 100;
     const DELAY_BOTFLAG_SECONDS  = 30;
     const DELAY_NOBOT_IN_SECONDS = 150;
     const ERROR_MSG_TEMPLATE     = __DIR__.'/../templates/message_errors.wiki';
@@ -101,6 +101,7 @@ class EditProcess
         // Skip AdQ
         if (preg_match('#{{ ?En-tête label#i', $this->wikiText) > 0) {
             echo "SKIP : AdQ ou BA.\n";
+
             return false;
         }
 
@@ -177,7 +178,7 @@ class EditProcess
         sleep(30);
 
         $editInfo = new EditInfo($miniSummary, $this->minorFlag, $this->botFlag);
-        $success = $page->editPage($this->wikiText, $editInfo);
+        $success = $page->editPage(\Normalizer::normalize($this->wikiText), $editInfo);
 
         echo ($success) ? "Ok\n" : "Erreur edit\n";
 
@@ -210,7 +211,7 @@ class EditProcess
         $origin = $data['raw'];
         $completed = $data['opti'];
 
-        dump($origin, $completed, $data['modifs']);
+        dump($origin, $completed, $data['modifs'], $data['version']);
 
         if (WikiTextUtil::isCommented($origin)) {
             echo "SKIP: template avec commentaire HTML\n";
