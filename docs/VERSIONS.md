@@ -1,6 +1,6 @@
 ## Versions des règles de corrections/complètement ##
-
-* 0.34 : sous-titre sans majuscule
+* 0.36 : paramètres inutiles : langue=fr, langue, page totale
+* 0.34 : sous-titre sans majuscule (@Ypirétis)
 * 0.33 : bug Google Livres (frontcover) (@Evynrhud) + romain
 * 0.32 : bug <nowiki>[[titre:sous-titre]]</nowiki> (@Okhjon) + "titre. sous-titre"
 * 0.31 : améliore données BnF

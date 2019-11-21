@@ -22,12 +22,12 @@ class OuvrageTemplate extends AbstractWikiTemplate
 
     const REQUIRED_PARAMETERS
         = [
-            'langue' => '',
+//            'langue' => '', // inutile avec 'fr'
 //            'auteur1' => '', // duplicate with prénom1/nom1
             'titre' => '', // obligatoire
             'éditeur' => '',
             'année' => '',
-            'pages totales' => '',
+//            'pages totales' => '',
 //            'passage' => '', // pas pertinent sur biblio et liste oeuvres
             'isbn' => '',
         ];
