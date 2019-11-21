@@ -97,7 +97,7 @@ class OuvrageOptimize
         // french translation : "London"->"Londres"
         $manager = new FileManager();
         $row = $manager->findCSVline(__DIR__.'/resources/traduction_ville.csv', $location);
-        if (!empty($row) || !empty($row[1])) {
+        if (!empty($row) && !empty($row[1])) {
             $this->setParam('lieu', $row[1]);
             $this->log('lieu francisé');
             $this->notCosmetic = true;
@@ -549,10 +549,10 @@ class OuvrageOptimize
         // exlude pattern "blabla... blabla"
         // DESACTIVED : bug with "Extraits des mémoires de M. le duc de Rovigo"
         // TODO: statistics
-//        if (!mb_strpos(':', $strTitle) && preg_match('#[^0-9.]{5,}\. ?[^0-9.]{5,}#', $strTitle) > 0) {
-//            $strTitle = preg_replace('#([^0-9]{5,})\. ?([^0-9)]{5,})#', '$1 : $2', $strTitle);
-//            // opti : replace all '.' ?
-//        }
+        //        if (!mb_strpos(':', $strTitle) && preg_match('#[^0-9.]{5,}\. ?[^0-9.]{5,}#', $strTitle) > 0) {
+        //            $strTitle = preg_replace('#([^0-9]{5,})\. ?([^0-9)]{5,})#', '$1 : $2', $strTitle);
+        //            // opti : replace all '.' ?
+        //        }
 
         // Replace ' - ' or ' / ' (spaced!) by ' : ' if no ':' and no numbers after (as PHP 7.3 or 1939-1945)
         if (!mb_strpos(':', $strTitle) && preg_match('#.{6,} ?[-/] ?[^0-9)]{6,}#', $strTitle) > 0) {
