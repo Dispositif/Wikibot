@@ -23,14 +23,14 @@ class OuvrageCompleteTest extends TestCase
             '{{Ouvrage |id =Bonneton|nom1=Collectif | titre = Loiret : un département à l\'élégance naturelle | éditeur = Christine Bonneton | lieu = Paris | année = 2 septembre 1998 | isbn = 978-2-86253-234-9| pages totales = 319}}'
         );
 
-        $google = new OuvrageClean();
+        $google = new OuvrageTemplate();
         $google->hydrateFromText(
             '{{ouvrage|langue=fr|auteur1=Clément Borgal|titre=Loiret|année=1998|pages totales=319|isbn=9782862532349}}'
         );
 
         $comp = new OuvrageComplete($origin, $google);
         $this::assertEquals(
-            '{{Ouvrage |id=Bonneton |nom1=Collectif |titre=Loiret : un département à l\'élégance naturelle |éditeur=Christine Bonneton |lieu=Paris |année=2 septembre 1998 |isbn=978-2-86253-234-9 |pages totales=319 |langue=fr}}',
+            '{{Ouvrage |id=Bonneton |nom1=Collectif |titre=Loiret : un département à l\'élégance naturelle |éditeur=Christine Bonneton |lieu=Paris |année=2 septembre 1998 |isbn=978-2-86253-234-9 |pages totales=319 |langue=}}',
             $comp->getResult()->serialize()
         );
     }

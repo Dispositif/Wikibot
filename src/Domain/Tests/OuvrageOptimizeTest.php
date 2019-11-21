@@ -36,11 +36,16 @@ class OuvrageOptimizeTest extends TestCase
     public function provideSomeParam()
     {
         return [
-            // Editeur
-            //            [
-            //                ['éditeur' => 'Éd. de La Ville'],
-            //                '{{Ouvrage|langue=|titre=|éditeur=La Ville|année=|pages totales=|isbn=}}',
-            //            ],
+            [
+                // langue FR
+                ['langue' => 'Français'],
+                '{{Ouvrage|titre=|éditeur=|année=|pages totales=|isbn=}}',
+            ],
+            [
+                // langue FR
+                ['langue' => 'Anglais'],
+                '{{Ouvrage|langue=en|titre=|éditeur=|année=|pages totales=|isbn=}}',
+            ],
             [
                 ['éditeur' => '[[Fu]]'],
                 '{{Ouvrage|langue=|titre=|éditeur=[[Fu]]|année=|pages totales=|isbn=}}',
@@ -57,7 +62,6 @@ class OuvrageOptimizeTest extends TestCase
                 ['éditeur' => '[[Fu]] [[Bar]]'],
                 '{{Ouvrage|langue=|titre=|éditeur=[[Fu]] [[Bar]]|année=|pages totales=|isbn=}}',
             ],
-
             // Lieu
             [
                 ['lieu' => '[[paris]]'],
@@ -75,13 +79,13 @@ class OuvrageOptimizeTest extends TestCase
                 ['lieu' => 'Fu'],
                 '{{Ouvrage|langue=|titre=|lieu=Fu|éditeur=|année=|pages totales=|isbn=}}',
             ],
-            // date
             [
+                // date
                 ['date' => '[[1995]]'],
                 '{{Ouvrage|langue=|titre=|éditeur=|année=1995|pages totales=|isbn=}}',
             ],
-            // bnf
             [
+                // bnf
                 ['bnf' => 'FRBNF30279779'],
                 '{{Ouvrage|langue=|titre=|éditeur=|année=|pages totales=|isbn=|bnf=30279779}}',
             ],
@@ -91,14 +95,14 @@ class OuvrageOptimizeTest extends TestCase
     public function testGetOuvrage()
     {
         $raw
-            = '{{Ouvrage|languX=français|id=ZE|prénom1=Ernest|nom1=Nègre|titre=Toponymie:France|tome=3|page=15-27|isbn=2600028846}}';
+            = '{{Ouvrage|languX=anglais|id=ZE|prénom1=Ernest|nom1=Nègre|titre=Toponymie:France|tome=3|page=15-27|isbn=2600028846}}';
 
         $parse = TemplateParser::parseAllTemplateByName('ouvrage', $raw);
         $origin = $parse['ouvrage'][0]['model'];
 
         $optimized = (new OuvrageOptimize($origin))->doTasks()->getOuvrage();
         $this::assertSame(
-            '{{Ouvrage|id=ZE|langue=fr|prénom1=Ernest|nom1=Nègre|titre=Toponymie|sous-titre=France|tome=3|éditeur=|année=|pages totales=|isbn=978-2-600-02884-4|isbn10=2600028846|passage=15-27}}',
+            '{{Ouvrage|id=ZE|langue=en|prénom1=Ernest|nom1=Nègre|titre=Toponymie|sous-titre=France|tome=3|éditeur=|année=|pages totales=|isbn=978-2-600-02884-4|isbn10=2600028846|passage=15-27}}',
             $optimized->serialize(true)
         );
     }
@@ -155,11 +159,6 @@ class OuvrageOptimizeTest extends TestCase
                 ['title' => 'Toponymie'],
                 '{{Ouvrage|langue=|titre=Toponymie|éditeur=|année=|pages totales=|isbn=}}',
             ],
-//            [
-//                // Transform desactived
-//                ['title' => 'Toponymie. France'],
-//                '{{Ouvrage|langue=|titre=Toponymie|sous-titre=France|éditeur=|année=|pages totales=|isbn=}}',
-//            ],
             [
                 // Extraits des mémoires de M. le duc de Rovigo
                 ['title' => 'Extraits des mémoires de M. le duc de Rovigo'],
@@ -197,19 +196,39 @@ class OuvrageOptimizeTest extends TestCase
         ];
     }
 
-    public function testProcessIsbnLangFromISBN()
+    /**
+     * @dataProvider provideISBN
+     * @throws Exception
+     */
+    public function testIsbn($isbn, $expected)
     {
-        $raw
-            = '{{Ouvrage|isbn=2600028846}}';
-
-        $parse = TemplateParser::parseAllTemplateByName('ouvrage', $raw);
-        $origin = $parse['ouvrage'][0]['model'];
+        $origin = new OuvrageTemplate();
+        $origin->hydrate(['isbn' => $isbn]);
 
         $optimized = (new OuvrageOptimize($origin))->doTasks()->getOuvrage();
         $this::assertSame(
-            '{{Ouvrage|langue=fr|titre=|éditeur=|année=|pages totales=|isbn=978-2-600-02884-4|isbn10=2600028846}}',
+            $expected,
             $optimized->serialize(true)
         );
+    }
+
+    public function provideISBN()
+    {
+        return [
+            ['978-2-600-02884-4', '{{Ouvrage|langue=|titre=|éditeur=|année=|pages totales=|isbn=978-2-600-02884-4}}'],
+            // isbn10
+            [
+                '2706812516',
+                '{{Ouvrage|langue=|titre=|éditeur=|année=|pages totales=|isbn=978-2-7068-1251-4|isbn10=2706812516}}',
+            ],
+            // isbn invalide (clé vérification)
+            ['978-2-600-02884-0', '{{Ouvrage|langue=|titre=|éditeur=|année=|pages totales=|isbn=978-2-600-02884-4}}'],
+            // isbn invalide
+            [
+                '978-2-600-028-0',
+                '{{Ouvrage|langue=|titre=|éditeur=|année=|pages totales=|isbn=978-2-600-028-0|isbn invalide=978-2-600-028-0 trop court ou trop long}}',
+            ],
+        ];
     }
 
     public function testDistinguishAuthors()

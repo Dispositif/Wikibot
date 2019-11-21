@@ -17,6 +17,7 @@ use Exception;
 
 class OuvrageComplete
 {
+    const WIKI_LANGUAGE = 'fr';
     /**
      * @var OuvrageTemplate
      */
@@ -91,6 +92,9 @@ class OuvrageComplete
         foreach ($this->book->toArray() as $param => $value) {
             if (empty($this->origin->getParam($param))) {
                 if (in_array($param, $skipParam)) {
+                    continue;
+                }
+                if ('langue' === $param && static::WIKI_LANGUAGE === $value) {
                     continue;
                 }
 

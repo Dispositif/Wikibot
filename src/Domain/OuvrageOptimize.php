@@ -26,6 +26,8 @@ use Throwable;
  */
 class OuvrageOptimize
 {
+    const WIKI_LANGUAGE = 'fr';
+
     protected $original;
 
     private $wikiPageTitle;
@@ -176,25 +178,26 @@ class OuvrageOptimize
 
     /**
      * todo: move/implement.
+     *
+     * @throws Exception
      */
     private function processLang()
     {
-        try {
-            $lang = $this->getParam('langue') ?? null;
-        } catch (Exception $e) {
-            dump('ERROR '.$e);
+        $lang = $this->getParam('langue') ?? null;
 
-            return;
-        }
         if ($lang) {
             $lang2 = str_ireplace(
                 ['française', 'français', 'anglaise', 'anglais', 'japonais', 'allemand', 'espagnol'],
                 ['fr', 'fr', 'en', 'en', 'ja', 'de', 'es'],
-                $lang
+                mb_strtolower($lang)
             );
-            if ($lang !== $lang2) {
+            if ($lang !== $lang2 && self::WIKI_LANGUAGE !== $lang2) {
                 $this->setParam('langue', $lang2);
                 $this->log('±langue');
+            }
+            if(self::WIKI_LANGUAGE === $lang2) {
+                $this->unsetParam('langue');
+                $this->log('-fr');
             }
         }
     }
@@ -222,30 +225,13 @@ class OuvrageOptimize
             // TODO : bot ISBN invalide (queue, message PD...)
             $this->setParam(
                 'isbn invalide',
-                sprintf(
-                    '%s %s',
-                    $isbn,
-                    $e->getMessage() ?? ''
-                )
+                sprintf('%s %s', $isbn, $e->getMessage() ?? '')
             );
-            $this->log(
-                sprintf(
-                    'ISBN invalide: %s',
-                    $e->getMessage()
-                )
-            );
+            $this->log(sprintf('ISBN invalide: %s', $e->getMessage()));
             $this->notCosmetic = true;
 
             // TODO log file ISBNinvalide
             return;
-        }
-
-        // Langue d'après ISBN : restreint à 'fr' pour fiabilité frwiki
-        $langFromIsbn = $isbnMachine->getCountryShortName();
-        if ($langFromIsbn && empty($this->getParam('langue')) && 'fr' === $langFromIsbn) {
-            $this->setParam('langue', $langFromIsbn);
-            $this->log('+langue:'.$langFromIsbn);
-            $this->notCosmetic = true;
         }
 
         // ISBN 10 ?
@@ -355,7 +341,7 @@ class OuvrageOptimize
             $newtitre = str_replace($matches[0], trim($matches[2]), $this->getParam('titre'));
             $this->setParam('titre', $newtitre);
             $this->log('°titre');
-            if (empty($this->getParam('langue'))) {
+            if (self::WIKI_LANGUAGE !== $lang && empty($this->getParam('langue'))) {
                 $this->setParam('langue', $lang);
                 $this->log('+langue='.$lang);
             }
@@ -521,12 +507,7 @@ class OuvrageOptimize
 
         // Replace first '.' by ':' if no ': ' and no numbers around (as PHP 7.3)
         // exlude pattern "blabla... blabla"
-        // DESACTIVED : bug with "Extraits des mémoires de M. le duc de Rovigo"
         // TODO: statistics
-        //        if (!mb_strpos(':', $strTitle) && preg_match('#[^0-9.]{5,}\. ?[^0-9.]{5,}#', $strTitle) > 0) {
-        //            $strTitle = preg_replace('#([^0-9]{5,})\. ?([^0-9)]{5,})#', '$1 : $2', $strTitle);
-        //            // opti : replace all '.' ?
-        //        }
 
         // Replace ' - ' or ' / ' (spaced!) by ' : ' if no ':' and no numbers after (as PHP 7.3 or 1939-1945)
         if (!mb_strpos(':', $strTitle) && preg_match('#.{6,} ?[-/] ?[^0-9)]{6,}#', $strTitle) > 0) {
@@ -564,12 +545,6 @@ class OuvrageOptimize
     {
         $this->ouvrage->unsetParam($name);
     }
-
-    /**
-     * -----------------------------------------------------------
-     *              TASKS
-     * --------------------------------------------------------.
-     */
 
     /**
      * TODO move+refac
