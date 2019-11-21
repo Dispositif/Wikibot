@@ -20,7 +20,7 @@ class OuvrageCompleteTest extends TestCase
     {
         $origin = new OuvrageTemplate();
         $origin->hydrateFromText(
-            '{{Ouvrage |id =Bonneton|nom1=Collectif | titre = Loiret : un département à l\'élégance naturelle | éditeur = Christine Bonneton | lieu = Paris | année = 2 septembre 1998 | isbn = 978-2-86253-234-9| pages totales = 319}}'
+            '{{Ouvrage |id =Bonneton|nom1=Collectif | titre = Loiret : un département à l\'élégance naturelle | éditeur = Christine Bonneton | lieu = Paris | année = 2 septembre 1998 | isbn = 978-2-86253-234-9| pages totales = 319 }}'
         );
 
         $google = new OuvrageTemplate();
@@ -30,7 +30,7 @@ class OuvrageCompleteTest extends TestCase
 
         $comp = new OuvrageComplete($origin, $google);
         $this::assertEquals(
-            '{{Ouvrage |id=Bonneton |nom1=Collectif |titre=Loiret : un département à l\'élégance naturelle |éditeur=Christine Bonneton |lieu=Paris |année=2 septembre 1998 |isbn=978-2-86253-234-9 |pages totales=319 |langue=}}',
+            '{{Ouvrage |id=Bonneton |nom1=Collectif |titre=Loiret : un département à l\'élégance naturelle |éditeur=Christine Bonneton |lieu=Paris |année=2 septembre 1998 |isbn=978-2-86253-234-9 |pages totales=319}}',
             $comp->getResult()->serialize()
         );
     }
@@ -66,42 +66,42 @@ class OuvrageCompleteTest extends TestCase
             [
                 '{{Ouvrage|titre = Loiret Joli}}',
                 '{{Ouvrage|titre = Loiret Joli|sous-titre=un département}}',
-                '{{Ouvrage|langue=|titre=Loiret Joli|sous-titre=un département|éditeur=|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=Loiret Joli|sous-titre=un département|éditeur=|année=|isbn=}}',
             ],
             // punctuation titre différente, sous-titre manquant
             [
                 '{{Ouvrage|titre = Loiret Joli !!!!}}',
                 '{{Ouvrage|titre = Loiret Joli|sous-titre=un département}}',
-                '{{Ouvrage|langue=|titre=Loiret Joli !!!!|sous-titre=un département|éditeur=|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=Loiret Joli !!!!|sous-titre=un département|éditeur=|année=|isbn=}}',
             ],
             // sous-titre inclus dans titre original
             [
                 '{{Ouvrage|titre = Loiret Joli : un département}}',
                 '{{Ouvrage|titre = Loiret Joli|sous-titre=un département}}',
-                '{{Ouvrage|langue=|titre=Loiret Joli|sous-titre=un département|éditeur=|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=Loiret Joli|sous-titre=un département|éditeur=|année=|isbn=}}',
             ],
             // sous-titre absent online
             [
                 '{{Ouvrage|titre = Loiret Joli|sous-titre=un département}}',
                 '{{Ouvrage|titre = Loiret Joli}}',
-                '{{Ouvrage|langue=|titre=Loiret Joli|sous-titre=un département|éditeur=|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=Loiret Joli|sous-titre=un département|éditeur=|année=|isbn=}}',
             ],
             // titre absent online
             [
                 '{{Ouvrage|auteur1=bla|titre = Loiret Joli}}',
                 '{{Ouvrage|auteur1=bla}}',
-                '{{Ouvrage|langue=|auteur1=bla|titre=Loiret Joli|éditeur=|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|auteur1=bla|titre=Loiret Joli|éditeur=|année=|isbn=}}',
             ],
             // titre volume existe -> skip
             [
                 '{{Ouvrage|titre = Loiret Joli|titre volume=Bla}}',
                 '{{Ouvrage|titre = Loiret Joli|sous-titre=Fubar}}',
-                '{{Ouvrage|langue=|titre=Loiret Joli|titre volume=Bla|éditeur=|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=Loiret Joli|titre volume=Bla|éditeur=|année=|isbn=}}',
             ],
             [
                 '{{Ouvrage|titre = Loiret Joli|collection=Bla}}',
                 '{{Ouvrage|titre = Loiret Joli|sous-titre=Fubar}}',
-                '{{Ouvrage|langue=|titre=Loiret Joli|éditeur=|collection=Bla|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=Loiret Joli|éditeur=|collection=Bla|année=|isbn=}}',
             ],
         ];
     }

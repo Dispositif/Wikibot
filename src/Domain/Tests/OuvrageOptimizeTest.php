@@ -39,55 +39,55 @@ class OuvrageOptimizeTest extends TestCase
             [
                 // langue FR
                 ['langue' => 'Français'],
-                '{{Ouvrage|titre=|éditeur=|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=|éditeur=|année=|isbn=}}',
             ],
             [
                 // langue FR
                 ['langue' => 'Anglais'],
-                '{{Ouvrage|langue=en|titre=|éditeur=|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|langue=en|titre=|éditeur=|année=|isbn=}}',
             ],
             [
                 ['éditeur' => '[[Fu]]'],
-                '{{Ouvrage|langue=|titre=|éditeur=[[Fu]]|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=|éditeur=[[Fu]]|année=|isbn=}}',
             ],
             [
                 ['éditeur' => '[[Fu|Bar]] bla'],
-                '{{Ouvrage|langue=|titre=|éditeur=[[Fu|Bar]] bla|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=|éditeur=[[Fu|Bar]] bla|année=|isbn=}}',
             ],
             [
                 ['éditeur' => 'bar', 'lien éditeur' => 'fu'],
-                '{{Ouvrage|langue=|titre=|éditeur=[[Fu|Bar]]|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=|éditeur=[[Fu|Bar]]|année=|isbn=}}',
             ],
             [
                 ['éditeur' => '[[Fu]] [[Bar]]'],
-                '{{Ouvrage|langue=|titre=|éditeur=[[Fu]] [[Bar]]|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=|éditeur=[[Fu]] [[Bar]]|année=|isbn=}}',
             ],
             // Lieu
             [
                 ['lieu' => '[[paris]]'],
-                '{{Ouvrage|langue=|titre=|lieu=Paris|éditeur=|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=|lieu=Paris|éditeur=|année=|isbn=}}',
             ],
             [
                 ['lieu' => 'London'],
-                '{{Ouvrage|langue=|titre=|lieu=Londres|éditeur=|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=|lieu=Londres|éditeur=|année=|isbn=}}',
             ],
             [
                 ['lieu' => 'Köln'],
-                '{{Ouvrage|langue=|titre=|lieu=Cologne|éditeur=|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=|lieu=Cologne|éditeur=|année=|isbn=}}',
             ],
             [
                 ['lieu' => 'Fu'],
-                '{{Ouvrage|langue=|titre=|lieu=Fu|éditeur=|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=|lieu=Fu|éditeur=|année=|isbn=}}',
             ],
             [
                 // date
                 ['date' => '[[1995]]'],
-                '{{Ouvrage|langue=|titre=|éditeur=|année=1995|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=|éditeur=|année=1995|isbn=}}',
             ],
             [
                 // bnf
                 ['bnf' => 'FRBNF30279779'],
-                '{{Ouvrage|langue=|titre=|éditeur=|année=|pages totales=|isbn=|bnf=30279779}}',
+                '{{Ouvrage|titre=|éditeur=|année=|isbn=|bnf=30279779}}',
             ],
         ];
     }
@@ -102,7 +102,7 @@ class OuvrageOptimizeTest extends TestCase
 
         $optimized = (new OuvrageOptimize($origin))->doTasks()->getOuvrage();
         $this::assertSame(
-            '{{Ouvrage|id=ZE|langue=en|prénom1=Ernest|nom1=Nègre|titre=Toponymie|sous-titre=France|tome=3|éditeur=|année=|pages totales=|isbn=978-2-600-02884-4|isbn10=2600028846|passage=15-27}}',
+            '{{Ouvrage|id=ZE|langue=en|prénom1=Ernest|nom1=Nègre|titre=Toponymie|sous-titre=France|tome=3|éditeur=|année=|isbn=978-2-600-02884-4|isbn10=2600028846|passage=15-27}}',
             $optimized->serialize(true)
         );
     }
@@ -133,65 +133,65 @@ class OuvrageOptimizeTest extends TestCase
             [
                 // bug 17 nov [[titre:sous-titre]]
                 ['title' => '[[Fu:bar]]'],
-                '{{Ouvrage|langue=|titre=[[Fu:bar]]|éditeur=|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=[[Fu:bar]]|éditeur=|année=|isbn=}}',
             ],
             [
                 // [[titre]]
                 ['title' => '[[Fubar]]'],
-                '{{Ouvrage|langue=|titre=[[Fubar]]|éditeur=|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=[[Fubar]]|éditeur=|année=|isbn=}}',
             ],
             [
                 // {{lang}} + [[ ]]
                 ['title' => '{{lang|en|[[Fubar]]}}'],
-                '{{Ouvrage|langue=en|titre=[[Fubar]]|éditeur=|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|langue=en|titre=[[Fubar]]|éditeur=|année=|isbn=}}',
             ],
             [
                 // {{lang}}
                 ['title' => '{{lang|en|fubar}}'],
-                '{{Ouvrage|langue=en|titre=Fubar|éditeur=|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|langue=en|titre=Fubar|éditeur=|année=|isbn=}}',
             ],
             [
                 // lien externe -> déplacé
                 ['title' => '[http://google.fr/bla Fubar]'],
-                '{{Ouvrage|langue=|titre=Fubar|éditeur=|année=|pages totales=|isbn=|lire en ligne=http://google.fr/bla}}',
+                '{{Ouvrage|titre=Fubar|éditeur=|année=|isbn=|lire en ligne=http://google.fr/bla}}',
             ],
             [
                 ['title' => 'Toponymie'],
-                '{{Ouvrage|langue=|titre=Toponymie|éditeur=|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=Toponymie|éditeur=|année=|isbn=}}',
             ],
             [
                 // Extraits des mémoires de M. le duc de Rovigo
                 ['title' => 'Extraits des mémoires de M. le duc de Rovigo'],
-                '{{Ouvrage|langue=|titre=Extraits des mémoires de M. le duc de Rovigo|éditeur=|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=Extraits des mémoires de M. le duc de Rovigo|éditeur=|année=|isbn=}}',
             ],
             [
                 // inchangé (numbers)
                 ['title' => 'Vive PHP 7.3 en short'],
-                '{{Ouvrage|langue=|titre=Vive PHP 7.3 en short|éditeur=|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=Vive PHP 7.3 en short|éditeur=|année=|isbn=}}',
             ],
             [
                 ['title' => 'Ils ont osé... Les maires de Saint-Camille'],
-                '{{Ouvrage|langue=|titre=Ils ont osé... Les maires de Saint-Camille|éditeur=|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=Ils ont osé... Les maires de Saint-Camille|éditeur=|année=|isbn=}}',
             ],
             [
                 // explode "-" spaced)
                 ['title' => 'Toponymie - france'],
-                '{{Ouvrage|langue=|titre=Toponymie|sous-titre=france|éditeur=|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=Toponymie|sous-titre=france|éditeur=|année=|isbn=}}',
             ],
             [
                 // explode "/" spaced)
                 ['title' => 'Toponymie / France'],
-                '{{Ouvrage|langue=|titre=Toponymie|sous-titre=France|éditeur=|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=Toponymie|sous-titre=France|éditeur=|année=|isbn=}}',
             ],
             [
                 // inchangé
                 ['title' => 'Toponymie Jean-Pierre France'],
-                '{{Ouvrage|langue=|titre=Toponymie Jean-Pierre France|éditeur=|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=Toponymie Jean-Pierre France|éditeur=|année=|isbn=}}',
             ],
             [
                 // inchangé
                 ['title' => 'Toponymie 1914-1918 super'],
-                '{{Ouvrage|langue=|titre=Toponymie 1914-1918 super|éditeur=|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=Toponymie 1914-1918 super|éditeur=|année=|isbn=}}',
             ],
         ];
     }
@@ -215,18 +215,18 @@ class OuvrageOptimizeTest extends TestCase
     public function provideISBN()
     {
         return [
-            ['978-2-600-02884-4', '{{Ouvrage|langue=|titre=|éditeur=|année=|pages totales=|isbn=978-2-600-02884-4}}'],
+            ['978-2-600-02884-4', '{{Ouvrage|titre=|éditeur=|année=|isbn=978-2-600-02884-4}}'],
             // isbn10
             [
                 '2706812516',
-                '{{Ouvrage|langue=|titre=|éditeur=|année=|pages totales=|isbn=978-2-7068-1251-4|isbn10=2706812516}}',
+                '{{Ouvrage|titre=|éditeur=|année=|isbn=978-2-7068-1251-4|isbn10=2706812516}}',
             ],
             // isbn invalide (clé vérification)
-            ['978-2-600-02884-0', '{{Ouvrage|langue=|titre=|éditeur=|année=|pages totales=|isbn=978-2-600-02884-4}}'],
+            ['978-2-600-02884-0', '{{Ouvrage|titre=|éditeur=|année=|isbn=978-2-600-02884-4}}'],
             // isbn invalide
             [
                 '978-2-600-028-0',
-                '{{Ouvrage|langue=|titre=|éditeur=|année=|pages totales=|isbn=978-2-600-028-0|isbn invalide=978-2-600-028-0 trop court ou trop long}}',
+                '{{Ouvrage|titre=|éditeur=|année=|isbn=978-2-600-028-0|isbn invalide=978-2-600-028-0 trop court ou trop long}}',
             ],
         ];
     }
@@ -240,7 +240,7 @@ class OuvrageOptimizeTest extends TestCase
         $final = $optimizer->getOuvrage();
 
         $this::assertSame(
-            '{{Ouvrage|langue=|auteur1=Marie Durand|auteur2=Pierre Berger|auteur3=Francois Morgand|titre=Bla|éditeur=|année=|pages totales=|isbn=}}',
+            '{{Ouvrage|auteur1=Marie Durand|auteur2=Pierre Berger|auteur3=Francois Morgand|titre=Bla|éditeur=|année=|isbn=}}',
             $final->serialize(true)
         );
     }
