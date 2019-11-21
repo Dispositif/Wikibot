@@ -17,6 +17,7 @@ use App\Domain\OuvrageComplete;
 use App\Domain\OuvrageFactory;
 use App\Domain\OuvrageOptimize;
 use App\Domain\Utils\TemplateParser;
+use App\Infrastructure\DbAdapter;
 use App\Infrastructure\GoogleBooksAdapter;
 use Throwable;
 
