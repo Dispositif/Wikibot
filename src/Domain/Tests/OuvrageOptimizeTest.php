@@ -37,9 +37,9 @@ class OuvrageOptimizeTest extends TestCase
     {
         return [
             [
-                // langue FR
+                // langue FR : HOTFIX 22 nov 2019 "ne retire pas langue=fr" ajouté par humain
                 ['langue' => 'Français'],
-                '{{Ouvrage|titre=|éditeur=|année=|isbn=}}',
+                '{{Ouvrage|langue=fr|titre=|éditeur=|année=|isbn=}}',
             ],
             [
                 // langue FR

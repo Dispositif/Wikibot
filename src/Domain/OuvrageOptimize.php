@@ -191,13 +191,11 @@ class OuvrageOptimize
                 ['fr', 'fr', 'en', 'en', 'ja', 'de', 'es'],
                 mb_strtolower($lang)
             );
-            if ($lang !== $lang2 && self::WIKI_LANGUAGE !== $lang2) {
+            if ($lang !== $lang2) {
                 $this->setParam('langue', $lang2);
-                $this->log('±langue');
-            }
-            if(self::WIKI_LANGUAGE === $lang2) {
-                $this->unsetParam('langue');
-                $this->log('-fr');
+                if (self::WIKI_LANGUAGE !== $lang2) {
+                    $this->log('±langue');
+                }
             }
         }
     }
