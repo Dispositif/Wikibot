@@ -42,64 +42,16 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
     }
 
     /**
-     * TODO? move
+     * Create {Google Book} from URL.
      * See also https://fr.wikipedia.org/wiki/Utilisateur:Jack_ma/GB
      * https://stackoverflow.com/questions/11584551/need-information-on-query-parameters-for-google-books-e-g-difference-between-d
-     * Note: consensus pour perte extra parameters ?
      *
-     * @param string $link
+     * @param string $url
      *
      * @return GoogleLivresTemplate|null
-     *
      * @throws Exception
      */
-    public static function createFromURL(string $link): ?self
-    {
-        if (!self::isGoogleBookURL($link)) {
-            throw new DomainException('not a Google Book URL');
-        }
-        $gooDat = self::parseGoogleBookQuery($link);
-
-        if (empty($gooDat['id'])) {
-            throw new DomainException("no GoogleBook 'id' in URL");
-        }
-        $dat['id'] = $gooDat['id'];
-
-        // Affichage couverture plutôt que présentation livre
-        if(isset($gooDat['printsec']) && 'frontcover' ===$gooDat['printsec'] ) {
-            $dat['couv'] = '1';
-        }
-
-        // pages
-        if (!empty($gooDat['pg'])) {
-            $dat['page autre'] = $gooDat['pg'];
-
-            //  pg=PAx => "page=x"
-            if (preg_match('/^PA([0-9]+)$/', $gooDat['pg'], $toc) > 0) {
-                $dat['page'] = $toc[1];
-                unset($dat['page autre']);
-            }
-            //  pg=PRx => "page=x|romain=1"
-            if (preg_match('/^PR([0-9]+)$/', $gooDat['pg'], $toc) > 0) {
-                $dat['page'] = $toc[1];
-                $dat['romain'] = '1';
-                unset($dat['page autre']);
-            }
-        }
-
-        $dat['surligne'] = $gooDat['dq'] ?? $gooDat['q'] ?? null;
-        // fix bug frwiki sur encodage/espace
-        if (!empty($dat['surligne'])) {
-            $dat['surligne'] = urlencode($dat['surligne']);
-        }
-
-        $templ = new self();
-        $templ->hydrate($dat);
-
-        return $templ;
-    }
-
-    public static function simplifyGoogleUrl(string $url): string
+    public static function createFromURL(string $url): ?self
     {
         if (!self::isGoogleBookURL($url)) {
             throw new DomainException('not a Google Book URL');
@@ -110,9 +62,77 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
             throw new DomainException("no GoogleBook 'id' in URL");
         }
 
+        $data = self::mapGooData($gooDat);
+
+        $templ = new self();
+        $templ->hydrate($data);
+
+        return $templ;
+    }
+
+    /**
+     * Mapping Google URL data to {Google Livres} data.
+     *
+     * @param array $gooData
+     *
+     * @return array
+     */
+    private static function mapGooData(array $gooData): array
+    {
+        $data = [];
+        $data['id'] = $gooData['id'];
+
+        // show cover ?
+        if (isset($gooData['printsec']) && 'frontcover' === $gooData['printsec']) {
+            $data['couv'] = '1';
+        }
+
+        // page number
+        if (!empty($gooData['pg'])) {
+            $data['page autre'] = $gooData['pg'];
+
+            //  pg=PAx => "page=x"
+            if (preg_match('/^PA([0-9]+)$/', $gooData['pg'], $matches) > 0) {
+                $data['page'] = $matches[1];
+                unset($data['page autre']);
+            }
+            //  pg=PRx => "page=x|romain=1"
+            if (preg_match('/^PR([0-9]+)$/', $gooData['pg'], $matches) > 0) {
+                $data['page'] = $matches[1];
+                $data['romain'] = '1';
+                unset($data['page autre']);
+            }
+        }
+
+        if (!empty($gooData['dq']) || !empty($gooData['q'])) {
+            $data['surligne'] = $gooData['dq'] ?? $gooData['q'];
+            $data['surligne'] = urlencode($data['surligne']);
+        }
+
+        return $data;
+    }
+
+    /**
+     * Clean the google book URL from optional&tracking data.
+     *
+     * @param string $url
+     *
+     * @return string URL
+     */
+    public static function simplifyGoogleUrl(string $url): string
+    {
+        if (!self::isGoogleBookURL($url)) {
+            throw new DomainException('not a Google Book URL');
+        }
+
+        $gooDat = self::parseGoogleBookQuery($url);
+        if (empty($gooDat['id'])) {
+            throw new DomainException("no GoogleBook 'id' in URL");
+        }
+
         $dat = [];
         // keep only a few parameters (+'q' ?)
-        $keeps = ['id', 'pg', 'dq'];
+        $keeps = ['id', 'pg', 'printsec', 'dq', 'q'];
         foreach ($keeps as $keep) {
             if (!empty($gooDat[$keep])) {
                 $dat[$keep] = $gooDat[$keep];
@@ -122,6 +142,13 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
         return self::DEFAULT_DOMAIN_URL.'?'.http_build_query($dat);
     }
 
+    /**
+     * Parse URL argument from ?query and #fragment.
+     *
+     * @param string $url
+     *
+     * @return array
+     */
     private static function parseGoogleBookQuery(string $url): array
     {
         // Note : Also datas in URL after the '#' !!! (URL fragment)
@@ -134,8 +161,7 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
     }
 
     /**
-     * TODO move.
-     * https://books.google.com/books?id=mlj71rhp-EwC&pg=PA69.
+     * Check google URL pattern.
      *
      * @param string $text
      *
@@ -143,13 +169,20 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
      */
     public static function isGoogleBookURL(string $text): bool
     {
-        if (preg_match('#^https?://books\.google\.[a-z]{2,3}/books\?id=#i', $text) > 0) {
+        if (preg_match('#^https?://books\.google\.[a-z]{2,3}/books(/reader)?\?id=#i', $text) > 0) {
             return true;
         }
 
         return false;
     }
 
+    /**
+     * Check if Google URL or wiki {Google Books} template.
+     *
+     * @param string $text
+     *
+     * @return bool
+     */
     public static function isGoogleBookValue(string $text): bool
     {
         if (true === self::isGoogleBookURL($text)) {
