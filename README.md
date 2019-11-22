@@ -15,7 +15,7 @@ Correction and completion of bibliographic references on the french Wikipedia, u
 Please do not play with this package. These programs can actually modify the live wiki on the net, and proper
 wiki-etiquette should be followed before running it on any wiki. See https://en.wikipedia.org/wiki/WP:Bot
  
-Tech stack : RabbitMQ, MySQL, Symfony components, addwiki/mediawiki-api, etc.
+Tech stack : PHP>=7.1, RabbitMQ or MySQL, Symfony components, addwiki/mediawiki-api, etc.
 
 List of console commands : ```php src/console list```
 
