@@ -33,6 +33,7 @@ $process->run();
  */
 class EditProcess
 {
+    const TASK_NAME              = 'Amélioration bibliographique';
     const CITATION_LIMIT         = 100;
     const DELAY_BOTFLAG_SECONDS  = 30;
     const DELAY_NOBOT_IN_SECONDS = 150;
@@ -42,7 +43,8 @@ class EditProcess
     private $bot;
     private $wiki;
     private $wikiText;
-    private $pageSummary;
+    private $citationSummary;
+    private $citationVersion = '';
     private $errorWarning = [];
     private $importantSummary = [];
     private $nbRows;
@@ -51,6 +53,7 @@ class EditProcess
     private $minorFlag = true;
     // Bot flag on edit
     private $botFlag = true;
+
 
     public function __construct()
     {
@@ -144,43 +147,14 @@ class EditProcess
             return false;
         }
 
-        // MINI SUMMARY
-        $miniSummary = substr($this->pageSummary, 0, 80);
-        if (strlen($this->pageSummary) > 80) {
-            $miniSummary = $miniSummary.'...';
-        }
-
-        // NEW SUMMARY
-        if (!empty($this->importantSummary)) {
-            $miniSummary = sprintf(
-                '%s [%s] : %s...',
-                $this->bot->getCommentary(),
-                $this->nbRows,
-                implode(', ', $this->importantSummary)
-            );
-        }
-
-        // Start summary with "Bot" when using botflag
-        if ($this->botFlag) {
-            $miniSummary = sprintf('bot %s', $miniSummary);
-        }
-        // Start summary with "/!\" when errorWarning
-        if (!empty($this->errorWarning)) {
-            $miniSummary = sprintf('!! %s', $miniSummary);
-            echo "** ERROR WARNING **\n";
-            dump($this->errorWarning);
-        }
-
-
+        $miniSummary = $this->generateSummary();
         echo "Edition ?\n".$miniSummary."\n\n";
-
         echo "sleep 30...\n";
         sleep(30);
 
         $editInfo = new EditInfo($miniSummary, $this->minorFlag, $this->botFlag);
         $success = $page->editPage(\Normalizer::normalize($this->wikiText), $editInfo);
-
-        echo ($success) ? "Ok\n" : "Erreur edit\n";
+        echo ($success) ? "Ok\n" : "***** Erreur edit\n";
 
         if ($success) {
             // updata DB
@@ -230,21 +204,58 @@ class EditProcess
 
         // Replace text
         $newText = WikiPageAction::replaceTemplateInText($this->wikiText, $origin, $completed);
-        $this->pageSummary .= sprintf(
-            '%s / ',
-            $data['modifs']
-        );
+
         if (!$newText || $newText === $this->wikiText) {
             echo "newText error\n";
 
             return false;
         }
-
         $this->wikiText = $newText;
-
         $this->minorFlag = ('1' === $data['major']) ? false : $this->minorFlag;
+        $this->citationVersion = $data['version'];
+        $this->citationSummary[] = $data['modifs'];
 
         return true;
+    }
+
+    /**
+     * Generate wiki edition summary.
+     *
+     * @return string
+     */
+    public function generateSummary(): string
+    {
+        // Start summary with "Bot" when using botflag, else "*"
+        $prefix = ($this->botFlag) ? 'bot' : '*';
+        // add "/!\" when errorWarning
+        $prefix = (!empty($this->errorWarning) && !$this->botFlag) ? '!!!' : $prefix;
+
+
+        // basic modifs
+        $citeSummary = implode(' ', $this->citationSummary);
+        // replace by list of modifs to verify by humans
+        if (!empty($this->importantSummary)) {
+            $citeSummary = implode(', ', $this->importantSummary);
+        }
+
+        $summary = sprintf(
+            '%s [%s/%s] %s %s : %s',
+            $prefix,
+            str_replace('v.', '', $this->bot::getGitVersion()),
+            str_replace('v', '', $this->citationVersion),
+            self::TASK_NAME,
+            $this->nbRows,
+            $citeSummary
+        );
+
+        // shrink long summary if no important details to verify
+        if (empty($this->importantSummary)) {
+            $length = strlen($summary);
+            $summary = substr($summary, 0, 80);
+            $summary .= ($length > strlen($summary)) ? '…' : '';
+        }
+
+        return $summary;
     }
 
     /**
@@ -296,9 +307,12 @@ class EditProcess
         if (preg_match('#\+lieu#', $data['modifs']) > 0) {
             $this->addSummaryTag('+lieu');
         }
-        if (preg_match('#\+langue#', $data['modifs']) > 0) {
-            $this->addSummaryTag('+langue');
+        if (preg_match('#\+éditeur#', $data['modifs']) > 0) {
+            $this->addSummaryTag('éditeur');
         }
+        //        if (preg_match('#\+langue#', $data['modifs']) > 0) {
+        //            $this->addSummaryTag('langue');
+        //        }
 
         // mention BnF si ajout donnée + ajout identifiant bnf=
         if (!empty($this->importantSummary) && preg_match('#\+bnf#i', $data['modifs'], $matches) > 0) {
@@ -354,12 +368,12 @@ class EditProcess
         $this->botFlag = true;
         $this->errorWarning = [];
         $this->wikiText = null;
-        $this->pageSummary = $this->bot->getCommentary().': ';
-        $this->minorFlag = true;
+        $this->citationSummary = [];
         $this->importantSummary = [];
+        $this->minorFlag = true;
         $this->nbRows = 0;
 
-        $this->bot->checkWatchPages();
+        $this->bot->checkWatchPages(true);
     }
 
 }
