@@ -7,17 +7,15 @@
 [![StyleCI](https://github.styleci.io/repos/206988215/shield?branch=master)](https://github.styleci.io/repos/206988215)
 
 
+PHP CLI app for my Wikipedia robot.
 
-PHP CLI app for my wikipedian bot.
-
-Correction and completion of bibliographic references (books, articles) on fr-Wikipedia, using my legacy
- code and importing open data (GoogleBooks, OpenLibrary...). 
+Correction and completion of bibliographic references on the french Wikipedia, using my legacy code
+ and importing open data (GoogleBooks, OpenLibrary, Bibliothèque nationale de France...). 
  
-  * See https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Bot or https://en.wikipedia.org/wiki/WP:Bot
+Please do not play with this package. These programs can actually modify the live wiki on the net, and proper
+wiki-etiquette should be followed before running it on any wiki. See https://en.wikipedia.org/wiki/WP:Bot
  
- ----
- 
-Technos : RabbitMQ, MySQL, Symfony Components, addwiki/mediawiki-api, etc.
+Tech stack : RabbitMQ, MySQL, Symfony components, addwiki/mediawiki-api, etc.
 
 List of console commands : ```php src/console list```
 
