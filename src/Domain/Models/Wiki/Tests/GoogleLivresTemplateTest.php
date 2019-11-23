@@ -7,8 +7,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Models\Wiki;
+namespace App\Domain\Models\Wiki\Tests;
 
+use App\Domain\Models\Wiki\GoogleLivresTemplate;
 use PHPUnit\Framework\TestCase;
 
 class GoogleLivresTemplateTest extends TestCase

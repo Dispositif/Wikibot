@@ -7,8 +7,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Models\Wiki;
+namespace App\Domain\Models\Wiki\Tests;
 
+use App\Domain\Models\Wiki\LienWebTemplate;
 use Exception;
 use PHPUnit\Framework\TestCase;
 
@@ -20,7 +21,7 @@ class AbstractWikiTemplateTest extends TestCase
     public function testSerialize()
     {
         $data = [
-//            '1' => 'fr',
+            //            '1' => 'fr',
             'url' => 'http://google.com',
             'auteur1' => 'Bob',
             'date' => '2010-11-25',
@@ -72,16 +73,16 @@ class AbstractWikiTemplateTest extends TestCase
         );
     }
 
-//    public function testUnknownParameter()
-//    {
-//        $data = [
-//            'fu' => 'bar',
-//        ];
-//        $lienWeb = new LienWebTemplate();
-//        $this::expectException(\Exception::class);
-//        // no parameter "fu" in template "lien web"
-//        $lienWeb->hydrate($data);
-//    }
+    //    public function testUnknownParameter()
+    //    {
+    //        $data = [
+    //            'fu' => 'bar',
+    //        ];
+    //        $lienWeb = new LienWebTemplate();
+    //        $this::expectException(\Exception::class);
+    //        // no parameter "fu" in template "lien web"
+    //        $lienWeb->hydrate($data);
+    //    }
 
     public function testAliasParameter()
     {

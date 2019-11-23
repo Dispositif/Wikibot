@@ -7,9 +7,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Models;
+namespace App\Domain\Models\Tests;
 
 use App\Domain\Models\Wiki\OuvrageTemplate;
+use App\Domain\Models\WikiRef;
 use Exception;
 use PHPUnit\Framework\TestCase;
 
@@ -26,7 +27,7 @@ class WikiRefTest extends TestCase
 {{commentaire biblio|Ce livre trace un portrait exhaustif de l\'histoire du Québec jusqu\'au milieu du {{s-|XX}}.}}';
 
         $ref = new WikiRef($text);
-//        $ref->parseAllTemplates();
+        //        $ref->parseAllTemplates();
         $templates = $ref->getTemplateParsed();
 
         $this::assertIsArray($templates);
@@ -56,7 +57,7 @@ class WikiRefTest extends TestCase
 {{commentaire biblio|Ce livre trace un portrait exhaustif de l\'histoire du Québec jusqu\'au milieu du {{s-|XX}}.}}';
 
         $ref = new WikiRef($text);
-//        $ref->parseAllTemplates();
+        //        $ref->parseAllTemplates();
         $names = $ref->getTemplateNames();
         $this::assertEquals('lien web', $names[0]);
         $this::assertEquals('ouvrage', $names[2]);
