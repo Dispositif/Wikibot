@@ -21,7 +21,7 @@ use Bluora\LaravelGitInfo\GitInfo;
 class Bot
 {
     const WIKI_STATE_FILENAME = __DIR__.'/resources/wiki_state.json';
-    const WATCHPAGE_FILENAME = __DIR__.'/resources/watch_pages.json';
+    const WATCHPAGE_FILENAME  = __DIR__.'/resources/watch_pages.json';
 
     const EXIT_ON_CHECK_WATCHPAGE = true;
 
@@ -40,6 +40,8 @@ class Bot
     const EDIT_LAPS_FLAGBOT = 8;
 
     public $taskName = 'Améliorations bibliographiques';
+
+    public static $gitVersion;
 
     public function __construct()
     {
@@ -67,10 +69,15 @@ class Bot
      */
     public static function getGitVersion(): ?string
     {
+        if (self::$gitVersion) {
+            return self::$gitVersion;
+        }
         $git = new GitInfo();
         $raw = $git->version();
         if (preg_match('#^(v[0-9.a-e]+)#', $raw, $matches) > 0) {
-            return $matches[1];
+            self::$gitVersion = $matches[1];
+
+            return self::$gitVersion;
         }
 
         return null;
@@ -96,9 +103,12 @@ class Bot
      * Is there a new message on the discussion page of the bot (or owner) ?
      * Stop on new message ?
      *
+     * @param bool $botTalk
+     *
      * @throws ConfigException
+     * @throws \Mediawiki\Api\UsageException
      */
-    public function checkWatchPages()
+    public function checkWatchPages(bool $botTalk = false)
     {
         foreach ($this->getWatchPages() as $title => $lastTime) {
             $pageTime = $this->getTimestamp($title);
@@ -115,10 +125,9 @@ class Bot
                 echo "Replace with $title => '$pageTime'";
 
                 if (self::EXIT_ON_CHECK_WATCHPAGE) {
-
-                    if( class_exists(ZiziBot::class)) {
-                        (new ZiziBot())->botTalk();
-                    }
+//                    if ($botTalk && class_exists(ZiziBot::class)) {
+//                        (new ZiziBot())->botTalk();
+//                    }
 
                     echo "\nSTOP on checkWatchPages.\n";
                     exit();
@@ -129,7 +138,6 @@ class Bot
 
     /**
      * @return array
-     *
      * @throws ConfigException
      */
     protected function getWatchPages(): array
@@ -167,7 +175,7 @@ class Bot
     {
         $time = $this->getTimestamp($title);  // 2011-09-02T16:31:13Z
 
-        return (int) round((time() - strtotime($time)) / 60);
+        return (int)round((time() - strtotime($time)) / 60);
     }
 
     /**

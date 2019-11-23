@@ -46,9 +46,9 @@ class ZiziBot extends Bot
 
         $addText = $this->generateTalkText($last->getUser());
 
-        echo "Prepare to talk. Sleep 60...\n";
+        echo "Prepare to talk. Sleep 5 min...\n";
         echo sprintf("-> %s \n", $addText);
-        sleep(60);
+        sleep(300);
 
         $editInfo = new EditInfo(static::BOT_TALK_SUMMARY);
         $success = $page->addToBottomOfThePage($addText, $editInfo);
@@ -58,7 +58,7 @@ class ZiziBot extends Bot
 
     private function generateTalkText(?string $toEditor = null, ?string $identation = ':')
     {
-        $to = ($toEditor) ? sprintf('@[[User:%s|%s]] : ', $toEditor, $toEditor) : ''; // {{notif}}
+        $to = ($toEditor) ? sprintf('@%s : ', $toEditor) : ''; // {{notif}}
         $sentence = TextUtil::mb_ucfirst($this->getRandomSentence());
         $addText = sprintf('%s%s%s --~~~~', $identation, $to, $sentence);
 
