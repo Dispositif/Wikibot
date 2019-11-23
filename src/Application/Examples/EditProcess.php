@@ -54,7 +54,6 @@ class EditProcess
     // Bot flag on edit
     private $botFlag = true;
 
-
     public function __construct()
     {
         $this->db = new DbAdapter();
@@ -80,19 +79,32 @@ class EditProcess
         $this->initialize();
 
         // get a random queue line
-        $json = $this->db->getCompletedData();
+        $json = $this->db->getAllRowsToEdit(self::CITATION_LIMIT);
         $data = json_decode($json, true);
 
         if (empty($data)) {
-            echo "no data\n";
+            echo "SKIP : no rows to process\n";
 
             return false;
         }
 
-        $title = $data['page'];
-        echo "$title \n";
+        try {
+            $title = $data[0]['page'];
+            echo "$title \n";
+            $page = new WikiPageAction($this->wiki, $title);
+        } catch (\Exception $e) {
+            echo "*** WikiPageAction error : $title \n";
+            sleep(60);
 
-        $page = new WikiPageAction($this->wiki, $title);
+            return false;
+        }
+
+        // TODO : HACK
+        if (in_array($page->getLastEditor(), [getenv('BOT_NAME'), getenv('BOT_OWNER')])) {
+            echo "SKIP : édité recemment par bot/dresseur.\n";
+            $this->db->skipRow($title);
+            return false;
+        }
         $this->wikiText = $page->getText();
 
         if ($this->bot->minutesSinceLastEdit($title) < 15) {
@@ -104,31 +116,18 @@ class EditProcess
         // Skip AdQ
         if (preg_match('#{{ ?En-tête label#i', $this->wikiText) > 0) {
             echo "SKIP : AdQ ou BA.\n";
-
+            $this->db->skipRow($title);
             return false;
         }
 
         // GET all article lines from db
-        $json = $this->db->getPageRows($title, self::CITATION_LIMIT);
-        if (empty($json)) {
-            echo "SKIP no rows to process.\n";
-
-            return false;
-        }
-        $data = json_decode($json, true);
-        if (empty($data)) {
-            echo "SKIP : empty data.\n";
-
-            return false;
-        }
         echo sprintf(">> %s rows to process\n", count($data));
 
-        // foreach line : $this->dataProcess($data)
+        // foreach line
         $changed = false;
-        $this->nbRows = count($data);
         foreach ($data as $dat) {
-            // hack pour éviter articles dont CompleteProcess incomplet
-            if (empty($dat['opti']) || empty($dat['optidate'])) {
+            // hack temporaire pour éviter articles dont CompleteProcess incomplet
+            if (empty($dat['opti']) || empty($dat['optidate']) || $dat['optidate'] < DbAdapter::OPTI_VALID_DATE) {
                 echo "SKIP : Complètement incomplet de l'article \n";
 
                 return false;
@@ -214,6 +213,7 @@ class EditProcess
         $this->minorFlag = ('1' === $data['major']) ? false : $this->minorFlag;
         $this->citationVersion = $data['version'];
         $this->citationSummary[] = $data['modifs'];
+        $this->nbRows++;
 
         return true;
     }
@@ -226,7 +226,7 @@ class EditProcess
     public function generateSummary(): string
     {
         // Start summary with "Bot" when using botflag, else "*"
-        $prefix = ($this->botFlag) ? 'bot' : '*';
+        $prefix = ($this->botFlag) ? 'bot' : '??';
         // add "/!\" when errorWarning
         $prefix = (!empty($this->errorWarning) && !$this->botFlag) ? '!!!' : $prefix;
 

@@ -23,17 +23,18 @@ use Throwable;
  */
 class DbAdapter implements QueueInterface
 {
-    private $db;
+    protected $db;
+    protected $pdoConn;
 
-    private $newRawValidDate = '2019-11-20 14:00:00'; // v.34 sous-titre sans maj
+    const OPTI_VALID_DATE = '2019-11-20 14:00:00'; // v.34 sous-titre sans maj
 
     public function __construct()
     {
         $pdo = new PDOConnector(
             getenv('MYSQL_HOST'), getenv('MYSQL_USER'), getenv('MYSQL_PASSWORD'), getenv('MYSQL_DATABASE')
         );
-        $pdoConn = $pdo->connect('utf8', ['port' => getenv('MYSQL_PORT')]);
-        $this->db = new Mysql($pdoConn);
+        $this->pdoConn = $pdo->connect('utf8', ['port' => getenv('MYSQL_PORT')]);
+        $this->db = new Mysql($this->pdoConn);
     }
 
     /**
@@ -62,9 +63,9 @@ class DbAdapter implements QueueInterface
             $raw = $this->db->fetchColumn(
                 'SELECT raw FROM TempRawOpti 
                 WHERE (opti = "" OR optidate IS NULL OR optidate < :validDate ) AND (edited IS NULL)
-                ORDER BY priority DESC,optidate,id',
+                ORDER BY priority DESC,id',
                 [
-                    'validDate' => $this->newRawValidDate,
+                    'validDate' => self::OPTI_VALID_DATE,
                 ]
             );
         } catch (Throwable $e) {
@@ -74,6 +75,9 @@ class DbAdapter implements QueueInterface
         return $raw;
     }
 
+    /**
+     * Update DB with completed data from CompleteProcess.
+     */
     public function sendCompletedData(array $finalData): bool
     {
         try {
@@ -91,31 +95,69 @@ class DbAdapter implements QueueInterface
         return !empty($result);
     }
 
+    //------------------------------------------------------
+    //          EDIT QUEUE
+    //------------------------------------------------------
     /**
      * Get one new raw text (template) for edit process.
      *
+     * @param int|null $limit
+     *
      * @return string|null
      */
-    public function getCompletedData(): ?string
+    public function getAllRowsToEdit(?int $limit = 100): ?string
     {
         $json = null;
 
         try {
-            $data = $this->db->fetchRow(
-                'SELECT * FROM TempRawOpti 
-                WHERE (opti IS NOT NULL AND opti <> "" AND optidate > :validDate AND edited IS NULL AND version IS NOT NULL AND notcosmetic=1) 
-                ORDER BY priority DESC,RAND() 
-                LIMIT 1',
-                [
-                    'validDate' => $this->newRawValidDate,
-                ]
+            $pageInfo = $this->pdoConn->query(
+                '
+                SELECT A.page FROM TempRawOpti A
+                WHERE notcosmetic=1. 
+                AND NOT EXISTS
+                    (SELECT B.* FROM TempRawOpti B
+                    WHERE (
+                        B.edited IS NOT NULL 
+                        OR B.optidate < "'.self::OPTI_VALID_DATE.'" 
+                        OR B.optidate IS NULL 
+                        OR B.opti="" 
+                        OR B.skip=1
+                        )
+                    AND A.page = B.page
+                    )
+                ORDER BY A.priority,RAND() DESC
+                LIMIT '.$limit.'
+                '
+            );
+            $page = $pageInfo->fetchAll()[0]['page'];
+
+            $data = $this->db->fetchRowMany(
+                'SELECT * FROM TempRawOpti WHERE page=:page',
+                ['page' => $page]
             );
             $json = json_encode($data);
         } catch (Throwable $e) {
-            echo "SQL : No more queue to process \n";
+            echo "*** SQL : No more queue to process \n";
+            exit();
         }
 
         return $json;
+    }
+
+    public function skipRow(string $title):bool
+    {
+        try {
+            $result = $this->db->update(
+                'TempRawOpti',
+                ['page' => $title], // condition
+                ['skip' => true]
+            );
+        } catch (MysqlException $e) {
+            dump($e);
+
+            return false;
+        }
+        return !empty($result);
     }
 
     /**
@@ -142,38 +184,7 @@ class DbAdapter implements QueueInterface
         return !empty($result);
     }
 
-    /**
-     * Get all lines from article for edit process.
-     *
-     * @param string   $pageTitle
-     * @param int|null $limit
-     *
-     * @return string|null
-     */
-    public function getPageRows(string $pageTitle, ?int $limit = 40): ?string
-    {
-        $json = null;
-
-        try {
-            $data = $this->db->fetchRowMany(
-            // optidate > :validDate (pour vérification que Article entièrement analysé
-            // retirer "AND notcosmetic=1" pour homogenisation citations
-                'SELECT * FROM TempRawOpti 
-                        WHERE OPTI IS NOT NULL AND OPTI <> "" AND edited IS NULL AND notcosmetic=1 AND page = :page AND optidate > :validDate
-                        LIMIT :limit',
-                [
-                    'validDate' => $this->newRawValidDate,
-                    'page' => $pageTitle,
-                    'limit' => $limit,
-                ]
-            );
-            $json = json_encode($data);
-        } catch (Throwable $e) {
-            echo "SQL : No more queue to process \n";
-        }
-
-        return $json;
-    }
+    //------------------------------------------------------
 
     /**
      * Dirty naive ORM.
@@ -228,5 +239,51 @@ class DbAdapter implements QueueInterface
         }
 
         return null;
+    }
+
+    /**
+     * Get a row to monitor edits.
+     */
+    public function getMonitor(): ?array
+    {
+        $data = null;
+        // 6 hours ago
+        $beforeTime = (new \DateTime)->sub(new \DateInterval('PT6H'));
+        try {
+            $data = $this->db->fetchRowMany(
+                'SELECT id,page,raw,opti,optidate,edited FROM TempRawOpti WHERE page = (
+                    SELECT page FROM TempRawOpti
+                    WHERE edited IS NOT NULL and edited < :edited
+             		ORDER BY optidate,verify,edited
+                    LIMIT 1)',
+                [
+                    'edited' => $beforeTime->format('Y-m-d H:i:s'),
+                ]
+            );
+        } catch (Throwable $e) {
+            echo "SQL : No more queue to process \n";
+        }
+
+        return $data;
+    }
+
+    public function updateMonitor(array $data): bool
+    {
+        if (empty($data['page'])) {
+            throw new \Exception('pas de page');
+        }
+        try {
+            $result = $this->db->update(
+                'TempRawOpti',
+                ['page' => $data['page']], // condition
+                $data
+            );
+        } catch (MysqlException $e) {
+            dump($e);
+
+            return false;
+        }
+
+        return !empty($result);
     }
 }
