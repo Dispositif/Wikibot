@@ -1,6 +1,7 @@
 ## Versions des règles de corrections/complètement ##
 
-* 0.37 : ne retire pas 'langue=fr' (inutile)
+* 0.39 : {{nobr|. {{plume}}}}
+* 0.37 : ne retire pas 'langue=fr' (pas de consensus) (@Ypirétis)
 * 0.36 : paramètres inutiles : langue=fr, langue, page totale
 * 0.34 : sous-titre sans majuscule (@Ypirétis)
 * 0.33 : bug Google Livres (frontcover) (@Evynrhud) + romain

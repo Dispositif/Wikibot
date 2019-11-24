@@ -37,6 +37,13 @@ class OuvrageOptimizeTest extends TestCase
     {
         return [
             [
+                [
+                    'commentaire' => 'bla',
+                    'plume' => 'oui',
+                ],
+                '{{Ouvrage|titre=|éditeur=|année=|isbn=}}{{nobr|. {{plume}}}}{{commentaire biblio|bla}}',
+            ],
+            [
                 // langue FR : HOTFIX 22 nov 2019 "ne retire pas langue=fr" ajouté par humain
                 ['langue' => 'Français'],
                 '{{Ouvrage|langue=fr|titre=|éditeur=|année=|isbn=}}',

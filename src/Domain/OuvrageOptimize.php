@@ -579,7 +579,7 @@ class OuvrageOptimize
             $this->ouvrage->externalTemplates[] = (object)[
                 'template' => 'plume',
                 '1' => $plumeValue,
-                'raw' => '{{plume}}',
+                'raw' => '{{nobr|. {{plume}}}}',
             ];
             $this->unsetParam('plume');
             $this->log('{plume}');
