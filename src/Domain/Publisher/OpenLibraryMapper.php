@@ -36,7 +36,7 @@ class OpenLibraryMapper extends AbstractBookMapper implements MapperInterface
             'lieu' => ($details['publish_places'][0]['name']) ?? null,
             'pages totales' => $this->nbPages($details),
             'lire en ligne' => $this->readOnline($data),
-            'présentation en ligne' => $this->previewOnline($data),
+//            'présentation en ligne' => $this->previewOnline($data), // pas de consensus
         ];
     }
 
