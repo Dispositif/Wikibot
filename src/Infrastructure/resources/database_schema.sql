@@ -7,7 +7,7 @@ CREATE TABLE `TempRawOpti`
     `opticorrected` text,
     `optidate`      timestamp        NULL     DEFAULT NULL,
     `skip`          tinyint(1)                DEFAULT '0',
-    `modifs`        varchar(150)              DEFAULT NULL,
+    `modifs`        varchar(250)              DEFAULT NULL,
     `version`       varchar(10)               DEFAULT NULL,
     `notcosmetic`   int(11)                   DEFAULT NULL,
     `major`         int(11)                   DEFAULT NULL,

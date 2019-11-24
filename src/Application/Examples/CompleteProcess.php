@@ -140,19 +140,26 @@ class CompleteProcess
             $bnfOuvrage = OuvrageFactory::BnfFromIsbn($isbn);
             $this->completeOuvrage($bnfOuvrage);
         } catch (Throwable $e) {
-            echo "*** ERREUR BnF ".$e->getMessage()."\n";
+            echo "*** ERREUR BnF Isbn Search".$e->getMessage()."\n";
+            echo "sleep 5min\n";
             sleep(60 * 5);
             goto online;
         }
 
         try {
-            dump('GOOGLE...');
-            $googleOuvrage = OuvrageFactory::GoogleFromIsbn($isbn);
-            $this->completeOuvrage($googleOuvrage);
+            if(!$this->skipGoogle()){
+                dump('GOOGLE...');
+                $googleOuvrage = OuvrageFactory::GoogleFromIsbn($isbn);
+                $this->completeOuvrage($googleOuvrage);
+            }
         } catch (Throwable $e) {
-            echo "*** ERREUR GOOGLE ".$e->getMessage()."\n";
-            sleep(60 * 60);
-            goto online;
+            echo "*** ERREUR GOOGLE Isbn Search ***".$e->getMessage()."\n";
+            if(strpos($e->getMessage(),'Daily Limit Exceeded') !== true ){
+                echo "sleep 1h\n";
+                sleep(60 * 60);
+                echo "Try goto\n";
+                goto online;
+            }
         }
 
 
@@ -163,7 +170,7 @@ class CompleteProcess
                 $this->completeOuvrage($openLibraryOuvrage);
             }
         } catch (Throwable $e) {
-            echo '**** ERREUR OpenLibrary';
+            echo '**** ERREUR OpenLibrary Isbn Search';
         }
     }
 
@@ -171,7 +178,7 @@ class CompleteProcess
     {
         echo "sleep 40...";
         sleep(40);
-
+        onlineQuerySearch:
 
         try {
             dump('GOOGLE SEARCH...');
@@ -183,7 +190,9 @@ class CompleteProcess
             //            return $import->getOuvrage();
             //            $this->completeOuvrage($googleOuvrage);
         } catch (Throwable $e) {
-            echo "*** ERREUR GOOGLE ".$e->getMessage()."\n";
+            echo "*** ERREUR GOOGLE QuerySearch *** ".$e->getMessage()."\n";
+            sleep(60*30);
+            goto onlineQuerySearch;
         }
     }
 
@@ -214,15 +223,20 @@ class CompleteProcess
             'raw' => $this->raw,
             'opti' => $this->ouvrage->serialize(true),
             'optidate' => date("Y-m-d H:i:s"),
-            'modifs' => implode(',', $this->log),
+            'modifs' => mb_substr(implode(',', $this->log), 0, 250),
             'notcosmetic' => ($this->notCosmetic) ? 1 : 0,
             'major' => ($this->major) ? 1 : 0,
-            'isbn' => $isbn13,
+            'isbn' => substr($isbn13,0,20),
             'version' => Bot::getGitVersion() ?? null,
         ];
         dump($finalData);
         // Json ?
         $result = $this->queueAdapter->sendCompletedData($finalData);
         dump($result); // bool
+    }
+
+    private function skipGoogle():bool
+    {
+        return false;
     }
 }
