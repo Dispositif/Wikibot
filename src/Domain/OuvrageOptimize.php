@@ -186,11 +186,28 @@ class OuvrageOptimize
         $lang = $this->getParam('langue') ?? null;
 
         if ($lang) {
+            $replace = [
+                'french' => 'fr',
+                'française' => 'fr',
+                'français' => 'fr',
+                'anglaise' => 'en',
+                'anglais' => 'en',
+                'english' => 'en',
+                'japonais' => 'ja',
+                'japanese' => 'ja',
+                'allemand' => 'de',
+                'deutsch' => 'de',
+                'german' => 'de',
+                'espagnol' => 'es',
+                'spanish' => 'es',
+                'español' => 'es',
+            ];
             $lang2 = str_ireplace(
-                ['française', 'français', 'anglaise', 'anglais', 'japonais', 'allemand', 'espagnol'],
-                ['fr', 'fr', 'en', 'en', 'ja', 'de', 'es'],
+                array_keys($replace),
+                array_values($replace),
                 mb_strtolower($lang)
             );
+
             if ($lang !== $lang2) {
                 $this->setParam('langue', $lang2);
                 if (self::WIKI_LANGUAGE !== $lang2) {
