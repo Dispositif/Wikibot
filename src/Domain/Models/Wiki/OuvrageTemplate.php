@@ -141,6 +141,7 @@ class OuvrageTemplate extends AbstractWikiTemplate
             //  'editor-last', 'editor-first', 'editor2-last', etc
             'publication-date' => 'date',
             'author-link' => 'lien auteur1',
+            'première édition' => 'année première édition'
         ];
 
     public $externalTemplates = [];
