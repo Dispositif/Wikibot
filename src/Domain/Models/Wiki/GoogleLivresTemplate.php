@@ -20,7 +20,7 @@ use Exception;
  */
 class GoogleLivresTemplate extends AbstractWikiTemplate
 {
-    const DEFAULT_DOMAIN_URL = 'https://books.google.com/books';
+    const DEFAULT_GOOGLEBOOK_URL = 'https://books.google.com/books';
 
     const ALLOW_USER_ORDER = false;
 
@@ -139,7 +139,7 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
             }
         }
 
-        return self::DEFAULT_DOMAIN_URL.'?'.http_build_query($dat);
+        return self::DEFAULT_GOOGLEBOOK_URL.'?'.http_build_query($dat);
     }
 
     /**

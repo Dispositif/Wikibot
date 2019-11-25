@@ -12,12 +12,18 @@ namespace App\Domain\Publisher;
 use Scriptotek\GoogleBooks\Volume;
 
 /**
- * Google mapping.
+ * Google Books API data mapping.
  * Doc : https://developers.google.com/books/docs/v1/reference/volumes
  * Class GoogleBookMapper.
  */
 class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
 {
+    // raw URL or wiki-template ?
+    const MODE_RAW_URL       = true;
+    const GOOGLE_URL_REPLACE = 'https://books.google.com/books?id=%s';
+    // sous-titre non ajoutés :
+    const SUBTITLE_FILTER = ['roman', 'récit', 'poèmes', 'biographie'];
+
     /**
      * @param $volume Volume
      *
@@ -26,37 +32,48 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
     public function process($volume): array
     {
         return [
-            'langue' => $volume->language,
+            // language : data not accurate !
+            // 'langue' => $this->langFilterByIsbn($volume),
             'auteur1' => $volume->authors[0],
             'auteur2' => $volume->authors[1] ?? null,
             'auteur3' => $volume->authors[2] ?? null,
             'titre' => $volume->title,
             'sous-titre' => $this->filterSubtitle($volume),
             'année' => $this->convertDate2Year($volume->publishedDate),
-            'pages totales' => (string) $volume->pageCount,
-            'isbn' => $this->isbn($volume),
+            'pages totales' => (string)$volume->pageCount ?? null,
+            'isbn' => $this->convertIsbn($volume),
             'présentation en ligne' => $this->presentationEnLigne($volume),
             'lire en ligne' => $this->lireEnLigne($volume),
         ];
     }
 
+    /**
+     * @param $volume
+     *
+     * @return string|null
+     */
     private function filterSubtitle($volume): ?string
     {
         // "biographie" ?
-        if (empty($volume->subtitle) || 'roman' === mb_strtolower($volume->subtitle)) {
+        if (empty($volume->subtitle) || in_array(mb_strtolower($volume->subtitle), self::SUBTITLE_FILTER)) {
             return null;
         }
 
         return $volume->subtitle;
     }
 
+    /**
+     * @param $data
+     *
+     * @return string|null
+     */
     private function convertDate2Year($data)
     {
         if (!isset($data)) {
             return null;
         }
         if (preg_match('/[^0-9]?([12][0-9]{3})[^0-9]?/', $data, $matches) > 0) {
-            return (string) $matches[1];
+            return (string)$matches[1];
         }
 
         return null;
@@ -67,7 +84,7 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
      *
      * @return string|null
      */
-    private function isbn(Volume $volume): ?string
+    private function convertIsbn(Volume $volume): ?string
     {
         if (!isset($volume->industryIdentifiers)) {
             return null;
@@ -75,7 +92,7 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
         // so isbn-13 replace isbn-10
         // todo refac algo (if 2x isbn13?)
         $isbn = null;
-        $ids = (array) $volume->industryIdentifiers;
+        $ids = (array)$volume->industryIdentifiers;
         foreach ($ids as $id) {
             if (!isset($isbn) && in_array($id->type, ['ISBN_10', 'ISBN_13'])) {
                 $isbn = $id->identifier;
@@ -88,21 +105,82 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
         return $isbn;
     }
 
-    private function presentationEnLigne($volume): ?string
+    /**
+     * @param Volume $volume
+     *
+     * @return string|null
+     */
+    private function presentationEnLigne(Volume $volume): ?string
     {
-        if (in_array($volume->accessInfo->viewability, ['PARTIAL'])) {
-            return sprintf('{{Google Livres|%s}}', $volume->id);
+        if (empty($volume->id) || !in_array($volume->accessInfo->viewability, ['PARTIAL'])) {
+            return null;
         }
 
-        return null;
+        return $this->returnGoogleRef($volume);
     }
 
-    private function lireEnLigne($volume): ?string
+    /**
+     * @param Volume $volume
+     *
+     * @return string|null
+     */
+    private function lireEnLigne(Volume $volume): ?string
     {
-        if (in_array($volume->accessInfo->viewability, ['ALL_PAGES'])) {
-            return sprintf('{{Google Livres|%s}}', $volume->id);
+        if (empty($volume->id) || !in_array($volume->accessInfo->viewability, ['ALL_PAGES'])) {
+            return null;
         }
 
-        return null;
+        return $this->returnGoogleRef($volume);
     }
+
+    /**
+     * @param Volume $volume
+     *
+     * @return string
+     */
+    private function returnGoogleRef(Volume $volume): string
+    {
+        if (self::MODE_RAW_URL) {
+            return sprintf(self::GOOGLE_URL_REPLACE, $volume->id);
+        }
+
+        return sprintf('{{Google Livres|%s}}', $volume->id);
+    }
+
+    /**
+     * Language data not consistant.
+     * -> comparing by ISBN code language.
+     */
+    //    private function langFilterByIsbn(Volume $volume): ?string
+    //    {
+    //        $isbn = $this->convertIsbn($volume);
+    //        if ($isbn) {
+    //            try {
+    //                $isbnMachine = new IsbnFacade($isbn);
+    //                $isbnMachine->validate();
+    //                $isbnLang = $isbnMachine->getCountryShortName();
+    //            } catch (\Throwable $e) {
+    //                unset($e);
+    //            }
+    //        }
+    //        if(isset($isbnLang)) {
+    //            echo "(ISBN lang: ".$isbnLang.")\n";
+    //        }else{
+    //            echo "(no ISBN lang)\n";
+    //        }
+    //
+    //        $gooLang = $volume->language;
+    //        // filtering lang because seems inconsistant
+    //        if (isset($isbnLang) && !empty($gooLang) && $gooLang !== $isbnLang) {
+    //            echo sprintf(
+    //                "*** Filtering Google langue=%s because ISBN langue=%s ",
+    //                $gooLang,
+    //                $isbnLang
+    //            );
+    //
+    //            return null;
+    //        }
+    //
+    //        return $gooLang;
+    //    }
 }
