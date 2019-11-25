@@ -25,7 +25,7 @@ Titre, sous-titre...
 * {{fait}} Typo : majuscules, règle internationale " : " (bistro 08-2019)
 * {{fait}}retire lien externe titre/sous-titre (Bistro 27 août 2011)
 * {{fait}}retire {{m|lang}} : déplacé vers 'langue' [invisible]
-* {{fait}} déplacement en 'sous-titre' [invisible?]
+* {{fait}} déplacement en 'sous-titre' [invisible]
 
 Autres :
 * {{fait}} pas de wikilien sur 'lieu' (stats/pertinence) : [[Paris]] -> Paris
@@ -39,9 +39,9 @@ Auteur :
 * {{pas fait}} prédiction wikilien page d'auteur
 
 Editeur :
-* {{fait}} 'lien éditeur' retiré (obsolète), remplacé par wikilien [invisible]
-* {{fait}} correction typographique : abbréviations du genre "(Éd.)"
-* {{fait}} forme brève : Éd. de La Gourde => [[Éditions de La Gourde|La Gourde]], mais 'Éditions de Minuit' inchangé
+* {{fait}} 'lien éditeur' (obsolète) remplacé par wikilien [invisible]
+* {{attendre}} correction typographique : abbréviations du genre "(Éd.)"
+* {{attendre}} forme brève : Éd. de La Gourde => [[Éditions de La Gourde|La Gourde]], mais 'Éditions de Minuit' inchangé
 * {{pas fait}} {{3/4}} prédiction du wikilien éditeur
 
 Lieu :
@@ -50,7 +50,7 @@ Lieu :
 
 ISBN :
 * {{fait}} conversion EAN (sans tiret) et ISBN-10 => ISBN-13 ([https://fr.wikipedia.org/w/index.php?title=Montigny-l%C3%A8s-Cormeilles&diff=prev&oldid=163545321])
-* {{fait}} ISBN-10 archivé dans 'isbn10' (invisible)
+* {{fait}} ISBN-10 archivé dans 'isbn10' (non affiché)
 * {{fait}} signalement ISBN invalide (checksum, code pays/product) : commentaire HTML et 'isbn invalide=' + message PD
 * {{pas fait}} contrôle des ISBN multiples (isbn2, isbn3)
 
@@ -82,11 +82,11 @@ Fonctionnement du bot :
 * {{fait}} ne traite pas les modèles contenant du commentaire HTML <nowiki><!-- blabla --></nowiki>
 * respecte les limitations {{m|nobots}} et {{m|bots}}
 * {{pas fait}} suivi des reverts (apprentissage)
-* {{pas fait}} page de log détaillé quotidien
 
 Sur page globale :
 * {{fait}} déplacement de la mention langue à l'intérieur du modèle [https://fr.wikipedia.org/w/index.php?title=Sailor_Jupiter&diff=prev&oldid=163845237]
 * {{fait}} pas d'intervention si édition humaine y'a moins de 15 minutes
+* {{fait}} provisoirement pas d'intervention sur AdQ/BA
 * {{pas fait}}  analyse des {fr}, {en} pour ajout {fr} si ouvrages étrangers > 50%
 * {{fait}}  Message en PD pour ISBN invalide, suggestion de correctifs, etc. Par le passé, succès/efficacité.
 * {{pas fait}} un seul wikilien identique par page
@@ -95,7 +95,7 @@ Sur page globale :
 Durée tâche :
 * 9 mois pour {ouvrage} avec ISBN (~200 edits/j, 10/h) 170'000
 * 2 ans pour {ouvrage} sans ISBN / 920'000 inclusions
-* Avec les limitations API gratuites, le bot analyse maximum 1000 citations/jour.
+* Avec les limitations API Google, le bot analyse maximum 1000 citations/jour
 * Le bot ne devrait pas repasser sur un article avant 1 an
 
 Dans sa version ancienne, suite aux édits du bot, y'avait environ 1% de modification humaine des citations. Les 2/3

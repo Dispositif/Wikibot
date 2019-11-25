@@ -1,5 +1,6 @@
 ## Versions des règles de corrections/complètement ##
 
+* 0.40 : OpenLibrary: retire borrowed books
 * 0.39 : {{nobr|. {{plume}}}}
 * 0.37 : ne retire pas 'langue=fr' (pas de consensus) (@Ypirétis)
 * 0.36 : paramètres inutiles : langue=fr, langue, page totale
