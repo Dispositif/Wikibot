@@ -23,7 +23,7 @@ class IsbnFacade extends Isbn
 
     const ERROR_INVALID_COUNTRY_CODE = 'code pays inconnu';
 
-    // Todo complete array.
+    // TODO: complete array.
     const ISBN_LANGUAGE_CODES
         = [
             '0' => 'en',

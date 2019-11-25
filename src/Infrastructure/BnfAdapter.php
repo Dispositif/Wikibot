@@ -56,7 +56,6 @@ class BnfAdapter extends AbstractBookApiAdapter implements BookApiInterface
                 ]
             );
 
-        dump($url);
         $response = $this->client->get($url);
 
         if (200 !== $response->getStatusCode()) {
