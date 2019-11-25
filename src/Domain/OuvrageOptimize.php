@@ -26,7 +26,8 @@ use Throwable;
  */
 class OuvrageOptimize
 {
-    const WIKI_LANGUAGE = 'fr';
+    const CONVERT_GOOGLEBOOK_TEMPLATE = false; // change OuvrageOptimizeTest !!
+    const WIKI_LANGUAGE               = 'fr';
 
     protected $original;
 
@@ -322,17 +323,39 @@ class OuvrageOptimize
         }
     }
 
-    private function googleBookUrl($param)
+    /**
+     * Normalize a Google Book links.
+     * Clean the useless URL parameters or transform into wiki-template.
+     *
+     * @param $param
+     *
+     * @throws Exception
+     */
+    private function googleBookUrl(string $param): void
     {
-        if (!empty($this->getParam($param))
-            && GoogleLivresTemplate::isGoogleBookURL($this->getParam($param))
+        $url = $this->getParam($param);
+        if (empty($url)
+            || !GoogleLivresTemplate::isGoogleBookURL($url)
         ) {
-            $goo = GoogleLivresTemplate::createFromURL($this->getParam($param));
-            if (is_object($goo)) {
-                $this->setParam($param, $goo->serialize());
+            return;
+        }
+
+        if (self::CONVERT_GOOGLEBOOK_TEMPLATE) {
+            $template = GoogleLivresTemplate::createFromURL($url);
+            if ($template) {
+                $this->setParam($param, $template->serialize());
                 $this->log('{Google}');
                 $this->notCosmetic = true;
+
+                return;
             }
+        }
+
+        $goo = GoogleLivresTemplate::simplifyGoogleUrl($url);
+        if (!empty($goo)) {
+            $this->setParam($param, $goo);
+            $this->log('Google');
+            $this->notCosmetic = true;
         }
     }
 
@@ -683,7 +706,9 @@ class OuvrageOptimize
             return true;
         }
         // Complétion langue ?
-        if (!empty($this->getParam('langue')) && empty($this->original->getParam('langue'))) {
+        if (!empty($this->getParam('langue')) && empty($this->original->getParam('langue'))
+            && self::WIKI_LANGUAGE !== $this->getParam('langue')
+        ) {
             return true;
         }
         // TODO replace conditions ci-dessous par event flagMajor()
