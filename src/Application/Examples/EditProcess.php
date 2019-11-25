@@ -34,6 +34,8 @@ $process->run();
 class EditProcess
 {
     const TASK_NAME              = 'Amélioration bibliographique';
+    const EDIT_SIGNALEMENT       = false;
+
     const CITATION_LIMIT         = 100;
     const DELAY_BOTFLAG_SECONDS  = 30;
     const DELAY_NOBOT_IN_SECONDS = 150;
@@ -103,6 +105,7 @@ class EditProcess
         if (in_array($page->getLastEditor(), [getenv('BOT_NAME'), getenv('BOT_OWNER')])) {
             echo "SKIP : édité recemment par bot/dresseur.\n";
             $this->db->skipRow($title);
+
             return false;
         }
         $this->wikiText = $page->getText();
@@ -117,6 +120,7 @@ class EditProcess
         if (preg_match('#{{ ?En-tête label#i', $this->wikiText) > 0) {
             echo "SKIP : AdQ ou BA.\n";
             $this->db->skipRow($title);
+
             return false;
         }
 
@@ -162,7 +166,9 @@ class EditProcess
             }
 
             try {
-                $this->sendErrorMessage($data);
+                if (self::EDIT_SIGNALEMENT) {
+                    $this->sendErrorMessage($data);
+                }
             } catch (Throwable $e) {
                 dump($e);
                 unset($e);
@@ -226,9 +232,9 @@ class EditProcess
     public function generateSummary(): string
     {
         // Start summary with "Bot" when using botflag, else "*"
-        $prefix = ($this->botFlag) ? 'bot' : '??';
+        $prefix = ($this->botFlag) ? 'bot' : '☆';
         // add "/!\" when errorWarning
-        $prefix = (!empty($this->errorWarning) && !$this->botFlag) ? '!!!' : $prefix;
+        $prefix = (!empty($this->errorWarning) && !$this->botFlag) ? '⚠' : $prefix;
 
 
         // basic modifs
@@ -241,8 +247,8 @@ class EditProcess
         $summary = sprintf(
             '%s [%s/%s] %s %s : %s',
             $prefix,
-            str_replace('v.', '', $this->bot::getGitVersion()),
-            str_replace('v', '', $this->citationVersion),
+            str_replace('v', '', $this->bot::getGitVersion()),
+            str_replace('v0.', '', $this->citationVersion),
             self::TASK_NAME,
             $this->nbRows,
             $citeSummary
@@ -373,7 +379,7 @@ class EditProcess
         $this->minorFlag = true;
         $this->nbRows = 0;
 
-        $this->bot->checkWatchPages(true);
+        $this->bot->checkStopOnTalkpage();
     }
 
 }

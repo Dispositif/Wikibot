@@ -42,6 +42,10 @@ class Bot
     public $taskName = 'Améliorations bibliographiques';
 
     public static $gitVersion;
+    /**
+     * @var \DateTimeImmutable
+     */
+    private $lastCheckStopDate;
 
     public function __construct()
     {
@@ -99,6 +103,37 @@ class Bot
         return null;
     }
 
+    public function checkStopOnTalkpage(?bool $botTalk = false): void
+    {
+        $title = 'Discussion_utilisateur:'.getenv('BOT_NAME');
+
+        if ($this->lastCheckStopDate
+            && new \DateTimeImmutable() < $this->lastCheckStopDate->add(
+                new \DateInterval('PT2M')
+            )
+        ) {
+            return;
+        }
+        $this->lastCheckStopDate = new \DateTimeImmutable();
+
+
+        $wiki = ServiceFactory::wikiApi();
+        $pageAction = new WikiPageAction($wiki, $title);
+        $text = $pageAction->getText();
+
+        if (preg_match('#({{stop}}|{{Stop}}|STOP)#', $text) > 0) {
+            echo date('Y-m-d H:i');
+            echo sprintf(
+                "\n*** STOP ON TALK PAGE BY %s ***\n\n",
+                $pageAction->getLastEditor()
+            );
+            if ($botTalk && class_exists(ZiziBot::class)) {
+                (new ZiziBot())->botTalk();
+            }
+            exit();
+        }
+    }
+
     /**
      * Is there a new message on the discussion page of the bot (or owner) ?
      * Stop on new message ?
@@ -108,13 +143,13 @@ class Bot
      * @throws ConfigException
      * @throws \Mediawiki\Api\UsageException
      */
-    public function checkWatchPages(bool $botTalk = false)
+    public function checkWatchPages()
     {
         foreach ($this->getWatchPages() as $title => $lastTime) {
             $pageTime = $this->getTimestamp($title);
 
             // the page has been edited since last check ?
-            if ($pageTime !== $lastTime) {
+            if (!$pageTime || $pageTime !== $lastTime) {
                 echo sprintf(
                     "WATCHPAGE '%s' has been edited since %s.\n",
                     $title,
@@ -125,11 +160,7 @@ class Bot
                 echo "Replace with $title => '$pageTime'";
 
                 if (self::EXIT_ON_CHECK_WATCHPAGE) {
-//                    if ($botTalk && class_exists(ZiziBot::class)) {
-//                        (new ZiziBot())->botTalk();
-//                    }
-
-                    echo "\nSTOP on checkWatchPages.\n";
+                    echo "EXIT_ON_CHECK_WATCHPAGE\n";
                     exit();
                 }
             }
@@ -156,7 +187,7 @@ class Bot
         return $array;
     }
 
-    private function getTimestamp(string $title): string
+    private function getTimestamp(string $title): ?string
     {
         $wiki = ServiceFactory::wikiApi();
         $page = new WikiPageAction($wiki, $title);
@@ -182,7 +213,7 @@ class Bot
      * Detect {{nobots}}, {{bots|deny=all}}, {{bots|deny=MyBot,BobBot}}.
      * Relevant out of the "main" wiki-namespace (talk pages, etc).
      *
-     * @param string      $text
+     * @param string $text
      * @param string|null $botName
      *
      * @return bool
@@ -190,7 +221,7 @@ class Bot
     public static function isNoBotTag(string $text, ?string $botName = null): bool
     {
         $botName = ($botName) ? $botName : getenv('BOT_NAME');
-        $denyReg = (!is_null($botName)) ? '|\{\{bots ?\| ?deny\=[^\}]*'.preg_quote($botName, '#').'[^\}]*\}\}' : '';
+        $denyReg = (!empty($botName)) ? '|\{\{bots ?\| ?deny\=[^\}]*'.preg_quote($botName, '#').'[^\}]*\}\}' : '';
 
         if (preg_match('#({{nobots}}|{{bots ?\| ?(optout|deny) ?= ?all ?}}'.$denyReg.')#i', $text) > 0) {
             return true;
@@ -211,5 +242,6 @@ class Bot
         if (preg_match('#{{Protection#i', $text) > 0) {
             return true;
         }
+        return false;
     }
 }
