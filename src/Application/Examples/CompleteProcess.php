@@ -147,14 +147,14 @@ class CompleteProcess
         }
 
         try {
-            if(!$this->skipGoogle()){
+            if (!$this->skipGoogle()) {
                 dump('GOOGLE...');
                 $googleOuvrage = OuvrageFactory::GoogleFromIsbn($isbn);
                 $this->completeOuvrage($googleOuvrage);
             }
         } catch (Throwable $e) {
             echo "*** ERREUR GOOGLE Isbn Search ***".$e->getMessage()."\n";
-            if(strpos($e->getMessage(),'Daily Limit Exceeded') !== true ){
+            if (strpos($e->getMessage(), 'Daily Limit Exceeded') !== true) {
                 echo "sleep 1h\n";
                 sleep(60 * 60);
                 echo "Try goto\n";
@@ -191,7 +191,7 @@ class CompleteProcess
             //            $this->completeOuvrage($googleOuvrage);
         } catch (Throwable $e) {
             echo "*** ERREUR GOOGLE QuerySearch *** ".$e->getMessage()."\n";
-            sleep(60*30);
+            sleep(60 * 30);
             goto onlineQuerySearch;
         }
     }
@@ -221,12 +221,12 @@ class CompleteProcess
         $finalData = [
             //    'page' =>
             'raw' => $this->raw,
-            'opti' => $this->ouvrage->serialize(true),
+            'opti' => $this->serializeFinalOpti(),
             'optidate' => date("Y-m-d H:i:s"),
             'modifs' => mb_substr(implode(',', $this->log), 0, 250),
             'notcosmetic' => ($this->notCosmetic) ? 1 : 0,
             'major' => ($this->major) ? 1 : 0,
-            'isbn' => substr($isbn13,0,20),
+            'isbn' => substr($isbn13, 0, 20),
             'version' => Bot::getGitVersion() ?? null,
         ];
         dump($finalData);
@@ -235,7 +235,25 @@ class CompleteProcess
         dump($result); // bool
     }
 
-    private function skipGoogle():bool
+    /**
+     * Final serialization of the completed OuvrageTemplate.
+     * Delete 'langue=fr'
+     *
+     * @return string
+     * @throws \Exception
+     */
+    private function serializeFinalOpti(): string
+    {
+        $ouvrage = $this->ouvrage;
+        $langue = $ouvrage->getParam('langue');
+        if ($langue && 'fr' === $langue) {
+            $ouvrage->unsetParam('langue');
+        }
+
+        return $ouvrage->serialize(true);
+    }
+
+    private function skipGoogle(): bool
     {
         return false;
     }

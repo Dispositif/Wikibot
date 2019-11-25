@@ -31,6 +31,8 @@ class OuvrageComplete
 
     private $log = [];
 
+    private $sameBook;
+
     //todo: injection référence base ou mapping ? (Google
     public function __construct(OuvrageTemplate $origin, OuvrageTemplate $book)
     {
@@ -61,7 +63,8 @@ class OuvrageComplete
     private function complete()
     {
         // si livre suspect, on stoppe
-        if (!$this->predictSameBook()) {
+        $this->sameBook = $this->predictSameBook();
+        if (!$this->sameBook) {
             dump('not same book');
 
             return false;
@@ -94,11 +97,14 @@ class OuvrageComplete
                 if (in_array($param, $skipParam)) {
                     continue;
                 }
+
+                $this->origin->setParam($param, $value);
+
                 if ('langue' === $param && static::WIKI_LANGUAGE === $value) {
+                    $this->log('fr'.$param);
                     continue;
                 }
 
-                $this->origin->setParam($param, $value);
                 $this->log('++'.$param);
                 $this->major = true;
                 $this->notCosmetic = true;
