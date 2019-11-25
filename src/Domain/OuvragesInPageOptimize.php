@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace App\Domain;
 
 use App\Domain\Models\Wiki\OuvrageTemplate;
-use App\Domain\Utils\TextUtil;
+use App\Domain\Utils\WikiTextUtil;
 
 class OuvragesInPageOptimize
 {
@@ -62,7 +62,7 @@ class OuvragesInPageOptimize
                 }
                 if (preg_match('#\[\[(.+)]]#', $value, $matches) > 0) {
                     if (isset($deja[$matches[1]])) {
-                        $newvalue = TextUtil::unWikify($value);
+                        $newvalue = WikiTextUtil::unWikify($value);
                         $ouvrage->setParam($param, $newvalue);
                         $this->log('unlink/article');
                     }

@@ -44,7 +44,7 @@ class WikiPageAction
         try {
             $this->page = $wiki->newPageGetter()->getFromTitle($title);
         } catch (Throwable $e) {
-            throw new Exception('Erreur construct WikiPageAction '. $e->getMessage());
+            throw new Exception('Erreur construct WikiPageAction '.$e->getMessage());
         }
     }
 
@@ -74,7 +74,7 @@ class WikiPageAction
      */
     public function isPageHomonymie(): bool
     {
-        return stristr($this->getText(), '{{homonymie');
+        return (false !== stristr($this->getText(), '{{homonymie'));
     }
 
     /**
@@ -95,7 +95,7 @@ class WikiPageAction
     public function getRedirect(): ?string
     {
         if (preg_match('/^#REDIRECT(?:ION)? ?\[\[([^]]+)]]/i', $this->getText(), $matches)) {
-            return (string) trim($matches[1]);
+            return (string)trim($matches[1]);
         }
 
         return null;
@@ -150,7 +150,12 @@ class WikiPageAction
      */
     public static function replaceTemplateInText(string $text, string $tplOrigin, string $tplReplace): string
     {
-        if (preg_match_all('#(?<langTemp>{{[a-z][a-z]}} ?{{[a-z][a-z]}}) ?'.preg_quote($tplOrigin, '#').'#i', $text, $matches)) {
+        if (preg_match_all(
+            '#(?<langTemp>{{[a-z][a-z]}} ?{{[a-z][a-z]}}) ?'.preg_quote($tplOrigin, '#').'#i',
+            $text,
+            $matches
+        )
+        ) {
             // Skip double lang prefix (like in "{{fr}} {{en}} {template}")
             echo 'SKIP ! double lang prefix !';
 
@@ -215,7 +220,6 @@ class WikiPageAction
      * @param $text string
      *
      * @return array
-     *
      * @throws Exception
      */
     public function extractRefFromText(string $text): ?array
@@ -223,7 +227,7 @@ class WikiPageAction
         $parser = new TagParser(); // todo ParserFactory
         $refs = $parser->importHtml($text)->getRefValues(); // []
 
-        return (array) $refs;
+        return (array)$refs;
     }
 
     /**

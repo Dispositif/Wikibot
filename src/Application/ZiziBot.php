@@ -56,19 +56,31 @@ class ZiziBot extends Bot
         return (bool)$success;
     }
 
+    /**
+     * @param string|null $toEditor
+     * @param string|null $identation
+     *
+     * @return string
+     * @throws Exception
+     */
     private function generateTalkText(?string $toEditor = null, ?string $identation = ':')
     {
         $to = ($toEditor) ? sprintf('@%s : ', $toEditor) : ''; // {{notif}}
         $sentence = TextUtil::mb_ucfirst($this->getRandomSentence());
+        if(!$sentence){
+            throw new \Exception('no sentence');
+        }
         $addText = sprintf('%s%s%s --~~~~', $identation, $to, $sentence);
 
         return $addText;
     }
 
-    private function getRandomSentence(): string
+    private function getRandomSentence(): ?string
     {
         $sentences = file(self::BOT_TALK_FILE);
-
+        if(!$sentences){
+            return null;
+        }
         return (string)trim($sentences[array_rand($sentences)]);
     }
 

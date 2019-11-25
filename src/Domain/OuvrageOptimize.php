@@ -303,7 +303,7 @@ class OuvrageOptimize
     private function extractSubTitle(): void
     {
         // FIXED bug [[fu:bar]]
-        if (WikiTextUtil::isWikify($this->getParam('titre'))) {
+        if (!$this->getParam('titre') || WikiTextUtil::isWikify($this->getParam('titre'))) {
             return;
         }
 
