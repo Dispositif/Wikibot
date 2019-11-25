@@ -1,7 +1,9 @@
 ## Versions des règles de corrections/complètement ##
 
-* 0.40 : OpenLibrary: retire borrowed books
-* 0.39 : {{nobr|. {{plume}}}}
+* 0.41 : exclusion donnée de langue GoogleBook (@Evynrhud)
+* 0.40 : OpenLibrary: n'ajoute pas URL livre empruntable
+* 0.39 : plume=oui -> {{nobr|. {{plume}}}}
+* 0.38 : bot qui revenait encore sur le même article
 * 0.37 : ne retire pas 'langue=fr' (pas de consensus) (@Ypirétis)
 * 0.36 : paramètres inutiles : langue=fr, langue, page totale
 * 0.34 : sous-titre sans majuscule (@Ypirétis)
