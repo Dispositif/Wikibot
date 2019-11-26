@@ -132,7 +132,7 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
 
         $dat = [];
         // keep only a few parameters (+'q' ?)
-        $keeps = ['id', 'pg', 'printsec', 'dq', 'q'];
+        $keeps = ['id', 'pg', 'printsec', 'dq'];
         foreach ($keeps as $keep) {
             if (!empty($gooDat[$keep])) {
                 $dat[$keep] = $gooDat[$keep];

@@ -45,7 +45,7 @@ class GoogleLivresTemplateTest extends TestCase
             [
                 // common pattern
                 'https://books.google.fr/books?id=26gcP_Yz-i8C&pg=PA56&lpg=PA56&dq=André+Poznanski&source=bl&ots=tuFKKbkpUS&sig=ACfU3U058ij4qQHFsXX_KX01YK81SLCCBw&hl=fr&sa=X&ved=2ahUKEwiB6tHVtKbkAhULNRoKHbOeDXU4ChDoATAAegQICBAB#v=onepage&q=André%20Poznanski&f=false',
-                'https://books.google.com/books?id=26gcP_Yz-i8C&pg=PA56&dq=Andr%C3%A9+Poznanski&q=Andr%C3%A9+Poznanski',
+                'https://books.google.com/books?id=26gcP_Yz-i8C&pg=PA56&dq=Andr%C3%A9+Poznanski',
             ],
             [
                 // pattern 'http://' and '/books/reader'
