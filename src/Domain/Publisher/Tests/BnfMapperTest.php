@@ -23,7 +23,7 @@ class BnfMapperTest extends TestCase
                 'bnf' => '35049657',
                 'isbn' => '2-85319-209-1',
                 'langue' => 'fr',
-                'langue originale' => null,
+                'langue originale' => 'it',
                 'langue titre' => null,
                 'titre' => 'Dictionnaire des chanteurs francophones',
                 'sous-titre' => 'de 1900 à nos jours',
@@ -34,7 +34,7 @@ class BnfMapperTest extends TestCase
                 'lieu' => 'Paris',
                 'éditeur' => 'Conseil international de la langue française',
                 'date' => '1989',
-                'pages totales' => '210',
+                'pages totales' => '622',
             ],
             $actual
         );

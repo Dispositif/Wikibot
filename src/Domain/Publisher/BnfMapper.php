@@ -122,15 +122,12 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
      */
     private function lang2wiki(?string $lang = null): ?string
     {
-        $iso2b_to_french = [];
-        $french_to_frlang = [];
-        require_once __DIR__.'/../Enums/languageData.php';
+        $iso2b_to_frlang = [];
+        require __DIR__.'/../Enums/languageData.php';
 
-        if ($lang && isset($iso2b_to_french[$lang])) {
-            $french = $iso2b_to_french[$lang];
-            if (isset($french_to_frlang[$french])) {
-                return $french_to_frlang[$french];
-            }
+        if (!empty($lang) && isset($iso2b_to_frlang[$lang])) {
+
+            return $iso2b_to_frlang[$lang];
         }
 
         return null;
