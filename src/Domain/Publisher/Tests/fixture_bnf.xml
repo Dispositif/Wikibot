@@ -37,6 +37,7 @@
                     </mxc:datafield>
                     <mxc:datafield tag="101" ind1="0" ind2=" ">
                         <mxc:subfield code="a">fre</mxc:subfield>
+                        <mxc:subfield code="c">ita</mxc:subfield>
                     </mxc:datafield>
                     <mxc:datafield tag="102" ind1=" " ind2=" ">
                         <mxc:subfield code="a">FR</mxc:subfield>
@@ -85,7 +86,7 @@
                         <mxc:subfield code="g">Normandie impr.</mxc:subfield>
                     </mxc:datafield>
                     <mxc:datafield tag="215" ind1=" " ind2=" ">
-                        <mxc:subfield code="a">210 p.</mxc:subfield>
+                        <mxc:subfield code="a">1 vol. (622 p.)</mxc:subfield>
                         <mxc:subfield code="c">couv. ill.</mxc:subfield>
                         <mxc:subfield code="d">24 cm</mxc:subfield>
                     </mxc:datafield>

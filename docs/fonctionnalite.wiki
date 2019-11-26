@@ -17,7 +17,7 @@ Complètement de données d'après des bases bibliographiques :
 * Bases interrogées : {{fait}} [[Google Books]], {{fait}} [[Open Library]], {{fait}}[[BnF]], {{mort}}[[WorldCat]],{{pas fait}}[[WikiData]]
 * todo: décrire fiabilité données
 * {{fait}} comparaison titre/auteur pour fiabilité infos
-* Exemple : [https://fr.wikipedia.org/w/index.php?title=Andr%C3%A9_Navarra&diff=prev&oldid=164482867]
+* Exemple : [https://fr.wikipedia.org/w/index.php?title=Anne-Sabine_Hedwiger&diff=prev&oldid=164866871]
 
 Améliorations typographiques :
 
