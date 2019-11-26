@@ -56,12 +56,13 @@ class BnfAdapter extends AbstractBookApiAdapter implements BookApiInterface
                 ]
             );
 
+        echo "URL : $url \n";
         $response = $this->client->get($url);
 
         if (200 !== $response->getStatusCode()) {
             throw new Exception('response error '.$response->getStatusCode().$response->getReasonPhrase());
         }
-        $raw = $response->getBody()->getContents();
+        $raw = \Normalizer::normalize($response->getBody()->getContents());
 
         try {
             $xml = new SimpleXMLElement($raw);
