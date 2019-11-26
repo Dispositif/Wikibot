@@ -81,7 +81,8 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
             'lieu' => $this->getLocation(),
             'éditeur' => $this->getPublisher(),
             'date' => $this->getPublishDate(),
-
+            // 215
+            'pages totales' => $this->convertPages(),
         ];
     }
 
@@ -90,6 +91,22 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
         $element = $this->xml->xpath($path);
         if (isset($element[0]) && $element[0] instanceof SimpleXMLElement) {
             return (string)$element[0];
+        }
+
+        return null;
+    }
+
+    /**
+     * Convert number of pages.
+     * "1 vol. (126 p.)"
+     *
+     * @return string|null
+     */
+    private function convertPages(): ?string
+    {
+        $raw = $this->xpath2string('//mxc:datafield[@tag="215"]/mxc:subfield[@code="a"]');
+        if (!empty($raw) && preg_match('#([0-9]{2,}) p\.#', $raw, $matches) > 0) {
+            return (string)$matches[1];
         }
 
         return null;

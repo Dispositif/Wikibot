@@ -34,6 +34,7 @@ class BnfMapperTest extends TestCase
                 'lieu' => 'Paris',
                 'éditeur' => 'Conseil international de la langue française',
                 'date' => '1989',
+                'pages totales' => '210',
             ],
             $actual
         );
