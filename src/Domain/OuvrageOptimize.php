@@ -620,6 +620,7 @@ class OuvrageOptimize
                     'raw' => '{{début citation}}'.$extrait.'{{fin citation}}',
                 ];
                 $this->log('{début citation}');
+                $this->notCosmetic = true;
             } else {
                 // StdClass
                 $this->ouvrage->externalTemplates[] = (object)[
@@ -628,9 +629,11 @@ class OuvrageOptimize
                     'raw' => '{{extrait|'.$extrait.'}}',
                 ];
                 $this->log('{extrait}');
+                $this->notCosmetic = true;
             }
 
             $this->unsetParam('extrait');
+            $this->notCosmetic = true;
         }
 
         // "commentaire=bla" => {{Commentaire biblio|1=bla}}
@@ -643,6 +646,7 @@ class OuvrageOptimize
             ];
             $this->unsetParam('commentaire');
             $this->log('{commentaire}');
+            $this->notCosmetic = true;
         }
     }
 
@@ -777,7 +781,10 @@ class OuvrageOptimize
         // ['éd. de ', 'éd. du ', 'éd.', 'ed.', 'Éd. de ', 'Éd.', 'édit.', 'Édit.', '(éd.)', '(ed.)', 'Ltd.']
 
         $editeurStr = WikiTextUtil::unWikify($editeur);
-        $editeurStr = TextUtil::mb_ucfirst($editeurStr);
+        // On garde minuscule sur éditeur, pour nuance Éditeur/éditeur permettant de supprimer "éditeur"
+        // ex: "éditions Milan" => "Milan"
+
+//        $editeurStr = TextUtil::mb_ucfirst($editeurStr);
 
         // Déconseillé : 'lien éditeur' (obsolete 2019)
         if (!empty($this->getParam('lien éditeur'))) {
