@@ -101,7 +101,7 @@ class OuvrageComplete
                 $this->origin->setParam($param, $value);
 
                 if ('langue' === $param && static::WIKI_LANGUAGE === $value) {
-                    $this->log('fr'.$param);
+                    //$this->log('fr'.$param);
                     continue;
                 }
 
@@ -337,7 +337,7 @@ class OuvrageComplete
 
         // if there is only 2 chars of difference (i.e. typo error)
         if (levenshtein($this->charsFromBigTitle($this->origin), $this->charsFromBigTitle($this->book)) <= 2) {
-            $this->log('typo titre?');
+//            $this->log('typo titre?'); // TODO Normalize:: text from external API
 
             return true;
         }
@@ -389,7 +389,7 @@ class OuvrageComplete
     {
         $text = $ouvrage->getParam('titre').$ouvrage->getParam('sous-titre');
 
-        return $this->stripAll($text);
+        return $this->stripAll(\Normalizer::normalize($text));
     }
 
     /**
