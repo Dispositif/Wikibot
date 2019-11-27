@@ -1,6 +1,7 @@
 ## Versions des règles de corrections/complètement ##
 
-* 0.43 : BnF datas (langue originale,pages), Google (q=)
+* 0.44 : Desactive temporairement gestion page/pages
+* 0.43 : BnF (langue originale, langue titre, pages), Google (-q=)
 * 0.41 : exclusion donnée de langue GoogleBook (@Evynrhud)
 * 0.40 : OpenLibrary: n'ajoute pas URL livre empruntable
 * 0.39 : plume=oui -> {{nobr|. {{plume}}}}
