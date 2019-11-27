@@ -68,8 +68,8 @@ class OuvrageTemplate extends AbstractWikiTemplate
             'numéro édition' => "numéro d'édition",
             'origyear' => 'année première édition',
             'publi' => 'réimpression',
-            'pages' => 'pages totales',
-            'page' => 'passage', // Doc
+//            'pages' => 'pages totales', // doc - mis temporairement en paramètre normal
+//            'page' => 'passage', // Doc - mis temporairement en paramètre normal
             //        'format' => 'format livre', //  ou 'format électronique' (pdf)
             'ISBN' => 'isbn',
             'isbn1' => 'isbn',
@@ -123,9 +123,9 @@ class OuvrageTemplate extends AbstractWikiTemplate
             'author' => 'auteur',
             'authorlink' => 'lien auteur',
             'coauthors' => 'co-auteur',
-            'editor' => '',
-            'editor-link' => '',
-            'others' => '',
+//            'editor' => '',
+//            'editor-link' => '',
+//            'others' => '',
             'trans_title' => 'titre traduit',
             'type' => '',
             'edition' => "numéro d'édition",
@@ -323,6 +323,8 @@ class OuvrageTemplate extends AbstractWikiTemplate
             'année première édition',
             'réimpression',
             'pages totales',
+            'page', // temporaire
+            'pages', // temporaire
             'format livre',
             'format', // obsolete
             'isbn',
