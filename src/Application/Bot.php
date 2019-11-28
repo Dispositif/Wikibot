@@ -11,7 +11,9 @@ namespace App\Application;
 
 use App\Domain\Exceptions\ConfigException;
 use App\Infrastructure\ServiceFactory;
+use App\Infrastructure\SMS;
 use Bluora\LaravelGitInfo\GitInfo;
+use Mediawiki\Api\UsageException;
 
 /**
  * Define wiki configuration of the bot.
@@ -120,15 +122,27 @@ class Bot
         $wiki = ServiceFactory::wikiApi();
         $pageAction = new WikiPageAction($wiki, $title);
         $text = $pageAction->getText();
+        $lastEditor = $pageAction->getLastEditor() ?? 'unknown';
 
         if (preg_match('#({{stop}}|{{Stop}}|STOP)#', $text) > 0) {
             echo date('Y-m-d H:i');
             echo sprintf(
                 "\n*** STOP ON TALK PAGE BY %s ***\n\n",
-                $pageAction->getLastEditor()
+                $lastEditor
             );
+            if (class_exists(SMS::class)) {
+                try {
+                    new SMS('Bot stop by '.$lastEditor);
+                } catch (\Exception $e) {
+                    unset($e);
+                }
+            }
             if ($botTalk && class_exists(ZiziBot::class)) {
-                (new ZiziBot())->botTalk();
+                try {
+                    (new ZiziBot())->botTalk();
+                } catch (UsageException $e) {
+                    unset($e);
+                }
             }
             exit();
         }
@@ -213,7 +227,7 @@ class Bot
      * Detect {{nobots}}, {{bots|deny=all}}, {{bots|deny=MyBot,BobBot}}.
      * Relevant out of the "main" wiki-namespace (talk pages, etc).
      *
-     * @param string $text
+     * @param string      $text
      * @param string|null $botName
      *
      * @return bool
@@ -242,6 +256,7 @@ class Bot
         if (preg_match('#{{Protection#i', $text) > 0) {
             return true;
         }
+
         return false;
     }
 }
