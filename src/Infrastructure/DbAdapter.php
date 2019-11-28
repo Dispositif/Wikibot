@@ -62,7 +62,7 @@ class DbAdapter implements QueueInterface
         try {
             $raw = $this->db->fetchColumn(
                 'SELECT raw FROM TempRawOpti 
-                WHERE (opti = "" OR optidate IS NULL OR optidate < :validDate ) AND (edited IS NULL)
+                WHERE raw <> "" AND (opti = "" OR optidate IS NULL OR optidate < :validDate ) AND (edited IS NULL)
                 ORDER BY priority DESC,id',
                 [
                     'validDate' => self::OPTI_VALID_DATE,
@@ -122,6 +122,7 @@ class DbAdapter implements QueueInterface
                         OR B.optidate IS NULL 
                         OR B.opti="" 
                         OR B.skip=1
+                        OR B.raw=""
                         )
                     AND A.page = B.page
                     )
