@@ -99,7 +99,7 @@ class DbAdapter implements QueueInterface
     //          EDIT QUEUE
     //------------------------------------------------------
     /**
-     * Get one new raw text (template) for edit process.
+     * Get batch of citations(template) for edit process.
      *
      * @param int|null $limit
      *
@@ -125,14 +125,15 @@ class DbAdapter implements QueueInterface
                         )
                     AND A.page = B.page
                     )
-                ORDER BY A.priority,RAND() DESC
+                ORDER BY A.priority,RAND()
                 LIMIT '.$limit.'
                 '
             );
             $page = $pageInfo->fetchAll()[0]['page'];
 
+            // Order by optidate for first version in edit commentary ?
             $data = $this->db->fetchRowMany(
-                'SELECT * FROM TempRawOpti WHERE page=:page',
+                'SELECT * FROM TempRawOpti WHERE page=:page ORDER BY optidate DESC',
                 ['page' => $page]
             );
             $json = json_encode($data);
@@ -144,12 +145,28 @@ class DbAdapter implements QueueInterface
         return $json;
     }
 
-    public function skipRow(string $title):bool
+    public function skipArticle(string $title):bool
     {
         try {
             $result = $this->db->update(
                 'TempRawOpti',
                 ['page' => $title], // condition
+                ['skip' => true]
+            );
+        } catch (MysqlException $e) {
+            dump($e);
+
+            return false;
+        }
+        return !empty($result);
+    }
+
+    public function skipRow(int $id):bool
+    {
+        try {
+            $result = $this->db->update(
+                'TempRawOpti',
+                ['id' => $id], // condition
                 ['skip' => true]
             );
         } catch (MysqlException $e) {
@@ -247,17 +264,21 @@ class DbAdapter implements QueueInterface
     public function getMonitor(): ?array
     {
         $data = null;
-        // 6 hours ago
-        $beforeTime = (new \DateTime)->sub(new \DateInterval('PT6H'));
+        // 2 hours ago
+        $beforeTime = (new \DateTime)->sub(new \DateInterval('PT2H'));
         try {
             $data = $this->db->fetchRowMany(
-                'SELECT id,page,raw,opti,optidate,edited FROM TempRawOpti WHERE page = (
+                'SELECT id,page,raw,opti,optidate,edited,verify,skip FROM TempRawOpti WHERE page = (
                     SELECT page FROM TempRawOpti
-                    WHERE edited IS NOT NULL and edited < :edited
-             		ORDER BY optidate,verify,edited
+                    WHERE edited IS NOT NULL 
+                    and edited > :afterDate and edited < :beforeDate
+                    and (verify is null or verify < :nextVerifyDate )
+             		ORDER BY verify,edited desc
                     LIMIT 1)',
                 [
-                    'edited' => $beforeTime->format('Y-m-d H:i:s'),
+                    'afterDate' => '2019-10-26 06:00:00',
+                    'beforeDate' => $beforeTime->format('Y-m-d H:i:s'),
+                    'nextVerifyDate' => (new \DateTime())->sub(new \DateInterval('P1D'))->format('Y-m-d H:i:s')
                 ]
             );
         } catch (Throwable $e) {
