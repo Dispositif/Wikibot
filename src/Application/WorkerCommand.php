@@ -59,10 +59,10 @@ class WorkerCommand extends Command
 
         $bot = new Bot();
 
-        if ('wstat' === $workerName) {
-            $worker = new WstatWorker();
-            $worker->run();
-        }
+//        if ('wstat' === $workerName) {
+//            $worker = new WstatWorker();
+//            $worker->run();
+//        }
         if ('fileworker' === $workerName) {
             $worker = new FileWorker(); // todo inject $io dans construct() ?
             $worker->run($io);
