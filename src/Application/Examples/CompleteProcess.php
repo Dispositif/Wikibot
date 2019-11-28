@@ -100,8 +100,9 @@ class CompleteProcess
              * RECHERCHE ONLINE
              */
             $isbn = $origin->getParam('isbn') ?? null; // avant mise en forme EAN>ISBN
+            $isbn10 = $origin->getParam('isbn10') ?? null;
             if (!empty($isbn)) {
-                $this->onlineIsbnSearch($isbn);
+                $this->onlineIsbnSearch($isbn, $isbn10);
             }
 
             $this->sendCompleted();
@@ -129,25 +130,32 @@ class CompleteProcess
         return $raw;
     }
 
-    private function onlineIsbnSearch(string $isbn)
+    private function onlineIsbnSearch(string $isbn, ?string $isbn10 = null)
     {
         online:
-        echo "sleep 40...\n";
+        echo "sleep 20...\n";
         sleep(40);
 
         try {
             dump('BIBLIO NAT FRANCE...');
-            $bnfOuvrage = OuvrageFactory::BnfFromIsbn($isbn);
+            // BnF sait pas trouver un vieux livre (10) d'après ISBN-13... FACEPALM !
+            if ($isbn10) {
+                $bnfOuvrage = OuvrageFactory::BnfFromIsbn($isbn10);
+            }
+            if (!$isbn10 || empty($bnfOuvrage->getParam('titre'))) {
+                $bnfOuvrage = OuvrageFactory::BnfFromIsbn($isbn);
+            }
             $this->completeOuvrage($bnfOuvrage);
         } catch (Throwable $e) {
             echo "*** ERREUR BnF Isbn Search".$e->getMessage()."\n";
             echo "sleep 5min\n";
             sleep(60 * 5);
+            echo "Wake up\n";
             goto online;
         }
 
         try {
-            if (!$this->skipGoogle()) {
+            if (!$this->skipGoogle($bnfOuvrage)) {
                 dump('GOOGLE...');
                 $googleOuvrage = OuvrageFactory::GoogleFromIsbn($isbn);
                 $this->completeOuvrage($googleOuvrage);
@@ -157,7 +165,7 @@ class CompleteProcess
             if (strpos($e->getMessage(), 'Daily Limit Exceeded') !== true) {
                 echo "sleep 1h\n";
                 sleep(60 * 60);
-                echo "Try goto\n";
+                echo "Wake up\n";
                 goto online;
             }
         }
@@ -177,7 +185,7 @@ class CompleteProcess
     private function onlineQuerySearch(string $query)
     {
         echo "sleep 40...";
-        sleep(40);
+        sleep(20);
         onlineQuerySearch:
 
         try {
@@ -191,7 +199,9 @@ class CompleteProcess
             //            $this->completeOuvrage($googleOuvrage);
         } catch (Throwable $e) {
             echo "*** ERREUR GOOGLE QuerySearch *** ".$e->getMessage()."\n";
+            echo "sleep 30min";
             sleep(60 * 30);
+            echo "Wake up\n";
             goto onlineQuerySearch;
         }
     }
@@ -237,23 +247,17 @@ class CompleteProcess
 
     /**
      * Final serialization of the completed OuvrageTemplate.
-     * Delete 'langue=fr'
      *
      * @return string
-     * @throws \Exception
      */
     private function serializeFinalOpti(): string
     {
-        $ouvrage = $this->ouvrage;
-        $langue = $ouvrage->getParam('langue');
-        if ($langue && 'fr' === $langue) {
-            $ouvrage->unsetParam('langue');
-        }
-
-        return $ouvrage->serialize(true);
+        $finalOpti = $this->ouvrage->serialize(true);
+        $finalOpti = \Normalizer::normalize($finalOpti);
+        return $finalOpti;
     }
 
-    private function skipGoogle(): bool
+    private function skipGoogle(OuvrageTemplate $bnfOuvrage): bool
     {
         return false;
     }
