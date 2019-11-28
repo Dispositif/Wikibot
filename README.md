@@ -19,6 +19,8 @@ Tech stack : PHP>=7.1, RabbitMQ or MySQL, Symfony components, addwiki/mediawiki-
 
 List of console commands : ```php src/console list```
 
+<img src="https://raw.githubusercontent.com/Dispositif/Wikibot/master/docs/workers.png" alt="schemas of workers" style="max-width:300px;" />
+
 Special thanks to
 * addshore (wiki API)
 * biblys (ISBN formating)
