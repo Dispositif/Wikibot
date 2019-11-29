@@ -33,12 +33,12 @@ $process->run();
  */
 class EditProcess
 {
-    const TASK_NAME              = 'Amélioration bibliographique';
-    const EDIT_SIGNALEMENT       = false;
+    const TASK_NAME        = 'Amélioration bibliographique';
+    const EDIT_SIGNALEMENT = true;
 
-    const CITATION_LIMIT         = 100;
-    const DELAY_BOTFLAG_SECONDS  = 30;
-    const DELAY_NOBOT_IN_SECONDS = 150;
+    const CITATION_LIMIT         = 150;
+    const DELAY_BOTFLAG_SECONDS  = 10;
+    const DELAY_NOBOT_IN_SECONDS = 60;
     const ERROR_MSG_TEMPLATE     = __DIR__.'/../templates/message_errors.wiki';
 
     private $db;
@@ -86,7 +86,10 @@ class EditProcess
 
         if (empty($data)) {
             echo "SKIP : no rows to process\n";
+            echo "Sleep 1h.";
+            sleep(60 * 60);
 
+            // or exit
             return false;
         }
 
@@ -96,7 +99,7 @@ class EditProcess
             $page = new WikiPageAction($this->wiki, $title);
         } catch (\Exception $e) {
             echo "*** WikiPageAction error : $title \n";
-            sleep(60);
+            sleep(20);
 
             return false;
         }
@@ -104,7 +107,7 @@ class EditProcess
         // TODO : HACK
         if (in_array($page->getLastEditor(), [getenv('BOT_NAME'), getenv('BOT_OWNER')])) {
             echo "SKIP : édité recemment par bot/dresseur.\n";
-            $this->db->skipRow($title);
+            $this->db->skipArticle($title);
 
             return false;
         }
@@ -119,7 +122,7 @@ class EditProcess
         // Skip AdQ
         if (preg_match('#{{ ?En-tête label#i', $this->wikiText) > 0) {
             echo "SKIP : AdQ ou BA.\n";
-            $this->db->skipRow($title);
+            $this->db->skipArticle($title);
 
             return false;
         }
@@ -141,6 +144,7 @@ class EditProcess
         }
         if (!$changed) {
             echo "Rien à changer...\n\n";
+            $this->db->skipArticle($title);
 
             return false;
         }
@@ -152,8 +156,8 @@ class EditProcess
 
         $miniSummary = $this->generateSummary();
         echo "Edition ?\n".$miniSummary."\n\n";
-        echo "sleep 30...\n";
-        sleep(30);
+        echo "sleep 20...\n";
+        sleep(20);
 
         $editInfo = new EditInfo($miniSummary, $this->minorFlag, $this->botFlag);
         $success = $page->editPage(\Normalizer::normalize($this->wikiText), $editInfo);
@@ -194,6 +198,7 @@ class EditProcess
 
         if (WikiTextUtil::isCommented($origin)) {
             echo "SKIP: template avec commentaire HTML\n";
+            $this->db->skipRow(intval($data['id']));
 
             return false;
         }
@@ -201,6 +206,7 @@ class EditProcess
         $find = mb_strpos($this->wikiText, $origin);
         if (!$find) {
             echo "String non trouvée. \n\n";
+            $this->db->skipRow(intval($data['id']));
 
             return false;
         }
@@ -254,6 +260,10 @@ class EditProcess
             $citeSummary
         );
 
+        if (!empty($this->importantSummary)) {
+            $summary .= '...';
+        }
+
         // shrink long summary if no important details to verify
         if (empty($this->importantSummary)) {
             $length = strlen($summary);
@@ -302,7 +312,7 @@ class EditProcess
             $this->addSummaryTag('distinction des auteurs');
         }
         // prédiction paramètre correct
-        if (preg_match('#[^,]+=>[^,]+#', $data['modifs'], $matches) > 0) {
+        if (preg_match('#[^,]+(=>|⇒)[^,]+#', $data['modifs'], $matches) > 0) {
             $this->botFlag = false;
             $this->addSummaryTag(sprintf('%s', $matches[0]));
         }
@@ -347,7 +357,7 @@ class EditProcess
             return;
         }
         echo "** Send Error Message on talk page. Wait 10... \n";
-        sleep(10);
+        sleep(3);
 
         // format wiki message
         $errorList = '';

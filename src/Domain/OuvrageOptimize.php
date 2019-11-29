@@ -437,11 +437,11 @@ class OuvrageOptimize
             }
 
             $predName = TextUtil::predictCorrectParam($name, $allParamsAndAlias, $maxDistance);
-            if ($predName && strlen($name) >= 4) {
+            if ($predName && strlen($name) >= 5) {
                 if (empty($this->getParam($predName))) {
                     $predName = $this->ouvrage->getAliasParam($predName);
                     $this->setParam($predName, $value);
-                    $this->log(sprintf('%s=>%s ?', $name, $predName));
+                    $this->log(sprintf('%s⇒%s ?', $name, $predName));
                     $this->notCosmetic = true;
                     unset($this->ouvrage->parametersErrorFromHydrate[$name]);
                 }
