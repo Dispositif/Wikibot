@@ -289,19 +289,19 @@ class EditProcess
 
         // paramètre inconnu
         if (preg_match(
-                "#\|[^|]+<!-- ?(PARAMETRE [^>]+ N'EXISTE PAS) ?-->#",
+                "#\|[^|]+<!-- ?(PARAMETRE [^>]+ N'EXISTE PAS|VALEUR SANS NOM DE PARAMETRE) ?-->#",
                 $data['opti'],
                 $matches
             ) > 0
         ) {
-            $this->errorWarning[$data['page']][] = $matches[0];
+            $this->addErrorWarning($data['page'], $matches[0]);
             $this->botFlag = false;
             $this->addSummaryTag('paramètre non corrigé');
         }
 
         // ISBN invalide
         if (preg_match("#isbn invalide ?=[^|}]+#i", $data['opti'], $matches) > 0) {
-            $this->errorWarning[$data['page']][] = $matches[0];
+            $this->addErrorWarning($data['page'], $matches[0]);
             $this->botFlag = false;
             $this->addSummaryTag('ISBN invalide');
         }
@@ -333,6 +333,19 @@ class EditProcess
         // mention BnF si ajout donnée + ajout identifiant bnf=
         if (!empty($this->importantSummary) && preg_match('#\+bnf#i', $data['modifs'], $matches) > 0) {
             $this->addSummaryTag('[[BnF]]');
+        }
+    }
+
+    /**
+     * Pour éviter les doublons dans signalements d'erreur.
+     *
+     * @param string $page
+     * @param string $text
+     */
+    private function addErrorWarning(string $page, string $text): void
+    {
+        if (!isset($this->errorWarning[$page]) || !in_array($text, $this->errorWarning[$page])) {
+            $this->errorWarning[$page][] = $text;
         }
     }
 
