@@ -57,6 +57,11 @@ class GoogleLivresTemplateTest extends TestCase
                 'https://books.google.fr/books?id=lcHcXrVhRUUC&printsec=frontcover&hl=fr&source=gbs_ge_summary_r&cad=0#v=onepage&q&f=false',
                 'https://books.google.com/books?id=lcHcXrVhRUUC&printsec=frontcover',
             ],
+            [
+                // play.google.com (rare)
+                'https://play.google.com/books/reader?id=1dtkAAAAMAAJ&printsec=frontcover&output=reader&hl=fr&pg=GBS.PR7',
+                'https://books.google.com/books?id=1dtkAAAAMAAJ&pg=GBS.PR7&printsec=frontcover',
+            ],
         ];
     }
 

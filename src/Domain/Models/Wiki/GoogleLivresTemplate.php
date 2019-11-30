@@ -33,11 +33,19 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
     protected $parametersByOrder
         = ['id', 'titre', 'couv', 'page', 'romain', 'page autre', 'surligne'];
 
+    /**
+     * Serialize the wiki-template.
+     * Improvement : force param order : id/titre/...
+     *
+     * @param bool|null $cleanOrder
+     *
+     * @return string
+     */
     public function serialize(?bool $cleanOrder = true): string
     {
         $text = parent::serialize();
+
         // Documentation suggère non affichage de ces 2 paramètres
-        // TODO : force param order : id/titre/...
         return str_replace(['id=', 'titre='], '', $text);
     }
 
@@ -169,7 +177,7 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
      */
     public static function isGoogleBookURL(string $text): bool
     {
-        if (preg_match('#^https?://books\.google\.[a-z]{2,3}/books(/reader)?\?id=#i', $text) > 0) {
+        if (preg_match('#^https?://(books|play)\.google\.[a-z]{2,3}/books(/reader)?\?id=#i', $text) > 0) {
             return true;
         }
 
