@@ -204,7 +204,7 @@ class EditProcess
         }
 
         $find = mb_strpos($this->wikiText, $origin);
-        if (!$find) {
+        if ($find === false) {
             echo "String non trouvée. \n\n";
             $this->db->skipRow(intval($data['id']));
 

@@ -103,7 +103,7 @@ class WstatImport
 
             // validate and explode wstat data
             $pos = mb_strpos($line, '|', 0);
-            if (!$pos || 0 === $pos) {
+            if (false === $pos || 0 === $pos) {
                 continue;
             }
             $title = trim(mb_substr($line, 0, $pos));

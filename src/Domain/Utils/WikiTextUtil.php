@@ -96,8 +96,8 @@ class WikiTextUtil extends TextUtil
      */
     public static function removeHTMLcomments(string $text)
     {
-        while (false !== ($start = strpos($text, '<!--'))) {
-            $end = strpos($text, '-->', $start + 4);
+        while (false !== ($start = mb_strpos($text, '<!--'))) {
+            $end = mb_strpos($text, '-->', $start + 4);
             if (false === $end) {
                 // Unterminated comment; bail out
                 break;
