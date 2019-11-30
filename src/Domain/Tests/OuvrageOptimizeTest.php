@@ -37,6 +37,16 @@ class OuvrageOptimizeTest extends TestCase
     {
         return [
             [
+                // prédiction paramètre
+                ['citation' => 'blabla'],
+                '{{Ouvrage|titre=|éditeur=|année=|isbn=}}{{extrait|blabla}}'
+            ],
+            [
+                // prédiction paramètre
+                ['autuer' => 'bob'],
+                '{{Ouvrage|auteur1=bob|titre=|éditeur=|année=|isbn=}}'
+            ],
+            [
                 // CONVERT_GOOGLEBOOK_TEMPLATE = false;
                 ['lire en ligne' => 'https://books.google.fr/books?id=3KNeP3Hm0TAC&pg=PA184&lpg=PA184&dq=apolline+de+Gourlet&source=bl&ots=bA3f27YKbl&sig=0EVHZ6yHKLBRTw-VgKwekQT7YZQ&hl=fr&sa=X&ved=2ahUKEwiLpNXY9pLfAhUH1hoKHa0EDy84ChDoATACegQIBRAB#v=onepage&q=apolline%20de%20Gourlet&f=false'],
                 //'{{Ouvrage|titre=|éditeur=|année=|isbn=|lire en ligne={{Google

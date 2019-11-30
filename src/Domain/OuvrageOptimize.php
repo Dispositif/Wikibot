@@ -251,7 +251,7 @@ class OuvrageOptimize
         }
 
         // ISBN 10 ?
-        if (10 === strlen(str_replace('-', '', $isbn)) && !$this->getParam('isbn10')) {
+        if (10 === \mb_strlen(str_replace('-', '', $isbn)) && !$this->getParam('isbn10')) {
             $this->setParam('isbn10', $isbn);
             $this->log('isbn10');
             $this->notCosmetic = true;
@@ -429,15 +429,15 @@ class OuvrageOptimize
             }
 
             $maxDistance = 1;
-            if (strlen($name) >= 4) {
+            if (\mb_strlen($name) >= 4) {
                 $maxDistance = 2;
             }
-            if (strlen($name) >= 8) {
+            if (\mb_strlen($name) >= 8) {
                 $maxDistance = 3;
             }
 
             $predName = TextUtil::predictCorrectParam($name, $allParamsAndAlias, $maxDistance);
-            if ($predName && strlen($name) >= 5) {
+            if ($predName && \mb_strlen($name) >= 5) {
                 if (empty($this->getParam($predName))) {
                     $predName = $this->ouvrage->getAliasParam($predName);
                     $this->setParam($predName, $value);
