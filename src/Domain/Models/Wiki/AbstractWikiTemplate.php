@@ -72,7 +72,6 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
      * @param string $name
      *
      * @return string|null
-     *
      * @throws Exception
      */
     public function getParam(string $name): ?string
@@ -99,7 +98,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     {
         // todo verify/useless ?
         if (is_int($name)) {
-            $name = (string) $name;
+            $name = (string)$name;
         }
 
         // that parameter exists in template ?
@@ -135,7 +134,6 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
      * @param string $value
      *
      * @return AbstractParametersObject
-     *
      * @throws Exception
      */
     public function setParam(string $name, string $value): AbstractParametersObject
@@ -161,7 +159,6 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
      * @param $param
      *
      * @return string|null
-     *
      * @throws Exception
      */
     public function __get($param): ?string
@@ -209,7 +206,6 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
      * @param array $data
      *
      * @return AbstractWikiTemplate
-     *
      * @throws Exception
      */
     public function hydrate(array $data): self
@@ -241,7 +237,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
         } catch (Throwable $e) {
             unset($e);
             // hack : 1 => "ouvrage collectif"
-            $name = (string) $name;
+            $name = (string)$name;
             $this->log[] = "parameter $name not found";
             $this->parametersErrorFromHydrate[$name] = $value;
 
@@ -326,7 +322,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
             $string .= $paramValue;
         }
         // expanded model -> "\n}}"
-        if($this->userSeparator && strpos($this->userSeparator,"\n") !== false ) {
+        if ($this->userSeparator && strpos($this->userSeparator, "\n") !== false) {
             $string .= "\n";
         }
         $string .= '}}';
@@ -408,11 +404,15 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
 
             // Add a note in HTML commentary
             foreach ($errorUserData as $param => $value) {
-                if(1 === intval($param)) {
-                    $errorUserData[$param] = $value." <!--VALEUR SANS NOM DE PARAMETRE -->";
-                }else{
-                    $errorUserData[$param] = $value." <!--PARAMETRE '$param' N'EXISTE PAS -->";
+                if ('string' === gettype($param) && empty(trim($param))) {
+                    continue;
                 }
+                if (is_int($param)) {
+                    // ou 1= 2= 3=
+                    $errorUserData[$param] = $value." <!--VALEUR SANS NOM DE PARAMETRE -->";
+                    continue;
+                }
+                $errorUserData[$param] = $value." <!--PARAMETRE '$param' N'EXISTE PAS -->";
             }
             $paramsByRenderOrder = array_merge($paramsByRenderOrder, $errorUserData);
         }
