@@ -794,14 +794,14 @@ class OuvrageOptimize
             $this->unsetParam('lien éditeur');
         }
 
-        if (isset($editeurUrl)) {
-            $editeurUrl = TextUtil::mb_ucfirst($editeurUrl);
-        }
+//        if (isset($editeurUrl)) {
+//            $editeurUrl = TextUtil::mb_ucfirst($editeurUrl);
+//        }
         $newEditeur = $editeurStr;
         if (isset($editeurUrl) && $editeurUrl !== $editeurStr) {
             $newEditeur = '[['.$editeurUrl.'|'.$editeurStr.']]';
         }
-        if (isset($editeurUrl) && $editeurUrl === $editeurStr) {
+        if (isset($editeurUrl) && $editeurUrl === $editeurStr ) {
             $newEditeur = '[['.$editeurStr.']]';
         }
 
