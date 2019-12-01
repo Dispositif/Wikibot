@@ -46,6 +46,10 @@ class OpenLibraryMapper extends AbstractBookMapper implements MapperInterface
             return null;
         }
 
+        if(strlen($details['subtitle']) > 80 ) {
+            return null;
+        }
+
         return $details['subtitle'];
     }
 
