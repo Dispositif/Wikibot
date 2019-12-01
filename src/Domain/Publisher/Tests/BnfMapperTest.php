@@ -40,4 +40,19 @@ class BnfMapperTest extends TestCase
             $actual
         );
     }
+
+    public function testProcessIsbnRectifie()
+    {
+        $text = file_get_contents(__DIR__.'/bnf_multi_isbn_rectifie.xml');
+
+        $xml = new SimpleXMLElement($text);
+        $xml->registerXPathNamespace('mxc', "info:lc/xmlns/marcxchange-v2");
+
+        $mapper = new BnfMapper();
+        $actual = $mapper->process($xml);
+        $this::assertSame(
+            [],
+            $actual
+        );
+    }
 }

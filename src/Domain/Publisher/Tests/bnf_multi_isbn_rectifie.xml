@@ -1,0 +1,591 @@
+<!--
+  ~ This file is part of dispositif/wikibot application
+  ~ 2019 © Philippe M. <dispositif@gmail.com>
+  ~ For the full copyright and MIT license information, please view the LICENSE file.
+  -->
+
+<srw:searchRetrieveResponse xmlns:srw="http://www.loc.gov/zing/srw/"
+                            xmlns="http://catalogue.bnf.fr/namespaces/InterXMarc"
+                            xmlns:ixm="http://catalogue.bnf.fr/namespaces/InterXMarc"
+                            xmlns:mn="http://catalogue.bnf.fr/namespaces/motsnotices">
+    <srw:version>1.2</srw:version>
+    <srw:echoedSearchRetrieveRequest>
+        <srw:version>1.2</srw:version>
+        <srw:query>bib.isbn adj "2907279203"</srw:query>
+    </srw:echoedSearchRetrieveRequest>
+    <srw:numberOfRecords>3</srw:numberOfRecords>
+    <srw:records>
+        <srw:record>
+            <srw:recordSchema>marcxchange</srw:recordSchema>
+            <srw:recordPacking>xml</srw:recordPacking>
+            <srw:recordData>
+                <mxc:record xmlns:mxc="info:lc/xmlns/marcxchange-v2" format="UNIMARC" id="ark:/12148/cb366858489"
+                            type="Bibliographic">
+                    <mxc:leader>cam 22 450</mxc:leader>
+                    <mxc:controlfield tag="001">FRBNF36685848000000X</mxc:controlfield>
+                    <mxc:controlfield tag="003">http://catalogue.bnf.fr/ark:/12148/cb366858489</mxc:controlfield>
+                    <mxc:datafield tag="010" ind1=" " ind2=" ">
+                        <mxc:subfield code="a">2-907279-20-3</mxc:subfield>
+                        <mxc:subfield code="b">br.</mxc:subfield>
+                        <mxc:subfield code="d">235 F</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="020" ind1=" " ind2=" ">
+                        <mxc:subfield code="a">FR</mxc:subfield>
+                        <mxc:subfield code="b">09610903</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="039" ind1=" " ind2=" ">
+                        <mxc:subfield code="o">OPL</mxc:subfield>
+                        <mxc:subfield code="a">020437452</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="100" ind1=" " ind2=" ">
+                        <mxc:subfield code="a">19951227d1994 m h0frey50 ba</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="102" ind1=" " ind2=" ">
+                        <mxc:subfield code="a">FR</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="105" ind1=" " ind2=" ">
+                        <mxc:subfield code="a">a z 00|y|</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="106" ind1=" " ind2=" ">
+                        <mxc:subfield code="a">r</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="181" ind1=" " ind2="0">
+                        <mxc:subfield code="6">01</mxc:subfield>
+                        <mxc:subfield code="a">i</mxc:subfield>
+                        <mxc:subfield code="b">xxxe</mxc:subfield>
+                        <mxc:subfield code="a">b</mxc:subfield>
+                        <mxc:subfield code="b">xb2e</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="181" ind1=" " ind2=" ">
+                        <mxc:subfield code="6">02</mxc:subfield>
+                        <mxc:subfield code="c">txt</mxc:subfield>
+                        <mxc:subfield code="c">sti</mxc:subfield>
+                        <mxc:subfield code="2">rdacontent</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="182" ind1=" " ind2="0">
+                        <mxc:subfield code="6">01</mxc:subfield>
+                        <mxc:subfield code="a">n</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="182" ind1=" " ind2=" ">
+                        <mxc:subfield code="6">02</mxc:subfield>
+                        <mxc:subfield code="c">n</mxc:subfield>
+                        <mxc:subfield code="2">rdamedia</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="200" ind1="1" ind2=" ">
+                        <mxc:subfield code="a">Nant</mxc:subfield>
+                        <mxc:subfield code="b">Texte imprimé</mxc:subfield>
+                        <mxc:subfield code="e">
+                            La Cavalariá, La Cobertoirada, L'Espitalet, Sauclièiras, Sent-Joan-del-Bruèlh
+                        </mxc:subfield>
+                        <mxc:subfield code="f">
+                            Christian-Pierre Bedel e los estatjants del canton de Nant
+                        </mxc:subfield>
+                        <mxc:subfield code="g">préf. de René Quatrefages</mxc:subfield>
+                        <mxc:subfield code="g">
+                            [publ. par la] Mission départementale de la culture
+                        </mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="210" ind1=" " ind2=" ">
+                        <mxc:subfield code="a">[Rodez]</mxc:subfield>
+                        <mxc:subfield code="c">Mission départementale de la culture</mxc:subfield>
+                        <mxc:subfield code="d">1994</mxc:subfield>
+                        <mxc:subfield code="e">12-Millau</mxc:subfield>
+                        <mxc:subfield code="g">Impr. Maury</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="215" ind1=" " ind2=" ">
+                        <mxc:subfield code="a">239 p.</mxc:subfield>
+                        <mxc:subfield code="c">ill., couv. ill.</mxc:subfield>
+                        <mxc:subfield code="d">28 cm</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="225" ind1="|" ind2=" ">
+                        <mxc:subfield code="a">Al canton</mxc:subfield>
+                        <mxc:subfield code="x">1151-8375</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="300" ind1=" " ind2=" ">
+                        <mxc:subfield code="a">Textes en français et en langue d'oc</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="300" ind1=" " ind2=" ">
+                        <mxc:subfield code="a">Bibliogr. p. 235-237</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="410" ind1=" " ind2="0">
+                        <mxc:subfield code="0">34267267</mxc:subfield>
+                        <mxc:subfield code="t">Opération Vilatge (Rodez)</mxc:subfield>
+                        <mxc:subfield code="x">1151-8375</mxc:subfield>
+                        <mxc:subfield code="d">1994</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="606" ind1=" " ind2=" ">
+                        <mxc:subfield code="3">13318485</mxc:subfield>
+                        <mxc:subfield code="a">Ethnologie</mxc:subfield>
+                        <mxc:subfield code="3">11931476</mxc:subfield>
+                        <mxc:subfield code="y">France</mxc:subfield>
+                        <mxc:subfield code="3">12500242</mxc:subfield>
+                        <mxc:subfield code="y">Nant (Aveyron ; région)</mxc:subfield>
+                        <mxc:subfield code="2">rameau</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="606" ind1=" " ind2=" ">
+                        <mxc:subfield code="3">11934645</mxc:subfield>
+                        <mxc:subfield code="a">Vie rurale</mxc:subfield>
+                        <mxc:subfield code="3">11931476</mxc:subfield>
+                        <mxc:subfield code="y">France</mxc:subfield>
+                        <mxc:subfield code="3">12500242</mxc:subfield>
+                        <mxc:subfield code="y">Nant (Aveyron ; région)</mxc:subfield>
+                        <mxc:subfield code="3">11976044</mxc:subfield>
+                        <mxc:subfield code="z">1900-1945</mxc:subfield>
+                        <mxc:subfield code="2">rameau</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="606" ind1=" " ind2=" ">
+                        <mxc:subfield code="3">11935390</mxc:subfield>
+                        <mxc:subfield code="a">Occitan ( langue )</mxc:subfield>
+                        <mxc:subfield code="x">Dialectes</mxc:subfield>
+                        <mxc:subfield code="3">11931476</mxc:subfield>
+                        <mxc:subfield code="y">France</mxc:subfield>
+                        <mxc:subfield code="3">12500242</mxc:subfield>
+                        <mxc:subfield code="y">Nant (Aveyron ; région)</mxc:subfield>
+                        <mxc:subfield code="2">rameau</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="607" ind1=" " ind2=" ">
+                        <mxc:subfield code="3">12500242</mxc:subfield>
+                        <mxc:subfield code="a">Nant (Aveyron ; région)</mxc:subfield>
+                        <mxc:subfield code="3">11932512</mxc:subfield>
+                        <mxc:subfield code="x">Moeurs et coutumes</mxc:subfield>
+                        <mxc:subfield code="3">11976044</mxc:subfield>
+                        <mxc:subfield code="z">1900-1945</mxc:subfield>
+                        <mxc:subfield code="2">rameau</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="686" ind1=" " ind2=" ">
+                        <mxc:subfield code="a">93</mxc:subfield>
+                        <mxc:subfield code="2">
+                            Cadre de classement de la Bibliographie nationale française
+                        </mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="700" ind1=" " ind2="|">
+                        <mxc:subfield code="3">12094468</mxc:subfield>
+                        <mxc:subfield code="o">ISNI0000000036997229</mxc:subfield>
+                        <mxc:subfield code="a">Bedel</mxc:subfield>
+                        <mxc:subfield code="b">Christian-Pierre</mxc:subfield>
+                        <mxc:subfield code="4">070</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="712" ind1="|" ind2="|">
+                        <mxc:subfield code="3">12237198</mxc:subfield>
+                        <mxc:subfield code="o">ISNI0000000119562298</mxc:subfield>
+                        <mxc:subfield code="a">Aveyron</mxc:subfield>
+                        <mxc:subfield code="b">Mission départementale de la culture</mxc:subfield>
+                        <mxc:subfield code="4">340</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="801" ind1=" " ind2="0">
+                        <mxc:subfield code="a">FR</mxc:subfield>
+                        <mxc:subfield code="b">FR-751131015</mxc:subfield>
+                        <mxc:subfield code="c">19951227</mxc:subfield>
+                        <mxc:subfield code="g">AFNOR</mxc:subfield>
+                        <mxc:subfield code="h">FRBNF36685848000000X</mxc:subfield>
+                        <mxc:subfield code="2">intermrc</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="930" ind1=" " ind2=" ">
+                        <mxc:subfield code="5">FR-751131007:36685848001001</mxc:subfield>
+                        <mxc:subfield code="a">4-LI30-298</mxc:subfield>
+                        <mxc:subfield code="b">759999999</mxc:subfield>
+                        <mxc:subfield code="c">
+                            Tolbiac - Rez de Jardin - Philosophie, histoire, sciences de l'homme - Magasin
+                        </mxc:subfield>
+                        <mxc:subfield code="d">O</mxc:subfield>
+                    </mxc:datafield>
+                </mxc:record>
+            </srw:recordData>
+            <srw:recordIdentifier>ark:/12148/cb366858489</srw:recordIdentifier>
+            <srw:recordPosition>1</srw:recordPosition>
+            <srw:extraRecordData>
+                <ixm:attr name="CreationDate">19951227</ixm:attr>
+                <ixm:attr name="LastModificationDate">20110418</ixm:attr>
+                <mn:score>7.0317054</mn:score>
+            </srw:extraRecordData>
+        </srw:record>
+        <srw:record>
+            <srw:recordSchema>marcxchange</srw:recordSchema>
+            <srw:recordPacking>xml</srw:recordPacking>
+            <srw:recordData>
+                <mxc:record xmlns:mxc="info:lc/xmlns/marcxchange-v2" format="UNIMARC" id="ark:/12148/cb366885722"
+                            type="Bibliographic">
+                    <mxc:leader>nam 22 450</mxc:leader>
+                    <mxc:controlfield tag="001">FRBNF366885720000002</mxc:controlfield>
+                    <mxc:controlfield tag="003">http://catalogue.bnf.fr/ark:/12148/cb366885722</mxc:controlfield>
+                    <mxc:datafield tag="010" ind1=" " ind2=" ">
+                        <mxc:subfield code="a">2-907279-20-3</mxc:subfield>
+                        <mxc:subfield code="b">br.</mxc:subfield>
+                        <mxc:subfield code="d">250 F</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="020" ind1=" " ind2=" ">
+                        <mxc:subfield code="a">FR</mxc:subfield>
+                        <mxc:subfield code="b">09622662</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="039" ind1=" " ind2=" ">
+                        <mxc:subfield code="o">OPL</mxc:subfield>
+                        <mxc:subfield code="a">021456078</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="100" ind1=" " ind2=" ">
+                        <mxc:subfield code="a">19960618d1995 m h0frey50 ba</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="102" ind1=" " ind2=" ">
+                        <mxc:subfield code="a">FR</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="105" ind1=" " ind2=" ">
+                        <mxc:subfield code="a">a z 00|y|</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="106" ind1=" " ind2=" ">
+                        <mxc:subfield code="a">r</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="181" ind1=" " ind2="0">
+                        <mxc:subfield code="6">01</mxc:subfield>
+                        <mxc:subfield code="a">i</mxc:subfield>
+                        <mxc:subfield code="b">xxxe</mxc:subfield>
+                        <mxc:subfield code="a">b</mxc:subfield>
+                        <mxc:subfield code="b">xb2e</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="181" ind1=" " ind2=" ">
+                        <mxc:subfield code="6">02</mxc:subfield>
+                        <mxc:subfield code="c">txt</mxc:subfield>
+                        <mxc:subfield code="c">sti</mxc:subfield>
+                        <mxc:subfield code="2">rdacontent</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="182" ind1=" " ind2="0">
+                        <mxc:subfield code="6">01</mxc:subfield>
+                        <mxc:subfield code="a">n</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="182" ind1=" " ind2=" ">
+                        <mxc:subfield code="6">02</mxc:subfield>
+                        <mxc:subfield code="c">n</mxc:subfield>
+                        <mxc:subfield code="2">rdamedia</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="200" ind1="1" ind2=" ">
+                        <mxc:subfield code="a">Sant-Roma</mxc:subfield>
+                        <mxc:subfield code="b">Texte imprimé</mxc:subfield>
+                        <mxc:subfield code="e">
+                            Aissenas, Broquièrs, Brossa, Las Còstas, L'Estrada, Sant-Victor, Lo Truèlh
+                        </mxc:subfield>
+                        <mxc:subfield code="f">
+                            Christian-Pierre Bedel e los estatjants del canton de Sant-Roma
+                        </mxc:subfield>
+                        <mxc:subfield code="g">préf. d'Alain Marc</mxc:subfield>
+                        <mxc:subfield code="g">
+                            [publ. par la] Mission départementale de la culture
+                        </mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="210" ind1=" " ind2=" ">
+                        <mxc:subfield code="a">[Rodez]</mxc:subfield>
+                        <mxc:subfield code="c">Mission départementale de la culture</mxc:subfield>
+                        <mxc:subfield code="d">1995</mxc:subfield>
+                        <mxc:subfield code="e">12-Millau</mxc:subfield>
+                        <mxc:subfield code="g">Impr. Maury</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="215" ind1=" " ind2=" ">
+                        <mxc:subfield code="a">239 p.</mxc:subfield>
+                        <mxc:subfield code="c">ill., couv. ill.</mxc:subfield>
+                        <mxc:subfield code="d">28 cm</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="225" ind1="|" ind2=" ">
+                        <mxc:subfield code="a">Al canton</mxc:subfield>
+                        <mxc:subfield code="x">1151-8375</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="300" ind1=" " ind2=" ">
+                        <mxc:subfield code="a">
+                            Titre de couv. : "Saint-Rome-de-Tarn : Ayssènes, Broquiès, Brousse-le-Château, Les
+                            Costes-Gozon, Lestrade-et-Thouels, Saint-Victor-et-Melvieu, Le Truel"
+                        </mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="300" ind1=" " ind2=" ">
+                        <mxc:subfield code="a">Texte en français et en langue d'oc</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="300" ind1=" " ind2=" ">
+                        <mxc:subfield code="a">Bibliogr. p. 236-237</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="410" ind1=" " ind2="0">
+                        <mxc:subfield code="0">34267267</mxc:subfield>
+                        <mxc:subfield code="t">Opération Vilatge (Rodez)</mxc:subfield>
+                        <mxc:subfield code="x">1151-8375</mxc:subfield>
+                        <mxc:subfield code="d">1995</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="517" ind1="1" ind2=" ">
+                        <mxc:subfield code="a">Saint-Rome-de-Tarn</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="606" ind1=" " ind2=" ">
+                        <mxc:subfield code="3">13318485</mxc:subfield>
+                        <mxc:subfield code="a">Ethnologie</mxc:subfield>
+                        <mxc:subfield code="3">11931476</mxc:subfield>
+                        <mxc:subfield code="y">France</mxc:subfield>
+                        <mxc:subfield code="3">12518946</mxc:subfield>
+                        <mxc:subfield code="y">Saint-Rome-de-Tarn (Aveyron ; région)</mxc:subfield>
+                        <mxc:subfield code="2">rameau</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="606" ind1=" " ind2=" ">
+                        <mxc:subfield code="3">11934645</mxc:subfield>
+                        <mxc:subfield code="a">Vie rurale</mxc:subfield>
+                        <mxc:subfield code="3">11931476</mxc:subfield>
+                        <mxc:subfield code="y">France</mxc:subfield>
+                        <mxc:subfield code="3">12518946</mxc:subfield>
+                        <mxc:subfield code="y">Saint-Rome-de-Tarn (Aveyron ; région)</mxc:subfield>
+                        <mxc:subfield code="3">11976044</mxc:subfield>
+                        <mxc:subfield code="z">1900-1945</mxc:subfield>
+                        <mxc:subfield code="2">rameau</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="606" ind1=" " ind2=" ">
+                        <mxc:subfield code="3">11935390</mxc:subfield>
+                        <mxc:subfield code="a">Occitan ( langue )</mxc:subfield>
+                        <mxc:subfield code="x">Dialectes</mxc:subfield>
+                        <mxc:subfield code="3">11931476</mxc:subfield>
+                        <mxc:subfield code="y">France</mxc:subfield>
+                        <mxc:subfield code="3">12518946</mxc:subfield>
+                        <mxc:subfield code="y">Saint-Rome-de-Tarn (Aveyron ; région)</mxc:subfield>
+                        <mxc:subfield code="2">rameau</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="607" ind1=" " ind2=" ">
+                        <mxc:subfield code="3">12518946</mxc:subfield>
+                        <mxc:subfield code="a">Saint-Rome-de-Tarn (Aveyron ; région)</mxc:subfield>
+                        <mxc:subfield code="3">11932512</mxc:subfield>
+                        <mxc:subfield code="x">Moeurs et coutumes</mxc:subfield>
+                        <mxc:subfield code="3">11976044</mxc:subfield>
+                        <mxc:subfield code="z">1900-1945</mxc:subfield>
+                        <mxc:subfield code="2">rameau</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="686" ind1=" " ind2=" ">
+                        <mxc:subfield code="a">93</mxc:subfield>
+                        <mxc:subfield code="2">
+                            Cadre de classement de la Bibliographie nationale française
+                        </mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="700" ind1=" " ind2="|">
+                        <mxc:subfield code="3">12094468</mxc:subfield>
+                        <mxc:subfield code="o">ISNI0000000036997229</mxc:subfield>
+                        <mxc:subfield code="a">Bedel</mxc:subfield>
+                        <mxc:subfield code="b">Christian-Pierre</mxc:subfield>
+                        <mxc:subfield code="4">070</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="712" ind1="|" ind2="|">
+                        <mxc:subfield code="3">12237198</mxc:subfield>
+                        <mxc:subfield code="o">ISNI0000000119562298</mxc:subfield>
+                        <mxc:subfield code="a">Aveyron</mxc:subfield>
+                        <mxc:subfield code="b">Mission départementale de la culture</mxc:subfield>
+                        <mxc:subfield code="4">340</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="801" ind1=" " ind2="0">
+                        <mxc:subfield code="a">FR</mxc:subfield>
+                        <mxc:subfield code="b">FR-751131015</mxc:subfield>
+                        <mxc:subfield code="c">19960618</mxc:subfield>
+                        <mxc:subfield code="g">AFNOR</mxc:subfield>
+                        <mxc:subfield code="h">FRBNF366885720000002</mxc:subfield>
+                        <mxc:subfield code="2">intermrc</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="930" ind1=" " ind2=" ">
+                        <mxc:subfield code="5">FR-751131007:36688572001001</mxc:subfield>
+                        <mxc:subfield code="a">4-LI30-312</mxc:subfield>
+                        <mxc:subfield code="b">759999999</mxc:subfield>
+                        <mxc:subfield code="c">
+                            Tolbiac - Rez de Jardin - Philosophie, histoire, sciences de l'homme - Magasin
+                        </mxc:subfield>
+                        <mxc:subfield code="d">O</mxc:subfield>
+                    </mxc:datafield>
+                </mxc:record>
+            </srw:recordData>
+            <srw:recordIdentifier>ark:/12148/cb366885722</srw:recordIdentifier>
+            <srw:recordPosition>2</srw:recordPosition>
+            <srw:extraRecordData>
+                <ixm:attr name="CreationDate">19960618</ixm:attr>
+                <ixm:attr name="LastModificationDate">20110418</ixm:attr>
+                <mn:score>7.030729</mn:score>
+            </srw:extraRecordData>
+        </srw:record>
+        <srw:record>
+            <srw:recordSchema>marcxchange</srw:recordSchema>
+            <srw:recordPacking>xml</srw:recordPacking>
+            <srw:recordData>
+                <mxc:record xmlns:mxc="info:lc/xmlns/marcxchange-v2" format="UNIMARC" id="ark:/12148/cb36688567g"
+                            type="Bibliographic">
+                    <mxc:leader>cam 22 450</mxc:leader>
+                    <mxc:controlfield tag="001">FRBNF366885670000002</mxc:controlfield>
+                    <mxc:controlfield tag="003">http://catalogue.bnf.fr/ark:/12148/cb36688567g</mxc:controlfield>
+                    <mxc:datafield tag="010" ind1=" " ind2=" ">
+                        <mxc:subfield code="a">2-907279-20-3</mxc:subfield>
+                        <mxc:subfield code="b">rectifié</mxc:subfield>
+                        <mxc:subfield code="z">2-907279-20-4</mxc:subfield>
+                        <mxc:subfield code="b">br.</mxc:subfield>
+                        <mxc:subfield code="d">250 F</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="020" ind1=" " ind2=" ">
+                        <mxc:subfield code="a">FR</mxc:subfield>
+                        <mxc:subfield code="b">09622661</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="039" ind1=" " ind2=" ">
+                        <mxc:subfield code="o">OPL</mxc:subfield>
+                        <mxc:subfield code="a">021455752</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="100" ind1=" " ind2=" ">
+                        <mxc:subfield code="a">19960618d1995 m h0frey50 ba</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="102" ind1=" " ind2=" ">
+                        <mxc:subfield code="a">FR</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="105" ind1=" " ind2=" ">
+                        <mxc:subfield code="a">a z 00|y|</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="106" ind1=" " ind2=" ">
+                        <mxc:subfield code="a">r</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="181" ind1=" " ind2="0">
+                        <mxc:subfield code="6">01</mxc:subfield>
+                        <mxc:subfield code="a">i</mxc:subfield>
+                        <mxc:subfield code="b">xxxe</mxc:subfield>
+                        <mxc:subfield code="a">b</mxc:subfield>
+                        <mxc:subfield code="b">xb2e</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="181" ind1=" " ind2=" ">
+                        <mxc:subfield code="6">02</mxc:subfield>
+                        <mxc:subfield code="c">txt</mxc:subfield>
+                        <mxc:subfield code="c">sti</mxc:subfield>
+                        <mxc:subfield code="2">rdacontent</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="182" ind1=" " ind2="0">
+                        <mxc:subfield code="6">01</mxc:subfield>
+                        <mxc:subfield code="a">n</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="182" ind1=" " ind2=" ">
+                        <mxc:subfield code="6">02</mxc:subfield>
+                        <mxc:subfield code="c">n</mxc:subfield>
+                        <mxc:subfield code="2">rdamedia</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="200" ind1="1" ind2=" ">
+                        <mxc:subfield code="a">Lo Pònt</mxc:subfield>
+                        <mxc:subfield code="b">Texte imprimé</mxc:subfield>
+                        <mxc:subfield code="e">
+                            Agenh, Arcas, Canet, Flavinh, Pradas, Tremolhas, Lo Vibal
+                        </mxc:subfield>
+                        <mxc:subfield code="f">
+                            Christian-Pierre Bedel e los estatjants del canton del Pònt
+                        </mxc:subfield>
+                        <mxc:subfield code="g">préf. d'Alain Pichon</mxc:subfield>
+                        <mxc:subfield code="g">
+                            [publ. par la] Mission départementale de la culture
+                        </mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="210" ind1=" " ind2=" ">
+                        <mxc:subfield code="a">[Rodez]</mxc:subfield>
+                        <mxc:subfield code="c">Mission départementale de la culture</mxc:subfield>
+                        <mxc:subfield code="d">1995</mxc:subfield>
+                        <mxc:subfield code="e">12-Millau</mxc:subfield>
+                        <mxc:subfield code="g">Impr. Maury</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="215" ind1=" " ind2=" ">
+                        <mxc:subfield code="a">239 p.</mxc:subfield>
+                        <mxc:subfield code="c">ill., couv. ill.</mxc:subfield>
+                        <mxc:subfield code="d">28 cm</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="225" ind1="|" ind2=" ">
+                        <mxc:subfield code="a">Al canton</mxc:subfield>
+                        <mxc:subfield code="x">1151-8375</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="300" ind1=" " ind2=" ">
+                        <mxc:subfield code="a">
+                            Titre de couv. : "Pont-de-Salars : Agen, Arques, Canet-de-Salars, Flavin, Prades-de-Salars,
+                            Trémouilles, Le Vibal"
+                        </mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="300" ind1=" " ind2=" ">
+                        <mxc:subfield code="a">Texte en français et en langue d'oc</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="300" ind1=" " ind2=" ">
+                        <mxc:subfield code="a">Bibliogr. p. 237-238</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="410" ind1=" " ind2="0">
+                        <mxc:subfield code="0">34267267</mxc:subfield>
+                        <mxc:subfield code="t">Opération Vilatge (Rodez)</mxc:subfield>
+                        <mxc:subfield code="x">1151-8375</mxc:subfield>
+                        <mxc:subfield code="d">1995</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="517" ind1="1" ind2=" ">
+                        <mxc:subfield code="a">Pont-de-Salars</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="606" ind1=" " ind2=" ">
+                        <mxc:subfield code="3">13318485</mxc:subfield>
+                        <mxc:subfield code="a">Ethnologie</mxc:subfield>
+                        <mxc:subfield code="3">11931476</mxc:subfield>
+                        <mxc:subfield code="y">France</mxc:subfield>
+                        <mxc:subfield code="3">12518938</mxc:subfield>
+                        <mxc:subfield code="y">Pont-de-Salars (Aveyron ; région)</mxc:subfield>
+                        <mxc:subfield code="2">rameau</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="606" ind1=" " ind2=" ">
+                        <mxc:subfield code="3">11934645</mxc:subfield>
+                        <mxc:subfield code="a">Vie rurale</mxc:subfield>
+                        <mxc:subfield code="3">11931476</mxc:subfield>
+                        <mxc:subfield code="y">France</mxc:subfield>
+                        <mxc:subfield code="3">12518938</mxc:subfield>
+                        <mxc:subfield code="y">Pont-de-Salars (Aveyron ; région)</mxc:subfield>
+                        <mxc:subfield code="3">11976044</mxc:subfield>
+                        <mxc:subfield code="z">1900-1945</mxc:subfield>
+                        <mxc:subfield code="2">rameau</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="606" ind1=" " ind2=" ">
+                        <mxc:subfield code="3">11935390</mxc:subfield>
+                        <mxc:subfield code="a">Occitan (langue)</mxc:subfield>
+                        <mxc:subfield code="x">Dialectes</mxc:subfield>
+                        <mxc:subfield code="3">11931476</mxc:subfield>
+                        <mxc:subfield code="y">France</mxc:subfield>
+                        <mxc:subfield code="3">12518938</mxc:subfield>
+                        <mxc:subfield code="y">Pont-de-Salars (Aveyron ; région)</mxc:subfield>
+                        <mxc:subfield code="2">rameau</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="607" ind1=" " ind2=" ">
+                        <mxc:subfield code="3">12518938</mxc:subfield>
+                        <mxc:subfield code="a">Pont-de-Salars (Aveyron ; région)</mxc:subfield>
+                        <mxc:subfield code="3">11932512</mxc:subfield>
+                        <mxc:subfield code="x">Moeurs et coutumes</mxc:subfield>
+                        <mxc:subfield code="3">11976044</mxc:subfield>
+                        <mxc:subfield code="z">1900-1945</mxc:subfield>
+                        <mxc:subfield code="2">rameau</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="686" ind1=" " ind2=" ">
+                        <mxc:subfield code="a">93</mxc:subfield>
+                        <mxc:subfield code="2">
+                            Cadre de classement de la Bibliographie nationale française
+                        </mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="700" ind1=" " ind2="|">
+                        <mxc:subfield code="3">12094468</mxc:subfield>
+                        <mxc:subfield code="o">ISNI0000000036997229</mxc:subfield>
+                        <mxc:subfield code="a">Bedel</mxc:subfield>
+                        <mxc:subfield code="b">Christian-Pierre</mxc:subfield>
+                        <mxc:subfield code="4">070</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="712" ind1="|" ind2="|">
+                        <mxc:subfield code="3">12237198</mxc:subfield>
+                        <mxc:subfield code="o">ISNI0000000119562298</mxc:subfield>
+                        <mxc:subfield code="a">Aveyron</mxc:subfield>
+                        <mxc:subfield code="b">Mission départementale de la culture</mxc:subfield>
+                        <mxc:subfield code="4">340</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="801" ind1=" " ind2="0">
+                        <mxc:subfield code="a">FR</mxc:subfield>
+                        <mxc:subfield code="b">FR-751131015</mxc:subfield>
+                        <mxc:subfield code="c">19960618</mxc:subfield>
+                        <mxc:subfield code="g">AFNOR</mxc:subfield>
+                        <mxc:subfield code="h">FRBNF366885670000002</mxc:subfield>
+                        <mxc:subfield code="2">intermrc</mxc:subfield>
+                    </mxc:datafield>
+                    <mxc:datafield tag="930" ind1=" " ind2=" ">
+                        <mxc:subfield code="5">FR-751131007:36688567001001</mxc:subfield>
+                        <mxc:subfield code="a">4-LI30-311</mxc:subfield>
+                        <mxc:subfield code="b">759999999</mxc:subfield>
+                        <mxc:subfield code="c">
+                            Tolbiac - Rez de Jardin - Philosophie, histoire, sciences de l'homme - Magasin
+                        </mxc:subfield>
+                        <mxc:subfield code="d">O</mxc:subfield>
+                    </mxc:datafield>
+                </mxc:record>
+            </srw:recordData>
+            <srw:recordIdentifier>ark:/12148/cb36688567g</srw:recordIdentifier>
+            <srw:recordPosition>3</srw:recordPosition>
+            <srw:extraRecordData>
+                <ixm:attr name="CreationDate">19960618</ixm:attr>
+                <ixm:attr name="LastModificationDate">20160805</ixm:attr>
+                <mn:score>5.0298314</mn:score>
+            </srw:extraRecordData>
+        </srw:record>
+    </srw:records>
+</srw:searchRetrieveResponse>

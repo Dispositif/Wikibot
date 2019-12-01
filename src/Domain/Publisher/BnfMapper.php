@@ -40,6 +40,13 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
         }
         $this->xml = $xml;
 
+        // skip multi-records
+        $nbResults = (int)$xml->xpath('//srw:numberOfRecords[1]')[0] ?? 0;
+        if (1 !== $nbResults) {
+            echo "BNF : $nbResults records (skip)\n";
+
+            return [];
+        }
 
         return [
             'bnf' => $this->convertBnfIdent(),
@@ -167,11 +174,11 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
             return $tac;
         }
         // 214 : nouvelle zone 2019
-        if ($tac = $this->xpath2string('//mxc:datafield[@tag="214"]/mxc:subfield[@code="a"]','/')) {
+        if ($tac = $this->xpath2string('//mxc:datafield[@tag="214"]/mxc:subfield[@code="a"]', '/')) {
             return $tac;
         }
         // ancienne zone ?
-        if ($tac = $this->xpath2string('//mxc:datafield[@tag="219"]/mxc:subfield[@code="a"]','/')) {
+        if ($tac = $this->xpath2string('//mxc:datafield[@tag="219"]/mxc:subfield[@code="a"]', '/')) {
             return $tac;
         }
 
