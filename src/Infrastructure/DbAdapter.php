@@ -43,8 +43,19 @@ class DbAdapter implements QueueInterface
      * @return int|null
      * @throws Exception
      */
-    public function insertTempRawOpti($datas)
+    public function insertTempRawOpti(array $datas)
     {
+        // check if article already in db
+        $page = $datas[0]['page'];
+        $count = $this->db->fetchRowMany(
+            'SELECT id from TempRawOpti WHERE page=:page',
+            ['page' => $page]
+        );
+        if (null !== $count) {
+            return false;
+        }
+
+        // add the citations
         $id = $this->db->insertMany('TempRawOpti', $datas);
 
         return $id;
@@ -146,7 +157,7 @@ class DbAdapter implements QueueInterface
         return $json;
     }
 
-    public function skipArticle(string $title):bool
+    public function skipArticle(string $title): bool
     {
         try {
             $result = $this->db->update(
@@ -159,10 +170,11 @@ class DbAdapter implements QueueInterface
 
             return false;
         }
+
         return !empty($result);
     }
 
-    public function skipRow(int $id):bool
+    public function skipRow(int $id): bool
     {
         try {
             $result = $this->db->update(
@@ -175,6 +187,7 @@ class DbAdapter implements QueueInterface
 
             return false;
         }
+
         return !empty($result);
     }
 
@@ -274,12 +287,12 @@ class DbAdapter implements QueueInterface
                     WHERE edited IS NOT NULL 
                     and edited > :afterDate and edited < :beforeDate
                     and (verify is null or verify < :nextVerifyDate )
-             		ORDER BY verify,edited desc
+             		ORDER BY verify,edited
                     LIMIT 1)',
                 [
-                    'afterDate' => '2019-10-26 06:00:00',
+                    'afterDate' => '2019-11-26 06:00:00',
                     'beforeDate' => $beforeTime->format('Y-m-d H:i:s'),
-                    'nextVerifyDate' => (new \DateTime())->sub(new \DateInterval('P1D'))->format('Y-m-d H:i:s')
+                    'nextVerifyDate' => (new \DateTime())->sub(new \DateInterval('P2D'))->format('Y-m-d H:i:s'),
                 ]
             );
         } catch (Throwable $e) {
