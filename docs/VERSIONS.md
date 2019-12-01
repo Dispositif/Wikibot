@@ -1,6 +1,8 @@
 ## Versions des règles de corrections/complètement ##
 
-* 0.45 : conserve paramètre erroné vide (@Evynrhud), réglage prédiction paramètre
+* 0.46 : data BnF (lieu multiples) + redondance sous-titre (@Herr Satz) 
+  + bug [[Editeur|editeur]] + URL play.google + OL/G sous-titre 80 max
+* 0.45 : conserve paramètre erroné vide (@Evynrhud) réglage prédiction paramètre
 * 0.44 : Desactive temporairement gestion page/pages (@Evynrhud)
 * 0.43 : BnF (langue originale, langue titre, pages), Google (-q=)
 * 0.41 : exclusion donnée de langue GoogleBook (@Evynrhud)
