@@ -116,6 +116,7 @@ class WikiPageAction
 
         $content = new Content($newText);
         $revision = new Revision($content, $revision);
+        // TODO try/catch UsageExceptions badtoken
         $success = $this->wiki->newRevisionSaver()->save($revision, $editInfo);
 
         return $success;

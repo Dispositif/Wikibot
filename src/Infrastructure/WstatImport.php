@@ -33,13 +33,15 @@ class WstatImport
         $this->max = min(self::MAX_IMPORT, $max);
 
         //example
+        // "nom de page" : https://wstat.fr/template/index.php?title=Ouvrage&query=inclusions-title&start=105000&limit=5000
+        // "modèle complet" : https://wstat.fr/template/index.php?title=Ouvrage&query=inclusions&start=105000&limit=5000
         if (!$params) {
             $params = [
                 'title' => 'Ouvrage',
-                'query' => 'inclusions',
-                'param' => 'isbn',
+                'query' => 'inclusions-title',
+//                'param' => 'isbn',
                 'start' => 50000,
-                'limit' => 500,
+                'limit' => 5000,
             ];
         }
         $this->params = $params;
@@ -68,6 +70,7 @@ class WstatImport
                 return [];
             }
             $data = array_merge($data, $this->parsingWstatData($raw));
+            echo count($data)." titles\n";
             if ($this->max <= 0) {
                 $flag = false;
 

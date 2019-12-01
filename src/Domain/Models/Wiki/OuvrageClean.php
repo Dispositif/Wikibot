@@ -31,7 +31,7 @@ class OuvrageClean extends OuvrageTemplate
     protected function setPagestotales($pages)
     {
         // confusion 'passage' = "134-145"
-        if (preg_match('/[0-9]+-[0-9]+$/', $pages) > 0 && !isset($this->parametersValues['passage'])) {
+        if (preg_match('/[-,]+/', $pages) > 0 && !isset($this->parametersValues['passage'])) {
             $this->parametersValues['passage'] = $pages;
 
             return;
