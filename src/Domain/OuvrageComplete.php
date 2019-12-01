@@ -297,7 +297,10 @@ class OuvrageComplete
 
         // Skip pour éviter conflit entre 'sous-titre' et 'collection' ou 'titre volume'
         if (!empty($this->origin->getParam('titre volume'))
+            || !empty($this->origin->getParam('titre chapitre'))
+            || !empty($this->origin->getParam('titre tome'))
             || !empty($this->origin->getParam('collection'))
+            || !empty($this->origin->getParam('nature ouvrage'))
         ) {
             return;
         }
@@ -337,7 +340,7 @@ class OuvrageComplete
 
         // if there is only 2 chars of difference (i.e. typo error)
         if (levenshtein($this->charsFromBigTitle($this->origin), $this->charsFromBigTitle($this->book)) <= 2) {
-//            $this->log('typo titre?'); // TODO Normalize:: text from external API
+            //            $this->log('typo titre?'); // TODO Normalize:: text from external API
 
             return true;
         }

@@ -62,6 +62,12 @@ class OuvrageCompleteTest extends TestCase
     public function provideProcessSousTitre()
     {
         return [
+            // pas d'ajout si déjà titre volume/chapitre/tome ou nature ouvrage
+            [
+                '{{Ouvrage|titre = Loiret Joli|titre chapitre=Bla}}',
+                '{{Ouvrage|titre = Loiret Joli|sous-titre=un département}}',
+                '{{Ouvrage|titre=Loiret Joli|éditeur=|année=|isbn=|titre chapitre=Bla}}',
+            ],
             // titres identiques mais sous-titre manquant
             [
                 '{{Ouvrage|titre = Loiret Joli}}',
