@@ -130,7 +130,6 @@ class OuvrageTemplate extends AbstractWikiTemplate
 //            'type' => '',
             'edition' => "numéro d'édition",
 //            'series' => '',
-            'volume' => 'volume',
             'date' => 'date',
             'month' => 'mois',
             'language' => 'langue',
@@ -309,11 +308,11 @@ class OuvrageTemplate extends AbstractWikiTemplate
             'tome',
             'titre volume',
             'titre tome', // alias 'titre volume' à utilisé avec 'tome'
-            'lieu',
             'éditeur',
             'lien éditeur', // obsolète
-            'nature ouvrage',
             'collection',
+            'lieu',
+            'nature ouvrage',
             'série',
             'numéro dans collection',
             'année',
@@ -328,6 +327,7 @@ class OuvrageTemplate extends AbstractWikiTemplate
             'pages', // temporaire
             'format livre',
             'format', // obsolete
+            'passage',
             'isbn',
             'isbn10',
             'isbn2',
@@ -362,7 +362,6 @@ class OuvrageTemplate extends AbstractWikiTemplate
             'partie',
             'numéro chapitre',
             'titre chapitre',
-            'passage',
             'libellé',
             'référence',
             'référence simplifiée',

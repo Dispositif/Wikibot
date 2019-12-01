@@ -89,19 +89,19 @@ class OuvrageOptimizeTest extends TestCase
             // Lieu
             [
                 ['lieu' => '[[paris]]'],
-                '{{Ouvrage|titre=|lieu=Paris|éditeur=|année=|isbn=}}',
+                '{{Ouvrage|titre=|éditeur=|lieu=Paris|année=|isbn=}}',
             ],
             [
                 ['lieu' => 'London'],
-                '{{Ouvrage|titre=|lieu=Londres|éditeur=|année=|isbn=}}',
+                '{{Ouvrage|titre=|éditeur=|lieu=Londres|année=|isbn=}}',
             ],
             [
                 ['lieu' => 'Köln'],
-                '{{Ouvrage|titre=|lieu=Cologne|éditeur=|année=|isbn=}}',
+                '{{Ouvrage|titre=|éditeur=|lieu=Cologne|année=|isbn=}}',
             ],
             [
                 ['lieu' => 'Fu'],
-                '{{Ouvrage|titre=|lieu=Fu|éditeur=|année=|isbn=}}',
+                '{{Ouvrage|titre=|éditeur=|lieu=Fu|année=|isbn=}}',
             ],
             [
                 // date
@@ -126,7 +126,7 @@ class OuvrageOptimizeTest extends TestCase
 
         $optimized = (new OuvrageOptimize($origin))->doTasks()->getOuvrage();
         $this::assertSame(
-            '{{Ouvrage|id=ZE|langue=en|prénom1=Ernest|nom1=Nègre|titre=Toponymie|sous-titre=France|tome=3|éditeur=|année=|isbn=978-2-600-02884-4|isbn10=2600028846|passage=15-27}}',
+            '{{Ouvrage|id=ZE|langue=en|prénom1=Ernest|nom1=Nègre|titre=Toponymie|sous-titre=France|tome=3|éditeur=|année=|passage=15-27|isbn=978-2-600-02884-4|isbn10=2600028846}}',
             $optimized->serialize(true)
         );
     }
