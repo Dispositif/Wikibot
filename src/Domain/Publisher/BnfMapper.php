@@ -43,7 +43,8 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
 
         return [
             'bnf' => $this->convertBnfIdent(),
-            'isbn' => $this->xpath2string('//mxc:datafield[@tag="010"]/mxc:subfield[@code="a"]'),
+            'isbn' => $this->xpath2string('//mxc:datafield[@tag="010"]/mxc:subfield[@code="a"][1]'),
+            'isbn2' => $this->xpath2string('//mxc:datafield[@tag="010"]/mxc:subfield[@code="a"][2]'),
 
             // Langue
             'langue' => $this->lang2wiki($this->xpath2string('//mxc:datafield[@tag="101"]/mxc:subfield[@code="a"]')),
@@ -58,7 +59,7 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
 
             // Bloc 200
             // a : Titre propre
-            'titre' => $this->xpath2string('//mxc:datafield[@tag="200"]/mxc:subfield[@code="a"]'),
+            'titre' => $this->xpath2string('//mxc:datafield[@tag="200"]/mxc:subfield[@code="a"][1]'),
             // e : Complément du titre
             'sous-titre' => $this->xpath2string('//mxc:datafield[@tag="200"]/mxc:subfield[@code="e"]'),
             // f : responsabilité principale "Pierre Durand, Paul Dupond" (XML de dingue pour ça...)
@@ -86,11 +87,19 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
         ];
     }
 
-    private function xpath2string(string $path): ?string
+    private function xpath2string(string $path, ?string $glue = ', '): ?string
     {
-        $element = $this->xml->xpath($path);
-        if (isset($element[0]) && $element[0] instanceof SimpleXMLElement) {
-            return (string)$element[0];
+        $elements = $this->xml->xpath($path);
+
+        $res = [];
+        foreach ($elements as $element) {
+            if (isset($element) && $element instanceof SimpleXMLElement) {
+                $res[] = (string)$element;
+            }
+        }
+
+        if (!empty($res)) {
+            return implode($glue, $res);
         }
 
         return null;
@@ -126,7 +135,6 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
         require __DIR__.'/../Enums/languageData.php';
 
         if (!empty($lang) && isset($iso2b_to_frlang[$lang])) {
-
             return $iso2b_to_frlang[$lang];
         }
 

@@ -21,6 +21,7 @@
                     <mxc:controlfield tag="003">http://catalogue.bnf.fr/ark:/12148/cb35049657p</mxc:controlfield>
                     <mxc:datafield tag="010" ind1=" " ind2=" ">
                         <mxc:subfield code="a">2-85319-209-1</mxc:subfield>
+                        <mxc:subfield code="a">2-33333-209-1</mxc:subfield>
                         <mxc:subfield code="b">br.</mxc:subfield>
                         <mxc:subfield code="d">150 F</mxc:subfield>
                     </mxc:datafield>
@@ -79,11 +80,13 @@
                     </mxc:datafield>
                     <mxc:datafield tag="210" ind1=" " ind2=" ">
                         <mxc:subfield code="a">Paris</mxc:subfield>
+                        <mxc:subfield code="a">Saint-Denis</mxc:subfield>
+                        <mxc:subfield code="d">1996</mxc:subfield>
+                        <mxc:subfield code="g">Impr. Jouve</mxc:subfield>
                         <mxc:subfield code="b">11 rue de Navarin, 75009</mxc:subfield>
                         <mxc:subfield code="c">Conseil international de la langue française</mxc:subfield>
-                        <mxc:subfield code="d">1989</mxc:subfield>
+                        <mxc:subfield code="c">Université de la Réunion</mxc:subfield>
                         <mxc:subfield code="e">61-Alençon</mxc:subfield>
-                        <mxc:subfield code="g">Normandie impr.</mxc:subfield>
                     </mxc:datafield>
                     <mxc:datafield tag="215" ind1=" " ind2=" ">
                         <mxc:subfield code="a">1 vol. (622 p.)</mxc:subfield>
