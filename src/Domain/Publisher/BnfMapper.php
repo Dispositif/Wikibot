@@ -163,15 +163,15 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
     private function getLocation(): ?string
     {
         // zone 210
-        if ($tac = $this->xpath2string('//mxc:datafield[@tag="210"]/mxc:subfield[@code="a"]')) {
+        if ($tac = $this->xpath2string('//mxc:datafield[@tag="210"]/mxc:subfield[@code="a"]', '/')) {
             return $tac;
         }
         // 214 : nouvelle zone 2019
-        if ($tac = $this->xpath2string('//mxc:datafield[@tag="214"]/mxc:subfield[@code="a"]')) {
+        if ($tac = $this->xpath2string('//mxc:datafield[@tag="214"]/mxc:subfield[@code="a"]','/')) {
             return $tac;
         }
         // ancienne zone ?
-        if ($tac = $this->xpath2string('//mxc:datafield[@tag="219"]/mxc:subfield[@code="a"]')) {
+        if ($tac = $this->xpath2string('//mxc:datafield[@tag="219"]/mxc:subfield[@code="a"]','/')) {
             return $tac;
         }
 

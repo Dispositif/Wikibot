@@ -32,7 +32,7 @@ class BnfMapperTest extends TestCase
                 'auteur2' => null,
                 'volume' => null,
                 'collection' => null,
-                'lieu' => 'Paris, Saint-Denis',
+                'lieu' => 'Paris/Saint-Denis',
                 'éditeur' => 'Conseil international de la langue française, Université de la Réunion',
                 'date' => '1996',
                 'pages totales' => '622',
