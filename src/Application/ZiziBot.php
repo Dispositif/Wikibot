@@ -22,12 +22,14 @@ use Mediawiki\DataModel\EditInfo;
 class ZiziBot extends Bot
 {
     const BOT_TALK_SUMMARY = 'Réponse artificielle';
-    const BOT_TALK_FILE    = __DIR__.'/resources/phrases_zizibot.txt';
+
+    const BOT_TALK_FILE = __DIR__.'/resources/phrases_zizibot.txt';
 
     /**
      * Add a freaky response in the bottom of the talk page.
      *
      * @return bool
+     *
      * @throws UsageException
      * @throws Exception
      */
@@ -53,7 +55,7 @@ class ZiziBot extends Bot
         $editInfo = new EditInfo(static::BOT_TALK_SUMMARY);
         $success = $page->addToBottomOfThePage($addText, $editInfo);
 
-        return (bool)$success;
+        return (bool) $success;
     }
 
     /**
@@ -61,13 +63,14 @@ class ZiziBot extends Bot
      * @param string|null $identation
      *
      * @return string
+     *
      * @throws Exception
      */
     private function generateTalkText(?string $toEditor = null, ?string $identation = ':')
     {
         $to = ($toEditor) ? sprintf('@%s : ', $toEditor) : ''; // {{notif}}
         $sentence = TextUtil::mb_ucfirst($this->getRandomSentence());
-        if(!$sentence){
+        if (!$sentence) {
             throw new Exception('no sentence');
         }
 
@@ -77,15 +80,16 @@ class ZiziBot extends Bot
     private function getRandomSentence(): ?string
     {
         $sentences = file(self::BOT_TALK_FILE);
-        if(!$sentences){
+        if (!$sentences) {
             return null;
         }
-        return (string)trim($sentences[array_rand($sentences)]);
+
+        return (string) trim($sentences[array_rand($sentences)]);
     }
 
     /**
      * Todo
-     * https://www.mediawiki.org/wiki/API:Usercontribs
+     * https://www.mediawiki.org/wiki/API:Usercontribs.
      */
     public function botContribs(): string
     {
@@ -94,5 +98,4 @@ class ZiziBot extends Bot
 
         return file_get_contents($url);
     }
-
 }

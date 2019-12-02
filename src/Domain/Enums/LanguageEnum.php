@@ -70,7 +70,7 @@ class LanguageEnum extends Enum
     {
         // todo Refactor
         /**
-         * @var $frlang_to_french array
+         * @var array
          */
         require_once 'languageData.php';
         if (!array_key_exists($this->frlang, $frlang_to_french)) {

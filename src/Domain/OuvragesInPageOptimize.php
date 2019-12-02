@@ -20,6 +20,7 @@ class OuvragesInPageOptimize
     private $ouvrages;
 
     private $page;
+
     /**
      * @var array
      */

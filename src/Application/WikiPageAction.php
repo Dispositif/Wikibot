@@ -74,7 +74,7 @@ class WikiPageAction
      */
     public function isPageHomonymie(): bool
     {
-        return (false !== stristr($this->getText(), '{{homonymie'));
+        return false !== stristr($this->getText(), '{{homonymie');
     }
 
     /**
@@ -95,7 +95,7 @@ class WikiPageAction
     public function getRedirect(): ?string
     {
         if (preg_match('/^#REDIRECT(?:ION)? ?\[\[([^]]+)]]/i', $this->getText(), $matches)) {
-            return (string)trim($matches[1]);
+            return (string) trim($matches[1]);
         }
 
         return null;
@@ -219,6 +219,7 @@ class WikiPageAction
      * @param $text string
      *
      * @return array
+     *
      * @throws Exception
      */
     public function extractRefFromText(string $text): ?array
@@ -226,7 +227,7 @@ class WikiPageAction
         $parser = new TagParser(); // todo ParserFactory
         $refs = $parser->importHtml($text)->getRefValues(); // []
 
-        return (array)$refs;
+        return (array) $refs;
     }
 
     /**

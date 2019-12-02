@@ -177,6 +177,7 @@ class PredictAuthors
                     1 => $val[2],
                     2 => $val[4],
                 ];
+
                 break;
 
             case 'FIRSTUPPER FIRSTUPPER COMMA FIRSTUPPER FIRSTUPPER COMMA MIXED FIRSTUPPER':

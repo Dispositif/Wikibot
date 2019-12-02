@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Domain\Publisher\Tests;
@@ -9,7 +10,6 @@ use Scriptotek\GoogleBooks\Volume;
 
 class GoogleBookMapperTest extends TestCase
 {
-
     public function testProcess()
     {
         $text = file_get_contents(__DIR__.'/googleBook.json');

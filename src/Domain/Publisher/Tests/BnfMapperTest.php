@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Domain\Publisher\Tests;
@@ -9,13 +10,12 @@ use SimpleXMLElement;
 
 class BnfMapperTest extends TestCase
 {
-
     public function testProcess()
     {
         $text = file_get_contents(__DIR__.'/fixture_bnf.xml');
 
         $xml = new SimpleXMLElement($text);
-        $xml->registerXPathNamespace('mxc', "info:lc/xmlns/marcxchange-v2");
+        $xml->registerXPathNamespace('mxc', 'info:lc/xmlns/marcxchange-v2');
 
         $mapper = new BnfMapper();
         $actual = $mapper->process($xml);
@@ -47,7 +47,7 @@ class BnfMapperTest extends TestCase
         $text = file_get_contents(__DIR__.'/bnf_multi_isbn_rectifie.xml');
 
         $xml = new SimpleXMLElement($text);
-        $xml->registerXPathNamespace('mxc', "info:lc/xmlns/marcxchange-v2");
+        $xml->registerXPathNamespace('mxc', 'info:lc/xmlns/marcxchange-v2');
 
         $mapper = new BnfMapper();
         $actual = $mapper->process($xml);

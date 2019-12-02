@@ -113,7 +113,7 @@ abstract class TextUtil
      *
      * @param string $str
      * @param array  $names
-     * @param int    $max Maximum number of permutation/add/subtraction)
+     * @param int    $max   Maximum number of permutation/add/subtraction)
      *
      * @return string|null
      */

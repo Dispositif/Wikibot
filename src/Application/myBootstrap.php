@@ -25,4 +25,3 @@ if (file_exists($dotFilename)) {
 if (getenv('USER_AGENT')) {
     ini_set('user_agent', getenv('USER_AGENT'));
 }
-

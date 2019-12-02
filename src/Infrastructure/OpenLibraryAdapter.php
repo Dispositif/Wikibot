@@ -35,6 +35,7 @@ class OpenLibraryAdapter extends AbstractBookApiAdapter implements BookApiInterf
      * @param string $isbn
      *
      * @return array|null
+     *
      * @throws Exception
      */
     public function getDataByIsbn(string $isbn): ?array

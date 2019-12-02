@@ -41,6 +41,7 @@ class SMS
      * @param string $message
      *
      * @return bool
+     *
      * @throws Exception
      */
     public function send(string $message): bool

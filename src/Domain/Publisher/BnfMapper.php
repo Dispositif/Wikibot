@@ -13,9 +13,7 @@ use SimpleXMLElement;
 
 /**
  * Class BnfMapper
- * http://catalogue.bnf.fr/api/SRU?version=1.2&operation=searchRetrieve&query=bib.isbn%2Badj%2B%25222844940404%2522
- *
- * @package App\Domain\Publisher
+ * http://catalogue.bnf.fr/api/SRU?version=1.2&operation=searchRetrieve&query=bib.isbn%2Badj%2B%25222844940404%2522.
  */
 class BnfMapper extends AbstractBookMapper implements MapperInterface
 {
@@ -27,7 +25,7 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
     /**
      * XML in UniMarc format.
      * See http://api.bnf.fr/formats-bibliographiques-intermarc-unimarc
-     * https://www.transition-bibliographique.fr/systemes-et-donnees/manuel-unimarc-format-bibliographique/
+     * https://www.transition-bibliographique.fr/systemes-et-donnees/manuel-unimarc-format-bibliographique/.
      *
      * @param $xml
      *
@@ -41,7 +39,7 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
         $this->xml = $xml;
 
         // skip multi-records
-        $nbResults = (int)$xml->xpath('//srw:numberOfRecords[1]')[0] ?? 0;
+        $nbResults = (int) $xml->xpath('//srw:numberOfRecords[1]')[0] ?? 0;
         if (1 !== $nbResults) {
             echo "BNF : $nbResults records (skip)\n";
 
@@ -101,7 +99,7 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
         $res = [];
         foreach ($elements as $element) {
             if (isset($element) && $element instanceof SimpleXMLElement) {
-                $res[] = (string)$element;
+                $res[] = (string) $element;
             }
         }
 
@@ -114,7 +112,7 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
 
     /**
      * Convert number of pages.
-     * "1 vol. (126 p.)"
+     * "1 vol. (126 p.)".
      *
      * @return string|null
      */
@@ -122,7 +120,7 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
     {
         $raw = $this->xpath2string('//mxc:datafield[@tag="215"]/mxc:subfield[@code="a"]');
         if (!empty($raw) && preg_match('#([0-9]{2,}) p\.#', $raw, $matches) > 0) {
-            return (string)$matches[1];
+            return (string) $matches[1];
         }
 
         return null;
@@ -130,7 +128,7 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
 
     /**
      * todo refac and move.
-     * ISO 639-1 http://www.loc.gov/standards/iso639-2/php/French_list.php
+     * ISO 639-1 http://www.loc.gov/standards/iso639-2/php/French_list.php.
      *
      * @param string|null $lang
      *
@@ -205,10 +203,9 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
         $raw = $this->xpath2string('//srw:recordIdentifier[1]/text()');
 
         if ($raw && preg_match('#ark:/[0-9]+/cb([0-9]+)#', $raw, $matches) > 0) {
-            return (string)$matches[1];
+            return (string) $matches[1];
         }
 
         return null;
     }
-
 }

@@ -46,7 +46,7 @@ class OpenLibraryMapper extends AbstractBookMapper implements MapperInterface
             return null;
         }
 
-        if(strlen($details['subtitle']) > 80 ) {
+        if (strlen($details['subtitle']) > 80) {
             return null;
         }
 
@@ -91,7 +91,7 @@ class OpenLibraryMapper extends AbstractBookMapper implements MapperInterface
             return null;
         }
         if (preg_match('/[^0-9]?([12][0-9]{3})[^0-9]?/', $details['publish_date'], $matches) > 0) {
-            return (string)$matches[1];
+            return (string) $matches[1];
         }
 
         return null;

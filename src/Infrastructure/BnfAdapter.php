@@ -19,9 +19,7 @@ use Throwable;
 
 /**
  * Data import from BnF.
- * Class BnfAdapter
- *
- * @package App\Infrastructure
+ * Class BnfAdapter.
  */
 class BnfAdapter extends AbstractBookApiAdapter implements BookApiInterface
 {
@@ -41,6 +39,7 @@ class BnfAdapter extends AbstractBookApiAdapter implements BookApiInterface
      * @param string $isbn
      *
      * @return SimpleXMLElement|null
+     *
      * @throws Exception
      */
     public function getDataByIsbn(string $isbn): ?SimpleXMLElement
@@ -68,15 +67,15 @@ class BnfAdapter extends AbstractBookApiAdapter implements BookApiInterface
         try {
             $xml = new SimpleXMLElement($raw);
             // Registering XML namespace or xpath() don't work
-            $xml->registerXPathNamespace('mxc', "info:lc/xmlns/marcxchange-v2");
+            $xml->registerXPathNamespace('mxc', 'info:lc/xmlns/marcxchange-v2');
         } catch (Throwable $e) {
-            echo "Error BnF XML";
+            echo 'Error BnF XML';
 
             return null;
         }
 
         // note : multi-records filtered in BnFMapper
-        $nbResults = (int)$xml->xpath('//srw:numberOfRecords[1]')[0] ?? 0;
+        $nbResults = (int) $xml->xpath('//srw:numberOfRecords[1]')[0] ?? 0;
         if (0 === $nbResults) {
             return null;
         }

@@ -1,4 +1,5 @@
 <?php
+
 ///**
 // * This file is part of dispositif/wikibot application
 // * 2019 : Philippe M. <dispositif@gmail.com>

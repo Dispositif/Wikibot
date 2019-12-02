@@ -27,7 +27,8 @@ use Throwable;
 class Bot
 {
     const WIKI_STATE_FILENAME = __DIR__.'/resources/wiki_state.json';
-    const WATCHPAGE_FILENAME  = __DIR__.'/resources/watch_pages.json';
+
+    const WATCHPAGE_FILENAME = __DIR__.'/resources/watch_pages.json';
 
     const EXIT_ON_CHECK_WATCHPAGE = true;
 
@@ -48,6 +49,7 @@ class Bot
     public $taskName = 'Améliorations bibliographiques';
 
     public static $gitVersion;
+
     /**
      * @var DateTimeImmutable
      */
@@ -122,7 +124,6 @@ class Bot
         }
         $this->lastCheckStopDate = new DateTimeImmutable();
 
-
         $wiki = ServiceFactory::wikiApi();
         $pageAction = new WikiPageAction($wiki, $title);
         $text = $pageAction->getText();
@@ -184,6 +185,7 @@ class Bot
 
     /**
      * @return array
+     *
      * @throws ConfigException
      */
     protected function getWatchPages(): array
@@ -221,7 +223,7 @@ class Bot
     {
         $time = $this->getTimestamp($title);  // 2011-09-02T16:31:13Z
 
-        return (int)round((time() - strtotime($time)) / 60);
+        return (int) round((time() - strtotime($time)) / 60);
     }
 
     /**

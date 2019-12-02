@@ -11,5 +11,4 @@ namespace App\Domain\Publisher;
 
 abstract class AbstractBookMapper
 {
-
 }

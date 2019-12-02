@@ -19,6 +19,7 @@ use Normalizer;
 class OuvrageComplete
 {
     const WIKI_LANGUAGE = 'fr';
+
     /**
      * @var OuvrageTemplate
      */
@@ -48,6 +49,7 @@ class OuvrageComplete
 
     /**
      * @return OuvrageTemplate
+     *
      * @throws Exception
      */
     public function getResult()
@@ -59,6 +61,7 @@ class OuvrageComplete
 
     /**
      * @return bool
+     *
      * @throws Exception
      */
     private function complete()
@@ -193,6 +196,7 @@ class OuvrageComplete
 
     /**
      * @return bool
+     *
      * @throws Exception
      */
     private function predictSameBook()
@@ -209,6 +213,7 @@ class OuvrageComplete
 
     /**
      * @return bool
+     *
      * @throws Exception
      */
     private function hasSameAuthors(): bool
@@ -236,6 +241,7 @@ class OuvrageComplete
      * @param OuvrageTemplate $ouv
      *
      * @return string
+     *
      * @throws Exception
      */
     private function authorsFromBook(OuvrageTemplate $ouv)
@@ -269,6 +275,7 @@ class OuvrageComplete
 
     /**
      * @return bool
+     *
      * @throws Exception
      */
     private function hasSameISBN(): bool
@@ -332,6 +339,7 @@ class OuvrageComplete
 
     /**
      * @return bool
+     *
      * @throws Exception
      */
     private function hasSameBookTitles(): bool
@@ -388,6 +396,7 @@ class OuvrageComplete
      * @param OuvrageTemplate $ouvrage
      *
      * @return string
+     *
      * @throws Exception
      */
     private function charsFromBigTitle(OuvrageTemplate $ouvrage): string

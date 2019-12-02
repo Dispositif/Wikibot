@@ -26,6 +26,7 @@ use Throwable;
 class DbAdapter implements QueueInterface
 {
     protected $db;
+
     protected $pdoConn;
 
     const OPTI_VALID_DATE = '2019-11-20 14:00:00'; // v.34 sous-titre sans maj
@@ -43,6 +44,7 @@ class DbAdapter implements QueueInterface
      * @param $datas
      *
      * @return int|null
+     *
      * @throws Exception
      */
     public function insertTempRawOpti(array $datas)
@@ -113,6 +115,7 @@ class DbAdapter implements QueueInterface
     //------------------------------------------------------
     //          EDIT QUEUE
     //------------------------------------------------------
+
     /**
      * Get batch of citations(template) for edit process.
      *
@@ -208,7 +211,7 @@ class DbAdapter implements QueueInterface
             $result = $this->db->update(
                 'TempRawOpti',
                 ['id' => $data['id']], // condition
-                ['edited' => date("Y-m-d H:i:s")]
+                ['edited' => date('Y-m-d H:i:s')]
             );
         } catch (MysqlException $e) {
             dump($e);
@@ -231,7 +234,7 @@ class DbAdapter implements QueueInterface
     public function saveEntity(object $object)
     {
         if ($object instanceof DbEditedPage) {
-            /**
+            /*
              * @var $object DbEditedPage
              */
             try {
@@ -255,7 +258,7 @@ class DbAdapter implements QueueInterface
     public function findEntity($table, $primary): ?object
     {
         if ('editedpages' === $table) {
-            /**
+            /*
              * @var $object DbEditedPage
              */
             try {
@@ -281,7 +284,8 @@ class DbAdapter implements QueueInterface
     {
         $data = null;
         // 2 hours ago
-        $beforeTime = (new DateTime)->sub(new DateInterval('PT2H'));
+        $beforeTime = (new DateTime())->sub(new DateInterval('PT2H'));
+
         try {
             $data = $this->db->fetchRowMany(
                 'SELECT id,page,raw,opti,optidate,edited,verify,skip FROM TempRawOpti WHERE page = (
@@ -309,6 +313,7 @@ class DbAdapter implements QueueInterface
         if (empty($data['page'])) {
             throw new Exception('pas de page');
         }
+
         try {
             $result = $this->db->update(
                 'TempRawOpti',

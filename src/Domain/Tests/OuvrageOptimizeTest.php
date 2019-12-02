@@ -17,7 +17,6 @@ use PHPUnit\Framework\TestCase;
 
 class OuvrageOptimizeTest extends TestCase
 {
-
     /**
      * @dataProvider provideSomeParam
      *
@@ -44,19 +43,19 @@ class OuvrageOptimizeTest extends TestCase
             [
                 // prédiction paramètre
                 ['citation' => 'blabla'],
-                '{{Ouvrage|titre=|éditeur=|année=|isbn=}}{{extrait|blabla}}'
+                '{{Ouvrage|titre=|éditeur=|année=|isbn=}}{{extrait|blabla}}',
             ],
             [
                 // prédiction paramètre
                 ['autuer' => 'bob'],
-                '{{Ouvrage|auteur1=bob|titre=|éditeur=|année=|isbn=}}'
+                '{{Ouvrage|auteur1=bob|titre=|éditeur=|année=|isbn=}}',
             ],
             [
                 // CONVERT_GOOGLEBOOK_TEMPLATE = false;
                 ['lire en ligne' => 'https://books.google.fr/books?id=3KNeP3Hm0TAC&pg=PA184&lpg=PA184&dq=apolline+de+Gourlet&source=bl&ots=bA3f27YKbl&sig=0EVHZ6yHKLBRTw-VgKwekQT7YZQ&hl=fr&sa=X&ved=2ahUKEwiLpNXY9pLfAhUH1hoKHa0EDy84ChDoATACegQIBRAB#v=onepage&q=apolline%20de%20Gourlet&f=false'],
                 //'{{Ouvrage|titre=|éditeur=|année=|isbn=|lire en ligne={{Google
                 // Livres|3KNeP3Hm0TAC|page=184|surligne=apolline+de+Gourlet}}}}'
-                '{{Ouvrage|titre=|éditeur=|année=|isbn=|lire en ligne=https://books.google.com/books?id=3KNeP3Hm0TAC&pg=PA184&dq=apolline+de+Gourlet}}'
+                '{{Ouvrage|titre=|éditeur=|année=|isbn=|lire en ligne=https://books.google.com/books?id=3KNeP3Hm0TAC&pg=PA184&dq=apolline+de+Gourlet}}',
             ],
             [
                 [
@@ -227,10 +226,12 @@ class OuvrageOptimizeTest extends TestCase
 
     /**
      * @dataProvider provideISBN
+     *
      * @param $isbn
      * @param $expected
+     *
      * @throws Exception
-*/
+     */
     public function testIsbn($isbn, $expected)
     {
         $origin = new OuvrageTemplate();

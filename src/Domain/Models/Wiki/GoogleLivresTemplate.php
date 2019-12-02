@@ -52,11 +52,12 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
     /**
      * Create {Google Book} from URL.
      * See also https://fr.wikipedia.org/wiki/Utilisateur:Jack_ma/GB
-     * https://stackoverflow.com/questions/11584551/need-information-on-query-parameters-for-google-books-e-g-difference-between-d
+     * https://stackoverflow.com/questions/11584551/need-information-on-query-parameters-for-google-books-e-g-difference-between-d.
      *
      * @param string $url
      *
      * @return GoogleLivresTemplate|null
+     *
      * @throws Exception
      */
     public static function createFromURL(string $url): ?self
