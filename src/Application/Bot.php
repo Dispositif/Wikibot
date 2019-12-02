@@ -95,22 +95,6 @@ class Bot
         return null;
     }
 
-    /**
-     * Return start of last commit id.
-     *
-     * @return string|null
-     */
-    public static function getCommitId(): ?string
-    {
-        $git = new GitInfo();
-        $raw = $git->version();
-        if (preg_match('#g([0-9a-f]+)#', $raw, $matches) > 0) {
-            return $matches[1];
-        }
-
-        return null;
-    }
-
     public function checkStopOnTalkpage(?bool $botTalk = false): void
     {
         $title = 'Discussion_utilisateur:'.getenv('BOT_NAME');
@@ -185,7 +169,6 @@ class Bot
 
     /**
      * @return array
-     *
      * @throws ConfigException
      */
     protected function getWatchPages(): array
@@ -223,7 +206,7 @@ class Bot
     {
         $time = $this->getTimestamp($title);  // 2011-09-02T16:31:13Z
 
-        return (int) round((time() - strtotime($time)) / 60);
+        return (int)round((time() - strtotime($time)) / 60);
     }
 
     /**
@@ -235,7 +218,7 @@ class Bot
      *
      * @return bool
      */
-    public static function isNoBotTag(string $text, ?string $botName = null): bool
+    private static function isNoBotTag(string $text, ?string $botName = null): bool
     {
         $botName = ($botName) ? $botName : getenv('BOT_NAME');
         $denyReg = (!empty($botName)) ? '|\{\{bots ?\| ?deny\=[^\}]*'.preg_quote($botName, '#').'[^\}]*\}\}' : '';
@@ -254,9 +237,12 @@ class Bot
      *
      * @return bool
      */
-    public static function isEditionRestricted(string $text): bool
+    public static function isEditionRestricted(string $text, ?string $botName = null): bool
     {
-        if (preg_match('#{{Protection#i', $text) > 0) {
+        if (preg_match('#\{\{Protection#i', $text) > 0
+            || preg_match('#\{\{3R\}\}#', $text) > 0
+            || self::isNoBotTag($text, $botName)
+        ) {
             return true;
         }
 

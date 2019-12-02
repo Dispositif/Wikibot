@@ -116,6 +116,11 @@ class EditProcess
         }
         $this->wikiText = $page->getText();
 
+        if (BOT::isEditionRestricted($this->wikiText)) {
+            echo "SKIP : protection/3R.\n";
+            $this->db->skipArticle($title);
+        }
+
         if ($this->bot->minutesSinceLastEdit($title) < 15) {
             echo "SKIP : édition humaine dans les dernières 15 minutes.\n";
 
