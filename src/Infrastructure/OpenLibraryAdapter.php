@@ -13,6 +13,7 @@ use App\Domain\Publisher\BookApiInterface;
 use App\Domain\Publisher\OpenLibraryMapper;
 use Exception;
 use GuzzleHttp\Client;
+use Normalizer;
 
 /**
  * Doc : https://openlibrary.org/dev/docs/api/books
@@ -58,11 +59,9 @@ class OpenLibraryAdapter extends AbstractBookApiAdapter implements BookApiInterf
         if (empty($json)) {
             return null;
         }
-        $json = \Normalizer::normalize($json);
+        $json = Normalizer::normalize($json);
         $allData = json_decode($json, true) ?? null;
         // Warning : response structure is different with jscmd = data/details
-        $data = $allData[array_key_first($allData)] ?? null;
-
-        return $data;
+        return $allData[array_key_first($allData)] ?? null;
     }
 }

@@ -41,9 +41,8 @@ abstract class AbstractParametersObject
     {
         $sanitizedName = str_replace([' ', 'à', 'é'], ['', 'a', 'e'], $name);
         $sanitizedName = preg_replace('#[^A-Za-z0-9]#', '', $sanitizedName);
-        $method = 'set'.ucfirst($sanitizedName);
 
-        return $method;
+        return 'set'.ucfirst($sanitizedName);
     }
 
     /**

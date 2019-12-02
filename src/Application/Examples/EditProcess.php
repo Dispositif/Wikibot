@@ -15,7 +15,10 @@ use App\Application\WikiPageAction;
 use App\Domain\Utils\WikiTextUtil;
 use App\Infrastructure\DbAdapter;
 use App\Infrastructure\ServiceFactory;
+use Exception;
+use LogicException;
 use Mediawiki\DataModel\EditInfo;
+use Normalizer;
 use Throwable;
 
 //use App\Application\CLI;
@@ -86,8 +89,8 @@ class EditProcess
 
         if (empty($data)) {
             echo "SKIP : no rows to process\n";
-            echo "Sleep 1h.";
-            sleep(60 * 60);
+            echo "Sleep 2h.";
+            sleep(60 * 120);
 
             // or exit
             return false;
@@ -97,7 +100,7 @@ class EditProcess
             $title = $data[0]['page'];
             echo "$title \n";
             $page = new WikiPageAction($this->wiki, $title);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             echo "*** WikiPageAction error : $title \n";
             sleep(20);
 
@@ -160,7 +163,7 @@ class EditProcess
         sleep(20);
 
         $editInfo = new EditInfo($miniSummary, $this->minorFlag, $this->botFlag);
-        $success = $page->editPage(\Normalizer::normalize($this->wikiText), $editInfo);
+        $success = $page->editPage(Normalizer::normalize($this->wikiText), $editInfo);
         echo ($success) ? "Ok\n" : "***** Erreur edit\n";
 
         if ($success) {
@@ -279,12 +282,12 @@ class EditProcess
      *
      * @param array $data
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function checkErrorWarning(array $data): void
     {
         if (!isset($data['opti'])) {
-            throw new \LogicException('Opti NULL');
+            throw new LogicException('Opti NULL');
         }
 
         // paramètre inconnu
@@ -384,9 +387,9 @@ class EditProcess
         // Edit wiki talk page
         try {
             $talkPage = new WikiPageAction($this->wiki, 'Discussion:'.$rows[0]['page']);
-            $editInfo = new EditInfo('Signalement erreur {ouvrage}', false, false, 5);
+            $editInfo = new EditInfo('Signalement erreur {ouvrage}', false, false);
             $talkPage->addToBottomOfThePage($errorMessage, $editInfo);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             unset($e);
         }
     }

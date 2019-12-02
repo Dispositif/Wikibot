@@ -11,6 +11,8 @@ namespace App\Infrastructure;
 
 use App\Application\QueueInterface;
 use App\Infrastructure\entities\DbEditedPage;
+use DateInterval;
+use DateTime;
 use Exception;
 use Simplon\Mysql\Mysql;
 use Simplon\Mysql\MysqlException;
@@ -56,9 +58,7 @@ class DbAdapter implements QueueInterface
         }
 
         // add the citations
-        $id = $this->db->insertMany('TempRawOpti', $datas);
-
-        return $id;
+        return $this->db->insertMany('TempRawOpti', $datas);
     }
 
     /**
@@ -88,6 +88,10 @@ class DbAdapter implements QueueInterface
 
     /**
      * Update DB with completed data from CompleteProcess.
+     *
+     * @param array $finalData
+     *
+     * @return bool
      */
     public function sendCompletedData(array $finalData): bool
     {
@@ -231,9 +235,7 @@ class DbAdapter implements QueueInterface
              * @var $object DbEditedPage
              */
             try {
-                $id = $this->db->replace('editedpages', $object->getVars());
-
-                return $id;
+                return $this->db->replace('editedpages', $object->getVars());
             } catch (MysqlException $e) {
                 unset($e);
             }
@@ -279,7 +281,7 @@ class DbAdapter implements QueueInterface
     {
         $data = null;
         // 2 hours ago
-        $beforeTime = (new \DateTime)->sub(new \DateInterval('PT2H'));
+        $beforeTime = (new DateTime)->sub(new DateInterval('PT2H'));
         try {
             $data = $this->db->fetchRowMany(
                 'SELECT id,page,raw,opti,optidate,edited,verify,skip FROM TempRawOpti WHERE page = (
@@ -292,7 +294,7 @@ class DbAdapter implements QueueInterface
                 [
                     'afterDate' => '2019-11-26 06:00:00',
                     'beforeDate' => $beforeTime->format('Y-m-d H:i:s'),
-                    'nextVerifyDate' => (new \DateTime())->sub(new \DateInterval('P2D'))->format('Y-m-d H:i:s'),
+                    'nextVerifyDate' => (new DateTime())->sub(new DateInterval('P2D'))->format('Y-m-d H:i:s'),
                 ]
             );
         } catch (Throwable $e) {
@@ -305,7 +307,7 @@ class DbAdapter implements QueueInterface
     public function updateMonitor(array $data): bool
     {
         if (empty($data['page'])) {
-            throw new \Exception('pas de page');
+            throw new Exception('pas de page');
         }
         try {
             $result = $this->db->update(

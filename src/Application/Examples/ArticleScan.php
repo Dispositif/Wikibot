@@ -14,6 +14,7 @@ use App\Application\WikiPageAction;
 use App\Domain\Utils\TemplateParser;
 use App\Infrastructure\DbAdapter;
 use App\Infrastructure\ServiceFactory;
+use Exception;
 
 //use App\Application\CLI;
 
@@ -71,7 +72,7 @@ class ArticleScan
 
         try {
             $parse = TemplateParser::parseAllTemplateByName('ouvrage', $text);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             dump($e);
 
             return false;

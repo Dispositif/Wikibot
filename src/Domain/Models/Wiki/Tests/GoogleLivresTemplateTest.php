@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Domain\Models\Wiki\Tests;
 
 use App\Domain\Models\Wiki\GoogleLivresTemplate;
+use Exception;
 use PHPUnit\Framework\TestCase;
 
 class GoogleLivresTemplateTest extends TestCase
@@ -30,6 +31,9 @@ class GoogleLivresTemplateTest extends TestCase
 
     /**
      * @dataProvider provideSimplify
+     *
+     * @param $url
+     * @param $expected
      */
     public function testSimplyGoogleBookUrl($url, $expected)
     {
@@ -67,7 +71,9 @@ class GoogleLivresTemplateTest extends TestCase
 
     /**
      * @dataProvider provideGoogleUrl
-     * @throws \Exception
+     * @param string $url
+     * @param string $expected
+     * @throws Exception
      */
     public function testCreateFromURL(string $url, string $expected)
     {

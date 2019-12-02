@@ -13,6 +13,7 @@ use App\Application\WikiPageAction;
 use App\Infrastructure\ServiceFactory;
 use GuzzleHttp\Client;
 use Mediawiki\DataModel\EditInfo;
+use Throwable;
 
 include __DIR__.'/../myBootstrap.php';
 
@@ -24,7 +25,7 @@ if (200 !== $response->getStatusCode()) {
 }
 try{
     $newText = $response->getBody()->getContents();
-}catch (\Throwable $e){
+}catch (Throwable $e){
     dump($e);
     die;
 }
@@ -34,8 +35,14 @@ $title = 'Utilisateur:ZiziBot/features';
 $summary = 'bot : Update from Github';
 
 $wiki = ServiceFactory::wikiApi();
-$page = new WikiPageAction($wiki, $title, true, true);
 
-$success = $page->editPage($newText, new EditInfo($summary));
+try {
+    $page = new WikiPageAction($wiki, $title);
+} catch (\Exception $e) {
+    echo "Erreur WikiPageAction\n";
+    dump($e);
+    die;
+}
+$success = $page->editPage($newText, new EditInfo($summary, true, true));
 dump($success);
 

@@ -14,6 +14,7 @@ use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\Utils\TextUtil;
 use App\Domain\Utils\WikiTextUtil;
 use Exception;
+use Normalizer;
 
 class OuvrageComplete
 {
@@ -393,7 +394,7 @@ class OuvrageComplete
     {
         $text = $ouvrage->getParam('titre').$ouvrage->getParam('sous-titre');
 
-        return $this->stripAll(\Normalizer::normalize($text));
+        return $this->stripAll(Normalizer::normalize($text));
     }
 
     /**

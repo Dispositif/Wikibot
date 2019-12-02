@@ -13,6 +13,7 @@ use App\Domain\Publisher\BnfMapper;
 use App\Domain\Publisher\BookApiInterface;
 use Exception;
 use GuzzleHttp\Client;
+use Normalizer;
 use SimpleXMLElement;
 use Throwable;
 
@@ -62,7 +63,7 @@ class BnfAdapter extends AbstractBookApiAdapter implements BookApiInterface
         if (200 !== $response->getStatusCode()) {
             throw new Exception('response error '.$response->getStatusCode().$response->getReasonPhrase());
         }
-        $raw = \Normalizer::normalize($response->getBody()->getContents());
+        $raw = Normalizer::normalize($response->getBody()->getContents());
 
         try {
             $xml = new SimpleXMLElement($raw);

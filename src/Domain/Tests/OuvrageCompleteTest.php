@@ -12,6 +12,7 @@ namespace App\Domain\Tests;
 use App\Domain\Models\Wiki\OuvrageClean;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\OuvrageComplete;
+use Exception;
 use PHPUnit\Framework\TestCase;
 
 class OuvrageCompleteTest extends TestCase
@@ -42,7 +43,7 @@ class OuvrageCompleteTest extends TestCase
      * @param string $onlineStr
      * @param string $expected
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function testProcessSousTitre(string $originStr, string $onlineStr, string $expected)
     {

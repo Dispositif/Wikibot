@@ -20,6 +20,11 @@ class OuvrageOptimizeTest extends TestCase
 
     /**
      * @dataProvider provideSomeParam
+     *
+     * @param $data
+     * @param $expected
+     *
+     * @throws Exception
      */
     public function testSomeParam($data, $expected)
     {
@@ -222,8 +227,10 @@ class OuvrageOptimizeTest extends TestCase
 
     /**
      * @dataProvider provideISBN
+     * @param $isbn
+     * @param $expected
      * @throws Exception
-     */
+*/
     public function testIsbn($isbn, $expected)
     {
         $origin = new OuvrageTemplate();

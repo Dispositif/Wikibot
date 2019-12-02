@@ -170,14 +170,14 @@ class PredictAuthors
 
             /*
              *  3 authors
-             */
-            // Geddes, Czapor, Labahn
+             */ // Geddes, Czapor, Labahn
             case 'FIRSTUPPER COMMA FIRSTUPPER COMMA FIRSTUPPER':
                 $this->authors = [
                     0 => $val[0],
                     1 => $val[2],
                     2 => $val[4],
                 ];
+                break;
 
             case 'FIRSTUPPER FIRSTUPPER COMMA FIRSTUPPER FIRSTUPPER COMMA MIXED FIRSTUPPER':
                 // Andrzej Suchcitz, Ludwik Maik, Wojciech Rojek

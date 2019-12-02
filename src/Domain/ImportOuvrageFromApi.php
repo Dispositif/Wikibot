@@ -86,9 +86,7 @@ class ImportOuvrageFromApi
         /**
          * @var $mapper MapperInterface
          */
-        $data = $mapper->process($volume);
-
-        return $data;
+        return $mapper->process($volume);
     }
 
     private function getDataByIsbn(string $isbn)

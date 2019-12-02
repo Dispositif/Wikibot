@@ -41,9 +41,8 @@ class PublisherAction
         if (200 !== $response->getStatusCode()) {
             throw new Exception('response error '.$response);
         }
-        $html = $response->getBody()->getContents();
 
-        return $html;
+        return $response->getBody()->getContents();
     }
 
     /**

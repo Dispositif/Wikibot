@@ -68,11 +68,10 @@ class ZiziBot extends Bot
         $to = ($toEditor) ? sprintf('@%s : ', $toEditor) : ''; // {{notif}}
         $sentence = TextUtil::mb_ucfirst($this->getRandomSentence());
         if(!$sentence){
-            throw new \Exception('no sentence');
+            throw new Exception('no sentence');
         }
-        $addText = sprintf('%s%s%s --~~~~', $identation, $to, $sentence);
 
-        return $addText;
+        return sprintf('%s%s%s --~~~~', $identation, $to, $sentence);
     }
 
     private function getRandomSentence(): ?string

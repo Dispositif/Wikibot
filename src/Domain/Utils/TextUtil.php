@@ -113,13 +113,14 @@ abstract class TextUtil
      *
      * @param string $str
      * @param array  $names
-     * @param int    $max   Maximum number of permutation/add/subtraction)
+     * @param int    $max Maximum number of permutation/add/subtraction)
      *
      * @return string|null
      */
     public static function predictCorrectParam(string $str, array $names, int $max = 2): ?string
     {
         $sanitized = self::sanitizeParamForPredict($str);
+        $closest = null;
         foreach ($names as $name) {
             $sanitizedName = self::sanitizeParamForPredict($name);
             if ($str === $name || $sanitized === $sanitizedName) {

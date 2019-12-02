@@ -13,7 +13,11 @@ use App\Domain\Exceptions\ConfigException;
 use App\Infrastructure\ServiceFactory;
 use App\Infrastructure\SMS;
 use Bluora\LaravelGitInfo\GitInfo;
+use DateInterval;
+use DateTimeImmutable;
+use Exception;
 use Mediawiki\Api\UsageException;
+use Throwable;
 
 /**
  * Define wiki configuration of the bot.
@@ -45,7 +49,7 @@ class Bot
 
     public static $gitVersion;
     /**
-     * @var \DateTimeImmutable
+     * @var DateTimeImmutable
      */
     private $lastCheckStopDate;
 
@@ -110,13 +114,13 @@ class Bot
         $title = 'Discussion_utilisateur:'.getenv('BOT_NAME');
 
         if ($this->lastCheckStopDate
-            && new \DateTimeImmutable() < $this->lastCheckStopDate->add(
-                new \DateInterval('PT2M')
+            && new DateTimeImmutable() < $this->lastCheckStopDate->add(
+                new DateInterval('PT2M')
             )
         ) {
             return;
         }
-        $this->lastCheckStopDate = new \DateTimeImmutable();
+        $this->lastCheckStopDate = new DateTimeImmutable();
 
 
         $wiki = ServiceFactory::wikiApi();
@@ -133,7 +137,7 @@ class Bot
             if (class_exists(SMS::class)) {
                 try {
                     new SMS('Bot stop by '.$lastEditor);
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     unset($e);
                 }
             }
@@ -152,10 +156,7 @@ class Bot
      * Is there a new message on the discussion page of the bot (or owner) ?
      * Stop on new message ?
      *
-     * @param bool $botTalk
-     *
      * @throws ConfigException
-     * @throws \Mediawiki\Api\UsageException
      */
     public function checkWatchPages()
     {
@@ -194,7 +195,7 @@ class Bot
         try {
             $json = file_get_contents(static::WATCHPAGE_FILENAME);
             $array = json_decode($json, true);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             throw new ConfigException('Watchpage file malformed.');
         }
 

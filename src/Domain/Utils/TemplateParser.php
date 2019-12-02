@@ -149,9 +149,7 @@ abstract class TemplateParser extends WikiTextUtil
             throw new LogicException("Parameters from template '$tplName' can't be parsed");
         }
 
-        $data = self::explodeParameterValue($wikiParams[1]);
-
-        return $data;
+        return self::explodeParameterValue($wikiParams[1]);
     }
 
     /**
@@ -255,7 +253,7 @@ abstract class TemplateParser extends WikiTextUtil
             }
 
             // TODO : accept empty value ?
-            if (false === strlen(trim($value))) {
+            if (!isset($value) || 0 === strlen(trim($value))) {
                 continue;
             }
             // reverse the sub-template pipe encoding

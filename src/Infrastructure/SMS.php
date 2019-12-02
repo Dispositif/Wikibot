@@ -9,10 +9,13 @@ declare(strict_types=1);
 
 namespace App\Infrastructure;
 
+use Exception;
+use GuzzleHttp\Client;
+
 class SMS
 {
     /**
-     * @var \GuzzleHttp\Client
+     * @var Client
      */
     private $client;
 
@@ -21,13 +24,13 @@ class SMS
      *
      * @param string $message
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct(?string $message = null)
     {
-        $this->client = new \GuzzleHttp\Client();
+        $this->client = new Client();
         if (!getenv('FREE_SMS_URL')) {
-            throw new \Exception('Pas d\'URL free mobile configurée');
+            throw new Exception('Pas d\'URL free mobile configurée');
         }
         if (!empty($message)) {
             $this->send($message);
@@ -38,12 +41,12 @@ class SMS
      * @param string $message
      *
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function send(string $message): bool
     {
         if (!getenv('FREE_SMS_URL')) {
-            throw new \Exception('Pas d\'URL free mobile configurée');
+            throw new Exception('Pas d\'URL free mobile configurée');
         }
         $sender = getenv('BOT_NAME') ?? '';
         $message = sprintf('%s : %s', $sender, $message);

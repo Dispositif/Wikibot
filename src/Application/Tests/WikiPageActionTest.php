@@ -16,6 +16,11 @@ class WikiPageActionTest extends TestCase
 {
     /**
      * @dataProvider provideReplaceTemplateInText
+     *
+     * @param string $text
+     * @param string $origin
+     * @param string $replace
+     * @param string $expected
      */
     public function testReplaceTemplateInText(string $text, string $origin, string $replace, string $expected)
     {
