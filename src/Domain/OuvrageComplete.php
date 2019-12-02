@@ -71,6 +71,7 @@ class OuvrageComplete
         }
 
         $skipParam = [
+            'isbn invalide',
             'auteurs',
             'auteur1',
             'prénom1',
