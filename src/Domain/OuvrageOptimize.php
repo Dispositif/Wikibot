@@ -55,7 +55,7 @@ class OuvrageOptimize
 
     public function doTasks(): self
     {
-        $this->parametersErrorFromHydrate();
+        $this->cleanAndPredictErrorParameters();
 
         $this->processAuthors();
 
@@ -412,7 +412,7 @@ class OuvrageOptimize
      *
      * @throws Exception
      */
-    private function parametersErrorFromHydrate()
+    private function cleanAndPredictErrorParameters()
     {
         if (empty($this->ouvrage->parametersErrorFromHydrate)) {
             return;

@@ -46,6 +46,11 @@ class OuvrageOptimizeTest extends TestCase
                 '{{Ouvrage|titre=|éditeur=|année=|isbn=}}{{extrait|blabla}}',
             ],
             [
+                // année vide retirée si date=bla
+                ['date' => '12-12-2018'],
+                '{{Ouvrage|titre=|éditeur=|date=12-12-2018|isbn=}}',
+            ],
+            [
                 // prédiction paramètre
                 ['autuer' => 'bob'],
                 '{{Ouvrage|auteur1=bob|titre=|éditeur=|année=|isbn=}}',

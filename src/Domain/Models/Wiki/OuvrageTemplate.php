@@ -22,13 +22,13 @@ class OuvrageTemplate extends AbstractWikiTemplate
 
     const REQUIRED_PARAMETERS
         = [
-//            'langue' => '', // inutile avec 'fr'
-//            'auteur1' => '', // duplicate with prénom1/nom1
+            //            'langue' => '', // inutile avec 'fr'
+            //            'auteur1' => '', // duplicate with prénom1/nom1
             'titre' => '', // obligatoire
             'éditeur' => '',
-            'année' => '',
-//            'pages totales' => '',
-//            'passage' => '', // pas pertinent sur biblio et liste oeuvres
+            'année' => '', // géré dans serialize
+            //            'pages totales' => '',
+            //            'passage' => '', // pas pertinent sur biblio et liste oeuvres
             'isbn' => '',
         ];
 
@@ -68,8 +68,8 @@ class OuvrageTemplate extends AbstractWikiTemplate
             'numéro édition' => "numéro d'édition",
             'origyear' => 'année première édition',
             'publi' => 'réimpression',
-//            'pages' => 'pages totales', // doc - mis temporairement en paramètre normal
-//            'page' => 'passage', // Doc - mis temporairement en paramètre normal
+            //            'pages' => 'pages totales', // doc - mis temporairement en paramètre normal
+            //            'page' => 'passage', // Doc - mis temporairement en paramètre normal
             //        'format' => 'format livre', //  ou 'format électronique' (pdf)
             'ISBN' => 'isbn',
             'isbn1' => 'isbn',
@@ -123,13 +123,13 @@ class OuvrageTemplate extends AbstractWikiTemplate
             'author' => 'auteur',
             'authorlink' => 'lien auteur',
             'coauthors' => 'co-auteur',
-//            'editor' => '',
-//            'editor-link' => '',
-//            'others' => '',
+            //            'editor' => '',
+            //            'editor-link' => '',
+            //            'others' => '',
             'trans_title' => 'titre traduit',
-//            'type' => '',
+            //            'type' => '',
             'edition' => "numéro d'édition",
-//            'series' => '',
+            //            'series' => '',
             'date' => 'date',
             'month' => 'mois',
             'language' => 'langue',
@@ -371,16 +371,16 @@ class OuvrageTemplate extends AbstractWikiTemplate
         ];
 
     /**
-     * todo move to abstract ?
-     * todo 'lang' au début, 'sous-titre' après 'titre'.
-     *
      * @param bool|null $cleanOrder
      *
      * @return string
      */
     public function serialize(?bool $cleanOrder = false): string
     {
-        return parent::serialize($cleanOrder).$this->serializeExternalTemplates();
+        $serial = parent::serialize($cleanOrder);
+        $serial = $this->anneeOrDateSerialize($serial);
+
+        return $serial.$this->serializeExternalTemplates();
     }
 
     /**
@@ -397,5 +397,19 @@ class OuvrageTemplate extends AbstractWikiTemplate
         }
 
         return $res;
+    }
+
+    /**
+     * Pas de serialization année vide si date non vide.
+     */
+    private function anneeOrDateSerialize(string $serial): string
+    {
+        if (preg_match("#\|[\n ]*année=[\n ]*\|#", $serial) > 0
+            && preg_match("#\|[\n ]*date=#", $serial) > 0
+        ) {
+            $serial = preg_replace("#\|[\n ]*année=[\n ]*#", '', $serial);
+        }
+
+        return $serial;
     }
 }
