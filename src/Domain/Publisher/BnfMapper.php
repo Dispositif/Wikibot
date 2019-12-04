@@ -149,16 +149,16 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
     private function getPublisher(): ?string
     {
         // zone 210
-        if ($tac = $this->xpath2string('//mxc:datafield[@tag="210"]/mxc:subfield[@code="c"]')) {
+        if ($tac = $this->xpath2string('//mxc:datafield[@tag="210"]/mxc:subfield[@code="c"]', ' / ')) {
             return $tac;
         }
         // 214 : nouvelle zone 2019
-        if ($tac = $this->xpath2string('//mxc:datafield[@tag="214"]/mxc:subfield[@code="c"]')) {
+        if ($tac = $this->xpath2string('//mxc:datafield[@tag="214"]/mxc:subfield[@code="c"]',' / ')) {
             return $tac;
         }
 
         // 219 ancienne zone ?
-        if ($tac = $this->xpath2string('//mxc:datafield[@tag="219"]/mxc:subfield[@code="c"]')) {
+        if ($tac = $this->xpath2string('//mxc:datafield[@tag="219"]/mxc:subfield[@code="c"]',' / ')) {
             return $tac;
         }
 
