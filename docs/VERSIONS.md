@@ -1,5 +1,8 @@
 ## Versions des règles de corrections/complètement ##
 
+* 0.49 : année vide inutile si date=
+* 0.48 : pas d'import 'isbn invalide' (@Evynrhud)
+* 0.47 : lieu/éditeur multiples (@Hr Satz)
 * 0.46 : data BnF (lieu multiples) + redondance sous-titre (@Herr Satz) 
   + bug [[Editeur|editeur]] + URL play.google + OL/G sous-titre 80 max
 * 0.45 : conserve paramètre erroné vide (@Evynrhud) réglage prédiction paramètre
