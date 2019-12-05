@@ -148,7 +148,14 @@ class DbAdapter implements QueueInterface
                 LIMIT '.$limit.'
                 '
             );
-            $page = $pageInfo->fetchAll()[0]['page'];
+
+            // No page to edit
+            $rows = $pageInfo->fetchAll();
+            if(empty($rows)){
+                return "[]";
+            }
+
+            $page = $rows[0]['page'];
 
             // Order by optidate for first version in edit commentary ?
             $data = $this->db->fetchRowMany(
