@@ -9,14 +9,16 @@ declare(strict_types=1);
 
 namespace App\Domain;
 
+use App\Domain\Enums\Language;
 use App\Domain\Models\Wiki\GoogleLivresTemplate;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\Utils\TextUtil;
 use App\Domain\Utils\WikiTextUtil;
 use App\Infrastructure\FileManager;
 use Exception;
-use function mb_strlen;
 use Throwable;
+
+use function mb_strlen;
 
 /**
  * Legacy.
@@ -190,29 +192,9 @@ class OuvrageOptimize
         $lang = $this->getParam('langue') ?? null;
 
         if ($lang) {
-            $replace = [
-                'french' => 'fr',
-                'française' => 'fr',
-                'français' => 'fr',
-                'anglaise' => 'en',
-                'anglais' => 'en',
-                'english' => 'en',
-                'japonais' => 'ja',
-                'japanese' => 'ja',
-                'allemand' => 'de',
-                'deutsch' => 'de',
-                'german' => 'de',
-                'espagnol' => 'es',
-                'spanish' => 'es',
-                'español' => 'es',
-            ];
-            $lang2 = str_ireplace(
-                array_keys($replace),
-                array_values($replace),
-                mb_strtolower($lang)
-            );
+            $lang2 = Language::all2wiki($lang);
 
-            if ($lang !== $lang2) {
+            if ($lang2 && $lang !== $lang2) {
                 $this->setParam('langue', $lang2);
                 if (self::WIKI_LANGUAGE !== $lang2) {
                     $this->log('±langue');
@@ -459,7 +441,6 @@ class OuvrageOptimize
      * @param $name
      *
      * @return string|null
-     *
      * @throws Exception
      */
     private function getParam(string $name): ?string
@@ -604,7 +585,7 @@ class OuvrageOptimize
         // todo detect duplication ouvrage/plume dans externalTemplate ?
         if (!empty($this->getParam('plume'))) {
             $plumeValue = $this->getParam('plume');
-            $this->ouvrage->externalTemplates[] = (object) [
+            $this->ouvrage->externalTemplates[] = (object)[
                 'template' => 'plume',
                 '1' => $plumeValue,
                 'raw' => '{{nobr|. {{plume}}}}',
@@ -619,7 +600,7 @@ class OuvrageOptimize
             // todo bug {{citation bloc}} si "=" ou "|" dans texte de citation
             // Legacy : use {{début citation}} ... {{fin citation}}
             if (preg_match('#[=|]#', $extrait) > 0) {
-                $this->ouvrage->externalTemplates[] = (object) [
+                $this->ouvrage->externalTemplates[] = (object)[
                     'template' => 'début citation',
                     '1' => '',
                     'raw' => '{{début citation}}'.$extrait.'{{fin citation}}',
@@ -628,7 +609,7 @@ class OuvrageOptimize
                 $this->notCosmetic = true;
             } else {
                 // StdClass
-                $this->ouvrage->externalTemplates[] = (object) [
+                $this->ouvrage->externalTemplates[] = (object)[
                     'template' => 'citation bloc',
                     '1' => $extrait,
                     'raw' => '{{extrait|'.$extrait.'}}',
@@ -644,7 +625,7 @@ class OuvrageOptimize
         // "commentaire=bla" => {{Commentaire biblio|1=bla}}
         if (!empty($this->getParam('commentaire'))) {
             $commentaire = $this->getParam('commentaire');
-            $this->ouvrage->externalTemplates[] = (object) [
+            $this->ouvrage->externalTemplates[] = (object)[
                 'template' => 'commentaire biblio',
                 '1' => $commentaire,
                 'raw' => '{{commentaire biblio|'.$commentaire.'}}',
@@ -706,7 +687,6 @@ class OuvrageOptimize
 
     /**
      * @return bool
-     *
      * @throws Exception
      */
     public function checkMajorEdit(): bool
@@ -790,7 +770,7 @@ class OuvrageOptimize
         // On garde minuscule sur éditeur, pour nuance Éditeur/éditeur permettant de supprimer "éditeur"
         // ex: "éditions Milan" => "Milan"
 
-//        $editeurStr = TextUtil::mb_ucfirst($editeurStr);
+        //        $editeurStr = TextUtil::mb_ucfirst($editeurStr);
 
         // Déconseillé : 'lien éditeur' (obsolete 2019)
         if (!empty($this->getParam('lien éditeur'))) {
@@ -800,9 +780,9 @@ class OuvrageOptimize
             $this->unsetParam('lien éditeur');
         }
 
-//        if (isset($editeurUrl)) {
-//            $editeurUrl = TextUtil::mb_ucfirst($editeurUrl);
-//        }
+        //        if (isset($editeurUrl)) {
+        //            $editeurUrl = TextUtil::mb_ucfirst($editeurUrl);
+        //        }
         $newEditeur = $editeurStr;
         if (isset($editeurUrl) && $editeurUrl !== $editeurStr) {
             $newEditeur = '[['.$editeurUrl.'|'.$editeurStr.']]';

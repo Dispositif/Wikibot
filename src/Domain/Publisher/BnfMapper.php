@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Publisher;
 
+use App\Domain\Enums\Language;
 use SimpleXMLElement;
 
 /**
@@ -39,7 +40,7 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
         $this->xml = $xml;
 
         // skip multi-records
-        $nbResults = (int) $xml->xpath('//srw:numberOfRecords[1]')[0] ?? 0;
+        $nbResults = (int)$xml->xpath('//srw:numberOfRecords[1]')[0] ?? 0;
         if (1 !== $nbResults) {
             echo "BNF : $nbResults records (skip)\n";
 
@@ -99,7 +100,7 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
         $res = [];
         foreach ($elements as $element) {
             if (isset($element) && $element instanceof SimpleXMLElement) {
-                $res[] = (string) $element;
+                $res[] = (string)$element;
             }
         }
 
@@ -120,7 +121,7 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
     {
         $raw = $this->xpath2string('//mxc:datafield[@tag="215"]/mxc:subfield[@code="a"]');
         if (!empty($raw) && preg_match('#([0-9]{2,}) p\.#', $raw, $matches) > 0) {
-            return (string) $matches[1];
+            return (string)$matches[1];
         }
 
         return null;
@@ -136,11 +137,8 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
      */
     private function lang2wiki(?string $lang = null): ?string
     {
-        $iso2b_to_frlang = [];
-        require __DIR__.'/../Enums/languageData.php';
-
-        if (!empty($lang) && isset($iso2b_to_frlang[$lang])) {
-            return $iso2b_to_frlang[$lang];
+        if (!empty($lang)) {
+            return Language::iso2b2wiki($lang);
         }
 
         return null;
@@ -153,12 +151,12 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
             return $tac;
         }
         // 214 : nouvelle zone 2019
-        if ($tac = $this->xpath2string('//mxc:datafield[@tag="214"]/mxc:subfield[@code="c"]',' / ')) {
+        if ($tac = $this->xpath2string('//mxc:datafield[@tag="214"]/mxc:subfield[@code="c"]', ' / ')) {
             return $tac;
         }
 
         // 219 ancienne zone ?
-        if ($tac = $this->xpath2string('//mxc:datafield[@tag="219"]/mxc:subfield[@code="c"]',' / ')) {
+        if ($tac = $this->xpath2string('//mxc:datafield[@tag="219"]/mxc:subfield[@code="c"]', ' / ')) {
             return $tac;
         }
 
@@ -203,7 +201,7 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
         $raw = $this->xpath2string('//srw:recordIdentifier[1]/text()');
 
         if ($raw && preg_match('#ark:/[0-9]+/cb([0-9]+)#', $raw, $matches) > 0) {
-            return (string) $matches[1];
+            return (string)$matches[1];
         }
 
         return null;

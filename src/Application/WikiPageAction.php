@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Application;
 
+use App\Domain\Enums\Language;
 use App\Infrastructure\TagParser;
 use Exception;
 use Mediawiki\Api\MediawikiFactory;
@@ -226,7 +227,10 @@ class WikiPageAction
             > 0
         ) {
             foreach ($matches[0] as $num => $mention) {
-                $lang = $matches['lang'][$num] ?? ''; // todo: convert lang to ISO
+                $lang = $matches['lang'][$num] ?? '';
+                if(!empty($lang)){
+                    $lang = Language::all2wiki($lang);
+                }
 
                 // detect inconsistency between lang indicator and lang param
                 // example : {{en}} {{template|lang=ru}}
