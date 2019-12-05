@@ -19,6 +19,7 @@ use App\Domain\OuvrageOptimize;
 use App\Domain\Utils\TemplateParser;
 use App\Infrastructure\DbAdapter;
 use App\Infrastructure\GoogleBooksAdapter;
+use Normalizer;
 use Throwable;
 
 include __DIR__.'/../myBootstrap.php';
@@ -90,7 +91,7 @@ class CompleteProcess
             }
 
             // Final optimizing (with online predictions)
-            $optimizer = new OuvrageOptimize($origin, null, true);
+            $optimizer = new OuvrageOptimize($origin, null);
             $optimizer->doTasks();
             $this->ouvrage = $optimizer->getOuvrage();
             $this->log = array_merge($this->log, $optimizer->getLog());
@@ -101,7 +102,10 @@ class CompleteProcess
              */
             $isbn = $origin->getParam('isbn') ?? null; // avant mise en forme EAN>ISBN
             $isbn10 = $origin->getParam('isbn10') ?? null;
-            if (!empty($isbn)) {
+            if (!empty($isbn)
+                && empty($origin->getParam('isbn invalide'))
+                && empty($origin->getParam('isbn erroné'))
+            ) {
                 $this->onlineIsbnSearch($isbn, $isbn10);
             }
 
@@ -141,28 +145,32 @@ class CompleteProcess
             // BnF sait pas trouver un vieux livre (10) d'après ISBN-13... FACEPALM !
             if ($isbn10) {
                 $bnfOuvrage = OuvrageFactory::BnfFromIsbn($isbn10);
+                sleep(2);
             }
-            if (!$isbn10 || empty($bnfOuvrage->getParam('titre'))) {
+            if (!$isbn10 || !isset($bnfOuvrage) || empty($bnfOuvrage->getParam('titre'))) {
                 $bnfOuvrage = OuvrageFactory::BnfFromIsbn($isbn);
             }
-            $this->completeOuvrage($bnfOuvrage);
+            if (isset($bnfOuvrage) and $bnfOuvrage instanceof OuvrageTemplate) {
+                $this->completeOuvrage($bnfOuvrage);
+            }
         } catch (Throwable $e) {
             echo "*** ERREUR BnF Isbn Search".$e->getMessage()."\n";
-            echo "sleep 5min\n";
-            sleep(60 * 5);
-            echo "Wake up\n";
-            goto online;
+            //            echo "sleep 5min\n";
+            //            sleep(60 * 5);
+            //            echo "Wake up\n";
+            //            goto online;
         }
 
         try {
-            if (!$this->skipGoogle($bnfOuvrage)) {
+            if (!$bnfOuvrage || !$this->skipGoogle($bnfOuvrage)) {
                 dump('GOOGLE...');
                 $googleOuvrage = OuvrageFactory::GoogleFromIsbn($isbn);
                 $this->completeOuvrage($googleOuvrage);
             }
         } catch (Throwable $e) {
             echo "*** ERREUR GOOGLE Isbn Search ***".$e->getMessage()."\n";
-            if (strpos($e->getMessage(), 'Daily Limit Exceeded') !== true) {
+            sleep(10);
+            if (strpos($e->getMessage(), 'Daily Limit Exceeded') !== false) {
                 echo "sleep 1h\n";
                 sleep(60 * 60);
                 echo "Wake up\n";
@@ -253,7 +261,8 @@ class CompleteProcess
     private function serializeFinalOpti(): string
     {
         $finalOpti = $this->ouvrage->serialize(true);
-        $finalOpti = \Normalizer::normalize($finalOpti);
+        $finalOpti = Normalizer::normalize($finalOpti);
+
         return $finalOpti;
     }
 
