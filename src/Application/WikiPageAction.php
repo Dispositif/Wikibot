@@ -15,7 +15,9 @@ use Mediawiki\Api\MediawikiFactory;
 use Mediawiki\DataModel\Content;
 use Mediawiki\DataModel\EditInfo;
 use Mediawiki\DataModel\Page;
+use Mediawiki\DataModel\PageIdentifier;
 use Mediawiki\DataModel\Revision;
+use Mediawiki\DataModel\Title;
 use Throwable;
 
 class WikiPageAction
@@ -28,6 +30,10 @@ class WikiPageAction
     public $page; // public for debug
 
     public $wiki; // api ?
+    /**
+     * @var string
+     */
+    private $title;
 
     /**
      * WikiPageAction constructor.
@@ -40,6 +46,7 @@ class WikiPageAction
     public function __construct(MediawikiFactory $wiki, string $title)
     {
         $this->wiki = $wiki;
+        $this->title = $title;
 
         try {
             $this->page = $wiki->newPageGetter()->getFromTitle($title);
@@ -55,6 +62,11 @@ class WikiPageAction
      */
     public function getText(): ?string
     {
+        // page doesn't exist
+        if (empty($this->page->getRevisions()->getLatest())) {
+            return null;
+        }
+
         $latest = $this->page->getRevisions()->getLatest();
 
         return ($latest) ? $latest->getContent()->getData() : null;
@@ -62,6 +74,11 @@ class WikiPageAction
 
     public function getLastEditor(): ?string
     {
+        // page doesn't exist
+        if (empty($this->page->getRevisions()->getLatest())) {
+            return null;
+        }
+
         $latest = $this->page->getRevisions()->getLatest();
 
         return ($latest) ? $latest->getUser() : null;
@@ -94,8 +111,8 @@ class WikiPageAction
      */
     public function getRedirect(): ?string
     {
-        if (preg_match('/^#REDIRECT(?:ION)? ?\[\[([^]]+)]]/i', $this->getText(), $matches)) {
-            return (string) trim($matches[1]);
+        if ($this->getText() && preg_match('/^#REDIRECT(?:ION)? ?\[\[([^]]+)]]/i', $this->getText(), $matches)) {
+            return (string)trim($matches[1]);
         }
 
         return null;
@@ -116,8 +133,47 @@ class WikiPageAction
 
         $content = new Content($newText);
         $revision = new Revision($content, $revision);
+
         // TODO try/catch UsageExceptions badtoken
         return $this->wiki->newRevisionSaver()->save($revision, $editInfo);
+    }
+
+    /**
+     * Create a new page.
+     *
+     * @param string   $text
+     *
+     * @return bool
+     * @throws Exception
+     */
+    public function createPage(string $text, ?EditInfo $editInfo=null): bool
+    {
+        if (!empty($this->page->getRevisions()->getLatest())) {
+            throw new \Exception('That page already exists');
+        }
+
+        $newContent = new Content($text);
+        // $identifier = $this->page->getPageIdentifier()
+        $title = new Title($this->title);
+        $identifier = new PageIdentifier($title);
+        $revision = new Revision($newContent, $identifier);
+        return $this->wiki->newRevisionSaver()->save($revision, $editInfo);
+    }
+
+    /**
+     * @param string   $addText
+     * @param EditInfo $editInfo
+     *
+     * @return bool
+     * @throws Exception
+     */
+    public function addToBottomOrCreatePage(string $addText, EditInfo $editInfo): bool
+    {
+        if (empty($this->page->getRevisions()->getLatest())) {
+            return $this->createPage($addText, $editInfo);
+        }
+
+        return $this->addToBottomOfThePage($addText, $editInfo);
     }
 
     /**
@@ -127,9 +183,13 @@ class WikiPageAction
      * @param EditInfo $editInfo
      *
      * @return bool
+     * @throws Exception
      */
     public function addToBottomOfThePage(string $addText, EditInfo $editInfo): bool
     {
+        if (empty($this->page->getRevisions()->getLatest())) {
+            throw new Exception('That page does not exist');
+        }
         $oldText = $this->getText();
         $newText = $oldText."\n".$addText;
 
@@ -219,7 +279,6 @@ class WikiPageAction
      * @param $text string
      *
      * @return array
-     *
      * @throws Exception
      */
     public function extractRefFromText(string $text): ?array
@@ -227,7 +286,7 @@ class WikiPageAction
         $parser = new TagParser(); // todo ParserFactory
         $refs = $parser->importHtml($text)->getRefValues(); // []
 
-        return (array) $refs;
+        return (array)$refs;
     }
 
     /**

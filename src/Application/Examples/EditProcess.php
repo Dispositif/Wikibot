@@ -64,7 +64,7 @@ class EditProcess
         $this->db = new DbAdapter();
         $this->bot = new Bot();
 
-        $this->wiki = ServiceFactory::wikiApi();
+        $this->wikiLogin();
     }
 
     public function run()
@@ -167,8 +167,25 @@ class EditProcess
         echo "sleep 20...\n";
         sleep(20);
 
-        $editInfo = new EditInfo($miniSummary, $this->minorFlag, $this->botFlag);
-        $success = $page->editPage(Normalizer::normalize($this->wikiText), $editInfo);
+        pageEdit:
+
+        try{
+            $editInfo = new EditInfo($miniSummary, $this->minorFlag, $this->botFlag);
+            $success = $page->editPage(Normalizer::normalize($this->wikiText), $editInfo);
+        }catch (\Throwable $e){
+            // Invalid CSRF token.
+            if(strpos($e->getMessage(), 'Invalid CSRF token') !== false ) {
+                echo "*** Invalid CSRF token \n";
+                sleep(60);
+                $this->wikiLogin();
+                goto pageEdit;
+            }else{
+                dump($e); // todo log
+                sleep(60);
+                return false;
+            }
+        }
+
         echo ($success) ? "Ok\n" : "***** Erreur edit\n";
 
         if ($success) {
@@ -393,8 +410,9 @@ class EditProcess
         try {
             $talkPage = new WikiPageAction($this->wiki, 'Discussion:'.$rows[0]['page']);
             $editInfo = new EditInfo('Signalement erreur {ouvrage}', false, false);
-            $talkPage->addToBottomOfThePage($errorMessage, $editInfo);
+            $talkPage->addToBottomOrCreatePage($errorMessage, $editInfo);
         } catch (Throwable $e) {
+            dump($e);
             unset($e);
         }
     }
@@ -411,6 +429,11 @@ class EditProcess
         $this->nbRows = 0;
 
         $this->bot->checkStopOnTalkpage();
+    }
+
+    private function wikiLogin(): void
+    {
+        $this->wiki = ServiceFactory::wikiApi();
     }
 
 }
