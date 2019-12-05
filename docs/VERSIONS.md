@@ -1,5 +1,6 @@
 ## Versions des règles de corrections/complètement ##
 
+* 0.50 : conversion langues
 * 0.49 : année vide inutile si date=
 * 0.48 : pas d'import 'isbn invalide' (@Evynrhud)
 * 0.47 : lieu/éditeur multiples (@Hr Satz)
