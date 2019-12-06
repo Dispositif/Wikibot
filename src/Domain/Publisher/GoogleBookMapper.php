@@ -21,7 +21,7 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
     // raw URL or wiki-template ?
     const MODE_RAW_URL = true;
 
-    const GOOGLE_URL_REPLACE = 'https://books.google.com/books?id=%s';
+    const GOOGLE_URL_REPLACE = 'https://books.google.com/books?id=%s&printsec=frontcover';
 
     // sous-titre non ajoutés :
     const SUBTITLE_FILTER = ['roman', 'récit', 'poèmes', 'biographie'];
