@@ -37,7 +37,7 @@ class OuvrageCompleteTest extends TestCase
     }
 
     /**
-     * @dataProvider provideProcessSousTitre
+     * @dataProvider provideComplete
      *
      * @param string $originStr
      * @param string $onlineStr
@@ -45,7 +45,7 @@ class OuvrageCompleteTest extends TestCase
      *
      * @throws Exception
      */
-    public function testProcessSousTitre(string $originStr, string $onlineStr, string $expected)
+    public function testComplete(string $originStr, string $onlineStr, string $expected)
     {
         $origin = new OuvrageTemplate();
         $origin->hydrateFromText($originStr);
@@ -60,9 +60,41 @@ class OuvrageCompleteTest extends TestCase
         );
     }
 
-    public function provideProcessSousTitre()
+    public function provideComplete()
     {
         return [
+            [
+                // Google partiel
+                '{{Ouvrage|titre=}}',
+                '{{Ouvrage|titre=|présentation en ligne=Google}}',
+                '{{Ouvrage|titre=|éditeur=|année=|isbn=|présentation en ligne=Google}}',
+            ],
+            [
+                // Google total
+                '{{Ouvrage|titre=}}',
+                '{{Ouvrage|titre=|lire en ligne=Google}}',
+                '{{Ouvrage|titre=|éditeur=|année=|isbn=|lire en ligne=Google}}',
+            ],
+            [
+                //isbn invalide
+                '{{Ouvrage|titre=}}',
+                '{{Ouvrage|titre=|isbn invalide=bla}}',
+                '{{Ouvrage|titre=|éditeur=|année=|isbn=}}',
+            ],
+            // date/année
+            [
+                '{{Ouvrage|titre=}}',
+                '{{Ouvrage|titre=|année=2009}}',
+                '{{Ouvrage|titre=|éditeur=|année=2009|isbn=}}',
+            ],
+            [
+                '{{Ouvrage|titre=|date=2011}}',
+                '{{Ouvrage|titre=|année=2009}}',
+                '{{Ouvrage|titre=|éditeur=|date=2011|isbn=}}',
+            ],
+            /**
+             * titre + sous-titre
+             */
             // pas d'ajout si déjà titre volume/chapitre/tome ou nature ouvrage
             [
                 '{{Ouvrage|titre = Loiret Joli|titre chapitre=Bla}}',

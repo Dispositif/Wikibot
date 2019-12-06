@@ -18,7 +18,8 @@ use Normalizer;
 
 class OuvrageComplete
 {
-    const WIKI_LANGUAGE = 'fr';
+    const ADD_PRESENTATION_EN_LIGNE = true;
+    const WIKI_LANGUAGE             = 'fr';
 
     /**
      * @var OuvrageTemplate
@@ -49,7 +50,6 @@ class OuvrageComplete
 
     /**
      * @return OuvrageTemplate
-     *
      * @throws Exception
      */
     public function getResult()
@@ -61,7 +61,6 @@ class OuvrageComplete
 
     /**
      * @return bool
-     *
      * @throws Exception
      */
     private function complete()
@@ -91,7 +90,6 @@ class OuvrageComplete
             'nom4',
             'lire en ligne',
             'présentation en ligne',
-            'année',
             'date',
             'sous-titre',
         ];
@@ -100,6 +98,10 @@ class OuvrageComplete
         foreach ($this->book->toArray() as $param => $value) {
             if (empty($this->origin->getParam($param))) {
                 if (in_array($param, $skipParam)) {
+                    continue;
+                }
+                // skip 'année' if 'date' not empty
+                if ('année' === $param && !empty($this->origin->getParam('date'))) {
                     continue;
                 }
 
@@ -141,9 +143,6 @@ class OuvrageComplete
     {
         $lire = $this->origin->getParam('lire en ligne') ?? false;
         if (!empty($lire) && GoogleLivresTemplate::isGoogleBookValue($lire)) {
-            //            if (!empty($this->book->getParam('lire en ligne'))) {
-            //                // idem
-            //            }
             if (!empty($this->book->getParam('présentation en ligne'))) {
                 // PARTIAL
                 // on déplace sur présentation
@@ -154,12 +153,6 @@ class OuvrageComplete
 
                 return; // ?
             }
-            //            if (empty($this->book->getParam('lire en ligne'))) {
-            //                // todo : delete lire en ligne ?
-            //                // $this->major = true;
-            ////                $this->log('non accessible sur Google!');
-            ////                $this->notCosmetic = true;
-            //            }
         }
         // completion basique
         $booklire = $this->book->getParam('lire en ligne');
@@ -173,9 +166,6 @@ class OuvrageComplete
 
         $presentation = $this->origin->getParam('présentation en ligne') ?? false;
         if (!empty($presentation) && GoogleLivresTemplate::isGoogleBookValue($presentation)) {
-            //            if (!empty($this->book->getParam('présentation en ligne'))) {
-            //                // idem
-            //            }
             if (!empty($this->book->getParam('lire en ligne'))) {
                 // TOTAL
                 // on déplace sur lire en ligne
@@ -184,19 +174,24 @@ class OuvrageComplete
                 $this->log('Google accessible');
                 $this->notCosmetic = true;
             }
-            //            if (empty($this->book->getParam('présentation en ligne'))) {
-            //                // todo: delete présentation en ligne ?
-            ////                $this->log('non accessible sur Google!');
-            //            }
         }
-        // todo: completion pertinente si consultation partielle ??
-        // completion basique
-        // $bookpresentation = $this->book->getParam('présentation en ligne');
+
+        // ajout de Google partial si présentation/lire sont vides
+        $bookpresentation = $this->book->getParam('présentation en ligne');
+        if (self::ADD_PRESENTATION_EN_LIGNE
+            && empty($this->origin->getParam('présentation en ligne'))
+            && empty($this->origin->getParam('lire en ligne'))
+            && !empty($bookpresentation)
+        ) {
+            $this->origin->setParam('présentation en ligne', $bookpresentation);
+            $this->log('+présentation en ligne');
+            $this->notCosmetic = true;
+            $this->major = true;
+        }
     }
 
     /**
      * @return bool
-     *
      * @throws Exception
      */
     private function predictSameBook()
@@ -213,7 +208,6 @@ class OuvrageComplete
 
     /**
      * @return bool
-     *
      * @throws Exception
      */
     private function hasSameAuthors(): bool
@@ -241,7 +235,6 @@ class OuvrageComplete
      * @param OuvrageTemplate $ouv
      *
      * @return string
-     *
      * @throws Exception
      */
     private function authorsFromBook(OuvrageTemplate $ouv)
@@ -275,7 +268,6 @@ class OuvrageComplete
 
     /**
      * @return bool
-     *
      * @throws Exception
      */
     private function hasSameISBN(): bool
@@ -339,7 +331,6 @@ class OuvrageComplete
 
     /**
      * @return bool
-     *
      * @throws Exception
      */
     private function hasSameBookTitles(): bool
@@ -396,7 +387,6 @@ class OuvrageComplete
      * @param OuvrageTemplate $ouvrage
      *
      * @return string
-     *
      * @throws Exception
      */
     private function charsFromBigTitle(OuvrageTemplate $ouvrage): string
