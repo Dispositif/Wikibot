@@ -135,7 +135,7 @@ class OuvrageOptimizeTest extends TestCase
 
         $optimized = (new OuvrageOptimize($origin))->doTasks()->getOuvrage();
         $this::assertSame(
-            '{{Ouvrage|id=ZE|langue=en|prénom1=Ernest|nom1=Nègre|titre=Toponymie|sous-titre=France|tome=3|éditeur=|année=|passage=15-27|isbn=978-2-600-02884-4|isbn10=2600028846}}',
+            '{{Ouvrage|id=ZE|langue=en|prénom1=Ernest|nom1=Nègre|titre=Toponymie|sous-titre=France|tome=III|éditeur=|année=|passage=15-27|isbn=978-2-600-02884-4|isbn10=2600028846}}',
             $optimized->serialize(true)
         );
     }
@@ -163,6 +163,16 @@ class OuvrageOptimizeTest extends TestCase
     public function provideProcessTitle()
     {
         return [
+            [
+                // tome/volume en romain
+                ['tome' => '4', 'volume' => '34'],
+                '{{Ouvrage|titre=|volume={XXXIV}|tome=IV|éditeur=|année=|isbn=}}',
+            ],
+            [
+                // tome/volume bizarre
+                ['tome' => '4c', 'volume' => 'E'],
+                '{{Ouvrage|titre=|volume=E|tome=4c|éditeur=|année=|isbn=}}',
+            ],
             [
                 // bug 17 nov [[titre:sous-titre]]
                 ['title' => '[[Fu:bar]]'],

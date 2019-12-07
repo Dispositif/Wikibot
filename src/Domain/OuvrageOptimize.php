@@ -12,6 +12,7 @@ namespace App\Domain;
 use App\Domain\Enums\Language;
 use App\Domain\Models\Wiki\GoogleLivresTemplate;
 use App\Domain\Models\Wiki\OuvrageTemplate;
+use App\Domain\Utils\NumberUtil;
 use App\Domain\Utils\TextUtil;
 use App\Domain\Utils\WikiTextUtil;
 use App\Infrastructure\FileManager;
@@ -67,6 +68,9 @@ class OuvrageOptimize
         $this->externalTemplates();
         $this->predictFormatByPattern();
 
+        $this->convertRoman('tome');
+        $this->convertRoman('volume');
+
         $this->processIsbn();
         $this->processBnf();
 
@@ -120,6 +124,22 @@ class OuvrageOptimize
         }
         $bnf = str_ireplace('FRBNF', '', $bnf);
         $this->setParam('bnf', $bnf);
+    }
+
+    private function convertRoman(string $param): void
+    {
+        $value = $this->getParam($param);
+        // note : strval() condition because intval('4c') = 4
+        if ($value && intval($value) > 0 && strval(intval($value)) === $value) {
+            $number = abs(intval($value));
+            $roman = NumberUtil::arab2roman($number);
+            if ($number > 10) {
+                $roman = '{'.$roman.'}';
+            }
+            $this->setParam($param, $roman);
+            $this->log('romain');
+            $this->notCosmetic = true;
+        }
     }
 
     /**
