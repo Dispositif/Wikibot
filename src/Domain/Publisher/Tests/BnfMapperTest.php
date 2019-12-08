@@ -21,7 +21,7 @@ class BnfMapperTest extends TestCase
         $actual = $mapper->process($xml);
         $this::assertSame(
             [
-                'bnf' => '35049657',
+                //'bnf' => '35049657',
                 'isbn' => '2-85319-209-1',
                 'isbn2' => '2-33333-209-1',
                 'langue' => 'fr',

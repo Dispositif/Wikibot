@@ -48,7 +48,7 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
         }
 
         return [
-            'bnf' => $this->convertBnfIdent(),
+//            'bnf' => $this->convertBnfIdent(), // pertinent si isbn ?
             'isbn' => $this->xpath2string('//mxc:datafield[@tag="010"]/mxc:subfield[@code="a"][1]'),
             'isbn2' => $this->xpath2string('//mxc:datafield[@tag="010"]/mxc:subfield[@code="a"][2]'),
 
