@@ -25,8 +25,20 @@ use Throwable;
 
 include __DIR__.'/../myBootstrap.php';
 
-$process = new EditProcess();
-$process->run();
+// sort of process management
+while (true) {
+    try {
+        echo "*** NEW EDIT PROCESS\n";
+        $process = new EditProcess();
+        $process->run();
+    } catch (\Throwable $e) {
+        dump($e);
+        unset($e);
+    }
+    unset($process);
+    echo "Sleep 1h\n";
+    sleep(60 * 60);
+}
 
 /**
  * TODO refac
@@ -53,6 +65,7 @@ class EditProcess
     private $errorWarning = [];
     private $importantSummary = [];
     private $nbRows;
+    private $run = true;
 
     // Minor flag on edit
     private $minorFlag = true;
@@ -64,10 +77,10 @@ class EditProcess
         $this->db = new DbAdapter();
         $this->bot = new Bot();
 
-        $this->wikiLogin();
+        $this->wikiLogin(true);
     }
 
-    public function run()
+    public function run(): void
     {
         $memory = new Memory();
         while (true) {
@@ -88,12 +101,8 @@ class EditProcess
         $data = json_decode($json, true);
 
         if (empty($data)) {
-            echo "SKIP : no rows to process\n";
-            echo "Sleep 2h.";
-            sleep(60 * 120);
-
-            // or exit
-            return false;
+            echo "SKIP : no row to process\n";
+            throw new \Exception('no row to process');
         }
 
         try {
@@ -169,19 +178,18 @@ class EditProcess
 
         pageEdit:
 
-        try{
+        try {
             $editInfo = new EditInfo($miniSummary, $this->minorFlag, $this->botFlag);
             $success = $page->editPage(Normalizer::normalize($this->wikiText), $editInfo);
-        }catch (\Throwable $e){
+        } catch (\Throwable $e) {
             // Invalid CSRF token.
-            if(strpos($e->getMessage(), 'Invalid CSRF token') !== false ) {
+            if (strpos($e->getMessage(), 'Invalid CSRF token') !== false) {
                 echo "*** Invalid CSRF token \n";
-                sleep(60);
-                $this->wikiLogin();
-                goto pageEdit;
-            }else{
+                throw new \Exception('Invalid CSRF token');
+            } else {
                 dump($e); // todo log
                 sleep(60);
+
                 return false;
             }
         }
@@ -265,7 +273,7 @@ class EditProcess
         // Start summary with "Bot" when using botflag, else "*"
         $prefix = ($this->botFlag) ? 'bot' : '☆';
         // add "/!\" when errorWarning
-        $prefix = (!empty($this->errorWarning) && !$this->botFlag) ? '⚠' : $prefix;
+        $prefix .= (!empty($this->errorWarning)) ? ' ⚠' : '';
 
 
         // basic modifs
@@ -320,7 +328,7 @@ class EditProcess
             ) > 0
         ) {
             $this->addErrorWarning($data['page'], $matches[0]);
-            $this->botFlag = false;
+            //            $this->botFlag = false;
             $this->addSummaryTag('paramètre non corrigé');
         }
 
@@ -348,6 +356,13 @@ class EditProcess
         if (preg_match('#\+lieu#', $data['modifs']) > 0) {
             $this->addSummaryTag('+lieu');
         }
+        if (preg_match('#présentation en ligne#', $data['modifs']) > 0) {
+            $this->addSummaryTag('+présentation en ligne');
+        }
+        if (preg_match('#\+lire en ligne#', $data['modifs']) > 0) {
+            $this->addSummaryTag('+lire en ligne');
+        }
+
         if (preg_match('#\+éditeur#', $data['modifs']) > 0) {
             $this->addSummaryTag('éditeur');
         }
@@ -388,32 +403,55 @@ class EditProcess
 
     /**
      * @param array $rows Collection of citations
+     *
+     * @return bool
      */
-    private function sendErrorMessage(array $rows): void
+    private function sendErrorMessage(array $rows): bool
     {
-        if (empty($this->errorWarning[$rows[0]['page']])) {
-            return;
+        if (!isset($rows[0]) || empty($this->errorWarning[$rows[0]['page']])) {
+            return false;
         }
-        echo "** Send Error Message on talk page. Wait 10... \n";
+        $mainTitle = $rows[0]['page'];
+        echo "** Send Error Message on talk page. Wait 3... \n";
         sleep(3);
 
         // format wiki message
         $errorList = '';
-        foreach ($this->errorWarning[$rows[0]['page']] as $error) {
+        foreach ($this->errorWarning[$mainTitle] as $error) {
             $errorList .= sprintf("* <span style=\"background:#FCDFE8\"><nowiki>%s</nowiki></span> \n", $error);
         }
+
+        $diffStr = '';
+        try {
+            // get last bot revision ID
+            $main = new WikiPageAction($this->wiki, $mainTitle);
+            if (getenv('BOT_NAME') === $main->getLastRevision()->getUser()) {
+                $id = $main->getLastRevision()->getId();
+                $diffStr = sprintf(
+                    ' ([https://fr.wikipedia.org/w/index.php?title=%s&diff=%s diff])',
+                    str_replace(' ', '_', $mainTitle),
+                    $id
+                );
+            }
+        } catch (\Throwable $e) {
+            unset($e);
+        }
+
         $errorMessage = file_get_contents(self::ERROR_MSG_TEMPLATE);
         $errorMessage = str_replace('##ERROR LIST##', trim($errorList), $errorMessage);
-        $errorMessage = str_replace('##ARTICLE##', $rows[0]['page'], $errorMessage);
+        $errorMessage = str_replace('##ARTICLE##', $mainTitle, $errorMessage);
+        $errorMessage = str_replace('##DIFF##', $diffStr, $errorMessage);
 
         // Edit wiki talk page
         try {
-            $talkPage = new WikiPageAction($this->wiki, 'Discussion:'.$rows[0]['page']);
+            $talkPage = new WikiPageAction($this->wiki, 'Discussion:'.$mainTitle);
             $editInfo = new EditInfo('Signalement erreur {ouvrage}', false, false);
-            $talkPage->addToBottomOrCreatePage($errorMessage, $editInfo);
+
+            return $talkPage->addToBottomOrCreatePage($errorMessage, $editInfo);
         } catch (Throwable $e) {
             dump($e);
-            unset($e);
+
+            return false;
         }
     }
 
@@ -428,12 +466,17 @@ class EditProcess
         $this->minorFlag = true;
         $this->nbRows = 0;
 
-        $this->bot->checkStopOnTalkpage();
+        $this->bot->checkStopOnTalkpage(true);
     }
 
-    private function wikiLogin(): void
+    /**
+     * @param bool $forceLogin
+     *
+     * @throws \Mediawiki\Api\UsageException
+     */
+    private function wikiLogin($forceLogin = false): void
     {
-        $this->wiki = ServiceFactory::wikiApi();
+        $this->wiki = ServiceFactory::wikiApi($forceLogin);
     }
 
 }

@@ -3,7 +3,8 @@
 [[Image:Robot icon.svg|70px|right|alt=tête de robot souriante]][[Catégorie:Signalement ZiziBot|##ARTICLE##]]
 Bonjour Humains !
 
-Lors de la vérification des mentions bibliographiques de cet article, j'ai détecté des erreurs de paramètre du modèle {{m|ouvrage}} que je ne parviens pas corriger moi-même.
+Lors de la vérification des mentions bibliographiques de cet article##DIFF##, j'ai détecté des erreurs de paramètre du
+modèle {{m|ouvrage}} que je ne parviens pas corriger moi-même.
 J'ai signalé ces erreurs avec des [[Commentaire (informatique)|commentaires HTML]] (invisibles) que je copie ci-dessous :
 
 ##ERROR LIST##
