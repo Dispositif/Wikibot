@@ -33,6 +33,10 @@ class ServiceFactory
     private static $wikiApi;
 
     private static $dbConnection;
+    /**
+     * @var MediawikiApi
+     */
+    private static $api;
 
     private function __construct()
     {
@@ -86,22 +90,23 @@ class ServiceFactory
     /**
      * todo? replace that singleton pattern ??? (multi-lang wiki?).
      *
-     * @return MediawikiFactory
+     * @param bool|null $forceLogin
      *
+     * @return MediawikiFactory
      * @throws UsageException
      */
-    public static function wikiApi(): MediawikiFactory
+    public static function wikiApi(?bool $forceLogin = false): MediawikiFactory
     {
-        if (isset(self::$wikiApi)) {
+        if (isset(self::$wikiApi) && !$forceLogin) {
             return self::$wikiApi;
         }
 
-        $api = new MediawikiApi(getenv('API_URL'));
-        $api->login(
+        self::$api = new MediawikiApi(getenv('API_URL'));
+        self::$api->login(
             new ApiUser(getenv('API_USERNAME'), getenv('API_PASSWORD'))
         );
 
-        self::$wikiApi = new MediawikiFactory($api);
+        self::$wikiApi = new MediawikiFactory(self::$api);
 
         return self::$wikiApi;
     }
