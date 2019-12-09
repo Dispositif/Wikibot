@@ -73,6 +73,16 @@ class WikiPageAction
         return ($latest) ? $latest->getContent()->getData() : null;
     }
 
+    public function getLastRevision(): ?Revision
+    {
+        // page doesn't exist
+        if (empty($this->page->getRevisions()->getLatest())) {
+            return null;
+        }
+
+        return $this->page->getRevisions()->getLatest();
+    }
+
     public function getLastEditor(): ?string
     {
         // page doesn't exist
@@ -142,12 +152,12 @@ class WikiPageAction
     /**
      * Create a new page.
      *
-     * @param string   $text
+     * @param string $text
      *
      * @return bool
      * @throws Exception
      */
-    public function createPage(string $text, ?EditInfo $editInfo=null): bool
+    public function createPage(string $text, ?EditInfo $editInfo = null): bool
     {
         if (!empty($this->page->getRevisions()->getLatest())) {
             throw new \Exception('That page already exists');
@@ -158,6 +168,7 @@ class WikiPageAction
         $title = new Title($this->title);
         $identifier = new PageIdentifier($title);
         $revision = new Revision($newContent, $identifier);
+
         return $this->wiki->newRevisionSaver()->save($revision, $editInfo);
     }
 
@@ -165,7 +176,7 @@ class WikiPageAction
      * @param string   $addText
      * @param EditInfo $editInfo
      *
-     * @return bool
+     * @return bool success
      * @throws Exception
      */
     public function addToBottomOrCreatePage(string $addText, EditInfo $editInfo): bool
@@ -183,7 +194,7 @@ class WikiPageAction
      * @param string   $addText
      * @param EditInfo $editInfo
      *
-     * @return bool
+     * @return bool success
      * @throws Exception
      */
     public function addToBottomOfThePage(string $addText, EditInfo $editInfo): bool
@@ -228,7 +239,7 @@ class WikiPageAction
         ) {
             foreach ($matches[0] as $num => $mention) {
                 $lang = $matches['lang'][$num] ?? '';
-                if(!empty($lang)){
+                if (!empty($lang)) {
                     $lang = Language::all2wiki($lang);
                 }
 
