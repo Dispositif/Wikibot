@@ -1,5 +1,6 @@
 ## Versions des règles de corrections/complètement ##
 
+* 0.51 : tome/volume en romain
 * 0.50 : conversion langues
 * 0.49 : année vide inutile si date=
 * 0.48 : pas d'import 'isbn invalide' (@Evynrhud)

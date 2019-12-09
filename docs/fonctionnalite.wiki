@@ -69,6 +69,7 @@ Lien vers Google Books :
 * {{fait}} dans {{m|Ouvrage}} : correction 'lire en ligne'/'présentation en ligne' selon accessibilité totale ou partielle du document. [https://fr.wikipedia.org/w/index.php?title=Sahelanthropus_tchadensis&diff=163859267&oldid=163858241]
 * {{fait}} conversion en {{m|Google Livres}} [https://fr.wikipedia.org/w/index.php?title=Alexandrinisme&diff=prev&oldid=164635139]
 * {{fait}} ajout lien Google si livre d'accès complet.
+* {{fait}} ajout lien Google présentation en ligne [https://fr.wikipedia.org/w/index.php?title=Arthur_Somerset&diff=prev&oldid=165170630&diffmode=source]
 * {{attendre}} ajout 'présentation en ligne' si livre d'accès partiel.
 
 Lien vers Internet Archive :
