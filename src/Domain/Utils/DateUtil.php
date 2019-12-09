@@ -20,7 +20,7 @@ class DateUtil
         return $this->dateEnglish2french($date);
     }
 
-    public function dateEnglish2french(string $date)
+    public static function dateEnglish2french(string $date)
     {
         return str_replace(
             [

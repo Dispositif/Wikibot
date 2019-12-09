@@ -291,7 +291,7 @@ class DbAdapter implements QueueInterface
     {
         $data = null;
         // 2 hours ago
-        $beforeTime = (new DateTime())->sub(new DateInterval('PT2H'));
+        $beforeTime = (new DateTime())->sub(new DateInterval('PT3H'));
 
         try {
             $data = $this->db->fetchRowMany(

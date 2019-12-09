@@ -171,8 +171,8 @@ class CompleteProcess
             echo "*** ERREUR GOOGLE Isbn Search ***".$e->getMessage()."\n";
             sleep(10);
             if (strpos($e->getMessage(), 'Daily Limit Exceeded') !== false) {
-                echo "sleep 1h\n";
-                sleep(60 * 60);
+                echo "sleep 3h\n";
+                sleep(60 * 60 * 3);
                 echo "Wake up\n";
                 goto online;
             }

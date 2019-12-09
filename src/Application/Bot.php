@@ -16,7 +16,6 @@ use Bluora\LaravelGitInfo\GitInfo;
 use DateInterval;
 use DateTimeImmutable;
 use Exception;
-use Mediawiki\Api\UsageException;
 use Throwable;
 
 /**
@@ -129,7 +128,7 @@ class Bot
             if ($botTalk && class_exists(ZiziBot::class)) {
                 try {
                     (new ZiziBot())->botTalk();
-                } catch (UsageException $e) {
+                } catch (Throwable $e) {
                     unset($e);
                 }
             }
