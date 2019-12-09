@@ -15,7 +15,7 @@ include __DIR__.'/../myBootstrap.php';
  */
 
 $wiki = ServiceFactory::wikiApi();
-$taskName = "bot / Correction bibliographie : erreur plume";
+$taskName = "bot ## Correction {Google Livres} id= manquant";
 
 // Get raw list of articles
 $filename = __DIR__.'/../resources/plume.txt';
@@ -30,9 +30,18 @@ foreach ($titles as $title) {
     $text = $pageAction->getText();
 
     // 1ere occurrence = ${1} !!
-    $newText = preg_replace('#(\| ?)plume( ?[|}])#i', '${1}plume=oui$2', $text);
-    sleep(8);
+//    $newText = preg_replace('#(Google Livres)plume( ?[|}])#i', '${1}plume=oui$2', $text);
 
+    // {{Google Livres|=
+    // {{Google Livres|https://books.google.fr/books?id=
+    $newText = str_replace('{{Google Livres|https://books.google.fr/books?id=','{{Google Livres|id=',$text);
+
+    sleep(7);
+
+    if($newText === $text) {
+        echo "Skip identique\n";
+        continue;
+    }
     $result = $pageAction->editPage($newText, new EditInfo($taskName, true, true));
     echo ($result) ? "OK\n" : "*** ERROR ***\n";
 }
