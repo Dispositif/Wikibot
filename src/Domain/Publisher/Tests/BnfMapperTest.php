@@ -25,7 +25,7 @@ class BnfMapperTest extends TestCase
                 'isbn' => '2-85319-209-1',
                 'isbn2' => '2-33333-209-1',
                 'langue' => 'fr',
-                'langue originale' => 'it',
+//                'langue originale' => 'it',
                 'langue titre' => null,
                 'titre' => 'Dictionnaire des chanteurs francophones',
                 'sous-titre' => 'de 1900 à nos jours, 900 biographies d\'interprètes, 6000 titres de chansons',

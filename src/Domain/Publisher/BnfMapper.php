@@ -55,9 +55,9 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
             // Langue
             'langue' => $this->lang2wiki($this->xpath2string('//mxc:datafield[@tag="101"]/mxc:subfield[@code="a"]')),
             // c : Langue de l’œuvre originale
-            'langue originale' => $this->lang2wiki(
-                $this->xpath2string('//mxc:datafield[@tag="101"]/mxc:subfield[@code="c"]')
-            ),
+//            'langue originale' => $this->lang2wiki(
+//                $this->xpath2string('//mxc:datafield[@tag="101"]/mxc:subfield[@code="c"]')
+//            ),
             // g : Langue du titre propre (si différent)
             'langue titre' => $this->lang2wiki(
                 $this->xpath2string('//mxc:datafield[@tag="101"]/mxc:subfield[@code="g"]')
