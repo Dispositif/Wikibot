@@ -134,7 +134,7 @@ class OuvrageOptimize
             $number = abs(intval($value));
             $roman = NumberUtil::arab2roman($number);
             if ($number > 10) {
-                $roman = '{'.$roman.'}';
+                $roman = '{{'.$roman.'}}';
             }
             $this->setParam($param, $roman);
             $this->log('romain');
@@ -672,7 +672,7 @@ class OuvrageOptimize
             if (preg_match('#^-?[12][0-9][0-9][0-9]$#', $date)) {
                 $this->setParam('année', $date);
                 $this->unsetParam('date');
-                $this->log('>année');
+                //$this->log('>année');
             }
         }
     }

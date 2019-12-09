@@ -166,7 +166,7 @@ class OuvrageOptimizeTest extends TestCase
             [
                 // tome/volume en romain
                 ['tome' => '4', 'volume' => '34'],
-                '{{Ouvrage|titre=|volume={XXXIV}|tome=IV|éditeur=|année=|isbn=}}',
+                '{{Ouvrage|titre=|volume={{XXXIV}}|tome=IV|éditeur=|année=|isbn=}}',
             ],
             [
                 // tome/volume bizarre
