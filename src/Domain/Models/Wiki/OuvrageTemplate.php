@@ -37,6 +37,7 @@ class OuvrageTemplate extends AbstractWikiTemplate
      */
     const PARAM_ALIAS
         = [
+            'numéro dans la collection' => 'numéro dans collection',
             'lang' => 'langue',
             'lien langue' => 'langue',
             'prénom' => 'prénom1', // fréquent : ajouté sur params normaux
@@ -298,6 +299,10 @@ class OuvrageTemplate extends AbstractWikiTemplate
             'postface',
             'illustrateur',
             'photographe',
+            'editor', // provisoire
+            'editor1', // provisoire
+            'editor2', // provisoire
+            'editor3', // provisoire
             'champ libre',
             'titre',
             'sous-titre',
