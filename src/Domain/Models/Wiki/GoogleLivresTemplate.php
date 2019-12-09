@@ -28,7 +28,13 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
 
     const REQUIRED_PARAMETERS = ['id' => ''];
 
-    const PARAM_ALIAS = ['1' => 'id', '2' => 'titre'];
+    const PARAM_ALIAS
+        = [
+            '1' => 'id',
+            '2' => 'titre',
+            'surligné' => 'surligne',
+            'BuchID' => 'id',
+        ];
 
     protected $parametersByOrder
         = ['id', 'titre', 'couv', 'page', 'romain', 'page autre', 'surligne'];
@@ -57,7 +63,6 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
      * @param string $url
      *
      * @return GoogleLivresTemplate|null
-     *
      * @throws Exception
      */
     public static function createFromURL(string $url): ?self
