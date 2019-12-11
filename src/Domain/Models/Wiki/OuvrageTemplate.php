@@ -143,6 +143,8 @@ class OuvrageTemplate extends AbstractWikiTemplate
             'author-link' => 'lien auteur1',
             'première édition' => 'année première édition',
             'citation' => 'extrait',
+            'chapter-url' => 'lire en ligne',
+            'p' => 'passage',
         ];
 
     public $externalTemplates = [];
