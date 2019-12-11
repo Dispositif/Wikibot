@@ -235,9 +235,9 @@ class OuvrageOptimize
             return;
         }
 
-        // ISBN-13 à partir de 2007 :
+        // ISBN-13 à partir de 2007
         $year = $this->findBookYear();
-        if ($year && $year < 2007) {
+        if ($year && $year < 2007 && 10 === strlen($this->stripIsbn($isbn))) {
             // juste mise en forme ISBN-10 pour 'isbn'
             try {
                 $isbnMachine = new IsbnFacade($isbn);
