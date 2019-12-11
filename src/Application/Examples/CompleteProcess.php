@@ -147,7 +147,7 @@ class CompleteProcess
                 $bnfOuvrage = OuvrageFactory::BnfFromIsbn($isbn10);
                 sleep(2);
             }
-            if (!$isbn10 || !isset($bnfOuvrage) || empty($bnfOuvrage->getParam('titre'))) {
+            if (!$isbn10 || empty($bnfOuvrage) || empty($bnfOuvrage->getParam('titre'))) {
                 $bnfOuvrage = OuvrageFactory::BnfFromIsbn($isbn);
             }
             if (isset($bnfOuvrage) and $bnfOuvrage instanceof OuvrageTemplate) {
@@ -162,11 +162,9 @@ class CompleteProcess
         }
 
         try {
-            if (!$bnfOuvrage || !$this->skipGoogle($bnfOuvrage)) {
-                dump('GOOGLE...');
-                $googleOuvrage = OuvrageFactory::GoogleFromIsbn($isbn);
-                $this->completeOuvrage($googleOuvrage);
-            }
+            dump('GOOGLE...');
+            $googleOuvrage = OuvrageFactory::GoogleFromIsbn($isbn);
+            $this->completeOuvrage($googleOuvrage);
         } catch (Throwable $e) {
             echo "*** ERREUR GOOGLE Isbn Search ***".$e->getMessage()."\n";
             sleep(10);
