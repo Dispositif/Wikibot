@@ -272,6 +272,11 @@ class OuvrageOptimizeTest extends TestCase
                 '{{Ouvrage|titre=|éditeur=|année=|isbn=978-2-7068-1251-4|isbn2=2-7068-1251-6}}',
             ],
             [
+                // isbn10 avant 2007
+                ['isbn' => '2706812516', 'date'=> 'octobre 1988'],
+                '{{Ouvrage|titre=|éditeur=|date=octobre 1988|isbn=2-7068-1251-6}}',
+            ],
+            [
                 // isbn=10 et isbn2=13
                 ['isbn' => '2706812516', 'isbn2'=>'9782706812514'],
                 '{{Ouvrage|titre=|éditeur=|année=|isbn=978-2-7068-1251-4|isbn2=2-7068-1251-6}}',

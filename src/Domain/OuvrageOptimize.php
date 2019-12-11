@@ -231,14 +231,38 @@ class OuvrageOptimize
     private function processIsbn()
     {
         $isbn = $this->getParam('isbn') ?? '';
-
         if (empty($isbn)) {
             return;
         }
 
-        $isbnMachine = new IsbnFacade($isbn);
+        // ISBN-13 à partir de 2007 :
+        $year = $this->findBookYear();
+        if ($year && $year < 2007) {
+            // juste mise en forme ISBN-10 pour 'isbn'
+            try {
+                $isbnMachine = new IsbnFacade($isbn);
+                $isbnMachine->validate();
+                $isbn10pretty = $isbnMachine->format('ISBN-10');
+                if ($isbn10pretty !== $isbn) {
+                    $this->setParam('isbn', $isbn10pretty);
+                    $this->log('ISBN10');
+                    $this->notCosmetic = true;
+                }
+            } catch (\Throwable $e) {
+                // ISBN not validated
+                $this->setParam(
+                    'isbn invalide',
+                    sprintf('%s %s', $isbn, $e->getMessage() ?? '')
+                );
+                $this->log(sprintf('ISBN invalide: %s', $e->getMessage()));
+                $this->notCosmetic = true;
+            }
+
+            return;
+        }
 
         try {
+            $isbnMachine = new IsbnFacade($isbn);
             $isbnMachine->validate();
             $isbn13 = $isbnMachine->format('ISBN-13');
         } catch (Throwable $e) {
@@ -255,7 +279,7 @@ class OuvrageOptimize
             return;
         }
 
-        // Si 'isbn2' correspond à ISBN-13 => suppression
+        // Si $isbn13 et 'isbn2' correspond à ISBN-13 => suppression
         if (isset($isbn13)
             && $this->getParam('isbn2')
             && $this->stripIsbn($this->getParam('isbn2')) === $this->stripIsbn($isbn13)
@@ -301,6 +325,26 @@ class OuvrageOptimize
             $this->log('ISBN');
             $this->notCosmetic = true;
         }
+    }
+
+    /**
+     * Find year of book publication.
+     *
+     * @return int|null
+     * @throws Exception
+     */
+    private function findBookYear(): ?int
+    {
+        $annee = $this->getParam('année');
+        if (!empty($annee) && is_numeric($annee)) {
+            return intval($annee);
+        }
+        $date = $this->getParam('date');
+        if ($date && preg_match('#[^0-9]?([12][0-9][0-9][0-9])[^0-9]?#', $date, $matches) > 0) {
+            return intval($matches[1]);
+        }
+
+        return null;
     }
 
     private function stripIsbn(string $isbn): string
