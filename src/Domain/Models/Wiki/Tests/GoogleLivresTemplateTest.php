@@ -49,7 +49,7 @@ class GoogleLivresTemplateTest extends TestCase
             [
                 // common pattern
                 'https://books.google.fr/books?id=26gcP_Yz-i8C&pg=PA56&lpg=PA56&dq=André+Poznanski&source=bl&ots=tuFKKbkpUS&sig=ACfU3U058ij4qQHFsXX_KX01YK81SLCCBw&hl=fr&sa=X&ved=2ahUKEwiB6tHVtKbkAhULNRoKHbOeDXU4ChDoATAAegQICBAB#v=onepage&q=André%20Poznanski&f=false',
-                'https://books.google.com/books?id=26gcP_Yz-i8C&pg=PA56&dq=Andr%C3%A9+Poznanski',
+                'https://books.google.fr/books?id=26gcP_Yz-i8C&pg=PA56&dq=Andr%C3%A9+Poznanski',
             ],
             [
                 // pattern 'http://' and '/books/reader'
@@ -59,7 +59,7 @@ class GoogleLivresTemplateTest extends TestCase
             [
                 // frontcover
                 'https://books.google.fr/books?id=lcHcXrVhRUUC&printsec=frontcover&hl=fr&source=gbs_ge_summary_r&cad=0#v=onepage&q&f=false',
-                'https://books.google.com/books?id=lcHcXrVhRUUC&printsec=frontcover',
+                'https://books.google.fr/books?id=lcHcXrVhRUUC&printsec=frontcover',
             ],
             [
                 // play.google.com (rare)

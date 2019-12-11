@@ -153,7 +153,15 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
             }
         }
 
-        return self::DEFAULT_GOOGLEBOOK_URL.'?'.http_build_query($dat);
+        $googleURL = self::DEFAULT_GOOGLEBOOK_URL;
+
+        // domain .com .fr
+        $gooDomain = self::parseGoogleDomain($url);
+        if ($gooDomain) {
+            $googleURL = str_replace('.com', $gooDomain, $googleURL);
+        }
+
+        return $googleURL.'?'.http_build_query($dat);
     }
 
     /**
@@ -172,6 +180,23 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
         parse_str(implode('&', [$fragmentData, $queryData]), $val);
 
         return $val;
+    }
+
+    /**
+     * return '.fr' or '.com'.
+     *
+     * @param string $url
+     *
+     * @return string|null
+     */
+    private static function parseGoogleDomain(string $url): ?string
+    {
+        $host = parse_url($url, PHP_URL_HOST);
+        if (!empty($host) && preg_match('#\.[a-z]{2,3}$#', $host, $matches) > 0) {
+            return $matches[0]; // .fr
+        }
+
+        return null;
     }
 
     /**
