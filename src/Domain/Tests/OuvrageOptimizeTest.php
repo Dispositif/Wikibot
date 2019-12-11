@@ -128,7 +128,7 @@ class OuvrageOptimizeTest extends TestCase
     public function testGetOuvrage()
     {
         $raw
-            = '{{Ouvrage|languX=anglais|id=ZE|prénom1=Ernest|nom1=Nègre|titre=Toponymie:France|tome=3|passage=15-27|isbn=2600028846}}';
+            = '{{Ouvrage|languX=anglais|id=ZE|prénom1=Ernest|nom1=Nègre|nom2|titre=Toponymie:France|tome=3|passage=15-27|isbn=2600028846}}';
 
         $parse = TemplateParser::parseAllTemplateByName('ouvrage', $raw);
         $origin = $parse['ouvrage'][0]['model'];

@@ -412,6 +412,13 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
                     continue;
                 }
                 if (is_int($param)) {
+
+                    // erreur "|lire en ligne|"
+                    if(in_array($value, $this->getParamsAndAlias())){
+                        unset($errorUserData[$param]);
+                        continue;
+                    }
+
                     // ou 1= 2= 3=
                     $errorUserData[$param] = $value.' <!--VALEUR SANS NOM DE PARAMETRE -->';
 
