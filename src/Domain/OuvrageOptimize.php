@@ -255,11 +255,44 @@ class OuvrageOptimize
             return;
         }
 
-        // ISBN 10 ?
-        if (10 === mb_strlen(str_replace('-', '', $isbn)) && !$this->getParam('isbn10')) {
-            $this->setParam('isbn10', $isbn);
-            $this->log('isbn10');
-            $this->notCosmetic = true;
+        // Si 'isbn2' correspond à ISBN-13 => suppression
+        if (isset($isbn13)
+            && $this->getParam('isbn2')
+            && $this->stripIsbn($this->getParam('isbn2')) === $this->stripIsbn($isbn13)
+        ) {
+            $this->unsetParam('isbn2');
+        }
+
+
+        // ISBN-10 ?
+        $stripIsbn = $this->stripIsbn($isbn);
+        if (10 === mb_strlen($stripIsbn)) {
+            // ajout des tirets
+            $isbn10pretty = $isbn;
+            try {
+                $isbn10pretty = $isbnMachine->format('ISBN-10');
+                if ($isbn10pretty !== $isbn) {
+                    $this->notCosmetic = true;
+                }
+            } catch (\Throwable $e) {
+                unset($e);
+            }
+
+            // archivage ISBN-10 dans 'isbn2'
+            if (!$this->getParam('isbn2')) {
+                $this->setParam('isbn2', $isbn10pretty);
+            }
+            // sinon dans 'isbn3'
+            if (!empty($this->getParam('isbn2'))
+                && $this->stripIsbn($this->getParam('isbn2')) !== $stripIsbn
+                && empty($this->getParam('isbn3'))
+            ) {
+                $this->setParam('isbn3', $isbn10pretty);
+            }
+            // delete 'isbn10' (en attendant modification modèle)
+            if (!empty($this->getParam('isbn10')) && $this->stripIsbn($this->getParam('isbn10')) === $stripIsbn) {
+                $this->unsetParam('isbn10');
+            }
         }
 
         // ISBN correction
@@ -268,6 +301,11 @@ class OuvrageOptimize
             $this->log('ISBN');
             $this->notCosmetic = true;
         }
+    }
+
+    private function stripIsbn(string $isbn): string
+    {
+        return trim(preg_replace('#[^0-9Xx]#', '', $isbn));
     }
 
     private function processTitle()

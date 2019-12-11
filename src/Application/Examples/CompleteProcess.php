@@ -101,7 +101,7 @@ class CompleteProcess
              * RECHERCHE ONLINE
              */
             $isbn = $origin->getParam('isbn') ?? null; // avant mise en forme EAN>ISBN
-            $isbn10 = $origin->getParam('isbn10') ?? null;
+            $isbn10 = $origin->getParam('isbn2') ?? $origin->getParam('isbn10') ?? null;
             if (!empty($isbn)
                 && empty($origin->getParam('isbn invalide'))
                 && empty($origin->getParam('isbn erroné'))

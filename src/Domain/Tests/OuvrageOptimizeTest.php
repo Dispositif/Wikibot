@@ -135,7 +135,7 @@ class OuvrageOptimizeTest extends TestCase
 
         $optimized = (new OuvrageOptimize($origin))->doTasks()->getOuvrage();
         $this::assertSame(
-            '{{Ouvrage|id=ZE|langue=en|prénom1=Ernest|nom1=Nègre|titre=Toponymie|sous-titre=France|tome=III|éditeur=|année=|passage=15-27|isbn=978-2-600-02884-4|isbn10=2600028846}}',
+            '{{Ouvrage|id=ZE|langue=en|prénom1=Ernest|nom1=Nègre|titre=Toponymie|sous-titre=France|tome=III|éditeur=|année=|passage=15-27|isbn=978-2-600-02884-4|isbn2=2-600-02884-6}}',
             $optimized->serialize(true)
         );
     }
@@ -247,10 +247,10 @@ class OuvrageOptimizeTest extends TestCase
      *
      * @throws Exception
      */
-    public function testIsbn($isbn, $expected)
+    public function testIsbn(array $data, $expected)
     {
         $origin = new OuvrageTemplate();
-        $origin->hydrate(['isbn' => $isbn]);
+        $origin->hydrate($data);
 
         $optimized = (new OuvrageOptimize($origin))->doTasks()->getOuvrage();
         $this::assertSame(
@@ -262,17 +262,28 @@ class OuvrageOptimizeTest extends TestCase
     public function provideISBN()
     {
         return [
-            ['978-2-600-02884-4', '{{Ouvrage|titre=|éditeur=|année=|isbn=978-2-600-02884-4}}'],
-            // isbn10
             [
-                '2706812516',
-                '{{Ouvrage|titre=|éditeur=|année=|isbn=978-2-7068-1251-4|isbn10=2706812516}}',
+                ['isbn' => '978-2-600-02884-4'],
+                '{{Ouvrage|titre=|éditeur=|année=|isbn=978-2-600-02884-4}}',
             ],
-            // isbn invalide (clé vérification)
-            ['978-2-600-02884-0', '{{Ouvrage|titre=|éditeur=|année=|isbn=978-2-600-02884-4}}'],
-            // isbn invalide
             [
-                '978-2-600-028-0',
+                // isbn10
+                ['isbn' => '2706812516'],
+                '{{Ouvrage|titre=|éditeur=|année=|isbn=978-2-7068-1251-4|isbn2=2-7068-1251-6}}',
+            ],
+            [
+                // isbn=10 et isbn2=13
+                ['isbn' => '2706812516', 'isbn2'=>'9782706812514'],
+                '{{Ouvrage|titre=|éditeur=|année=|isbn=978-2-7068-1251-4|isbn2=2-7068-1251-6}}',
+            ],
+            [
+                // isbn invalide (clé vérification)
+                ['isbn' => '978-2-600-02884-0'],
+                '{{Ouvrage|titre=|éditeur=|année=|isbn=978-2-600-02884-4}}',
+            ],
+            [
+                // isbn invalide
+                ['isbn' => '978-2-600-028-0'],
                 '{{Ouvrage|titre=|éditeur=|année=|isbn=978-2-600-028-0|isbn invalide=978-2-600-028-0 trop court ou trop long}}',
             ],
         ];
