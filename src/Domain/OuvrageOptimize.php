@@ -68,8 +68,8 @@ class OuvrageOptimize
         $this->externalTemplates();
         $this->predictFormatByPattern();
 
-        $this->convertRoman('tome');
-        $this->convertRoman('volume');
+//        $this->convertRoman('tome');
+//        $this->convertRoman('volume');
 
         $this->processIsbn();
         $this->processBnf();
@@ -130,12 +130,12 @@ class OuvrageOptimize
     {
         $value = $this->getParam($param);
         // note : strval() condition because intval('4c') = 4
-        if ($value && intval($value) > 0 && strval(intval($value)) === $value) {
+        if ($value && intval($value) > 0 && intval($value) <= 10 && strval(intval($value)) === $value) {
             $number = abs(intval($value));
             $roman = NumberUtil::arab2roman($number);
-            if ($number > 10) {
-                $roman = '{{'.$roman.'}}';
-            }
+//            if ($number > 10) {
+//                $roman = '{{'.$roman.'}}';
+//            }
             $this->setParam($param, $roman);
             $this->log('romain');
             $this->notCosmetic = true;
@@ -370,11 +370,9 @@ class OuvrageOptimize
             $this->log('±titre');
         }
 
-        $this->currentTask = 'titre chapitre';
         $this->valideNumeroChapitre();
         $this->deWikifyExternalLink('titre chapitre');
         $this->upperCaseFirstLetter('titre chapitre');
-        $this->typoDeuxPoints('titre chapitre');
     }
 
     private function detectColon($param): bool

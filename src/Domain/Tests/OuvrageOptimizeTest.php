@@ -135,7 +135,7 @@ class OuvrageOptimizeTest extends TestCase
 
         $optimized = (new OuvrageOptimize($origin))->doTasks()->getOuvrage();
         $this::assertSame(
-            '{{Ouvrage|id=ZE|langue=en|prénom1=Ernest|nom1=Nègre|titre=Toponymie|sous-titre=France|tome=III|éditeur=|année=|passage=15-27|isbn=978-2-600-02884-4|isbn2=2-600-02884-6}}',
+            '{{Ouvrage|id=ZE|langue=en|prénom1=Ernest|nom1=Nègre|titre=Toponymie|sous-titre=France|tome=3|éditeur=|année=|passage=15-27|isbn=978-2-600-02884-4|isbn2=2-600-02884-6}}',
             $optimized->serialize(true)
         );
     }
@@ -163,16 +163,16 @@ class OuvrageOptimizeTest extends TestCase
     public function provideProcessTitle()
     {
         return [
-            [
-                // tome/volume en romain
-                ['tome' => '4', 'volume' => '34'],
-                '{{Ouvrage|titre=|volume={{XXXIV}}|tome=IV|éditeur=|année=|isbn=}}',
-            ],
-            [
-                // tome/volume bizarre
-                ['tome' => '4c', 'volume' => 'E'],
-                '{{Ouvrage|titre=|volume=E|tome=4c|éditeur=|année=|isbn=}}',
-            ],
+//            [
+//                // tome/volume en romain
+//                ['tome' => '4', 'volume' => '34'],
+//                '{{Ouvrage|titre=|volume=34|tome=4|éditeur=|année=|isbn=}}',
+//            ],
+//            [
+//                // tome/volume bizarre
+//                ['tome' => '4c', 'volume' => 'E'],
+//                '{{Ouvrage|titre=|volume=E|tome=4c|éditeur=|année=|isbn=}}',
+//            ],
             [
                 // bug 17 nov [[titre:sous-titre]]
                 ['title' => '[[Fu:bar]]'],
@@ -263,7 +263,8 @@ class OuvrageOptimizeTest extends TestCase
     {
         return [
             [
-                ['isbn' => '978-2-600-02884-4'],
+                // isbn 13
+                ['isbn' => '9782600028844'],
                 '{{Ouvrage|titre=|éditeur=|année=|isbn=978-2-600-02884-4}}',
             ],
             [
@@ -277,9 +278,19 @@ class OuvrageOptimizeTest extends TestCase
                 '{{Ouvrage|titre=|éditeur=|date=octobre 1988|isbn=2-7068-1251-6}}',
             ],
             [
+                // isbn10 avant 2007
+                ['isbn' => '2706812516', 'année'=> '1988'],
+                '{{Ouvrage|titre=|éditeur=|année=1988|isbn=2-7068-1251-6}}',
+            ],
+            [
                 // isbn=10 et isbn2=13
                 ['isbn' => '2706812516', 'isbn2'=>'9782706812514'],
                 '{{Ouvrage|titre=|éditeur=|année=|isbn=978-2-7068-1251-4|isbn2=2-7068-1251-6}}',
+            ],
+            [
+                // isbn=13 et isbn2=10
+                ['isbn'=>'9782706812514', 'isbn2' => '2-706812516'],
+                '{{Ouvrage|titre=|éditeur=|année=|isbn=978-2-7068-1251-4|isbn2=2-706812516}}',
             ],
             [
                 // isbn invalide (clé vérification)
