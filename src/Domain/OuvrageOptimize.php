@@ -437,7 +437,7 @@ class OuvrageOptimize
         }
 
         $goo = GoogleLivresTemplate::simplifyGoogleUrl($url);
-        if (!empty($goo)) {
+        if (!empty($goo) && $goo !== $url ) {
             $this->setParam($param, $goo);
             $this->log('Google');
             $this->notCosmetic = true;
