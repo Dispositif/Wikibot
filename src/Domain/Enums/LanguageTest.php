@@ -31,6 +31,7 @@ class LanguageTest extends TestCase
         return [
             ['fr', 'fr'],
             ['FR', 'fr'],
+            ['fre', 'fr'],
             // iso
             ['dan', 'da'],
             ['DAN', 'da'],

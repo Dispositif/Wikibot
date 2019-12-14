@@ -18,8 +18,6 @@ namespace App\Domain\Enums;
  */
 abstract class Language
 {
-    const dataFile = __DIR__.'/languageData.php';
-
     /**
      * only static call
      */
@@ -32,11 +30,10 @@ abstract class Language
      */
     private static function isWikiLang(string $lang): bool
     {
-        require self::dataFile;
         /**
          * @var $liste_frlang []
          */
-        if (isset($liste_frlang) && in_array($lang, $liste_frlang)) {
+        if (LanguageData::LANG_FRWIKI && in_array($lang, LanguageData::LANG_FRWIKI)) {
             return true;
         }
 
@@ -67,11 +64,10 @@ abstract class Language
 
     public static function iso2b2wiki(string $lang): ?string
     {
-        require self::dataFile;
         $lang = strtolower($lang);
-        if (isset($iso2b_to_french) && array_key_exists($lang, $iso2b_to_french)) {
-            if (!empty($iso2b_to_french[$lang])) {
-                return self::longFrench2wiki($iso2b_to_french[$lang]);
+        if (LanguageData::ISO2B_TO_FRENCH && array_key_exists($lang, LanguageData::ISO2B_TO_FRENCH)) {
+            if (!empty(LanguageData::ISO2B_TO_FRENCH[$lang])) {
+                return self::longFrench2wiki(LanguageData::ISO2B_TO_FRENCH[$lang]);
             }
         }
 
@@ -80,16 +76,14 @@ abstract class Language
 
     public static function english2wiki(string $lang): ?string
     {
-        require self::dataFile;
-
         $lang = ucfirst($lang);
-        if (isset($english_to_french) && array_key_exists($lang, $english_to_french)) {
-            return self::longFrench2wiki($english_to_french[$lang]);
+        if (LanguageData::ENGLISH_TO_FRENCH && array_key_exists($lang, LanguageData::ENGLISH_TO_FRENCH)) {
+            return self::longFrench2wiki(LanguageData::ENGLISH_TO_FRENCH[$lang]);
         }
         // ugly
         $lang = ucfirst(mb_strtolower($lang));
-        if (isset($english_to_french) && array_key_exists($lang, $english_to_french)) {
-            return self::longFrench2wiki($english_to_french[$lang]);
+        if (LanguageData::ENGLISH_TO_FRENCH && array_key_exists($lang, LanguageData::ENGLISH_TO_FRENCH)) {
+            return self::longFrench2wiki(LanguageData::ENGLISH_TO_FRENCH[$lang]);
         }
 
         return null;
@@ -97,10 +91,9 @@ abstract class Language
 
     private static function longFrench2wiki(string $lang): ?string
     {
-        require self::dataFile;
         $lang = mb_strtolower($lang);
-        if (isset($french_to_frlang) && array_key_exists($lang, $french_to_frlang)) {
-            return $french_to_frlang[$lang];
+        if (LanguageData::FRENCH_TO_FRWIKI && array_key_exists($lang, LanguageData::FRENCH_TO_FRWIKI)) {
+            return LanguageData::FRENCH_TO_FRWIKI[$lang];
         }
 
         return null;
