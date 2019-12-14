@@ -263,6 +263,16 @@ class OuvrageOptimizeTest extends TestCase
     {
         return [
             [
+                // no ISBN before 1970
+                ['année' => '1950'],
+                '{{Ouvrage|titre=|éditeur=|année=1950}}',
+            ],
+            [
+                // empty 'isbn' after 1970
+                ['année' => '1980'],
+                '{{Ouvrage|titre=|éditeur=|année=1980|isbn=}}',
+            ],
+            [
                 // isbn 13
                 ['isbn' => '9782600028844'],
                 '{{Ouvrage|titre=|éditeur=|année=|isbn=978-2-600-02884-4}}',

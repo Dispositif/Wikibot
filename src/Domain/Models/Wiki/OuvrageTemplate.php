@@ -386,6 +386,7 @@ class OuvrageTemplate extends AbstractWikiTemplate
     {
         $serial = parent::serialize($cleanOrder);
         $serial = $this->anneeOrDateSerialize($serial);
+        $serial = $this->stripIsbnBefore1970($serial);
 
         return $serial.$this->serializeExternalTemplates();
     }
@@ -404,6 +405,27 @@ class OuvrageTemplate extends AbstractWikiTemplate
         }
 
         return $res;
+    }
+
+    /**
+     * Strip empty 'isbn' before 1970.
+     *
+     * @param string $serial
+     *
+     * @return string
+     */
+    private function stripIsbnBefore1970(string $serial):string
+    {
+        if (preg_match("#\|[\n ]*isbn=[\n ]*[|}]#", $serial) > 0
+            && preg_match("#\|[\n ]*année=([0-9]+)[}| \n]#", $serial, $matches) > 0
+        ) {
+            $year = intval($matches[1]);
+            if ($year > 0 && $year < 1970) {
+                $serial = preg_replace("#\|[\n ]*isbn=[\n ]*#", '', $serial);
+            }
+        }
+
+        return $serial;
     }
 
     /**
