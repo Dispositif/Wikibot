@@ -94,6 +94,13 @@ class Bot
         return null;
     }
 
+    /**
+     * Throws Exception if "{{stop}}" or "STOP" on talk page.
+     *
+     * @param bool|null $botTalk
+     *
+     * @throws \Mediawiki\Api\UsageException
+     */
     public function checkStopOnTalkpage(?bool $botTalk = false): void
     {
         $title = 'Discussion_utilisateur:'.getenv('BOT_NAME');
@@ -107,6 +114,7 @@ class Bot
         }
         $this->lastCheckStopDate = new DateTimeImmutable();
 
+        // don't catch Exception (stop process if error)
         $wiki = ServiceFactory::wikiApi();
         $pageAction = new WikiPageAction($wiki, $title);
         $text = $pageAction->getText();
@@ -132,7 +140,7 @@ class Bot
                     unset($e);
                 }
             }
-            exit();
+            throw new \DomainException('STOP on talk page');
         }
     }
 
@@ -160,7 +168,7 @@ class Bot
 
                 if (self::EXIT_ON_CHECK_WATCHPAGE) {
                     echo "EXIT_ON_CHECK_WATCHPAGE\n";
-                    exit();
+                    throw new \DomainException('exit from check watchpages');
                 }
             }
         }
