@@ -137,8 +137,8 @@ class CompleteProcess
     private function onlineIsbnSearch(string $isbn, ?string $isbn10 = null)
     {
         online:
-        echo "sleep 20...\n";
-        sleep(40);
+        echo "sleep 10...\n";
+        sleep(10);
 
         try {
             dump('BIBLIO NAT FRANCE...');
@@ -155,36 +155,34 @@ class CompleteProcess
             }
         } catch (Throwable $e) {
             echo "*** ERREUR BnF Isbn Search".$e->getMessage()."\n";
-            //            echo "sleep 5min\n";
-            //            sleep(60 * 5);
-            //            echo "Wake up\n";
-            //            goto online;
         }
 
-        try {
-            dump('GOOGLE...');
-            $googleOuvrage = OuvrageFactory::GoogleFromIsbn($isbn);
-            $this->completeOuvrage($googleOuvrage);
-        } catch (Throwable $e) {
-            echo "*** ERREUR GOOGLE Isbn Search ***".$e->getMessage()."\n";
-            sleep(10);
-            if (strpos($e->getMessage(), 'Daily Limit Exceeded') !== false) {
-                echo "sleep 3h\n";
-                sleep(60 * 60 * 3);
-                echo "Wake up\n";
-                goto online;
+        if (!isset($bnfOuvrage) || !$this->skipGoogle($bnfOuvrage)) {
+            try {
+                dump('GOOGLE...');
+                $googleOuvrage = OuvrageFactory::GoogleFromIsbn($isbn);
+                $this->completeOuvrage($googleOuvrage);
+            } catch (Throwable $e) {
+                echo "*** ERREUR GOOGLE Isbn Search ***".$e->getMessage()."\n";
+                if (strpos($e->getMessage(), 'Daily Limit Exceeded') !== false) {
+                    echo "sleep 3h\n";
+                    sleep(60 * 60 * 3);
+                    echo "Wake up\n";
+                    goto online;
+                }
             }
         }
 
-
-        try {
-            dump('OpenLibrary...');
-            $openLibraryOuvrage = OuvrageFactory::OpenLibraryFromIsbn($isbn);
-            if (!empty($openLibraryOuvrage)) {
-                $this->completeOuvrage($openLibraryOuvrage);
+        if (!isset($bnfOuvrage) && !isset($googleOuvrage)) {
+            try {
+                dump('OpenLibrary...');
+                $openLibraryOuvrage = OuvrageFactory::OpenLibraryFromIsbn($isbn);
+                if (!empty($openLibraryOuvrage)) {
+                    $this->completeOuvrage($openLibraryOuvrage);
+                }
+            } catch (Throwable $e) {
+                echo '**** ERREUR OpenLibrary Isbn Search';
             }
-        } catch (Throwable $e) {
-            echo '**** ERREUR OpenLibrary Isbn Search';
         }
     }
 
@@ -264,8 +262,16 @@ class CompleteProcess
         return $finalOpti;
     }
 
-    private function skipGoogle(OuvrageTemplate $bnfOuvrage): bool
+    private function skipGoogle($bnfOuvrage): bool
     {
+        if ($bnfOuvrage instanceOf OuvrageTemplate
+            && !empty($bnfOuvrage->getParam('titre'))
+            && (!empty($this->ouvrage->getParam('lire en ligne'))
+                || !empty($this->ouvrage->getParam('présentation en ligne')))
+        ) {
+            return true;
+        }
+
         return false;
     }
 }
