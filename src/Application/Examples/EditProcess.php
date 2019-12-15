@@ -36,8 +36,8 @@ while (true) {
         unset($e);
     }
     unset($process);
-    echo "Sleep 1h\n";
-    sleep(60 * 60);
+    echo "Sleep 2h\n";
+    sleep(60 * 60 * 2);
 }
 
 /**
@@ -174,7 +174,7 @@ class EditProcess
         $miniSummary = $this->generateSummary();
         echo "Edition ?\n".$miniSummary."\n\n";
         echo "sleep 20...\n";
-        sleep(20);
+        sleep(30);
 
         pageEdit:
 
@@ -300,7 +300,7 @@ class EditProcess
         // shrink long summary if no important details to verify
         if (empty($this->importantSummary)) {
             $length = strlen($summary);
-            $summary = substr($summary, 0, 80);
+            $summary = mb_substr($summary, 0, 80);
             $summary .= ($length > strlen($summary)) ? '…' : '';
         }
 
@@ -321,14 +321,16 @@ class EditProcess
         }
 
         // paramètre inconnu
-        if (preg_match(
+        if (preg_match_all(
                 "#\|[^|]+<!-- ?(PARAMETRE [^>]+ N'EXISTE PAS|VALEUR SANS NOM DE PARAMETRE) ?-->#",
                 $data['opti'],
                 $matches
             ) > 0
         ) {
-            $this->addErrorWarning($data['page'], $matches[0]);
-            //            $this->botFlag = false;
+            foreach ($matches[0] as $line) {
+                $this->addErrorWarning($data['page'], $line);
+            }
+            //  $this->botFlag = false;
             $this->addSummaryTag('paramètre non corrigé');
         }
 
@@ -358,6 +360,9 @@ class EditProcess
         }
         if (preg_match('#présentation en ligne#', $data['modifs']) > 0) {
             $this->addSummaryTag('+présentation en ligne');
+        }
+        if (preg_match('#distinction auteurs#', $data['modifs']) > 0) {
+            $this->addSummaryTag('distinction auteurs');
         }
         if (preg_match('#\+lire en ligne#', $data['modifs']) > 0) {
             $this->addSummaryTag('+lire en ligne');
@@ -455,6 +460,9 @@ class EditProcess
         }
     }
 
+    /**
+     * @throws \Mediawiki\Api\UsageException
+     */
     private function initialize(): void
     {
         // initialisation vars
