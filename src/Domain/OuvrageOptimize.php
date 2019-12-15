@@ -246,7 +246,7 @@ class OuvrageOptimize
                 if ($isbn10pretty !== $isbn) {
                     $this->setParam('isbn', $isbn10pretty);
                     $this->log('ISBN10');
-                    $this->notCosmetic = true;
+//                    $this->notCosmetic = true;
                 }
             } catch (\Throwable $e) {
                 // ISBN not validated
@@ -296,7 +296,7 @@ class OuvrageOptimize
             try {
                 $isbn10pretty = $isbnMachine->format('ISBN-10');
                 if ($isbn10pretty !== $isbn) {
-                    $this->notCosmetic = true;
+//                    $this->notCosmetic = true;
                 }
             } catch (\Throwable $e) {
                 unset($e);
@@ -323,7 +323,7 @@ class OuvrageOptimize
         if ($isbn13 !== $isbn) {
             $this->setParam('isbn', $isbn13);
             $this->log('ISBN');
-            $this->notCosmetic = true;
+//            $this->notCosmetic = true;
         }
     }
 
