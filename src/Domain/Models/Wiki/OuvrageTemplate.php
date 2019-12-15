@@ -414,7 +414,7 @@ class OuvrageTemplate extends AbstractWikiTemplate
      *
      * @return string
      */
-    private function stripIsbnBefore1970(string $serial):string
+    private function stripIsbnBefore1970(string $serial): string
     {
         if (preg_match("#\|[\n ]*isbn=[\n ]*[|}]#", $serial) > 0
             && preg_match("#\|[\n ]*année=([0-9]+)[}| \n]#", $serial, $matches) > 0
@@ -430,6 +430,10 @@ class OuvrageTemplate extends AbstractWikiTemplate
 
     /**
      * Pas de serialization année vide si date non vide.
+     *
+     * @param string $serial
+     *
+     * @return string
      */
     private function anneeOrDateSerialize(string $serial): string
     {
@@ -441,4 +445,27 @@ class OuvrageTemplate extends AbstractWikiTemplate
 
         return $serial;
     }
+
+    /**
+     * Détermine l'id d'ancrage <span> de l'ouvrage.
+     * Utilisable par titre#ancrage ou {{harvsp}}.
+     * Voir http://fr.wikipedia.org/wiki/Modèle:Module_biblio/span_initial
+     */
+    public function getSpanInitial(): string
+    {
+        // Identifiant paramétré
+        if ($this->getParam('id')) {
+            return $this->getParam('id');
+        }
+
+        // Identifiant déduit : auteur1,2,3,4,année
+        $id = '';
+        for ($i = 1; $i < 4; $i++) {
+            $id .= ($this->getParam('nom'.$i)) ?? $this->getParam('auteur'.$i) ?? '';
+        }
+        $id .= $this->getParam('année') ?? '';
+
+        return $id;
+    }
+
 }
