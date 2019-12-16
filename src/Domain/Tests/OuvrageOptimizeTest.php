@@ -80,6 +80,11 @@ class OuvrageOptimizeTest extends TestCase
                 '{{Ouvrage|langue=en|titre=|éditeur=|année=|isbn=}}',
             ],
             [
+                // langue originale
+                ['langue originale' => 'Anglais'],
+                '{{Ouvrage|langue originale=en|titre=|éditeur=|année=|isbn=}}',
+            ],
+            [
                 ['éditeur' => '[[Fu]]'],
                 '{{Ouvrage|titre=|éditeur=[[Fu]]|année=|isbn=}}',
             ],

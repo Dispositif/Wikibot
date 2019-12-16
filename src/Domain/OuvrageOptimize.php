@@ -68,13 +68,15 @@ class OuvrageOptimize
         $this->externalTemplates();
         $this->predictFormatByPattern();
 
-//        $this->convertRoman('tome');
-//        $this->convertRoman('volume');
+        //        $this->convertRoman('tome');
+        //        $this->convertRoman('volume');
 
         $this->processIsbn();
         $this->processBnf();
 
         $this->processLang();
+        $this->processLang('langue originale');
+
         $this->processLocation(); // 'lieu'
 
         $this->GoogleBookURL('lire en ligne');
@@ -133,9 +135,9 @@ class OuvrageOptimize
         if ($value && intval($value) > 0 && intval($value) <= 10 && strval(intval($value)) === $value) {
             $number = abs(intval($value));
             $roman = NumberUtil::arab2roman($number);
-//            if ($number > 10) {
-//                $roman = '{{'.$roman.'}}';
-//            }
+            //            if ($number > 10) {
+            //                $roman = '{{'.$roman.'}}';
+            //            }
             $this->setParam($param, $roman);
             $this->log('romain');
             $this->notCosmetic = true;
@@ -205,19 +207,21 @@ class OuvrageOptimize
     /**
      * todo: move/implement.
      *
+     * @param string|null $param
+     *
      * @throws Exception
      */
-    private function processLang()
+    private function processLang(?string $param = 'langue')
     {
-        $lang = $this->getParam('langue') ?? null;
+        $lang = $this->getParam($param) ?? null;
 
         if ($lang) {
             $lang2 = Language::all2wiki($lang);
 
             if ($lang2 && $lang !== $lang2) {
-                $this->setParam('langue', $lang2);
+                $this->setParam($param, $lang2);
                 if (self::WIKI_LANGUAGE !== $lang2) {
-                    $this->log('±langue');
+                    $this->log('±'.$param);
                 }
             }
         }
@@ -246,7 +250,7 @@ class OuvrageOptimize
                 if ($isbn10pretty !== $isbn) {
                     $this->setParam('isbn', $isbn10pretty);
                     $this->log('ISBN10');
-//                    $this->notCosmetic = true;
+                    //                    $this->notCosmetic = true;
                 }
             } catch (\Throwable $e) {
                 // ISBN not validated
@@ -296,7 +300,7 @@ class OuvrageOptimize
             try {
                 $isbn10pretty = $isbnMachine->format('ISBN-10');
                 if ($isbn10pretty !== $isbn) {
-//                    $this->notCosmetic = true;
+                    //                    $this->notCosmetic = true;
                 }
             } catch (\Throwable $e) {
                 unset($e);
@@ -323,7 +327,7 @@ class OuvrageOptimize
         if ($isbn13 !== $isbn) {
             $this->setParam('isbn', $isbn13);
             $this->log('ISBN');
-//            $this->notCosmetic = true;
+            //            $this->notCosmetic = true;
         }
     }
 
@@ -437,7 +441,7 @@ class OuvrageOptimize
         }
 
         $goo = GoogleLivresTemplate::simplifyGoogleUrl($url);
-        if (!empty($goo) && $goo !== $url ) {
+        if (!empty($goo) && $goo !== $url) {
             $this->setParam($param, $goo);
             $this->log('Google');
             $this->notCosmetic = true;
