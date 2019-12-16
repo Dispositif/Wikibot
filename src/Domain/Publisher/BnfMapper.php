@@ -48,38 +48,43 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
         }
 
         return [
-//            'bnf' => $this->convertBnfIdent(), // pertinent si isbn ?
+            //            'bnf' => $this->convertBnfIdent(), // pertinent si isbn ?
             'isbn' => $this->xpath2string('//mxc:datafield[@tag="010"]/mxc:subfield[@code="a"][1]'),
             'isbn2' => $this->xpath2string('//mxc:datafield[@tag="010"]/mxc:subfield[@code="a"][2]'),
 
             // Langue
-            'langue' => $this->lang2wiki($this->xpath2string('//mxc:datafield[@tag="101"]/mxc:subfield[@code="a"]')),
+            'langue' => $this->lang2wiki($this->xpath2string('//mxc:datafield[@tag="101"]/mxc:subfield[@code="a"][1]')),
             // c : Langue de l’œuvre originale
-//            'langue originale' => $this->lang2wiki(
-//                $this->xpath2string('//mxc:datafield[@tag="101"]/mxc:subfield[@code="c"]')
-//            ),
+            'langue originale' => $this->lang2wiki(
+                $this->xpath2string('//mxc:datafield[@tag="101"]/mxc:subfield[@code="c"][1]')
+            ),
             // g : Langue du titre propre (si différent)
             'langue titre' => $this->lang2wiki(
-                $this->xpath2string('//mxc:datafield[@tag="101"]/mxc:subfield[@code="g"]')
+                $this->xpath2string('//mxc:datafield[@tag="101"]/mxc:subfield[@code="g"][1]')
             ),
 
-            // Bloc 200
+            /**
+             * Bloc 200.
+             * https://www.transition-bibliographique.fr/wp-content/uploads/2019/11/B200-2018.pdf
+             */
             // a : Titre propre
             'titre' => $this->xpath2string('//mxc:datafield[@tag="200"]/mxc:subfield[@code="a"][1]'),
+            // d : Titre parralèle (autre langue)
+            'titre original' => $this->xpath2string('//mxc:datafield[@tag="200"]/mxc:subfield[@code="d"][1]'),
             // e : Complément du titre
-            'sous-titre' => $this->xpath2string('//mxc:datafield[@tag="200"]/mxc:subfield[@code="e"]'),
+            'sous-titre' => $this->xpath2string('//mxc:datafield[@tag="200"]/mxc:subfield[@code="e"]', ', '),
             // f : responsabilité principale "Pierre Durand, Paul Dupond" (XML de dingue pour ça...)
-            'auteur1' => $this->xpath2string('//mxc:datafield[@tag="200"]/mxc:subfield[@code="f"]'),
+            'auteur1' => $this->xpath2string('//mxc:datafield[@tag="200"]/mxc:subfield[@code="f"]',  ', '),
             // g : Mention de responsabilité suivante
-            'auteur2' => $this->xpath2string('//mxc:datafield[@tag="200"]/mxc:subfield[@code="g"]'),
+            'auteur2' => $this->xpath2string('//mxc:datafield[@tag="200"]/mxc:subfield[@code="g"]',  ', '),
             // h : Numéro de partie
             //            'volume' => $this->xpath2string('//mxc:datafield[@tag="200"]/mxc:subfield[@code="h"]'),
             // i : Titre de partie
             // v : numéro de volume
-            'volume' => $this->xpath2string('//mxc:datafield[@tag="200"]/mxc:subfield[@code="v"]'),
+            'volume' => $this->xpath2string('//mxc:datafield[@tag="200"]/mxc:subfield[@code="v"][1]'),
 
             // 410 : collection
-            'collection' => $this->xpath2string('//mxc:datafield[@tag="410"]/mxc:subfield[@code="a"]'),
+            'collection' => $this->xpath2string('//mxc:datafield[@tag="410"]/mxc:subfield[@code="a"][1]'),
 
             // Auteur : voir plutôt 7XX
             //  https://www.transition-bibliographique.fr/wp-content/uploads/2018/07/B7XX-6-2011.pdf
@@ -128,7 +133,7 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
     }
 
     /**
-     * todo refac and move.
+     * todo gestion bilingue fr+en
      * ISO 639-1 http://www.loc.gov/standards/iso639-2/php/French_list.php.
      *
      * @param string|null $lang
@@ -184,11 +189,11 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
     private function getPublishDate(): ?string
     {
         // zone 210 d : Date de publication, de diffusion, etc.
-        if ($tac = $this->xpath2string('//mxc:datafield[@tag="210"]/mxc:subfield[@code="d"]')) {
+        if ($tac = $this->xpath2string('//mxc:datafield[@tag="210"]/mxc:subfield[@code="d"][1]')) {
             return $tac;
         }
         // 214 : nouvelle zone 2019
-        if ($tac = $this->xpath2string('//mxc:datafield[@tag="214"]/mxc:subfield[@code="d"]')) {
+        if ($tac = $this->xpath2string('//mxc:datafield[@tag="214"]/mxc:subfield[@code="d"][1]')) {
             return $tac;
         }
 
