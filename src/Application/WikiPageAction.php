@@ -31,6 +31,7 @@ class WikiPageAction
     public $page; // public for debug
 
     public $wiki; // api ?
+
     /**
      * @var string
      */
@@ -123,7 +124,7 @@ class WikiPageAction
     public function getRedirect(): ?string
     {
         if ($this->getText() && preg_match('/^#REDIRECT(?:ION)? ?\[\[([^]]+)]]/i', $this->getText(), $matches)) {
-            return (string)trim($matches[1]);
+            return (string) trim($matches[1]);
         }
 
         return null;
@@ -155,6 +156,7 @@ class WikiPageAction
      * @param string $text
      *
      * @return bool
+     *
      * @throws Exception
      */
     public function createPage(string $text, ?EditInfo $editInfo = null): bool
@@ -177,6 +179,7 @@ class WikiPageAction
      * @param EditInfo $editInfo
      *
      * @return bool success
+     *
      * @throws Exception
      */
     public function addToBottomOrCreatePage(string $addText, EditInfo $editInfo): bool
@@ -195,6 +198,7 @@ class WikiPageAction
      * @param EditInfo $editInfo
      *
      * @return bool success
+     *
      * @throws Exception
      */
     public function addToBottomOfThePage(string $addText, EditInfo $editInfo): bool
@@ -294,6 +298,7 @@ class WikiPageAction
      * @param $text string
      *
      * @return array
+     *
      * @throws Exception
      */
     public function extractRefFromText(string $text): ?array
@@ -301,7 +306,7 @@ class WikiPageAction
         $parser = new TagParser(); // todo ParserFactory
         $refs = $parser->importHtml($text)->getRefValues(); // []
 
-        return (array)$refs;
+        return (array) $refs;
     }
 
     /**

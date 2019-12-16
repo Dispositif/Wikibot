@@ -395,8 +395,6 @@ class OuvrageTemplate extends AbstractWikiTemplate
         $this->source = $source;
     }
 
-
-
     /**
      * @param bool|null $cleanOrder
      *
@@ -469,7 +467,7 @@ class OuvrageTemplate extends AbstractWikiTemplate
     /**
      * Détermine l'id d'ancrage <span> de l'ouvrage.
      * Utilisable par titre#ancrage ou {{harvsp}}.
-     * Voir http://fr.wikipedia.org/wiki/Modèle:Module_biblio/span_initial
+     * Voir http://fr.wikipedia.org/wiki/Modèle:Module_biblio/span_initial.
      */
     public function getSpanInitial(): string
     {
@@ -480,12 +478,11 @@ class OuvrageTemplate extends AbstractWikiTemplate
 
         // Identifiant déduit : auteur1,2,3,4,année
         $id = '';
-        for ($i = 1; $i < 4; $i++) {
+        for ($i = 1; $i < 4; ++$i) {
             $id .= ($this->getParam('nom'.$i)) ?? $this->getParam('auteur'.$i) ?? '';
         }
         $id .= $this->getParam('année') ?? '';
 
         return $id;
     }
-
 }

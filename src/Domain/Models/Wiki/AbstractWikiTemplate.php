@@ -412,10 +412,10 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
                     continue;
                 }
                 if (is_int($param)) {
-
                     // erreur "|lire en ligne|"
-                    if(in_array($value, $this->getParamsAndAlias())){
+                    if (in_array($value, $this->getParamsAndAlias())) {
                         unset($errorUserData[$param]);
+
                         continue;
                     }
 

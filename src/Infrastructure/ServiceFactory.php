@@ -33,6 +33,7 @@ class ServiceFactory
     private static $wikiApi;
 
     private static $dbConnection;
+
     /**
      * @var MediawikiApi
      */
@@ -93,6 +94,7 @@ class ServiceFactory
      * @param bool|null $forceLogin
      *
      * @return MediawikiFactory
+     *
      * @throws UsageException
      */
     public static function wikiApi(?bool $forceLogin = false): MediawikiFactory

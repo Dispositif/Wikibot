@@ -7,14 +7,12 @@
 
 declare(strict_types=1);
 
-
 namespace App\Domain\Enums;
 
 use PHPUnit\Framework\TestCase;
 
 class LanguageTest extends TestCase
 {
-
     /**
      * @dataProvider provideAll2wiki
      */

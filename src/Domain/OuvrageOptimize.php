@@ -17,9 +17,8 @@ use App\Domain\Utils\TextUtil;
 use App\Domain\Utils\WikiTextUtil;
 use App\Infrastructure\FileManager;
 use Exception;
-use Throwable;
-
 use function mb_strlen;
+use Throwable;
 
 /**
  * Legacy.
@@ -291,12 +290,12 @@ class OuvrageOptimize
             $this->unsetParam('isbn2');
         }
 
-
         // ISBN-10 ?
         $stripIsbn = $this->stripIsbn($isbn);
         if (10 === mb_strlen($stripIsbn)) {
             // ajout des tirets
             $isbn10pretty = $isbn;
+
             try {
                 $isbn10pretty = $isbnMachine->format('ISBN-10');
                 if ($isbn10pretty !== $isbn) {
@@ -335,6 +334,7 @@ class OuvrageOptimize
      * Find year of book publication.
      *
      * @return int|null
+     *
      * @throws Exception
      */
     private function findBookYear(): ?int
@@ -545,6 +545,7 @@ class OuvrageOptimize
      * @param $name
      *
      * @return string|null
+     *
      * @throws Exception
      */
     private function getParam(string $name): ?string
@@ -689,7 +690,7 @@ class OuvrageOptimize
         // todo detect duplication ouvrage/plume dans externalTemplate ?
         if (!empty($this->getParam('plume'))) {
             $plumeValue = $this->getParam('plume');
-            $this->ouvrage->externalTemplates[] = (object)[
+            $this->ouvrage->externalTemplates[] = (object) [
                 'template' => 'plume',
                 '1' => $plumeValue,
                 'raw' => '{{nobr|. {{plume}}}}',
@@ -704,7 +705,7 @@ class OuvrageOptimize
             // todo bug {{citation bloc}} si "=" ou "|" dans texte de citation
             // Legacy : use {{début citation}} ... {{fin citation}}
             if (preg_match('#[=|]#', $extrait) > 0) {
-                $this->ouvrage->externalTemplates[] = (object)[
+                $this->ouvrage->externalTemplates[] = (object) [
                     'template' => 'début citation',
                     '1' => '',
                     'raw' => '{{début citation}}'.$extrait.'{{fin citation}}',
@@ -713,7 +714,7 @@ class OuvrageOptimize
                 $this->notCosmetic = true;
             } else {
                 // StdClass
-                $this->ouvrage->externalTemplates[] = (object)[
+                $this->ouvrage->externalTemplates[] = (object) [
                     'template' => 'citation bloc',
                     '1' => $extrait,
                     'raw' => '{{extrait|'.$extrait.'}}',
@@ -729,7 +730,7 @@ class OuvrageOptimize
         // "commentaire=bla" => {{Commentaire biblio|1=bla}}
         if (!empty($this->getParam('commentaire'))) {
             $commentaire = $this->getParam('commentaire');
-            $this->ouvrage->externalTemplates[] = (object)[
+            $this->ouvrage->externalTemplates[] = (object) [
                 'template' => 'commentaire biblio',
                 '1' => $commentaire,
                 'raw' => '{{commentaire biblio|'.$commentaire.'}}',
@@ -791,6 +792,7 @@ class OuvrageOptimize
 
     /**
      * @return bool
+     *
      * @throws Exception
      */
     public function checkMajorEdit(): bool

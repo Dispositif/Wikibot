@@ -7,21 +7,20 @@
 
 declare(strict_types=1);
 
-
 namespace App\Domain\Enums;
 
 /**
  * Convert language name in wiki lang code.
- * Class Lang
- *
- * @package App\Domain\Enums
+ * Class Lang.
  */
 abstract class Language
 {
     /**
-     * only static call
+     * only static call.
      */
-    private function __construct() { }
+    private function __construct()
+    {
+    }
 
     /**
      * @param string $lang
@@ -30,7 +29,7 @@ abstract class Language
      */
     private static function isWikiLang(string $lang): bool
     {
-        /**
+        /*
          * @var $liste_frlang []
          */
         if (LanguageData::LANG_FRWIKI && in_array($lang, LanguageData::LANG_FRWIKI)) {
@@ -98,5 +97,4 @@ abstract class Language
 
         return null;
     }
-
 }

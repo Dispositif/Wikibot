@@ -151,8 +151,8 @@ class DbAdapter implements QueueInterface
 
             // No page to edit
             $rows = $pageInfo->fetchAll();
-            if(empty($rows)){
-                return "[]";
+            if (empty($rows)) {
+                return '[]';
             }
 
             $page = $rows[0]['page'];

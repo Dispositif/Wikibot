@@ -35,7 +35,7 @@ class ErrorReportTest extends TestCase
      */
     public function testCountErrorInText($errors)
     {
-        $article = <<<EOF
+        $article = <<<'EOF'
 sadfzd |editor=JT Staley, MP Bryant, N Pfennig, and JG Holt, eds. <!--PARAMETRE 'editor' N'EXISTE PAS -->
 qsfqsf |editor=DR Boone and RW Castenholz, eds. <!--PARAMETRE 'editor' N'EXISTE PAS --> sqdf bla
 EOF;
@@ -66,5 +66,4 @@ cruentis delectabatur et in circo sex vel septem aliquotiens vetitis certaminibu
             $report->deleteAllReports($text)
         );
     }
-
 }

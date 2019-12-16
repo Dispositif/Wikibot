@@ -140,6 +140,7 @@ class Bot
                     unset($e);
                 }
             }
+
             throw new \DomainException('STOP on talk page');
         }
     }
@@ -168,6 +169,7 @@ class Bot
 
                 if (self::EXIT_ON_CHECK_WATCHPAGE) {
                     echo "EXIT_ON_CHECK_WATCHPAGE\n";
+
                     throw new \DomainException('exit from check watchpages');
                 }
             }
@@ -176,6 +178,7 @@ class Bot
 
     /**
      * @return array
+     *
      * @throws ConfigException
      */
     protected function getWatchPages(): array
@@ -213,7 +216,7 @@ class Bot
     {
         $time = $this->getTimestamp($title);  // 2011-09-02T16:31:13Z
 
-        return (int)round((time() - strtotime($time)) / 60);
+        return (int) round((time() - strtotime($time)) / 60);
     }
 
     /**

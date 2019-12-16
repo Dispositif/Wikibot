@@ -40,10 +40,9 @@ class OuvrageTemplateTest extends TestCase
                 'Dupont1989',
             ],
             [
-                ['auteur1' => 'Dupont', 'auteur2'=>'Durand', 'année' => '1989'],
+                ['auteur1' => 'Dupont', 'auteur2' => 'Durand', 'année' => '1989'],
                 'DupontDurand1989',
             ],
         ];
     }
-
 }

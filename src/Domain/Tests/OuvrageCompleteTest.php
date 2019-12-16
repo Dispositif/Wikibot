@@ -92,7 +92,7 @@ class OuvrageCompleteTest extends TestCase
                 '{{Ouvrage|titre=|année=2009}}',
                 '{{Ouvrage|titre=|éditeur=|date=2011|isbn=}}',
             ],
-            /**
+            /*
              * titre + sous-titre
              */
             // pas d'ajout si déjà titre volume/chapitre/tome ou nature ouvrage

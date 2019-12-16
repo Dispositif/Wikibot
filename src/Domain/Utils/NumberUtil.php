@@ -7,9 +7,7 @@
 
 declare(strict_types=1);
 
-
 namespace App\Domain\Utils;
-
 
 class NumberUtil
 {
@@ -46,5 +44,4 @@ class NumberUtil
 
         return $result;
     }
-
 }

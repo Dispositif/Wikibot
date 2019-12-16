@@ -27,6 +27,7 @@ class OuvrageFactory
         $import->hydrateFromIsbn($isbn);
         $ouvrage = $import->getOuvrage();
         $ouvrage->setSource('OL');
+
         return $ouvrage;
     }
 
@@ -36,6 +37,7 @@ class OuvrageFactory
         $import->hydrateFromIsbn($isbn);
         $ouvrage = $import->getOuvrage();
         $ouvrage->setSource('GB');
+
         return $ouvrage;
     }
 
@@ -45,6 +47,7 @@ class OuvrageFactory
         $import->hydrateFromIsbn($isbn);
         $ouvrage = $import->getOuvrage();
         $ouvrage->setSource('BnF');
+
         return $ouvrage;
     }
 

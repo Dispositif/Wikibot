@@ -11,7 +11,6 @@ namespace App\Domain\Enums;
 
 abstract class LanguageData
 {
-
     // Data $english_to_french
     public const ENGLISH_TO_FRENCH
         = [
@@ -478,7 +477,7 @@ abstract class LanguageData
         ];
 
     /**
-     * TODO : virer parenthèses et voir pour comparaison sans "language(s)"
+     * TODO : virer parenthèses et voir pour comparaison sans "language(s)".
      */
     public const ISO2B_TO_FRENCH
         = [
@@ -1671,5 +1670,4 @@ abstract class LanguageData
             'zh',
             'zu',
         ];
-
 }

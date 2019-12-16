@@ -7,7 +7,6 @@
 
 declare(strict_types=1);
 
-
 namespace App\Application\Tests;
 
 use App\Application\Bot;
@@ -15,7 +14,6 @@ use PHPUnit\Framework\TestCase;
 
 class BotTest extends TestCase
 {
-
     public function testIsEditionRestricted()
     {
         $this::assertFalse(Bot::isEditionRestricted('bla bla'));
@@ -23,6 +21,6 @@ class BotTest extends TestCase
         $this::assertTrue(Bot::isEditionRestricted('{{3R}} bla'));
         $this::assertTrue(Bot::isEditionRestricted('{{nobots}} bla'));
         $this::assertTrue(Bot::isEditionRestricted('{{bots|deny=Bob,FuBot}} bla', 'FuBot'));
-        $this::assertFalse(Bot::isEditionRestricted('{{bots|deny=Bob,FuBot}} bla'));;
+        $this::assertFalse(Bot::isEditionRestricted('{{bots|deny=Bob,FuBot}} bla'));
     }
 }

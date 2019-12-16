@@ -63,6 +63,7 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
      * @param string $url
      *
      * @return GoogleLivresTemplate|null
+     *
      * @throws Exception
      */
     public static function createFromURL(string $url): ?self

@@ -40,7 +40,7 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
         $this->xml = $xml;
 
         // skip multi-records
-        $nbResults = (int)$xml->xpath('//srw:numberOfRecords[1]')[0] ?? 0;
+        $nbResults = (int) $xml->xpath('//srw:numberOfRecords[1]')[0] ?? 0;
         if (1 !== $nbResults) {
             echo "BNF : $nbResults records (skip)\n";
 
@@ -63,7 +63,7 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
                 $this->xpath2string('//mxc:datafield[@tag="101"]/mxc:subfield[@code="g"][1]')
             ),
 
-            /**
+            /*
              * Bloc 200.
              * https://www.transition-bibliographique.fr/wp-content/uploads/2019/11/B200-2018.pdf
              */
@@ -74,9 +74,9 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
             // e : Complément du titre
             'sous-titre' => $this->xpath2string('//mxc:datafield[@tag="200"]/mxc:subfield[@code="e"][1]', ', '),
             // f : responsabilité principale "Pierre Durand, Paul Dupond" (XML de dingue pour ça...)
-            'auteur1' => $this->xpath2string('//mxc:datafield[@tag="200"]/mxc:subfield[@code="f"]',  ', '),
+            'auteur1' => $this->xpath2string('//mxc:datafield[@tag="200"]/mxc:subfield[@code="f"]', ', '),
             // g : Mention de responsabilité suivante
-            'auteur2' => $this->xpath2string('//mxc:datafield[@tag="200"]/mxc:subfield[@code="g"]',  ', '),
+            'auteur2' => $this->xpath2string('//mxc:datafield[@tag="200"]/mxc:subfield[@code="g"]', ', '),
             // h : Numéro de partie
             //            'volume' => $this->xpath2string('//mxc:datafield[@tag="200"]/mxc:subfield[@code="h"]'),
             // i : Titre de partie
@@ -105,7 +105,7 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
         $res = [];
         foreach ($elements as $element) {
             if (isset($element) && $element instanceof SimpleXMLElement) {
-                $res[] = (string)$element;
+                $res[] = (string) $element;
             }
         }
 
@@ -126,7 +126,7 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
     {
         $raw = $this->xpath2string('//mxc:datafield[@tag="215"]/mxc:subfield[@code="a"]');
         if (!empty($raw) && preg_match('#([0-9]{2,}) p\.#', $raw, $matches) > 0) {
-            return (string)$matches[1];
+            return (string) $matches[1];
         }
 
         return null;
@@ -206,7 +206,7 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
         $raw = $this->xpath2string('//srw:recordIdentifier[1]/text()');
 
         if ($raw && preg_match('#ark:/[0-9]+/cb([0-9]+)#', $raw, $matches) > 0) {
-            return (string)$matches[1];
+            return (string) $matches[1];
         }
 
         return null;

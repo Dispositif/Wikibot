@@ -16,7 +16,7 @@ class ErrorReport
     /**
      * Liste les erreurs reportées.
      * 0 => "|editor=JT Staley, MP Bryant, N Pfennig, and JG Holt, eds. <!--PARAMETRE 'editor' N'EXISTE PAS -->"
-     * 1 => "|editor=DR Boone and RW Castenholz, eds. <!--PARAMETRE 'editor' N'EXISTE PAS -->"
+     * 1 => "|editor=DR Boone and RW Castenholz, eds. <!--PARAMETRE 'editor' N'EXISTE PAS -->".
      *
      * @param string $text
      *
@@ -40,8 +40,8 @@ class ErrorReport
     {
         $found = 0;
         foreach ($errors as $error) {
-            if (mb_strpos($text, $error) !== false) {
-                $found++;
+            if (false !== mb_strpos($text, $error)) {
+                ++$found;
             }
         }
 
@@ -72,5 +72,4 @@ class ErrorReport
 
         return $text;
     }
-
 }
