@@ -1,0 +1,29 @@
+version: '3'
+services:
+
+  docker-php:
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile
+    image: docker-php
+    volumes:
+      - .:/app
+    ports:
+      - 8080:80
+#    links:
+#      - mysql
+    environment:
+      DB_HOST: mysql
+      DB_DATABASE: docker
+      DB_USERNAME: docker
+      DB_PASSWORD: docker
+
+#  mysql:
+#    image: mysql:5.7
+#    ports:
+#      – 13306:3306
+#    environment:
+#      MYSQL_DATABASE: docker
+#      MYSQL_USER: docker
+#      MYSQL_PASSWORD: docker
+#      MYSQL_ROOT_PASSWORD: docker
