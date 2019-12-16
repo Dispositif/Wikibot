@@ -377,6 +377,26 @@ class OuvrageTemplate extends AbstractWikiTemplate
             'commentaire', // obsolete => {{commentaire biblio}}
         ];
 
+    private $source;
+
+    /**
+     * @return mixed
+     */
+    public function getSource()
+    {
+        return $this->source;
+    }
+
+    /**
+     * @param mixed $source
+     */
+    public function setSource($source): void
+    {
+        $this->source = $source;
+    }
+
+
+
     /**
      * @param bool|null $cleanOrder
      *

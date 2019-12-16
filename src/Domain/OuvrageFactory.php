@@ -25,24 +25,27 @@ class OuvrageFactory
     {
         $import = new ImportOuvrageFromApi(new OuvrageClean(), new OpenLibraryAdapter());
         $import->hydrateFromIsbn($isbn);
-
-        return $import->getOuvrage();
+        $ouvrage = $import->getOuvrage();
+        $ouvrage->setSource('OL');
+        return $ouvrage;
     }
 
     public static function GoogleFromIsbn(string $isbn): OuvrageTemplate
     {
         $import = new ImportOuvrageFromApi(new OuvrageClean(), new GoogleBooksAdapter());
         $import->hydrateFromIsbn($isbn);
-
-        return $import->getOuvrage();
+        $ouvrage = $import->getOuvrage();
+        $ouvrage->setSource('GB');
+        return $ouvrage;
     }
 
     public static function BnfFromIsbn(string $isbn): OuvrageTemplate
     {
         $import = new ImportOuvrageFromApi(new OuvrageClean(), new BnfAdapter());
         $import->hydrateFromIsbn($isbn);
-
-        return $import->getOuvrage();
+        $ouvrage = $import->getOuvrage();
+        $ouvrage->setSource('BnF');
+        return $ouvrage;
     }
 
     public static function OptimizedFromData(array $data): OuvrageTemplate
