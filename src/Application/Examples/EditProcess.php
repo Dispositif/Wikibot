@@ -30,9 +30,10 @@ while (true) {
     try {
         echo "*** NEW EDIT PROCESS\n";
         $process = new EditProcess();
+//        $process->verbose = true;
         $process->run();
     } catch (\Throwable $e) {
-        dump($e);
+        echo $e->getMessage();
         unset($e);
     }
     unset($process);
@@ -48,7 +49,10 @@ while (true) {
  */
 class EditProcess
 {
-    const TASK_NAME        = 'Amélioration bibliographique';
+    const TASK_NAME = 'Amélioration bibliographique';
+    /**
+     * poster ou pas le message en PD signalant les erreurs à résoudre
+     */
     const EDIT_SIGNALEMENT = true;
 
     const CITATION_LIMIT         = 150;
@@ -56,16 +60,18 @@ class EditProcess
     const DELAY_NOBOT_IN_SECONDS = 60;
     const ERROR_MSG_TEMPLATE     = __DIR__.'/../templates/message_errors.wiki';
 
+    public $verbose = false;
     private $db;
     private $bot;
     private $wiki;
     private $wikiText;
+
     private $citationSummary;
     private $citationVersion = '';
     private $errorWarning = [];
     private $importantSummary = [];
+
     private $nbRows;
-    private $run = true;
 
     // Minor flag on edit
     private $minorFlag = true;
@@ -86,7 +92,9 @@ class EditProcess
         while (true) {
             echo "\n-------------------------------------\n\n";
             echo date("Y-m-d H:i")."\n";
-            $memory->echoMemory(true);
+            if ($this->verbose) {
+                $memory->echoMemory(true);
+            }
 
             $this->pageProcess();
         }
@@ -172,8 +180,10 @@ class EditProcess
         }
 
         $miniSummary = $this->generateSummary();
-        echo "Edition ?\n".$miniSummary."\n\n";
-        echo "sleep 20...\n";
+        echo $miniSummary."\n\n";
+        if ($this->verbose) {
+            echo "sleep 20...\n";
+        }
         sleep(30);
 
         pageEdit:
@@ -194,7 +204,9 @@ class EditProcess
             }
         }
 
-        echo ($success) ? "Ok\n" : "***** Erreur edit\n";
+        if ($this->verbose) {
+            echo ($success) ? "Ok\n" : "***** Erreur edit\n";
+        }
 
         if ($success) {
             // updata DB
@@ -212,11 +224,17 @@ class EditProcess
             }
 
             if (!$this->botFlag) {
-                echo "sleep ".self::DELAY_NOBOT_IN_SECONDS."\n";
+                if ($this->verbose) {
+                    echo "sleep ".self::DELAY_NOBOT_IN_SECONDS."\n";
+                }
                 sleep(self::DELAY_NOBOT_IN_SECONDS);
             }
-            echo "sleep ".self::DELAY_BOTFLAG_SECONDS."\n";
-            sleep(self::DELAY_BOTFLAG_SECONDS);
+            if ($this->botFlag) {
+                if ($this->verbose) {
+                    echo "sleep ".self::DELAY_BOTFLAG_SECONDS."\n";
+                }
+                sleep(self::DELAY_BOTFLAG_SECONDS);
+            }
         }
 
         return $success;
@@ -376,8 +394,8 @@ class EditProcess
         //        }
 
         // mention BnF si ajout donnée + ajout identifiant bnf=
-        if (!empty($this->importantSummary) && preg_match('#\+bnf#i', $data['modifs'], $matches) > 0) {
-            $this->addSummaryTag('[[BnF]]');
+        if (!empty($this->importantSummary) && preg_match('#BnF#i', $data['modifs'], $matches) > 0) {
+            $this->addSummaryTag('(BnF)');
         }
     }
 
@@ -417,7 +435,9 @@ class EditProcess
             return false;
         }
         $mainTitle = $rows[0]['page'];
-        echo "** Send Error Message on talk page. Wait 3... \n";
+        if (!$this->botFlag) {
+            echo "** Send Error Message on talk page. Wait 3... \n";
+        }
         sleep(3);
 
         // format wiki message
