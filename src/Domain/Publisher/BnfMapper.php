@@ -72,7 +72,7 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
             // d : Titre parralèle (autre langue)
             'titre original' => $this->xpath2string('//mxc:datafield[@tag="200"]/mxc:subfield[@code="d"][1]'),
             // e : Complément du titre
-            'sous-titre' => $this->xpath2string('//mxc:datafield[@tag="200"]/mxc:subfield[@code="e"]', ', '),
+            'sous-titre' => $this->xpath2string('//mxc:datafield[@tag="200"]/mxc:subfield[@code="e"][1]', ', '),
             // f : responsabilité principale "Pierre Durand, Paul Dupond" (XML de dingue pour ça...)
             'auteur1' => $this->xpath2string('//mxc:datafield[@tag="200"]/mxc:subfield[@code="f"]',  ', '),
             // g : Mention de responsabilité suivante

@@ -29,7 +29,7 @@ class BnfMapperTest extends TestCase
                 'langue titre' => null,
                 'titre' => 'Dictionnaire des chanteurs francophones',
                 'titre original' => null,
-                'sous-titre' => 'de 1900 à nos jours, 900 biographies d\'interprètes, 6000 titres de chansons',
+                'sous-titre' => 'de 1900 à nos jours', //, 900 biographies d\'interprètes, 6000 titres de chansons',
                 'auteur1' => 'Alain-Pierre Noyer',
                 'auteur2' => null,
                 'volume' => null,
