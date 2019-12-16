@@ -1,5 +1,7 @@
 ## Versions des règles de corrections/complètement ##
 
+* 0.56 : BnF +langue originale +titre original
+* 0.55 : formatage ISBN notcosmetic=true
 * 0.53 : ISBN-10 déplacé dans 'isbn2'
 * 0.51 : tome/volume en romain
 * 0.50 : conversion langues
