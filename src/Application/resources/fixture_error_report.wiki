@@ -1,0 +1,25 @@
+{{À faire}}
+
+== Bla ==
+Erat autem diritatis eius hoc quoque indicium nec obscurum nec latens, quod ludicris cruentis delectabatur et in circo sex vel septem aliquotiens vetitis certaminibus pugilum vicissim se concidentium perfusorumque sanguine specie ut lucratus ingentia laetabatur.
+
+[[Utilisateur:ZiziBot|ZiziBot]]
+
+== Ouvrage avec erreur de paramètre ==
+
+[[Image:Robot icon.svg|70px|right|alt=tête de robot souriante]][[Catégorie:Signalement ZiziBot|Archaeoglobus]]
+Bonjour Humains !
+
+Lors de la vérification des mentions bibliographiques de cet article, j'ai détecté des erreurs de paramètre du modèle {{m|ouvrage}} que je ne parviens pas corriger moi-même.
+J'ai signalé ces erreurs avec des [[Commentaire (informatique)|commentaires HTML]] (invisibles) que je copie ci-dessous :
+
+* <span style="background:#FCDFE8"><nowiki>|editor=JT Staley, MP Bryant, N Pfennig, and JG Holt, eds. <!--PARAMETRE 'editor' N'EXISTE PAS --></nowiki></span>
+* <span style="background:#FCDFE8"><nowiki>|editor=DR Boone and RW Castenholz, eds. <!--PARAMETRE 'editor' N'EXISTE PAS --></nowiki></span>
+
+Une fois la correction réalisée, merci de supprimer ce message. <br>
+Le robot [[Utilisateur:ZiziBot|ZiziBot]] ([[Discussion utilisateur:ZiziBot|discuter]]) 29 novembre 2019 à 00:09 (CET)
+
+== Blabla ==
+
+Erat autem diritatis eius hoc quoque indicium nec obscurum nec latens, quod ludicris
+cruentis delectabatur et in circo sex vel septem aliquotiens vetitis certaminibus pugilum vicissim se concidentium perfusorumque sanguine specie ut lucratus ingentia laetabatur.
