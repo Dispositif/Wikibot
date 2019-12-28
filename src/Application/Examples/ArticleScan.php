@@ -60,6 +60,11 @@ class ArticleScan
 
         $page = new WikiPageAction($this->wiki, $title);
         $text = $page->getText();
+        if (empty($text)) {
+            echo "SKIP : texte vide\n";
+
+            return false;
+        }
 
         // Skip AdQ
         if (preg_match('#{{ ?En-tête label#i', $text) > 0) {
@@ -96,6 +101,7 @@ class ArticleScan
 
         $result = $this->db->insertTempRawOpti($data);
         dump($result);
+
         return !empty($result);
     }
 
