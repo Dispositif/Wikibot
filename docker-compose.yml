@@ -10,13 +10,22 @@ services:
       - .:/app
     ports:
       - 8080:80
-#    links:
-#      - mysql
+    #    links:
+    #      - mysql
     environment:
       DB_HOST: mysql
       DB_DATABASE: docker
       DB_USERNAME: docker
       DB_PASSWORD: docker
+
+  composer:
+    restart: 'no'
+    image: composer/composer
+    container_name: sunebook-composer
+    working_dir: /composer
+    command: install
+    volumes:
+      - .:/composer
 
 #  mysql:
 #    image: mysql:5.7

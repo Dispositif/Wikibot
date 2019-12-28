@@ -3,7 +3,7 @@ FROM php:7.3-apache
 # https://hub.docker.com/_/php
 
 # Install extensions
-#RUN docker-php-ext-install pdo_mysql mbstring
+#RUN docker-php-ext-install pdo_mysql
 #RUN docker-php-ext-configure gd –with-gd –with-freetype-dir=/usr/include/
 
 # si on monte un volume dans docker-compose :
