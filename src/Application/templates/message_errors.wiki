@@ -1,6 +1,6 @@
 == Ouvrage avec erreur de paramètre ==
 
-[[Image:Robot icon.svg|70px|right|alt=tête de robot souriante]][[Catégorie:Signalement ZiziBot|##ARTICLE##]]
+[[Image:Robot icon.svg|70px|right|alt=tête de robot souriante]][[Catégorie:##CATEGORY##|##ARTICLE##]]
 Bonjour Humains !
 
 En vérifiant les mentions bibliographiques de cet article##DIFF##, j'ai détecté des erreurs de paramètre du

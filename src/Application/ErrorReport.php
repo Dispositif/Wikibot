@@ -11,8 +11,6 @@ namespace App\Application;
 
 class ErrorReport
 {
-    const BOTNAME = 'ZiziBot';
-
     /**
      * Liste les erreurs reportées.
      * 0 => "|editor=JT Staley, MP Bryant, N Pfennig, and JG Holt, eds. <!--PARAMETRE 'editor' N'EXISTE PAS -->"
@@ -51,17 +49,18 @@ class ErrorReport
     /**
      * Delete the previous bot errorReporting message from text.
      *
-     * @param string $text
+     * @param string      $text
+     * @param string|null $botName
      *
      * @return string
      */
-    public function deleteAllReports(string $text): string
+    public function deleteAllReports(string $text, ?string $botName='ZiziBot'): string
     {
         $pattern = sprintf(
             '#== Ouvrage avec erreur de paramètre ==(.*)Le robot \[\[Utilisateur:%s\|%s\]\] \(\[\[Discussion utilisateur:%s\|discuter\]\]\) [0-9a-zéà: ]+ \(CET\)[\n]*#s',
-            self::BOTNAME,
-            self::BOTNAME,
-            self::BOTNAME
+            $botName,
+            $botName,
+            $botName
         );
         // option s : dot matches new lines
         $text = preg_replace(

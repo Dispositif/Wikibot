@@ -30,7 +30,7 @@ while (true) {
     try {
         echo "*** NEW EDIT PROCESS\n";
         $process = new EditProcess();
-//        $process->verbose = true;
+        //        $process->verbose = true;
         $process->run();
     } catch (\Throwable $e) {
         echo $e->getMessage();
@@ -56,8 +56,8 @@ class EditProcess
     const EDIT_SIGNALEMENT = true;
 
     const CITATION_LIMIT         = 150;
-    const DELAY_BOTFLAG_SECONDS  = 10;
-    const DELAY_NOBOT_IN_SECONDS = 60;
+    const DELAY_BOTFLAG_SECONDS  = 30;
+    const DELAY_NOBOT_IN_SECONDS = 120;
     const ERROR_MSG_TEMPLATE     = __DIR__.'/../templates/message_errors.wiki';
 
     public $verbose = false;
@@ -462,7 +462,10 @@ class EditProcess
             unset($e);
         }
 
+        $errorCategoryName = sprintf('Signalement %s', getenv('BOT_NAME'));
+
         $errorMessage = file_get_contents(self::ERROR_MSG_TEMPLATE);
+        $errorMessage = str_replace('##CATEGORY##', $errorCategoryName, $errorMessage);
         $errorMessage = str_replace('##ERROR LIST##', trim($errorList), $errorMessage);
         $errorMessage = str_replace('##ARTICLE##', $mainTitle, $errorMessage);
         $errorMessage = str_replace('##DIFF##', $diffStr, $errorMessage);

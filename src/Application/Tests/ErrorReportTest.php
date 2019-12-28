@@ -48,6 +48,7 @@ EOF;
 
     public function testDeleteAllReports()
     {
+        $botName = 'ZiziBot';
         $text = file_get_contents(__DIR__.'/../resources/fixture_error_report.wiki');
         $report = new ErrorReport();
         $this::assertSame(
@@ -63,7 +64,7 @@ Erat autem diritatis eius hoc quoque indicium nec obscurum nec latens, quod ludi
 Erat autem diritatis eius hoc quoque indicium nec obscurum nec latens, quod ludicris
 cruentis delectabatur et in circo sex vel septem aliquotiens vetitis certaminibus pugilum vicissim se concidentium perfusorumque sanguine specie ut lucratus ingentia laetabatur.
 ',
-            $report->deleteAllReports($text)
+            $report->deleteAllReports($text, $botName)
         );
     }
 }
