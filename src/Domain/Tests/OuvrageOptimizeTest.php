@@ -188,16 +188,18 @@ class OuvrageOptimizeTest extends TestCase
                 ['title' => '[[Fubar]]'],
                 '{{Ouvrage|titre=[[Fubar]]|éditeur=|année=|isbn=}}',
             ],
-            [
-                // {{lang}} + [[ ]]
-                ['title' => '{{lang|en|[[Fubar]]}}'],
-                '{{Ouvrage|langue=en|titre=[[Fubar]]|éditeur=|année=|isbn=}}',
-            ],
-            [
-                // {{lang}}
-                ['title' => '{{lang|en|fubar}}'],
-                '{{Ouvrage|langue=en|titre=Fubar|éditeur=|année=|isbn=}}',
-            ],
+//            [
+//                // desactivé (livre FR avec titre EN)
+//                // {{lang}} + [[ ]]
+//                ['title' => '{{lang|en|[[Fubar]]}}'],
+//                '{{Ouvrage|langue=en|titre=[[Fubar]]|éditeur=|année=|isbn=}}',
+//            ],
+//            [
+//                // desactivé (livre FR avec titre EN)
+//                // {{lang}}
+//                ['title' => '{{lang|en|fubar}}'],
+//                '{{Ouvrage|langue=en|titre=Fubar|éditeur=|année=|isbn=}}',
+//            ],
             [
                 // lien externe -> déplacé
                 ['title' => '[http://google.fr/bla Fubar]'],

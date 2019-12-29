@@ -17,8 +17,9 @@ use App\Domain\Utils\TextUtil;
 use App\Domain\Utils\WikiTextUtil;
 use App\Infrastructure\FileManager;
 use Exception;
-use function mb_strlen;
 use Throwable;
+
+use function mb_strlen;
 
 /**
  * Legacy.
@@ -61,20 +62,17 @@ class OuvrageOptimize
 
         $this->processAuthors();
 
+        $this->processLang();
+        $this->processLang('langue originale');
+
         $this->processTitle();
         $this->processEditeur();
         $this->processDates();
         $this->externalTemplates();
         $this->predictFormatByPattern();
 
-        //        $this->convertRoman('tome');
-        //        $this->convertRoman('volume');
-
         $this->processIsbn();
         $this->processBnf();
-
-        $this->processLang();
-        $this->processLang('langue originale');
 
         $this->processLocation(); // 'lieu'
 
@@ -334,7 +332,6 @@ class OuvrageOptimize
      * Find year of book publication.
      *
      * @return int|null
-     *
      * @throws Exception
      */
     private function findBookYear(): ?int
@@ -456,7 +453,7 @@ class OuvrageOptimize
      *
      * @throws Exception
      */
-    private function langInTitle()
+    private function langInTitle(): void
     {
         if (preg_match(
                 '#^{{ ?(?:lang|langue) ?\| ?([a-z-]{2,5}) ?\| ?(?:texte=)?([^{}=]+)(?:\|dir=rtl)?}}$#i',
@@ -466,12 +463,21 @@ class OuvrageOptimize
         ) {
             $lang = trim($matches[1]);
             $newtitre = str_replace($matches[0], trim($matches[2]), $this->getParam('titre'));
-            $this->setParam('titre', $newtitre);
-            $this->log('°titre');
-            if (self::WIKI_LANGUAGE !== $lang && empty($this->getParam('langue'))) {
-                $this->setParam('langue', $lang);
-                $this->log('+langue='.$lang);
+
+            // problème : titre anglais de livre français
+            // => conversion {{lang}} du titre seulement si langue= défini
+            // opti : restreindre à ISBN zone 2 fr ?
+            if ($lang === $this->getParam('langue')) {
+                $this->setParam('titre', $newtitre);
+                $this->log('°titre');
             }
+
+             // desactivé à cause de l'exception décrite ci-dessus
+             // si langue=VIDE : ajout langue= à partir de langue titre
+//            if (self::WIKI_LANGUAGE !== $lang && empty($this->getParam('langue'))) {
+//                $this->setParam('langue', $lang);
+//                $this->log('+langue='.$lang);
+//            }
         }
     }
 
@@ -545,7 +551,6 @@ class OuvrageOptimize
      * @param $name
      *
      * @return string|null
-     *
      * @throws Exception
      */
     private function getParam(string $name): ?string
@@ -690,7 +695,7 @@ class OuvrageOptimize
         // todo detect duplication ouvrage/plume dans externalTemplate ?
         if (!empty($this->getParam('plume'))) {
             $plumeValue = $this->getParam('plume');
-            $this->ouvrage->externalTemplates[] = (object) [
+            $this->ouvrage->externalTemplates[] = (object)[
                 'template' => 'plume',
                 '1' => $plumeValue,
                 'raw' => '{{nobr|. {{plume}}}}',
@@ -705,7 +710,7 @@ class OuvrageOptimize
             // todo bug {{citation bloc}} si "=" ou "|" dans texte de citation
             // Legacy : use {{début citation}} ... {{fin citation}}
             if (preg_match('#[=|]#', $extrait) > 0) {
-                $this->ouvrage->externalTemplates[] = (object) [
+                $this->ouvrage->externalTemplates[] = (object)[
                     'template' => 'début citation',
                     '1' => '',
                     'raw' => '{{début citation}}'.$extrait.'{{fin citation}}',
@@ -714,7 +719,7 @@ class OuvrageOptimize
                 $this->notCosmetic = true;
             } else {
                 // StdClass
-                $this->ouvrage->externalTemplates[] = (object) [
+                $this->ouvrage->externalTemplates[] = (object)[
                     'template' => 'citation bloc',
                     '1' => $extrait,
                     'raw' => '{{extrait|'.$extrait.'}}',
@@ -730,7 +735,7 @@ class OuvrageOptimize
         // "commentaire=bla" => {{Commentaire biblio|1=bla}}
         if (!empty($this->getParam('commentaire'))) {
             $commentaire = $this->getParam('commentaire');
-            $this->ouvrage->externalTemplates[] = (object) [
+            $this->ouvrage->externalTemplates[] = (object)[
                 'template' => 'commentaire biblio',
                 '1' => $commentaire,
                 'raw' => '{{commentaire biblio|'.$commentaire.'}}',
@@ -792,7 +797,6 @@ class OuvrageOptimize
 
     /**
      * @return bool
-     *
      * @throws Exception
      */
     public function checkMajorEdit(): bool
