@@ -26,9 +26,6 @@ $botName = 'ZiziBot';
 
 $wiki = ServiceFactory::wikiApi();
 $pages = $wiki->newPageListGetter()->getPageListFromCategoryName('Catégorie:Signalement_'.$botName);
-if(!$pages) {
-    throw new \Exception("rien trouvé dans catégorie");
-}
 $pages = $pages->toArray();
 $res = [];
 foreach ($pages as $page){
@@ -54,6 +51,10 @@ foreach ($talkTitles as $talkTitle) {
 
     $talkAction = new WikiPageAction($wiki, $talkTitle);
     $talkText = $talkAction->getText();
+    if(empty($talkText)){
+        echo "No text\n";
+        continue;
+    }
 
     $errors = $report->getReport($talkText);
     if (empty($errors)) {
