@@ -34,10 +34,18 @@ class WikiPageActionTest extends TestCase
     {
         return [
             [
-                'zzzzzzz {{Ouvrage|langue=|titre=bla}} zzzz {{de}} {{Ouvrage|langue=|titre=bla}} zerqsdfqs',
+                // saut de ligne {{en}} \n{{ouvrage}}
+                "zzzzzzz {{Ouvrage|langue=|titre=bla}} zzzz {{de}}
+{{Ouvrage|langue=|titre=bla}} zerqsdfqs",
                 '{{Ouvrage|langue=|titre=bla}}',
                 '{{Ouvrage|langue=|titre=BLO}}',
-                'zzzzzzz {{Ouvrage|langue=de|titre=BLO}} zzzz {{Ouvrage|langue=de|titre=BLO}} zerqsdfqs',
+                "zzzzzzz {{Ouvrage|langue=de|titre=BLO}} zzzz {{Ouvrage|langue=de|titre=BLO}} zerqsdfqs",
+            ],
+            [
+                'zzzzzzz {{ouvrage|titre=ping}} aaa {{Ouvrage|langue=|titre=bla}} zzzz {{de}} {{Ouvrage|langue=|titre=bla}} zerqsdfqs',
+                '{{Ouvrage|langue=|titre=bla}}',
+                '{{Ouvrage|langue=|titre=BLO}}',
+                'zzzzzzz {{ouvrage|titre=ping}} aaa {{Ouvrage|langue=de|titre=BLO}} zzzz {{Ouvrage|langue=de|titre=BLO}} zerqsdfqs',
             ],
             [
                 'zzzzzzz {{Ouvrage|titre=bla}} zzzz {{en}} {{Ouvrage|titre=bla}} zerqsdfqs',

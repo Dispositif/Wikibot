@@ -124,7 +124,7 @@ class WikiPageAction
     public function getRedirect(): ?string
     {
         if ($this->getText() && preg_match('/^#REDIRECT(?:ION)? ?\[\[([^]]+)]]/i', $this->getText(), $matches)) {
-            return (string) trim($matches[1]);
+            return (string)trim($matches[1]);
         }
 
         return null;
@@ -156,7 +156,6 @@ class WikiPageAction
      * @param string $text
      *
      * @return bool
-     *
      * @throws Exception
      */
     public function createPage(string $text, ?EditInfo $editInfo = null): bool
@@ -179,7 +178,6 @@ class WikiPageAction
      * @param EditInfo $editInfo
      *
      * @return bool success
-     *
      * @throws Exception
      */
     public function addToBottomOrCreatePage(string $addText, EditInfo $editInfo): bool
@@ -198,7 +196,6 @@ class WikiPageAction
      * @param EditInfo $editInfo
      *
      * @return bool success
-     *
      * @throws Exception
      */
     public function addToBottomOfThePage(string $addText, EditInfo $editInfo): bool
@@ -225,6 +222,7 @@ class WikiPageAction
      */
     public static function replaceTemplateInText(string $text, string $tplOrigin, string $tplReplace): string
     {
+        // "{{en}} {{zh}} {{ouvrage...}}"
         if (preg_match_all(
             '#(?<langTemp>{{[a-z][a-z]}} ?{{[a-z][a-z]}}) ?'.preg_quote($tplOrigin, '#').'#i',
             $text,
@@ -238,8 +236,12 @@ class WikiPageAction
         }
 
         // hack // todo: autres patterns {{en}} ?
-        if (preg_match_all('#(?<langTemp>{{(?<lang>[a-z][a-z])}} *)?'.preg_quote($tplOrigin, '#').'#i', $text, $matches)
-            > 0
+        // OK : {{en}} \n {{ouvrage}}
+        if (preg_match_all(
+                "#(?<langTemp>{{(?<lang>[a-z][a-z])}} *\n?)?".preg_quote($tplOrigin, '#').'#i',
+                $text,
+                $matches
+            ) > 0
         ) {
             foreach ($matches[0] as $num => $mention) {
                 $lang = $matches['lang'][$num] ?? '';
@@ -298,7 +300,6 @@ class WikiPageAction
      * @param $text string
      *
      * @return array
-     *
      * @throws Exception
      */
     public function extractRefFromText(string $text): ?array
@@ -306,7 +307,7 @@ class WikiPageAction
         $parser = new TagParser(); // todo ParserFactory
         $refs = $parser->importHtml($text)->getRefValues(); // []
 
-        return (array) $refs;
+        return (array)$refs;
     }
 
     /**
