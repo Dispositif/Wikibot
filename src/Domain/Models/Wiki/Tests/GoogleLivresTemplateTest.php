@@ -57,6 +57,11 @@ class GoogleLivresTemplateTest extends TestCase
                 'https://books.google.com/books?id=WH4rAAAAYAAJ',
             ],
             [
+                // pattern rare : https://books.google.com/?id=-0h134NR1s0C
+                'https://books.google.com/?id=-0h134NR1s0C&pg=PA167&lpg=PA167&dq=Prairie+Shores+apartments+Michael+Reese#v=onepage&q=Prairie%20Shores%20apartments%20Michael%20Reese&f=false',
+                'https://books.google.com/books?id=-0h134NR1s0C&pg=PA167&dq=Prairie+Shores+apartments+Michael+Reese'
+            ],
+            [
                 // frontcover
                 'https://books.google.fr/books?id=lcHcXrVhRUUC&printsec=frontcover&hl=fr&source=gbs_ge_summary_r&cad=0#v=onepage&q&f=false',
                 'https://books.google.fr/books?id=lcHcXrVhRUUC&printsec=frontcover',
@@ -120,7 +125,7 @@ class GoogleLivresTemplateTest extends TestCase
             [
                 // surlignage
                 'https://books.google.fr/books?id=pbspjvZst5UC&pg=PA395&lpg=PA395&dq=D%C3%A9cret-Loi+10+septembre+1926&source=bl&ots=kiCzMrHO7b&sig=Jxt2Ybpig7Oo-Mtuzgp_sL5ipQ4&hl=fr&sa=X&ei=6SMLU_zIDarL0AX75YAI&ved=0CFEQ6AEwBA#v=onepage&q=D%C3%A9cret-Loi%2010%20septembre%201926&f=false',
-                '{{Google Livres|pbspjvZst5UC|page=395|surligne=D%C3%A9cret-Loi+10+septembre+1926}}',
+                '{{Google Livres|pbspjvZst5UC|page=395|surligne=Décret-Loi+10+septembre+1926}}',
             ],
         ];
     }

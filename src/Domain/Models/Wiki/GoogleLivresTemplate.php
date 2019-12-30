@@ -63,7 +63,6 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
      * @param string $url
      *
      * @return GoogleLivresTemplate|null
-     *
      * @throws Exception
      */
     public static function createFromURL(string $url): ?self
@@ -121,10 +120,18 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
 
         if (!empty($gooData['dq']) || !empty($gooData['q'])) {
             $data['surligne'] = $gooData['dq'] ?? $gooData['q'];
-            $data['surligne'] = urlencode($data['surligne']);
+            $data['surligne'] = self::googleUrlEncode($data['surligne']);
         }
 
         return $data;
+    }
+
+    /**
+     * Instead of url_encode(). No UTF-8 encoding.
+     */
+    private static function googleUrlEncode(string $str): string
+    {
+        return str_replace(' ', '+', trim(urldecode($str)));
     }
 
     /**
@@ -209,7 +216,7 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
      */
     public static function isGoogleBookURL(string $text): bool
     {
-        if (preg_match('#^https?://(books|play)\.google\.[a-z]{2,3}/books(/reader)?\?id=#i', $text) > 0) {
+        if (preg_match('#^https?://(books|play)\.google\.[a-z]{2,3}/(books)?(/reader)?\?id=#i', $text) > 0) {
             return true;
         }
 
