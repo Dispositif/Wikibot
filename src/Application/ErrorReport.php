@@ -28,7 +28,8 @@ class ErrorReport
                 $matches
             ) > 0
         ) {
-            return $matches[1];
+            // FIXED zizibot : des '<nowiki>' supplémentaires ajoutés à quelques rapports
+            return str_replace('<nowiki>','', $matches[1]);
         }
 
         return null;

@@ -27,8 +27,10 @@ $botName = 'ZiziBot';
 $wiki = ServiceFactory::wikiApi();
 $pages = $wiki->newPageListGetter()->getPageListFromCategoryName('Catégorie:Signalement_'.$botName);
 $pages = $pages->toArray();
+arsort($pages); // ordre Z->A pour pages récentes en premier
+
 $res = [];
-foreach ($pages as $page){
+foreach ($pages as $page) {
     /**
      * @var $page Page
      */
@@ -40,29 +42,33 @@ foreach ($pages as $page){
 $talkTitles = $res;
 echo count($res)." articles à vérifier\n";
 $report = new ErrorReport();
-// Get raw list of articles
-$filename = __DIR__.'/../resources/list_errorReport_cleaning.txt';
-$talkTitles = file($filename);
-
 foreach ($talkTitles as $talkTitle) {
-    $talkTitle = str_replace('Talk:','Discussion:', $talkTitle);
+    $talkTitle = str_replace('Talk:', 'Discussion:', $talkTitle);
     sleep(10);
     echo "$talkTitle \n";
 
     $talkAction = new WikiPageAction($wiki, $talkTitle);
     $talkText = $talkAction->getText();
-    if(empty($talkText)){
+    if (empty($talkText)) {
         echo "No text\n";
         continue;
     }
 
     $errors = $report->getReport($talkText);
+
+    // HACK provisoire pour message erroné sans liste
+    // https://fr.wikipedia.org/w/index.php?title=Discussion:Au_D%C3%A9jeuner&oldid=165292584
+    if (empty($errors) && preg_match('#== Ouvrage avec erreur de paramètre =#', $talkText) > 0) {
+        echo "Message d'erreur buggé\n";
+        goto deletePDmessage;
+    }
+
     if (empty($errors)) {
         echo "no errors\n";
         continue;
     }
 
-    $mainTitle = str_replace('Talk:', '', $talkTitle);
+    $mainTitle = str_replace('Discussion:', '', $talkTitle);
     $articleAction = new WikiPageAction($wiki, $mainTitle);
     $articleText = $articleAction->getText();
     $count = $report->countErrorInText($errors, $articleText);
@@ -73,9 +79,12 @@ foreach ($talkTitles as $talkTitle) {
     }
 
     // suppression message PD
+    deletePDmessage:
     echo $taskName."\n";
     $newText = $report->deleteAllReports($talkText, $botName);
-    $result = $talkAction->editPage($newText, new EditInfo($taskName, false, true));
-    dump($result);
-    sleep(180);
+    if ($newText !== $talkText) {
+        $result = $talkAction->editPage($newText, new EditInfo($taskName, false, true));
+        dump($result);
+        sleep(180);
+    }
 }
