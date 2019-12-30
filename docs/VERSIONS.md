@@ -1,5 +1,6 @@
 ## Versions des règles de corrections/complètement ##
 
+* 0.57 : bug {{en}}\n{{ouvrage}} + désactive prédiction 'langue' selon 'titre={{lang|...}'
 * 0.56 : BnF +langue originale +titre original
 * 0.55 : formatage ISBN notcosmetic=true
 * 0.53 : ISBN-10 déplacé dans 'isbn2'
