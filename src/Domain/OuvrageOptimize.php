@@ -722,9 +722,9 @@ class OuvrageOptimize
                 $this->ouvrage->externalTemplates[] = (object)[
                     'template' => 'citation bloc',
                     '1' => $extrait,
-                    'raw' => '{{extrait|'.$extrait.'}}',
+                    'raw' => '{{citation bloc|'.$extrait.'}}',
                 ];
-                $this->log('{extrait}');
+                $this->log('{citation bloc}');
                 $this->notCosmetic = true;
             }
 

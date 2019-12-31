@@ -43,7 +43,7 @@ class OuvrageOptimizeTest extends TestCase
             [
                 // prédiction paramètre
                 ['citation' => 'blabla'],
-                '{{Ouvrage|titre=|éditeur=|année=|isbn=}}{{extrait|blabla}}',
+                '{{Ouvrage|titre=|éditeur=|année=|isbn=}}{{citation bloc|blabla}}',
             ],
             [
                 // année vide retirée si date=bla
