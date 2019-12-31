@@ -682,7 +682,7 @@ class OuvrageOptimize
 
     /**
      * TODO move+refac
-     * TODO PlumeTemplate CommentaireBiblioTemplate  ExtraitTemplate
+     * TODO CommentaireBiblioTemplate  ExtraitTemplate
      * Probleme {{commentaire biblio}} <> {{commentaire biblio SRL}}
      * Generate supplementary templates from obsoletes params.
      *
@@ -690,20 +690,6 @@ class OuvrageOptimize
      */
     protected function externalTemplates()
     {
-        // "plume=bla" => {{plume}}
-        // =oui selon doc, mais testé OK avec "non"
-        // todo detect duplication ouvrage/plume dans externalTemplate ?
-        if (!empty($this->getParam('plume'))) {
-            $plumeValue = $this->getParam('plume');
-            $this->ouvrage->externalTemplates[] = (object)[
-                'template' => 'plume',
-                '1' => $plumeValue,
-                'raw' => '{{nobr|. {{plume}}}}',
-            ];
-            $this->unsetParam('plume');
-            $this->log('{plume}');
-        }
-
         // "extrait=bla" => {{citation bloc|bla}}
         if (!empty($this->getParam('extrait'))) {
             $extrait = $this->getParam('extrait');
@@ -713,18 +699,18 @@ class OuvrageOptimize
                 $this->ouvrage->externalTemplates[] = (object)[
                     'template' => 'début citation',
                     '1' => '',
-                    'raw' => '{{début citation}}'.$extrait.'{{fin citation}}',
+                    'raw' => '{{Début citation}}'.$extrait.'{{Fin citation}}',
                 ];
-                $this->log('{début citation}');
+                $this->log('{Début citation}');
                 $this->notCosmetic = true;
             } else {
                 // StdClass
                 $this->ouvrage->externalTemplates[] = (object)[
                     'template' => 'citation bloc',
                     '1' => $extrait,
-                    'raw' => '{{citation bloc|'.$extrait.'}}',
+                    'raw' => '{{Citation bloc|'.$extrait.'}}',
                 ];
-                $this->log('{citation bloc}');
+                $this->log('{Citation bloc}');
                 $this->notCosmetic = true;
             }
 
@@ -738,7 +724,7 @@ class OuvrageOptimize
             $this->ouvrage->externalTemplates[] = (object)[
                 'template' => 'commentaire biblio',
                 '1' => $commentaire,
-                'raw' => '{{commentaire biblio|'.$commentaire.'}}',
+                'raw' => '{{Commentaire biblio|'.$commentaire.'}}',
             ];
             $this->unsetParam('commentaire');
             $this->log('{commentaire}');

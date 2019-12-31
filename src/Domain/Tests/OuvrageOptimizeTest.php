@@ -43,7 +43,7 @@ class OuvrageOptimizeTest extends TestCase
             [
                 // prédiction paramètre
                 ['citation' => 'blabla'],
-                '{{Ouvrage|titre=|éditeur=|année=|isbn=}}{{citation bloc|blabla}}',
+                '{{Ouvrage|titre=|éditeur=|année=|isbn=}}{{Citation bloc|blabla}}',
             ],
             [
                 // année vide retirée si date=bla
@@ -67,7 +67,7 @@ class OuvrageOptimizeTest extends TestCase
                     'commentaire' => 'bla',
                     'plume' => 'oui',
                 ],
-                '{{Ouvrage|titre=|éditeur=|année=|isbn=}}{{nobr|. {{plume}}}}{{commentaire biblio|bla}}',
+                '{{Ouvrage|titre=|éditeur=|année=|isbn=|plume=oui}}{{Commentaire biblio|bla}}',
             ],
             [
                 // langue FR : HOTFIX 22 nov 2019 "ne retire pas langue=fr" ajouté par humain

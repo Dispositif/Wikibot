@@ -12,8 +12,8 @@ namespace App\Domain\Models\Wiki;
 /**
  * Parameters names changed on hydration (alias)
  * Raw datas : Value are not normalized (see rather OuvrageClean class for optimized values)
- * Note : Avec serialization(), extraction de plume=,extrait=,commentaire= (obsolètes)
- * sur {{plume}}, {{citationbloc}},{{commentaire biblio}}...
+ * Note : Avec serialization(), extraction de extrait=,commentaire= (obsolètes)
+ * sur {{citationbloc}},{{commentaire biblio}}...
  * Class OuvrageTemplate.
  */
 class OuvrageTemplate extends AbstractWikiTemplate
@@ -372,7 +372,7 @@ class OuvrageTemplate extends AbstractWikiTemplate
             'libellé',
             'référence',
             'référence simplifiée',
-            'plume', // obsolete {{plume}}
+            'plume', // obsolète ou pas? (déc. 2019)
             'extrait', // obsolete => {{citation bloc}}
             'commentaire', // obsolete => {{commentaire biblio}}
         ];
