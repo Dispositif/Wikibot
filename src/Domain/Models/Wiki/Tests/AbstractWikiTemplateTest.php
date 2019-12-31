@@ -10,11 +10,33 @@ declare(strict_types=1);
 namespace App\Domain\Models\Wiki\Tests;
 
 use App\Domain\Models\Wiki\LienWebTemplate;
+use App\Domain\Models\Wiki\OuvrageTemplate;
 use Exception;
 use PHPUnit\Framework\TestCase;
 
 class AbstractWikiTemplateTest extends TestCase
 {
+    public function testOuvrageSerialize()
+    {
+        $ouvrage = new OuvrageTemplate();
+        $ouvrage->hydrate(
+            [
+                'nom1' => 'Michou',
+                'prénom1' => 'Bob',
+                'titre' => 'Au soleil',
+            ]
+        );
+        $ouvrage->setParam('auteur2', 'Sophie');
+        $this::assertSame(
+            '{{Ouvrage|nom1=Michou|auteur2=Sophie|prénom1=Bob|titre=Au soleil|éditeur=|année=|isbn=}}',
+            $ouvrage->serialize()
+        );
+        $this::assertSame(
+            '{{Ouvrage|prénom1=Bob|nom1=Michou|auteur2=Sophie|titre=Au soleil|éditeur=|année=|isbn=}}',
+            $ouvrage->serialize(true)
+        );
+    }
+
     /**
      * @throws Exception
      */
@@ -31,11 +53,14 @@ class AbstractWikiTemplateTest extends TestCase
         $lienWeb = new LienWebTemplate();
         $lienWeb->hydrate($data);
 
-        $actual = $lienWeb->serialize();
+        $this::assertEquals(
+            '{{lien web|auteur1=Bob|titre=Foo bar|url=http://google.com|date=2010-11-25|consulté le=}}',
+            $lienWeb->serialize(true)
+        );
 
         $this::assertEquals(
-            '{{lien web|url=http://google.com|auteur1=Bob|date=2010-11-25|titre=Foo bar|consulté le=}}',
-            $actual
+            '{{lien web|url=http://google.com|auteur1=Bob|date=2010-11-25|consulté le=|titre=Foo bar}}',
+            $lienWeb->serialize()
         );
 
         $lienWeb->userSeparator = "\n|";
@@ -44,8 +69,8 @@ class AbstractWikiTemplateTest extends TestCase
 |url=http://google.com
 |auteur1=Bob
 |date=2010-11-25
-|titre=Foo bar
 |consulté le=
+|titre=Foo bar
 }}',
             $lienWeb->serialize()
         );
@@ -129,8 +154,8 @@ class AbstractWikiTemplateTest extends TestCase
         );
 
         $this::assertEquals(
-            '{{lien web|url=|titre=|consulté le=}}',
-            $lienWeb->serialize()
+            '{{lien web|titre=|url=|consulté le=}}',
+            $lienWeb->serialize(true)
         );
     }
 
@@ -146,8 +171,8 @@ class AbstractWikiTemplateTest extends TestCase
         $lienWeb->setParamOrderByUser(['url', 'langue', 'titre']);
 
         $this::assertEquals(
-            '{{lien web|url=http://google.com|langue=fr|titre=|consulté le=}}',
-            $lienWeb->serialize()
+            '{{lien web|langue=fr|titre=|url=http://google.com|consulté le=}}',
+            $lienWeb->serialize(true)
         );
     }
 }

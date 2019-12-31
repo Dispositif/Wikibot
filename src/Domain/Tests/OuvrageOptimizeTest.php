@@ -140,7 +140,7 @@ class OuvrageOptimizeTest extends TestCase
 
         $optimized = (new OuvrageOptimize($origin))->doTasks()->getOuvrage();
         $this::assertSame(
-            '{{Ouvrage|id=ZE|langue=en|prénom1=Ernest|nom1=Nègre|titre=Toponymie|sous-titre=France|tome=3|éditeur=|année=|passage=15-27|isbn=978-2-600-02884-4|isbn2=2-600-02884-6}}',
+            '{{Ouvrage|langue=en|prénom1=Ernest|nom1=Nègre|titre=Toponymie|sous-titre=France|tome=3|éditeur=|année=|passage=15-27|isbn=978-2-600-02884-4|isbn2=2-600-02884-6|id=ZE}}',
             $optimized->serialize(true)
         );
     }

@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Models\Wiki;
 
+use App\Domain\Utils\ArrayProcessTrait;
 use App\Domain\Utils\TemplateParser;
 use App\Domain\Utils\WikiTextUtil;
 use DomainException;
@@ -21,6 +22,8 @@ use Throwable;
  */
 abstract class AbstractWikiTemplate extends AbstractParametersObject
 {
+    use ArrayProcessTrait;
+
     const MODEL_NAME = '';
 
     const PARAM_ALIAS = [];
@@ -72,7 +75,6 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
      * @param string $name
      *
      * @return string|null
-     *
      * @throws Exception
      */
     public function getParam(string $name): ?string
@@ -99,7 +101,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     {
         // todo verify/useless ?
         if (is_int($name)) {
-            $name = (string) $name;
+            $name = (string)$name;
         }
 
         // that parameter exists in template ?
@@ -135,7 +137,6 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
      * @param string $value
      *
      * @return AbstractParametersObject
-     *
      * @throws Exception
      */
     public function setParam(string $name, string $value): AbstractParametersObject
@@ -161,7 +162,6 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
      * @param $param
      *
      * @return string|null
-     *
      * @throws Exception
      */
     public function __get($param): ?string
@@ -209,7 +209,6 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
      * @param array $data
      *
      * @return AbstractWikiTemplate
-     *
      * @throws Exception
      */
     public function hydrate(array $data): self
@@ -220,7 +219,6 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
             }
         }
 
-        // todo?
         $this->setParamOrderByUser($data);
 
         return $this;
@@ -241,7 +239,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
         } catch (Throwable $e) {
             unset($e);
             // hack : 1 => "ouvrage collectif"
-            $name = (string) $name;
+            $name = (string)$name;
             $this->log[] = "parameter $name not found";
             $this->parametersErrorFromHydrate[$name] = $value;
 
@@ -345,14 +343,12 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
 
         // By user order
         if (!empty($this->paramOrderByUser) && !$cleanOrder) {
-            // merge parameter orders (can't use the array operator +)
-            $newOrder = $this->paramOrderByUser;
-            foreach ($this->parametersByOrder as $paramName) {
-                if (!in_array($paramName, $newOrder)) {
-                    $newOrder = array_merge($newOrder, [$paramName]);
-                }
-            }
-            foreach ($newOrder as $paramName) {
+            $completeFantasyOrder = $this->completeFantasyOrder(
+                $this->paramOrderByUser,
+                $this->parametersByOrder
+            );
+
+            foreach ($completeFantasyOrder as $paramName) {
                 if (isset($this->parametersValues[$paramName])) {
                     $renderParams[$paramName] = $this->parametersValues[$paramName];
                 }
