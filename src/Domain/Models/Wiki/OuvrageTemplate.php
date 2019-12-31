@@ -151,7 +151,6 @@ class OuvrageTemplate extends AbstractWikiTemplate
 
     protected $parametersByOrder
         = [
-            'id', // déconseillé. En tête pour visibilité, car utilisé comme ancre
             'langue',
             'langue originale',
             'auteurs', // déconseillé => auteur1, auteur2...
@@ -369,12 +368,13 @@ class OuvrageTemplate extends AbstractWikiTemplate
             'partie',
             'numéro chapitre',
             'titre chapitre',
+            'id', // déconseillé
             'libellé',
             'référence',
             'référence simplifiée',
+            'extrait', // obsolete? => {{citation bloc}}
+            'commentaire', // obsolete? => {{commentaire biblio}}
             'plume', // obsolète ou pas? (déc. 2019)
-            'extrait', // obsolete => {{citation bloc}}
-            'commentaire', // obsolete => {{commentaire biblio}}
         ];
 
     private $source;
