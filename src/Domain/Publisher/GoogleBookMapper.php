@@ -42,9 +42,9 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
             'titre' => $volume->title,
             'sous-titre' => $this->filterSubtitle($volume),
             'année' => $this->convertDate2Year($volume->publishedDate),
-            'pages totales' => (string) $volume->pageCount ?? null,
+            'pages totales' => (string)$volume->pageCount ?? null,
             'isbn' => $this->convertIsbn($volume),
-            'présentation en ligne' => $this->presentationEnLigne($volume),
+            //            'présentation en ligne' => $this->presentationEnLigne($volume),
             'lire en ligne' => $this->lireEnLigne($volume),
         ];
     }
@@ -79,7 +79,7 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
             return null;
         }
         if (preg_match('/[^0-9]?([12][0-9]{3})[^0-9]?/', $data, $matches) > 0) {
-            return (string) $matches[1];
+            return (string)$matches[1];
         }
 
         return null;
@@ -98,7 +98,7 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
         // so isbn-13 replace isbn-10
         // todo refac algo (if 2x isbn13?)
         $isbn = null;
-        $ids = (array) $volume->industryIdentifiers;
+        $ids = (array)$volume->industryIdentifiers;
         foreach ($ids as $id) {
             if (!isset($isbn) && in_array($id->type, ['ISBN_10', 'ISBN_13'])) {
                 $isbn = $id->identifier;
@@ -116,14 +116,14 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
      *
      * @return string|null
      */
-    private function presentationEnLigne(Volume $volume): ?string
-    {
-        if (empty($volume->id) || !in_array($volume->accessInfo->viewability, ['PARTIAL'])) {
-            return null;
-        }
-
-        return $this->returnGoogleRef($volume);
-    }
+    //    private function presentationEnLigne(Volume $volume): ?string
+    //    {
+    //        if (empty($volume->id) || !in_array($volume->accessInfo->viewability, ['PARTIAL'])) {
+    //            return null;
+    //        }
+    //
+    //        return $this->returnGoogleRef($volume);
+    //    }
 
     /**
      * @param Volume $volume
@@ -132,7 +132,7 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
      */
     private function lireEnLigne(Volume $volume): ?string
     {
-        if (empty($volume->id) || !in_array($volume->accessInfo->viewability, ['ALL_PAGES'])) {
+        if (empty($volume->id) || !in_array($volume->accessInfo->viewability, ['ALL_PAGES', 'PARTIAL'])) {
             return null;
         }
 

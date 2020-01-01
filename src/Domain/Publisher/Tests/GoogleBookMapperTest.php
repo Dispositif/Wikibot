@@ -31,7 +31,7 @@ class GoogleBookMapperTest extends TestCase
                 'année' => '1991',
                 'pages totales' => '',
                 'isbn' => '9782737309526',
-                'présentation en ligne' => null,
+//                'présentation en ligne' => null,
                 'lire en ligne' => null,
             ],
             $actual
