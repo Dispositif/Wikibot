@@ -125,21 +125,22 @@ class OuvrageOptimize
         $this->setParam('bnf', $bnf);
     }
 
-    private function convertRoman(string $param): void
-    {
-        $value = $this->getParam($param);
-        // note : strval() condition because intval('4c') = 4
-        if ($value && intval($value) > 0 && intval($value) <= 10 && strval(intval($value)) === $value) {
-            $number = abs(intval($value));
-            $roman = NumberUtil::arab2roman($number);
-            //            if ($number > 10) {
-            //                $roman = '{{'.$roman.'}}';
-            //            }
-            $this->setParam($param, $roman);
-            $this->log('romain');
-            $this->notCosmetic = true;
-        }
-    }
+//    private function convertRoman(string $param): void
+//    {
+//        $value = $this->getParam($param);
+//        // note : strval() condition because intval('4c') = 4
+          // opti : $number can also be of type double
+//        if ($value && intval($value) > 0 && intval($value) <= 10 && strval(intval($value)) === $value) {
+//            $number = abs(intval($value));
+//            $roman = NumberUtil::arab2roman($number);
+//            //            if ($number > 10) {
+//            //                $roman = '{{'.$roman.'}}';
+//            //            }
+//            $this->setParam($param, $roman);
+//            $this->log('romain');
+//            $this->notCosmetic = true;
+//        }
+//    }
 
     /**
      * @throws Exception
@@ -238,7 +239,7 @@ class OuvrageOptimize
 
         // ISBN-13 à partir de 2007
         $year = $this->findBookYear();
-        if ($year && $year < 2007 && 10 === strlen($this->stripIsbn($isbn))) {
+        if ($year !== null && $year < 2007 && 10 === strlen($this->stripIsbn($isbn))) {
             // juste mise en forme ISBN-10 pour 'isbn'
             try {
                 $isbnMachine = new IsbnFacade($isbn);
@@ -282,7 +283,7 @@ class OuvrageOptimize
 
         // Si $isbn13 et 'isbn2' correspond à ISBN-13 => suppression
         if (isset($isbn13)
-            && $this->getParam('isbn2')
+            && !empty($this->getParam('isbn2'))
             && $this->stripIsbn($this->getParam('isbn2')) === $this->stripIsbn($isbn13)
         ) {
             $this->unsetParam('isbn2');
@@ -297,7 +298,7 @@ class OuvrageOptimize
             try {
                 $isbn10pretty = $isbnMachine->format('ISBN-10');
                 if ($isbn10pretty !== $isbn) {
-                    //                    $this->notCosmetic = true;
+                    // $this->notCosmetic = true;
                 }
             } catch (\Throwable $e) {
                 unset($e);
@@ -486,7 +487,7 @@ class OuvrageOptimize
         // dewikification
         $params = ['date', 'année', 'mois', 'jour'];
         foreach ($params as $param) {
-            if (WikiTextUtil::isWikify(' '.$this->getParam($param))) {
+            if (!empty($this->getParam($param)) && WikiTextUtil::isWikify(' '.$this->getParam($param))) {
                 $this->setParam($param, WikiTextUtil::unWikify($this->getParam($param)));
             }
         }

@@ -47,7 +47,6 @@ class CompleteProcess
      * @var OuvrageTemplate
      */
     private $ouvrage;
-    private $continue = true;
 
     public function __construct(QueueInterface $queueAdapter)
     {
@@ -122,13 +121,14 @@ class CompleteProcess
      * Get raw string to complete from AMQP queue, SQL Select or file reading.
      *
      * @return string|null
+     * @throws \Exception
      */
     private function getNewRaw(): ?string
     {
         $raw = $this->queueAdapter->getNewRaw();
         if (!$raw) {
             echo "STOP: no more queue to process \n";
-            exit;
+            throw new \Exception('no more queue to process');
         }
 
         return $raw;
@@ -186,29 +186,29 @@ class CompleteProcess
         }
     }
 
-    private function onlineQuerySearch(string $query)
-    {
-        echo "sleep 40...";
-        sleep(20);
-        onlineQuerySearch:
-
-        try {
-            dump('GOOGLE SEARCH...');
-            //            $googleOuvrage = OuvrageFactory::GoogleFromIsbn($isbn);
-            $adapter = new GoogleBooksAdapter();
-            $data = $adapter->search('blabla');
-            dump($data);
-            die;
-            //            return $import->getOuvrage();
-            //            $this->completeOuvrage($googleOuvrage);
-        } catch (Throwable $e) {
-            echo "*** ERREUR GOOGLE QuerySearch *** ".$e->getMessage()."\n";
-            echo "sleep 30min";
-            sleep(60 * 30);
-            echo "Wake up\n";
-            goto onlineQuerySearch;
-        }
-    }
+//    private function onlineQuerySearch(string $query)
+//    {
+//        echo "sleep 40...";
+//        sleep(20);
+//        onlineQuerySearch:
+//
+//        try {
+//            dump('GOOGLE SEARCH...');
+//            //            $googleOuvrage = OuvrageFactory::GoogleFromIsbn($isbn);
+//            $adapter = new GoogleBooksAdapter();
+//            $data = $adapter->search('blabla');
+//            dump($data);
+//            //die;
+//            //            return $import->getOuvrage();
+//            //            $this->completeOuvrage($googleOuvrage);
+//        } catch (Throwable $e) {
+//            echo "*** ERREUR GOOGLE QuerySearch *** ".$e->getMessage()."\n";
+//            echo "sleep 30min";
+//            sleep(60 * 30);
+//            echo "Wake up\n";
+//            goto onlineQuerySearch;
+//        }
+//    }
 
     private function completeOuvrage(OuvrageTemplate $onlineOuvrage)
     {

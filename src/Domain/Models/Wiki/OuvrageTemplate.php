@@ -472,7 +472,7 @@ class OuvrageTemplate extends AbstractWikiTemplate
     public function getSpanInitial(): string
     {
         // Identifiant paramétré
-        if ($this->getParam('id')) {
+        if (null !== $this->getParam('id')) {
             return $this->getParam('id');
         }
 

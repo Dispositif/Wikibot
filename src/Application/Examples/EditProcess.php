@@ -305,7 +305,7 @@ class EditProcess
             '%s [%s/%s] %s %s : %s',
             $prefix,
             str_replace('v', '', $this->bot::getGitVersion()),
-            str_replace('v0.', '', $this->citationVersion),
+            str_replace(['v0.','v1.'], '', $this->citationVersion),
             self::TASK_NAME,
             $this->nbRows,
             $citeSummary

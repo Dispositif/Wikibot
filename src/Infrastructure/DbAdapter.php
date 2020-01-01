@@ -43,8 +43,7 @@ class DbAdapter implements QueueInterface
     /**
      * @param $datas
      *
-     * @return int|null
-     *
+     * @return array|bool
      * @throws Exception
      */
     public function insertTempRawOpti(array $datas)
@@ -164,8 +163,7 @@ class DbAdapter implements QueueInterface
             );
             $json = json_encode($data);
         } catch (Throwable $e) {
-            echo "*** SQL : No more queue to process \n";
-            exit();
+            throw new Exception('SQL : No more queue to process');
         }
 
         return $json;
