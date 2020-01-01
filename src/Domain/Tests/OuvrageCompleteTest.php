@@ -66,14 +66,14 @@ class OuvrageCompleteTest extends TestCase
             [
                 // Google partiel
                 '{{Ouvrage|titre=}}',
-                '{{Ouvrage|titre=|présentation en ligne=Google}}',
-                '{{Ouvrage|titre=|éditeur=|année=|isbn=|présentation en ligne=Google}}',
+                '{{Ouvrage|titre=|présentation en ligne=https://books.google.com/books?id=day56Sz-rEEC}}',
+                '{{Ouvrage|titre=|éditeur=|année=|isbn=|lire en ligne=https://books.google.com/books?id=day56Sz-rEEC}}',
             ],
             [
                 // Google total
                 '{{Ouvrage|titre=}}',
-                '{{Ouvrage|titre=|lire en ligne=Google}}',
-                '{{Ouvrage|titre=|éditeur=|année=|isbn=|lire en ligne=Google}}',
+                '{{Ouvrage|titre=|lire en ligne=https://books.google.com/books?id=day56Sz-rEEC}}',
+                '{{Ouvrage|titre=|éditeur=|année=|isbn=|lire en ligne=https://books.google.com/books?id=day56Sz-rEEC}}',
             ],
             [
                 //isbn invalide

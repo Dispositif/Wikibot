@@ -51,7 +51,6 @@ class OuvrageComplete
 
     /**
      * @return OuvrageTemplate
-     *
      * @throws Exception
      */
     public function getResult()
@@ -63,7 +62,6 @@ class OuvrageComplete
 
     /**
      * @return bool
-     *
      * @throws Exception
      */
     private function complete()
@@ -140,58 +138,37 @@ class OuvrageComplete
     }
 
     /**
-     * todo: test + refactor dirty logic/duplicate.
-     * todo: bistro specs
-     * Gestion doublon et accessibilité document Google Book.
+     * Complétion lire/présentation en ligne, si vide.
+     * Passe Google Book en accès partiel en 'lire en ligne' (sondage)
      *
      * @throws Exception
      */
     private function googleBookProcess()
     {
-        $lire = $this->origin->getParam('lire en ligne') ?? false;
-        if (!empty($lire) && GoogleLivresTemplate::isGoogleBookValue($lire)) {
-            if (!empty($this->book->getParam('présentation en ligne'))) {
-                // PARTIAL
-                // on déplace sur présentation
-                $this->origin->setParam('présentation en ligne', $lire);
-                $this->origin->unsetParam('lire en ligne');
-                $this->log('Google partiel');
-                $this->notCosmetic = true;
-
-                return; // ?
-            }
+        // si déjà lire/présentation en ligne => on touche à rien
+        if (!empty($this->origin->getParam('lire en ligne'))
+            || !empty($this->origin->getParam('présentation en ligne'))
+        ) {
+            return;
         }
+
         // completion basique
         $booklire = $this->book->getParam('lire en ligne');
-        if (empty($lire) && !empty($booklire)) {
+        if ($booklire) {
             $this->origin->setParam('lire en ligne', $booklire);
             $this->log('+lire en ligne');
             $this->notCosmetic = true;
             $this->major = true;
-        }
-        unset($lire, $booklire);
 
-        $presentation = $this->origin->getParam('présentation en ligne') ?? false;
+            return;
+        }
+
+        $presentation = $this->book->getParam('présentation en ligne') ?? false;
+        // Ajout du partial Google => mis en lire en ligne
+        // plutôt que 'présentation en ligne' selon sondage
         if (!empty($presentation) && GoogleLivresTemplate::isGoogleBookValue($presentation)) {
-            if (!empty($this->book->getParam('lire en ligne'))) {
-                // TOTAL
-                // on déplace sur lire en ligne
-                $this->origin->setParam('lire en ligne', $presentation);
-                $this->origin->unsetParam('présentation en ligne');
-                $this->log('Google accessible');
-                $this->notCosmetic = true;
-            }
-        }
-
-        // ajout de Google partial si présentation/lire sont vides
-        $bookpresentation = $this->book->getParam('présentation en ligne');
-        if (self::ADD_PRESENTATION_EN_LIGNE
-            && empty($this->origin->getParam('présentation en ligne'))
-            && empty($this->origin->getParam('lire en ligne'))
-            && !empty($bookpresentation)
-        ) {
-            $this->origin->setParam('présentation en ligne', $bookpresentation);
-            $this->log('+présentation en ligne');
+            $this->origin->setParam('lire en ligne', $presentation);
+            $this->log('+lire en ligne');
             $this->notCosmetic = true;
             $this->major = true;
         }
@@ -199,7 +176,6 @@ class OuvrageComplete
 
     /**
      * @return bool
-     *
      * @throws Exception
      */
     private function predictSameBook()
@@ -216,7 +192,6 @@ class OuvrageComplete
 
     /**
      * @return bool
-     *
      * @throws Exception
      */
     private function hasSameAuthors(): bool
@@ -244,7 +219,6 @@ class OuvrageComplete
      * @param OuvrageTemplate $ouv
      *
      * @return string
-     *
      * @throws Exception
      */
     private function authorsFromBook(OuvrageTemplate $ouv)
@@ -278,7 +252,6 @@ class OuvrageComplete
 
     /**
      * @return bool
-     *
      * @throws Exception
      */
     private function hasSameISBN(): bool
@@ -342,7 +315,6 @@ class OuvrageComplete
 
     /**
      * @return bool
-     *
      * @throws Exception
      */
     private function hasSameBookTitles(): bool
@@ -399,7 +371,6 @@ class OuvrageComplete
      * @param OuvrageTemplate $ouvrage
      *
      * @return string
-     *
      * @throws Exception
      */
     private function charsFromBigTitle(OuvrageTemplate $ouvrage): string

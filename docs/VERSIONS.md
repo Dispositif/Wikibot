@@ -1,5 +1,6 @@
 ## Versions des règles de corrections/complètement ##
 
+* 0.60 : Google Book partiel sur 'lire en ligne'
 * 0.59 : pas de conversion {Plume}, bug {extrait} (@Evynrhud)
 * 0.58 : améliore URL Google Books
 * 0.57 : bug {{en}}\n{{ouvrage}} + désactive prédiction 'langue' selon 'titre={{lang|...}' (@Archimëa)

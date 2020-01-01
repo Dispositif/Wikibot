@@ -402,6 +402,10 @@ class OuvrageTemplate extends AbstractWikiTemplate
      */
     public function serialize(?bool $cleanOrder = false): string
     {
+        // modifier ici le this->userSeparator
+//        if('|' === $this->userSeparator) {
+//            $this->userSeparator = ' |';
+//        }
         $serial = parent::serialize($cleanOrder);
         $serial = $this->anneeOrDateSerialize($serial);
         $serial = $this->stripIsbnBefore1970($serial);
