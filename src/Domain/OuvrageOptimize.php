@@ -12,7 +12,6 @@ namespace App\Domain;
 use App\Domain\Enums\Language;
 use App\Domain\Models\Wiki\GoogleLivresTemplate;
 use App\Domain\Models\Wiki\OuvrageTemplate;
-use App\Domain\Utils\NumberUtil;
 use App\Domain\Utils\TextUtil;
 use App\Domain\Utils\WikiTextUtil;
 use App\Infrastructure\FileManager;
@@ -125,22 +124,22 @@ class OuvrageOptimize
         $this->setParam('bnf', $bnf);
     }
 
-//    private function convertRoman(string $param): void
-//    {
-//        $value = $this->getParam($param);
-//        // note : strval() condition because intval('4c') = 4
-          // opti : $number can also be of type double
-//        if ($value && intval($value) > 0 && intval($value) <= 10 && strval(intval($value)) === $value) {
-//            $number = abs(intval($value));
-//            $roman = NumberUtil::arab2roman($number);
-//            //            if ($number > 10) {
-//            //                $roman = '{{'.$roman.'}}';
-//            //            }
-//            $this->setParam($param, $roman);
-//            $this->log('romain');
-//            $this->notCosmetic = true;
-//        }
-//    }
+    //    private function convertRoman(string $param): void
+    //    {
+    //        $value = $this->getParam($param);
+    //        // note : strval() condition because intval('4c') = 4
+    // opti : $number can also be of type double
+    //        if ($value && intval($value) > 0 && intval($value) <= 10 && strval(intval($value)) === $value) {
+    //            $number = abs(intval($value));
+    //            $roman = NumberUtil::arab2roman($number);
+    //            //            if ($number > 10) {
+    //            //                $roman = '{{'.$roman.'}}';
+    //            //            }
+    //            $this->setParam($param, $roman);
+    //            $this->log('romain');
+    //            $this->notCosmetic = true;
+    //        }
+    //    }
 
     /**
      * @throws Exception
@@ -215,6 +214,14 @@ class OuvrageOptimize
 
         if ($lang) {
             $lang2 = Language::all2wiki($lang);
+
+            // strip "langue originale=fr"
+            if ('langue originale' === $param && self::WIKI_LANGUAGE === $lang2
+                && (!$this->getParam('langue') || $this->getParam('langue') === $lang2)
+            ) {
+                $this->unsetParam('langue originale');
+                $this->log('-langue originale');
+            }
 
             if ($lang2 && $lang !== $lang2) {
                 $this->setParam($param, $lang2);
@@ -473,12 +480,12 @@ class OuvrageOptimize
                 $this->log('°titre');
             }
 
-             // desactivé à cause de l'exception décrite ci-dessus
-             // si langue=VIDE : ajout langue= à partir de langue titre
-//            if (self::WIKI_LANGUAGE !== $lang && empty($this->getParam('langue'))) {
-//                $this->setParam('langue', $lang);
-//                $this->log('+langue='.$lang);
-//            }
+            // desactivé à cause de l'exception décrite ci-dessus
+            // si langue=VIDE : ajout langue= à partir de langue titre
+            //            if (self::WIKI_LANGUAGE !== $lang && empty($this->getParam('langue'))) {
+            //                $this->setParam('langue', $lang);
+            //                $this->log('+langue='.$lang);
+            //            }
         }
     }
 
