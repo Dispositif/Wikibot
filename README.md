@@ -11,6 +11,7 @@ PHP CLI app for my Wikipedia robot.
 
 Correction and completion of bibliographic references on the french Wikipedia, using my legacy code
  and importing open data (GoogleBooks, OpenLibrary, Bibliothèque nationale de France...). 
+ See https://fr.wikipedia.org/wiki/Utilisateur:CodexBot 
  
 Please do not play with this package. These programs can actually modify the live wiki on the net, and proper
 wiki-etiquette should be followed before running it on any wiki. See https://en.wikipedia.org/wiki/WP:Bot
