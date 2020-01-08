@@ -18,6 +18,8 @@ namespace App\Domain\Models\Wiki;
  */
 class OuvrageTemplate extends AbstractWikiTemplate
 {
+    use InfoTrait;
+
     const MODEL_NAME = 'Ouvrage'; // todo
 
     const REQUIRED_PARAMETERS
