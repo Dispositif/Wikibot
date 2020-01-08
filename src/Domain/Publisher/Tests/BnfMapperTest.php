@@ -38,6 +38,13 @@ class BnfMapperTest extends TestCase
                 'éditeur' => 'Conseil international de la langue française / Université de la Réunion',
                 'date' => '1996',
                 'pages totales' => '622',
+                'infos' => [
+                    'source' => 'BnF',
+                    'sourceTag' => 'BnF:2019',
+                    'bnfAuteur1' => '12136586',
+                    'ISNIAuteur1' => '0000 0003 6089 3659',
+                    'yearsAuteur1' => '1948-....',
+                ],
             ],
             $actual
         );

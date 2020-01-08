@@ -11,7 +11,6 @@ namespace App\Domain;
 
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\Publisher\BookApiInterface;
-use App\Domain\Publisher\MapperInterface;
 use Exception;
 use LogicException;
 use Scriptotek\GoogleBooks\Volume;
@@ -61,8 +60,16 @@ class ImportOuvrageFromApi
          */
         $data = $this->mapping($volume);
 
+        if(isset($data['infos'])) {
+            $infos = $data['infos'];
+            unset($data['infos']);
+        }
+
         try {
             $this->ouvrage->hydrate($data);
+            if(isset($infos)) {
+                $this->ouvrage->setInfos($infos);
+            }
         } catch (Throwable $e) {
             throw new LogicException('Hydratation error '.$e->getMessage());
         }

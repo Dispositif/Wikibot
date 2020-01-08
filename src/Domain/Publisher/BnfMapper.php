@@ -97,6 +97,15 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
             'date' => $this->getPublishDate(),
             // 215
             'pages totales' => $this->convertPages(),
+
+            // hidden data
+            'infos' => [
+                'source' => 'BnF',
+                'sourceTag' => $this->sourceTag(),
+                'bnfAuteur1' => $this->xpath2string('//mxc:datafield[@tag="700"][1]/mxc:subfield[@code="3"][1]'),
+                'ISNIAuteur1' => $this->formatISNI($this->xpath2string('//mxc:datafield[@tag="700"][1]/mxc:subfield[@code="o"][1]')),
+                'yearsAuteur1' => $this->xpath2string('//mxc:datafield[@tag="700"][1]/mxc:subfield[@code="f"][1]'),
+            ],
         ];
     }
 
@@ -113,6 +122,19 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
 
         if (!empty($res)) {
             return implode($glue, $res);
+        }
+
+        return null;
+    }
+
+    private function formatISNI(?string $raw = ''): ?string
+    {
+        if (preg_match('#^0000(000[0-4])([0-9]{4})([0-9]{3}[0-9X])$#', $raw, $matches) > 0) {
+            return $raw;
+        }
+        // BnF curious format of ISNI
+        if (preg_match('#^ISNI0000(000[0-4])([0-9]{4})([0-9]{3}[0-9X])$#', $raw, $matches) > 0) {
+            return sprintf('0000 %s %s %s', $matches[1], $matches[2], $matches[3]);
         }
 
         return null;
@@ -221,6 +243,17 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
 
         if ($raw && preg_match('#ark:/[0-9]+/cb([0-9]+)#', $raw, $matches) > 0) {
             return (string)$matches[1];
+        }
+
+        return null;
+    }
+
+    private function sourceTag(): ?string
+    {
+        $raw = $this->xpath2string('//srw:extraRecordData[1]/ixm:attr[@name="LastModificationDate"][1]');
+        // 20190922
+        if ($raw && preg_match('#^([0-9]{4})[0-9]{4}$#', $raw, $matches) > 0) {
+            return sprintf('BnF:%s', $matches[1]);
         }
 
         return null;
