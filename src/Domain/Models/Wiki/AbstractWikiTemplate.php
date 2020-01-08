@@ -26,7 +26,8 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
 
     const MODEL_NAME = '';
 
-    const PARAM_ALIAS = [];
+    // commented to allow inherit from Interface in OuvrageTemplate
+    //const PARAM_ALIAS = [];
 
     /**
      * todo : modify to [a,b,c] ?
@@ -42,10 +43,9 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     /**
      * optional
      * Not a constant so it can be modified in constructor.
-     *
-     * @var array
+     * Commented so it can be inherit from trait in OuvrageTemplate
      */
-    protected $parametersByOrder = [];
+    //protected $parametersByOrder = [];
 
     protected $paramOrderByUser = [];
 
