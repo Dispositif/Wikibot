@@ -1,0 +1,30 @@
+{
+  "head" : {
+    "vars" : [ "work", "workLabel", "article", "edition", "isbn" ]
+  },
+  "results" : {
+    "bindings" : [ {
+      "edition" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q58883644"
+      },
+      "isbn" : {
+        "type" : "literal",
+        "value" : "978-2-08-124633-1"
+      },
+      "work" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q1734550"
+      },
+      "article" : {
+        "type" : "uri",
+        "value" : "https://fr.wikipedia.org/wiki/La_Carte_et_le_Territoire"
+      },
+      "workLabel" : {
+        "xml:lang" : "fr",
+        "type" : "literal",
+        "value" : "La Carte et le Territoire"
+      }
+    } ]
+  }
+}

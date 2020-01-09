@@ -33,6 +33,33 @@ class WikidataAdapter
         }
     }
 
+    public function findArticleByISBN13(string $isbn): ?array
+    {
+        // strip ISBN formating
+        $isbn = preg_replace('#[^0-9X]#', '', $isbn);
+        if(strlen($isbn) !== 13) {
+            throw new \DomainException('ISBN-13 format error');
+        }
+
+        $sparql = sprintf(
+            'select ?work ?workLabel ?article ?edition ?isbn
+WHERE {
+    ?work wdt:P31 wd:Q47461344 ; # instance of written work
+        wdt:P747 ?edition . # has edition (P747)
+    ?edition wdt:P212 $isbn . # ISBN-13 (P212)
+    FILTER(REGEX(REPLACE(?isbn,"-",""), "%s", "i")). # strip ISBN formating
+    ?article schema:about ?work ;
+    		schema:isPartOf <https://fr.wikipedia.org/> # frwiki sitelink
+    SERVICE wikibase:label {
+        bd:serviceParam wikibase:language "fr" .
+   }
+}',
+            $isbn
+        );
+
+        return $this->sparqlRequest($sparql);
+    }
+
     /**
      * Get WD item, sitelink, VIAF from search by ISNI (author)
      *
@@ -61,15 +88,7 @@ class WikidataAdapter
             $isni
         );
 
-        $result = $this->sparqlRequest($sparql);
-        if ($result && isset($result['results']) && isset($result['results'])
-            && isset($result['results']['bindings'])
-            && count($result['results']['bindings']) === 1
-        ) {
-            return $result['results']['bindings'][0];
-        }
-
-        return null;
+        return $this->sparqlRequest($sparql);
     }
 
     /**
@@ -99,7 +118,17 @@ class WikidataAdapter
         }
         $json = Normalizer::normalize($json);
 
-        return json_decode($json, true) ?? null;
+        $array = json_decode($json, true) ?? null;
+
+        // return first result only
+        if ($array && isset($array['results']) && isset($array['results'])
+            && isset($array['results']['bindings'])
+            && count($array['results']['bindings']) === 1
+        ) {
+            return $array['results']['bindings'][0];
+        }
+
+        return null;
     }
 
     /**
