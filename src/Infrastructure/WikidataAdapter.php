@@ -27,7 +27,7 @@ class WikidataAdapter
     {
         if (null === $client) {
             // lazy dependency factory :)
-            $this->client = new Client(['timeout' => 5]);
+            $this->client = new Client(['timeout' => 5, 'headers' => ['User-Agent' => getenv('USER_AGENT')]]);
         } else {
             $this->client = $client;
         }

@@ -34,6 +34,7 @@ class PublisherAction
         $client = new Client(
             [
                 'timeout' => 5,
+                'headers' => ['User-Agent' => getenv('USER_AGENT')],
             ]
         );
         $response = $client->get($this->url);

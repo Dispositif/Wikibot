@@ -32,14 +32,13 @@ class BnfAdapter extends AbstractBookApiAdapter implements BookApiInterface
     public function __construct()
     {
         $this->mapper = new BnfMapper();
-        $this->client = new Client(['timeout' => 5]);
+        $this->client = new Client(['timeout' => 5, 'headers' => ['User-Agent' => getenv('USER_AGENT')]]);
     }
 
     /**
      * @param string $isbn
      *
      * @return SimpleXMLElement|null
-     *
      * @throws Exception
      */
     public function getDataByIsbn(string $isbn): ?SimpleXMLElement
@@ -75,7 +74,7 @@ class BnfAdapter extends AbstractBookApiAdapter implements BookApiInterface
         }
 
         // note : multi-records filtered in BnFMapper
-        $nbResults = (int) $xml->xpath('//srw:numberOfRecords[1]')[0] ?? 0;
+        $nbResults = (int)$xml->xpath('//srw:numberOfRecords[1]')[0] ?? 0;
         if (0 === $nbResults) {
             return null;
         }

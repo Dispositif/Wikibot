@@ -71,7 +71,7 @@ class WstatImportTest extends TestCase
     public function testGetUrl()
     {
         $wstat = new WstatImport(
-            new Client(),
+            new Client(['timeout'=>5, 'headers' => ['User-Agent' => getenv('USER_AGENT')]]),
             [
                 'title' => 'Ouvrage',
                 'query' => 'inclusions',
