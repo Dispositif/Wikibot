@@ -275,6 +275,11 @@ class OuvrageOptimizeTest extends TestCase
     {
         return [
             [
+                // bug iblis/isbn Mexican ISBN
+                ['isbn'=>'970-07-6492-3'],
+                '{{Ouvrage|titre=|éditeur=|année=|isbn=978-970-07-6492-4|isbn2=970-07-6492-3}}',
+            ],
+            [
                 // no ISBN before 1970
                 ['année' => '1950'],
                 '{{Ouvrage|titre=|éditeur=|année=1950}}',

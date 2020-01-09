@@ -1,5 +1,6 @@
 ## Versions des règles de corrections/complètement ##
 
+* 0.62 : mise à jour plages ISBN (+bug ISBN mexicain)
 * 0.61 : langue originale=fr (@Arroser)
 * 0.60 : Google Book partiel sur 'lire en ligne'
 * 0.59 : pas de conversion {Plume}, bug {extrait} (@Evynrhud)
