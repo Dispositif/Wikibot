@@ -103,7 +103,9 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
                 'source' => 'BnF',
                 'sourceTag' => $this->sourceTag(),
                 'bnfAuteur1' => $this->xpath2string('//mxc:datafield[@tag="700"][1]/mxc:subfield[@code="3"][1]'),
-                'ISNIAuteur1' => $this->formatISNI($this->xpath2string('//mxc:datafield[@tag="700"][1]/mxc:subfield[@code="o"][1]')),
+                'ISNIAuteur1' => $this->formatISNI(
+                    $this->xpath2string('//mxc:datafield[@tag="700"][1]/mxc:subfield[@code="o"][1]')
+                ),
                 'yearsAuteur1' => $this->xpath2string('//mxc:datafield[@tag="700"][1]/mxc:subfield[@code="f"][1]'),
             ],
         ];
@@ -127,8 +129,11 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
         return null;
     }
 
-    private function formatISNI(?string $raw = ''): ?string
+    private function formatISNI(?string $raw = null): ?string
     {
+        if (!$raw) {
+            return null;
+        }
         if (preg_match('#^0000(000[0-4])([0-9]{4})([0-9]{3}[0-9X])$#', $raw, $matches) > 0) {
             return $raw;
         }

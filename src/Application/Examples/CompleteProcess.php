@@ -18,7 +18,6 @@ use App\Domain\OuvrageFactory;
 use App\Domain\OuvrageOptimize;
 use App\Domain\Utils\TemplateParser;
 use App\Infrastructure\DbAdapter;
-use App\Infrastructure\GoogleBooksAdapter;
 use Normalizer;
 use Throwable;
 
@@ -154,7 +153,12 @@ class CompleteProcess
                 $this->completeOuvrage($bnfOuvrage);
             }
         } catch (Throwable $e) {
-            echo "*** ERREUR BnF Isbn Search".$e->getMessage()."\n";
+            echo sprintf(
+                "*** ERREUR BnF Isbn Search %s %s %s \n",
+                $e->getMessage(),
+                $e->getFile(),
+                $e->getLine()
+            );
         }
 
         if (!isset($bnfOuvrage) || !$this->skipGoogle($bnfOuvrage)) {
@@ -186,29 +190,29 @@ class CompleteProcess
         }
     }
 
-//    private function onlineQuerySearch(string $query)
-//    {
-//        echo "sleep 40...";
-//        sleep(20);
-//        onlineQuerySearch:
-//
-//        try {
-//            dump('GOOGLE SEARCH...');
-//            //            $googleOuvrage = OuvrageFactory::GoogleFromIsbn($isbn);
-//            $adapter = new GoogleBooksAdapter();
-//            $data = $adapter->search('blabla');
-//            dump($data);
-//            //die;
-//            //            return $import->getOuvrage();
-//            //            $this->completeOuvrage($googleOuvrage);
-//        } catch (Throwable $e) {
-//            echo "*** ERREUR GOOGLE QuerySearch *** ".$e->getMessage()."\n";
-//            echo "sleep 30min";
-//            sleep(60 * 30);
-//            echo "Wake up\n";
-//            goto onlineQuerySearch;
-//        }
-//    }
+    //    private function onlineQuerySearch(string $query)
+    //    {
+    //        echo "sleep 40...";
+    //        sleep(20);
+    //        onlineQuerySearch:
+    //
+    //        try {
+    //            dump('GOOGLE SEARCH...');
+    //            //            $googleOuvrage = OuvrageFactory::GoogleFromIsbn($isbn);
+    //            $adapter = new GoogleBooksAdapter();
+    //            $data = $adapter->search('blabla');
+    //            dump($data);
+    //            //die;
+    //            //            return $import->getOuvrage();
+    //            //            $this->completeOuvrage($googleOuvrage);
+    //        } catch (Throwable $e) {
+    //            echo "*** ERREUR GOOGLE QuerySearch *** ".$e->getMessage()."\n";
+    //            echo "sleep 30min";
+    //            sleep(60 * 30);
+    //            echo "Wake up\n";
+    //            goto onlineQuerySearch;
+    //        }
+    //    }
 
     private function completeOuvrage(OuvrageTemplate $onlineOuvrage)
     {
