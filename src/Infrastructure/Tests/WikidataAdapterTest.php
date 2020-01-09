@@ -40,7 +40,7 @@ class WikidataAdapterTest extends TestCase
 
         $this::assertSame(
             'https://fr.wikipedia.org/wiki/La_Carte_et_le_Territoire',
-            $actual['article']['value']
+            $actual['articleBook']['value']
         );
 
         $this::assertSame(
@@ -71,7 +71,7 @@ class WikidataAdapterTest extends TestCase
 
         $this::assertSame(
             'https://fr.wikipedia.org/wiki/Michel_Houellebecq',
-            $actual['article']['value']
+            $actual['articleAuthor']['value']
         );
 
         $this::assertSame(

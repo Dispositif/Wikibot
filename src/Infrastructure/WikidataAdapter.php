@@ -37,18 +37,18 @@ class WikidataAdapter
     {
         // strip ISBN formating
         $isbn = preg_replace('#[^0-9X]#', '', $isbn);
-        if(strlen($isbn) !== 13) {
+        if (strlen($isbn) !== 13) {
             throw new \DomainException('ISBN-13 format error');
         }
 
         $sparql = sprintf(
-            'select ?work ?workLabel ?article ?edition ?isbn
+            'select ?work ?workLabel ?articleBook ?edition ?isbn
 WHERE {
     ?work wdt:P31 wd:Q47461344 ; # instance of written work
         wdt:P747 ?edition . # has edition (P747)
     ?edition wdt:P212 $isbn . # ISBN-13 (P212)
     FILTER(REGEX(REPLACE(?isbn,"-",""), "%s", "i")). # strip ISBN formating
-    ?article schema:about ?work ;
+    ?articleBook schema:about ?work ;
     		schema:isPartOf <https://fr.wikipedia.org/> # frwiki sitelink
     SERVICE wikibase:label {
         bd:serviceParam wikibase:language "fr" .
@@ -75,11 +75,11 @@ WHERE {
         }
 
         $sparql = sprintf(
-            'SELECT distinct ?item ?itemLabel ?article ?isni ?viaf WHERE {
+            'SELECT distinct ?item ?itemLabel ?articleAuthor ?isni ?viaf WHERE {
   ?item wdt:P213 "%s" .
   ?item wdt:P213 ?isni.
   ?item wdt:P214 ?viaf.
-  ?article schema:about ?item ;
+  ?articleAuthor schema:about ?item ;
 		schema:isPartOf <https://fr.wikipedia.org/>
   SERVICE wikibase:label {
     bd:serviceParam wikibase:language "fr" .
@@ -102,14 +102,16 @@ WHERE {
         $url = 'https://query.wikidata.org/bigdata/namespace/wdq/sparql?'.http_build_query(
                 [
                     'format' => 'json',
-                    'query' => urlencode($sparql),
+                    'query' => $sparql, // rawurlencode()
                 ]
             );
 
-        $response = $this->client->get($url);
+
         // todo : catch + return null ?
+        $response = $this->client->get($url);
+
         if (200 !== $response->getStatusCode()) {
-            throw new Exception('response error '.$response->getStatusCode());
+            throw new Exception('response error '.$response->getStatusCode().' '.$response->getReasonPhrase());
         }
         $json = $response->getBody()->getContents();
 

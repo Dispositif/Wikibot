@@ -23,7 +23,7 @@
           "type": "literal",
           "value": "66522427"
         },
-        "article": {
+        "articleAuthor": {
           "type": "uri",
           "value": "https://fr.wikipedia.org/wiki/Michel_Houellebecq"
         },
