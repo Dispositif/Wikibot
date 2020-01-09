@@ -319,12 +319,18 @@ class OuvrageComplete
      */
     private function hasSameBookTitles(): bool
     {
-        if ($this->charsFromBigTitle($this->origin) === $this->charsFromBigTitle($this->book)) {
+        $originBigTitle = $this->charsFromBigTitle($this->origin);
+        $bookBigTitle = $this->charsFromBigTitle($this->book);
+
+        if ($originBigTitle === $bookBigTitle) {
             return true;
         }
 
         // if there is only 2 chars of difference (i.e. typo error)
-        if (levenshtein($this->charsFromBigTitle($this->origin), $this->charsFromBigTitle($this->book)) <= 2) {
+        // strlen for resource management
+        if (strlen($originBigTitle) < 40 && strlen($bookBigTitle) < 40
+            && levenshtein($originBigTitle, $bookBigTitle) <= 2
+        ) {
             //            $this->log('typo titre?'); // TODO Normalize:: text from external API
 
             return true;
@@ -344,7 +350,7 @@ class OuvrageComplete
             return true;
         }
         // titre manquant sur wiki
-        if (empty($this->charsFromBigTitle($this->origin))) {
+        if (empty($originBigTitle)) {
             return true;
         }
 
