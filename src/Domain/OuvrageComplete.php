@@ -151,8 +151,9 @@ class OuvrageComplete
         if (empty($lienAuteur1)) {
             return;
         }
-        if(!empty($this->origin->getParam('lien auteur1'))){
+        if (!empty($this->origin->getParam('lien auteur1'))) {
             echo "lien auteur1 existe déjà\n";
+
             return;
         }
 
@@ -161,7 +162,7 @@ class OuvrageComplete
 
         // WP:"Paul Durand" — Bnf "Paul Durand,..."
         if (!empty($bookAuteur1) && !empty($originAuteur1)
-            && mb_strpos($bookAuteur1, $originAuteur1) !== false
+            && mb_strtolower($bookAuteur1) === mb_strtolower($originAuteur1)
         ) {
             $this->origin->setParam('lien auteur1', $lienAuteur1);
             $this->log('+lien auteur1');

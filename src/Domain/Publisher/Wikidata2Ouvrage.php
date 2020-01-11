@@ -100,6 +100,7 @@ class Wikidata2Ouvrage
                 ['', ' '],
                 $this->data['articleAuthor']['value']
             );
+            $lienTitre = urldecode($lienTitre);
             $this->ouvrage->setParam('lien auteur1', $lienTitre);
             dump('Wikidata2Ouvrage: +lien auteur1='.$lienTitre);
             $this->log[] = '+lien auteur1';
@@ -122,6 +123,7 @@ class Wikidata2Ouvrage
                 ['', ' '],
                 $this->data['articleBook']['value']
             );
+            $lienTitre = urldecode($lienTitre);
             $this->ouvrage->setParam('lien titre', $lienTitre);
             dump('Wikidata2Ouvrage: +lien titre='.$lienTitre);
             $this->log[] = '+lien titre';
