@@ -153,12 +153,10 @@ class CompleteProcess
             if (isset($bnfOuvrage) and $bnfOuvrage instanceof OuvrageTemplate) {
                 $this->completeOuvrage($bnfOuvrage);
 
-                // Wikidata requests
+                // Wikidata requests from $infos (ISBN/ISNI)
                 if(!empty($bnfOuvrage->getInfos())) {
-                    $wdComplete = new Wikidata2Ouvrage($bnfOuvrage);
                     dump('WIKIDATA...');
-//                    dump($bnfOuvrage->getInfos());
-                    $wdOuvrage = $wdComplete->getOuvrage();
+                    $wdComplete = new Wikidata2Ouvrage(clone $bnfOuvrage);
                     $this->completeOuvrage($wdComplete->getOuvrage());
                 }
             }

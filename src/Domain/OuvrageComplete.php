@@ -121,10 +121,9 @@ class OuvrageComplete
             }
         }
 
-        //        $this->dateComplete();
+        $this->processLienAuteur();
         $this->googleBookProcess();
         $this->processSousTitre();
-        $this->processLienAuteur();
 
         if ($this->notCosmetic && 'BnF' === $this->book->getSource()) {
             $this->log('(BnF)');
@@ -152,15 +151,24 @@ class OuvrageComplete
         if (empty($lienAuteur1)) {
             return;
         }
+        if(!empty($this->origin->getParam('lien auteur1'))){
+            echo "lien auteur1 existe déjà\n";
+            return;
+        }
 
         $originAuteur1 = $this->concatParamsAuteur1($this->origin);
         $bookAuteur1 = $this->concatParamsAuteur1($this->book);
 
-        if ($originAuteur1 === $bookAuteur1
-            && empty($this->origin->getParam('lien auteur1'))
+        // WP:"Paul Durand" — Bnf "Paul Durand,..."
+        if (!empty($bookAuteur1) && !empty($originAuteur1)
+            && mb_strpos($bookAuteur1, $originAuteur1) !== false
         ) {
             $this->origin->setParam('lien auteur1', $lienAuteur1);
-            $this->log('++lien auteur1');
+            $this->log('+lien auteur1');
+            $this->notCosmetic = true;
+            $this->major = true;
+        } else {
+            echo 'DEBUG : auteur1 pas identifié\n';
         }
         // todo: gérer "not same book" avec inversion auteur1/2 avant d'implémenter +lien auteur2
     }
@@ -286,7 +294,7 @@ class OuvrageComplete
             'nom4',
         ];
         foreach ($paramAuteurs as $param) {
-            $value = $ouv->getParam($param);
+            $value = str_replace(['.', ','], '', $ouv->getParam($param));
             // retire wikilien sur auteur
             if (!empty($value)) {
                 $text .= WikiTextUtil::unWikify($value);
@@ -354,7 +362,7 @@ class OuvrageComplete
             if (empty($this->origin->getParam('sous-titre'))) {
                 $this->origin->setParam('titre', $this->book->getParam('titre'));
                 $this->origin->setParam('sous-titre', $this->book->getParam('sous-titre'));
-                $this->log('>titre>sous-titre');
+                $this->log('>sous-titre');
             }
         }
     }

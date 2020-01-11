@@ -385,6 +385,9 @@ class EditProcess
         if (preg_match('#\+lire en ligne#', $data['modifs']) > 0) {
             $this->addSummaryTag('+lire en ligne');
         }
+        if (preg_match('#\+lien #', $data['modifs']) > 0) {
+            $this->addSummaryTag('wikif');
+        }
 
         if (preg_match('#\+éditeur#', $data['modifs']) > 0) {
             $this->addSummaryTag('éditeur');

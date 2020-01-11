@@ -7,14 +7,14 @@ Correction syntaxique des paramètres :
 * {{fait}} conversion des paramètres enwiki ({{m|cite book}}) [invisible]
 * {{fait}} correction de paramètres inconnus (prédiction) : erreur de frappe [https://fr.wikipedia.org/w/index.php?title=Saint_Fran%C3%A7ois_recevant_les_stigmates_(van_Eyck)&diff=prev&oldid=163864610]
 * {{fait}}  signalement paramètre inconnu : commentaire HTML [https://fr.wikipedia.org/w/index.php?title=Algorithme_de_Flajolet_et_Martin&diff=164533194&oldid=156125120] {{fait}} message en page discussion [https://fr.wikipedia.org/w/index.php?title=Discussion:Alfred_Jarry&diff=164501575&oldid=158959440]
-* {{fait}} extraction paramètres obsolètes (plume,extrait,commentaire) vers {{m|plume}}, {{m|citation bloc}}, {{m|commentaire biblio}}, {{m|début citation}}... [invisible]
+* {{fait}} extraction paramètres obsolètes (plume,extrait,commentaire) vers <strike>{plume}</strike>,{{m|citation bloc}},{{m|commentaire biblio}}, {{m|début citation}}... [invisible]
 
 Style : conservation partielle du style rédactionnel du modèle : {{pas fait}} ordre des paramètres, {{fait}}
 espacement/retour ligne, {{pas fait}} noms de paramètre. [https://fr.wikipedia.org/w/index.php?title=Alfred_de_Schamphela%C3%ABre&diff=prev&oldid=164495257]
 
 Complètement de données d'après des bases bibliographiques :
 * recherche par {{fait}}ISBN, {{pas fait}} lien Google, {{pas fait}}  auteur+titre
-* Bases interrogées : {{fait}} [[Google Books]], {{fait}} [[Open Library]], {{fait}}[[BnF]], {{mort}}[[WorldCat]],{{pas fait}}[[WikiData]]
+* Bases interrogées : {{fait}} [[Google Books]], {{fait}} [[Open Library]], {{fait}}[[BnF]], {{mort}}[[WorldCat]],{{fait}}[[WikiData]]
 * todo: décrire fiabilité données
 * {{fait}} comparaison titre/auteur pour fiabilité infos
 * Exemple : [https://fr.wikipedia.org/w/index.php?title=Anne-Sabine_Hedwiger&diff=prev&oldid=164866871]

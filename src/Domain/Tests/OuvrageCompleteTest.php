@@ -66,7 +66,7 @@ class OuvrageCompleteTest extends TestCase
             [
                 // Wikidata+BnF completion of sitelinks
                 '{{Ouvrage|prénom1=Paul|nom1=Durand|titre=La vie}}',
-                '{{Ouvrage|auteur1=Paul Durand|lien auteur1=Paul Durand (écrivain)|titre=La Vie|lien titre=La Vie (livre)}}',
+                '{{Ouvrage|prénom1=Paul|nom1=Durand|lien auteur1=Paul Durand (écrivain)|titre=La Vie|lien titre=La Vie (livre)}}',
                 '{{Ouvrage|prénom1=Paul|nom1=Durand|lien auteur1=Paul Durand (écrivain)|titre=La vie|lien titre=La Vie (livre)|éditeur=|année=|isbn=}}',
             ],
             [

@@ -89,9 +89,9 @@ class Wikidata2Ouvrage
      */
     private function completeAuthorLink(): void
     {
+        // Note : auteur1 non wikifié puisque venant de BnF
         if (!empty($this->data['articleAuthor']) && !empty($this->data['articleAuthor']['value'])
             && empty($this->ouvrage->getParam('lien auteur1'))
-            && false === WikiTextUtil::isWikify($this->ouvrage->getParam('auteur1'))
         ) {
             // ajout wikilien auteur1
             // "https://fr.wikipedia.org/wiki/Michel_Houellebecq"
