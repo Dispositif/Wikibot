@@ -75,10 +75,15 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
             'titre original' => $this->xpath2string('//mxc:datafield[@tag="200"]/mxc:subfield[@code="d"][1]'),
             // e : Complément du titre
             'sous-titre' => $this->xpath2string('//mxc:datafield[@tag="200"]/mxc:subfield[@code="e"][1]', ', '),
-            // f : responsabilité principale "Pierre Durand, Paul Dupond" (XML de dingue pour ça...)
-            'auteur1' => $this->xpath2string('//mxc:datafield[@tag="200"]/mxc:subfield[@code="f"]', ', '),
-            // g : Mention de responsabilité suivante
-            'auteur2' => $this->xpath2string('//mxc:datafield[@tag="200"]/mxc:subfield[@code="g"]', ', '),
+
+            // Responsabilités : zone 200 trop merdique "Pierre Durand, Paul Dupond" ou "Paul Durand,..."
+            'prénom1' => $this->xpath2string('//mxc:datafield[@tag="700"]/mxc:subfield[@code="b"]'),
+            'nom1' => $this->xpath2string('//mxc:datafield[@tag="700"]/mxc:subfield[@code="a"]'),
+
+            'prénom2' => $this->xpath2string('//mxc:datafield[@tag="701"]/mxc:subfield[@code="b"]'),
+            'nom2' => $this->xpath2string('//mxc:datafield[@tag="701"]/mxc:subfield[@code="a"]'),
+
+            // zone 200
             // h : Numéro de partie
             //            'volume' => $this->xpath2string('//mxc:datafield[@tag="200"]/mxc:subfield[@code="h"]'),
             // i : Titre de partie
