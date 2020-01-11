@@ -16,6 +16,7 @@ use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\OuvrageComplete;
 use App\Domain\OuvrageFactory;
 use App\Domain\OuvrageOptimize;
+use App\Domain\Publisher\Wikidata2Ouvrage;
 use App\Domain\Utils\TemplateParser;
 use App\Infrastructure\DbAdapter;
 use Normalizer;
@@ -151,6 +152,16 @@ class CompleteProcess
             }
             if (isset($bnfOuvrage) and $bnfOuvrage instanceof OuvrageTemplate) {
                 $this->completeOuvrage($bnfOuvrage);
+
+                // Wikidata requests
+                if(!empty($bnfOuvrage->getInfos())) {
+                    $wdComplete = new Wikidata2Ouvrage($bnfOuvrage);
+                    dump('WIKIDATA...');
+//                    dump($bnfOuvrage->getInfos());
+                    $wdOuvrage = $wdComplete->getOuvrage();
+                    dump($wdOuvrage->serialize(true));
+                    $this->completeOuvrage($wdComplete->getOuvrage());
+                }
             }
         } catch (Throwable $e) {
             echo sprintf(

@@ -33,6 +33,19 @@ class WikidataAdapter
         }
     }
 
+    public function getDataByInfos(?array $infos)
+    {
+        $res = [];
+        if (isset($infos['ISNIAuteur1'])) {
+            $res = $this->searchByISNI($infos['ISNIAuteur1']);
+        }
+        if (isset($infos['isbn'])) {
+            $res = array_merge($res, $this->findArticleByISBN13($infos['isbn']));
+        }
+
+        return $res;
+    }
+
     public function findArticleByISBN13(string $isbn): ?array
     {
         // strip ISBN formating
