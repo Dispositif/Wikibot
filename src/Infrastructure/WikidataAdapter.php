@@ -40,6 +40,9 @@ class WikidataAdapter
             $res = $this->searchByISNI($infos['ISNIAuteur1']);
         }
         if (isset($infos['isbn'])) {
+            if(!empty($res)) {
+                sleep(2);
+            }
             $res = array_merge($res, $this->findArticleByISBN13($infos['isbn']));
         }
 

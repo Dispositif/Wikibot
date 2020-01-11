@@ -159,7 +159,6 @@ class CompleteProcess
                     dump('WIKIDATA...');
 //                    dump($bnfOuvrage->getInfos());
                     $wdOuvrage = $wdComplete->getOuvrage();
-                    dump($wdOuvrage->serialize(true));
                     $this->completeOuvrage($wdComplete->getOuvrage());
                 }
             }
@@ -179,6 +178,10 @@ class CompleteProcess
                 $this->completeOuvrage($googleOuvrage);
             } catch (Throwable $e) {
                 echo "*** ERREUR GOOGLE Isbn Search ***".$e->getMessage()."\n";
+                if (strpos($e->getMessage(), 'error 77: error setting certificate verify locations') !== false) {
+                    // todo exception & process manage
+                    exit;
+                }
                 if (strpos($e->getMessage(), 'Daily Limit Exceeded') !== false) {
                     echo "sleep 3h\n";
                     sleep(60 * 60 * 3);
