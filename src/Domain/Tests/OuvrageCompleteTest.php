@@ -70,6 +70,12 @@ class OuvrageCompleteTest extends TestCase
                 '{{Ouvrage|prénom1=Paul|nom1=Durand|lien auteur1=Paul Durand (écrivain)|titre=La vie|lien titre=La Vie (livre)|éditeur=|année=|isbn=}}',
             ],
             [
+                // Wikidata+BnF completion of sitelinks : prénoms différents
+                '{{Ouvrage|prénom1=Paul A.|nom1=Durand|titre=La vie|isbn=1234}}',
+                '{{Ouvrage|prénom1=Paul-André|nom1=Durand|lien auteur1=Paul Durand (écrivain)|titre=La Vie|isbn=1234}}',
+                '{{Ouvrage|prénom1=Paul A.|nom1=Durand|lien auteur1=Paul Durand (écrivain)|titre=La vie|éditeur=|année=|isbn=1234}}',
+            ],
+            [
                 // Google partiel
                 '{{Ouvrage|titre=}}',
                 '{{Ouvrage|titre=|présentation en ligne=https://books.google.com/books?id=day56Sz-rEEC}}',

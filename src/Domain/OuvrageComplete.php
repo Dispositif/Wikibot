@@ -159,10 +159,11 @@ class OuvrageComplete
 
         $originAuteur1 = $this->concatParamsAuteur1($this->origin);
         $bookAuteur1 = $this->concatParamsAuteur1($this->book);
-
+        //        dump($originAuteur1,$bookAuteur1, strpos($originAuteur1, $this->book->getParam('nom1')));
         // WP:"Paul Durand" — Bnf "Paul Durand,..."
         if (!empty($bookAuteur1) && !empty($originAuteur1)
-            && mb_strtolower($bookAuteur1) === mb_strtolower($originAuteur1)
+            && (mb_strtolower($bookAuteur1) === mb_strtolower($originAuteur1)
+                || strpos($originAuteur1, $this->book->getParam('nom1')) !== false)
         ) {
             $this->origin->setParam('lien auteur1', $lienAuteur1);
             $this->log('+lien auteur1');
@@ -317,6 +318,7 @@ class OuvrageComplete
         // TODO replace with calcul isbn13
         $isbn1 = IsbnFacade::isbn2ean($this->origin->getParam('isbn'));
         $isbn2 = IsbnFacade::isbn2ean($this->book->getParam('isbn'));
+
         if ($isbn1 === $isbn2) {
             return true;
         }
