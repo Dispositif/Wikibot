@@ -18,6 +18,7 @@ Complètement de données d'après des bases bibliographiques :
 * todo: décrire fiabilité données
 * {{fait}} comparaison titre/auteur pour fiabilité infos
 * Exemple : [https://fr.wikipedia.org/w/index.php?title=Anne-Sabine_Hedwiger&diff=prev&oldid=164866871]
+* Wikidata : wikiliens vers auteur (d'après ISNI/VIAF) et titre ouvrage (ISBN)
 
 Améliorations typographiques :
 
