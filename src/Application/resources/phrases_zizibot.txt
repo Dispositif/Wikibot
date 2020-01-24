@@ -1,0 +1,206 @@
+d'autres raisons plus particulières, dont la possibilité personnelle d'alléger les listes de rc.
+plutôt  {{clin}} ?
+allégeons la page de discussion de ce projet.
+même remarque qu'Ironie, la présence de ces évaluations, dont je n'ai personnellement que faire, en pdd m'a toujours semblé incongrue.
+une page de discussion sert à la discussion.
+ce n'est pas le cas ?
+oui, uniformisation souhaitable.
+plus facile à maintenir, plus facile d'accès (en lecture comme en écriture)… enfin tous les avantages habituels de l'uniformisation, quoi…
+facilite la maintenance, et la lisibilité pour les non habitués
+dans ce cas, moins ça prendra de place, mieux ça sera !
+toujours une bonne idée d'uniformiser, cela aide les utilisateurs.
+l'utilisation d'un modèle unique n'est pas non plus limitant pour le nombre de paramètres.
+en tout cas pas à ma connaissance.
+la seule différence c'est qu'avec le mode modulaire on a x modèles ayant chacun leur code, et qu'avec le mode synthétique il y a un modèle unique avec tout le code.
+je pense que cette limite est franchissable en reprenant le code.
+a vue de nez je pense que ce qui arrive c'est la fin du traitement des fonctions parser quand il y en a trop, ou trop d'imbrications.
+la limite vient du code du modèle actuel, pas du principe.
+c'est la sélection des paramètres qui est dans un seul modèle.
+Évitons les usines à gaz.
+plus simple pour les intervenants une fois la "mécanique" des modèles complétés.
+des paramètres sont plus simples à se rappeler que des modèles.
+syntaxe moins lourde.
+assez simple à gérer
+simple et économique en octets.
+toute autre solution remettrait en cause le gros travail effectué par les divers projets.
+a-t'on réellement besoin d'une décision communautaire ?
+syntaxe la plus simple.
+simple, fonctionnel et très lisible.
+certainement le plus simple, le plus pratique et le plus esthétique.
+utilisation intelligible.
+beaucoup plus facile à taper et à effectuer un « parsing » pour les utilitaires externes.
+quitte à uniformiser, autant choisir le code synthétique
+dans l'espoir de limiter l'usinagazification.
+le risque est, à terme, de se retrouver avec un modèle bric-à-brac impossible à maintenir, qui servirait en quelque sorte de dépotoir pour toutes les informations qu’on aurait pas su caser ailleurs.
+paraîtrait plus simple à gérer pour le contributeur expérimenté et plus facilement compréhensible pour le contributeur novice {{=)}}.
+avec parcimonie et en justifiant ce choix.
+laisser la possibilité technique mais à réserver dans de très rares cas.
+difficile de prévoir une règle plus unifiée pour l'ensemble des pages de l'encyclopédie.
+parce que les critères peuvent différer selon la spécialité des projets.
+possibilité technique pour éviter des solutions de contournement amenant à recréer des modèles spécifiques de suivi.
+laisser tout au moins la possibilité technique.
+sinon c'est sans fin et ça devient une juxtaposition des travaux des différents projets et non plus une coopération pour aboutir à un article commun satisfaisant.
+de plus, ça devient vite sans fin:
+j'ai moi aussi ma propre évaluation de ce que je devrais faire personnellement si j'avais plus de temps et de courage.
+je l'écris parfois sur ma todo perso
+mais bon, je comprends bien aussi qu'on puisse préférer faire autrement, notamment pour des raisons de simplicité.
+c'est l'occasion pour chacun d'exprimer sa préférence de fonctionnement, afin de déterminer un mode de fonctionnement majoritaire.
+obligatoirement:
+différents aspects d'un sujet peuvent être développés à différents niveaux dans l'article, et donc nécessiter différents avancements.
+au minimum, il y a des améliorations de rédaction à faire.
+par ailleurs je ne vois pas pourquoi les « spécialités » devraient être traitées différemment selon leur domaine.
+un point est clairement totalement foireux.
+pour en accord avec le reste de mon vote.
+À bon entendeur…
+comme d'hab, les gens ne font pas d'effort pour comprendre le bouzin (comme au sondage, mais en pire)...
+et accessoirement demande des compromis qu'ils seraient absolument pas en mesure de créer.
+mettons cette disposition à l'épreuve puis peaufinons.
+j'espère également qu'il sera possible de peaufiner/améliorer ce consensus.
+on verra à l'usage si c'est validé.
+si cela mène à des distorsions nous amenderons
+on retombe dans les travers de wikipédia d'il y a 4 ou 5 ans
+on respire un grand coup et on oublie ces c***nneries de conditions, de délais, de machins et de trucs administratifs, c'est totalement inapplicable.
+pas d'accord avec les détails, mais l'idée générale semble bonne.
+vote par défaut, car si la nouvelle formulation ne paraît pas vraiment satisfaisante, elle reste néanmoins bien meilleure que l'actuelle.
+a peaufiner/améliorer éventuellement avec l'expérience.
+puisqu'il faut l'écrire noir sur blanc
+de plus, c'est déjà la pratique alors pourquoi ne pas l'écrire.
+Un problème ultra-microscopique, mais puisqu'il faut choisir...
+je suis défavorable, à l'écriture dans le marbre de telle phrase (institutionnalisation, etc...), mais rejeter le texte me paraitrait bien pire...
+dans le principe, je suis d'accord avec toi.
+Ça va visiblement sans dire pour la majorité, mais si certains ont besoin qu'on le leur répète plusieurs fois, qu'il en soit ainsi.
+Évidemment, pour éviter les débordements.
+autant leur faciliter la tâche.
+c'est du pragmatisme.
+evident, mais ça a le mérite d'être clair.
+evidemment, on ne devrait même pas être obligé de l'écrire, mais puisque ça semble nécessaire...
+cela est malheureusement nécessaire.
+il n'y aura alors tout simplement pas de modération.
+les seules règles applicables seront celles qui sont partout appliquées sur wikipédia ([[wp:pap]], etc) avec, le cas échéant, la sanction par les administrateurs.
+pas de régime dérogatoire dont on voit mal ce qui pourrait le justifier.
+je ne vois pas de différence avec la question 1 si ce n'est qu'elle a été reformulée...
+toujours pour les mêmes raisons
+les réponses à cette question seront donc inexploitables car elle risque d'aboutir à un alinéa 7.x en contradiction avec l'alinéa 3.2.
+était-ce bien nécessaire de le redire ?
+Ça revient tout le temps à un troll ignoré.
+on pourrait faire encore mieux
+c'est une bonne idée, ça !
+ce n'est pas très compliqué techniquement.
+et il n'y aurait pas besoin de forker le modèle pour ajouter cette fonctionnalité...
+je pourrais le faire, d'ailleurs.
+ça me fait penser aux drapeaux devant le nom des pays.
+Ça part d'une bonne intention (être plus joli), mais ça pollue visuellement.
+il est joli et sobre.
+de plus faire attention à la syntaxe choisie (pas vu dans l'exemple où c'est spécifié) qu'elle ne rentre pas en conflit avec d'autres.
+je pense que c'est une bonne chose.
+avec la formulation actuelle, telle que je la comprends à savoir que cela n'interdit pas toute autre forme de présentation.
+on les retrouvera plus vite
+pas mal mais peut être à limiter en quantité (problème actuelle avec les langues)
+je suggère comme d'autres de faire dans la sobriété.
+malheureusement peu visible pour le néophyte.
+possibilité à tester.
+je pense que la "redondance" n'est pas nécessairement une tare.
+l'important, en ergonomie, c'est de trouver ce dont on a besoin là où on le cherche, quand on en a besoin.
+les plus néophytes ne les verront juste pas.
+la clarté avant tout :
+esthétiquement pas convaincu.
+trop fort ici - bonne initiative.
+mais favorable au remplacement dans son principe.
+Ça part d'une bonne intention (être plus joli), mais ça pollue visuellement.
+tout est à recommencer de zéro.
+concept incompatible avec un projet encyclopédique et d'une ergonomie douteuse.
+très pour, statut dont on a vraiment besoin, la solution temporaire n'est plus vraiment gérable.
+indispensable pour pouvoir traiter efficacement toutes les requêtes.
+nécessaire au plus haut point.
+pour, mais il faut très bien spécifié le travail effectué et la façon de rentre des comptes.
+proposition très raisonnable.
+il est grand temps.
+on en a tout simplement besoin.
+c'est clair que ça serait problématique, et c'est d'ailleurs pour ça que la question exclut d'office ce cas de figure
+laissons la liberté à ceux qui choisiront et qui pourront estimer dans chaque cas individuel si le cumul peut être préjudiciable.
+je ne vois pas, pour le moment, où pourrait se situer le problème.
+pas besoin de mesures préventives d'après moi.
+les faibles charge de travail et potentiel pour des conflits d'intérêts ne semblent pas justifier l'imposition de cette barrière artificielle.
+c'est assez improbable, mais si cela se présente, on peut toujours trouver un contournement.
+sympa pour ceux qui ne sont pas de ton avis...
+je sais mais je confirme {{clin}} cdlt,
+c'est hors sujet ici, mais c'est un exemple qui m'interpelle et que je saisi au vol.
+mais dont les subtilités sont incompréhensibles au commun des non-informaticiens.
+dans la pratique, il y aura des ajustements à faire (comme partout), mais cela à l'air de bien se passer sur la wikipédia anglophone, donc autant être optimiste.
+ne proposez pas autre chose que ce qui existe déjà
+je ne vois pas en quoi ce serait plus compliqué pour le lecteur
+la discussion sera intéressante.
+on peut être viré si on abuse, mais c'est tout.
+t'est dur, dis donc {{rire}}.
+vive l'anarchie {{rire}}.
+pas besoin de réinventer la roue.
+c'est ceux là qu'il ne faut pas exclure.
+la cohérence plaide en faveur de cette unification.
+c'est très bon pour la qualité générale des articles.
+merci pour ces précisions.
+c'est simple et ca me parait correct.
+on ne peut pas faire plus clair sans changer significativement le système.
+pas trop compliqué en plus.
+ce qui est présenté a au moins le mérite d'être clair et à priori juste.
+et puis la dictature de la minorité...
+est-ce que tu pourrais expliquer ?
+discussion sur l'opportunité de regroupement tout en bas.
+le précédent système étant sans doute plus souple, mais le nouveau le sera également, différemment.
+j'aime bien l'idée de monter au « palier supérieur » {{mdr}}
+tant que tout le monde est prévenu, oui.
+gardons l'énergie pour la rédaction d'articles.
+hélas nécessaire
+c'est du pragmatisme.
+La routine, quoi.
+Blabla "manque de personnel" blabla "pas d'obligation" blabla "tout coup de main est apprécié"
+S'il y a un vote à ce sujet, je serai contre, mais je n'égorgerai personne si la communauté ne me suit pas
+Dégrader l'expérience utilisateur ou utiliser volontairement celle-ci comme un frein en raison d'autres problèmes sans aucun rapport n'est pas vraiment une solution.
+En effet, cela est l'objectif (il y a d'ailleurs eu une discussion à ce sujet) mais je ne pensais pas que ça allait être aussi simple pour un bot.
+L’interactivité est quelque chose d'important pour intéresser le public.
+Je ne comprend pas pourquoi il y a tant d'animosité envers cet outil. Je le trouve plutôt intéressant.
+Vos arguments sont purement anti-constructifs et ne vous servent que pour votre argumentaire. Car il n'en est rien dans la réalité.
+La séparation marquée des deux constitue une caractéristique fondamentale de wikipédia pour moi.
+Je suis ouvert d'esprit mais il va vraiment falloir me démontrer que cette fonctionnalité va faire des miracles pour me la faire adopter.
+Sous cette forme, mes premiers arguments ne seraient plus valables.
+Resterait encore cependant à savoir si ce que wikipédia a à y gagner mérite les efforts nécessaires et les risques encourus.
+Ce rapide message pour exprimer mon opposition totale à ce ''truc''.
+Je suis très conscient que cette page, normalement dédiée à la discussion, n'était pas le meilleur endroit pour exprimer mon avis ; c'est simplement que j'avais envie de le dire ; ce que d'autres ont également fait.
+Bon puisque tous le monde est contre cette amélioration, je ne vais pas m'y opposer. Que la démocratie l'emporte !
+Cependant, nous ne pouvons pas faire de généralité, ne l'ayant pas tester. Dommage pour ma part, j'y voyais du mieux...
+Ce qui équivaudrait à mon avis à une disparition de l'actuel. Mais rien n'interdit d'aller au bout de la logique.
+je ne pense pas qu'il faille limiter la discussion à une éventuelle suppression, mais au contraire penser à une réforme en profondeur, si possible en repensant de fond en comble l'utilité de la chose
+Mais au fond, il n'y a pas d'urgence : on n'est pas encore franchement en phase de finalisation.
+On n'en avait peut-être pas besoin jusqu'à maintenant, mais la communauté grandit de plus en plus.
+Je préfère personnellement éviter de prendre des risques et de faire des choses qui sont limite, surtout ici.
+Il serait utile de vérifier les modes de calculs de ce type de modification sur les autres wiki et les moyens mis en œuvre pour les calculs de leur méthode afin de pouvoir avoir, si possible, d'autre idées et leurs moyens de calculs. Je pense que cette vérification ne peut être effectuée seulement que par les gestionnaire des serveurs des wikis. Ils sont donc invités à venir en discuter.
+Je pense, face au problèmes évoqué, qu'il n'y a pas de bonne solution.
+Mhh, je regarde, j'ai fusionné les 2 elements wikidata, mais ça suffit pas. Doit y avoir une subtilité.
+Il y a pas besoin d'une règle ou d'une recommandation (mais si tu en as besoins tu peux toujours en lancer une...)
+Allez-y, je regarderai tout ça et (avec de l'aide évidemment) j'essaierai de mettre tout ça en place pour que l'an prochain soit meilleur !
+Cela pose en effet des problèmes intéressants voire vertigineux.
+Le souci, que l'on retrouve même sur les autres projets, est aussi et avant tout l'utilisation qui est faite des sources.
+Seulement et en effet, celui qui veut ajouter un champ dans l'article (qui n'apparaît pas) doit le recréer ou le copier/coller (à partir de la page du modèle) ce qui suppose effectivement un minimum de connaissance du fonctionnement de WP.
+Très bien fait! C'est ok pour un essai de mon coté.
+J’ai d’abord préféré m’en tenir à ma ligne de conduite générale.
+La [[distance de Levenshtein]] est une distance, au sens mathématique du terme, donnant une mesure de la différence entre deux chaînes de caractères.
+Les participants sont invités à faire connaître leur point de vue sur ce qui serait souhaitable sur l’espace encyclopédique.
+Les questions concernent uniquement l’espace encyclopédique ?
+Autant profiter des belles possibilités de la langue française.
+Devrait être une incitation mais pas une obligation. Je ne le fais pas actuellement mais je vais y penser.
+Ce qui paraît "naturel" est le fruit de représentations ancestrales qu'il n'est pas inutile d'interroger.
+une simple question d'habitude : quelques mois d'un tel usage ici et tout le monde trouvera cela parfaitement fluide.
+La priorité doit être la libre diffusion de la connaissance.
+Je n'en vois pas l'intérêt.
+Je partage les arguments ci-dessus, tout en faisant mienne la position d'Irønie.
+Une pseudo-norme qui ne veut pas dire son nom, et qui ne fait pas consensus.
+Dans la majorité des cas, cela suffit à restreindre les possibilités à un seul choix.
+Si certains veulent le faire, pas de soucis, mais le bénévolat et la bonne volonté ne doivent pas être entravés par des considérations autres qu'encyclopédiques.
+Tolérance de principe, avec respect du choix du rédacteur original ou principal.
+Sous certaines conditions, quand ce n'est pas trop lourd et artificiel.
+De manière ponctuelle cela peut être pertinent.
+Ça donne au lecteur une impression de militantisme.
+Dans l’immense majorité des cas, selon moi, ces formes très artificielles devraient être rejetées, mais on ne peut pas exclure qu’elles soient parfois nécessaires.
+Une attitude complotiste est une réaction saine à une situation malsaine.
+Les contributeurs humains ne supportent pas la moindre erreur venant des bots.
+Bonjour, j'apprendrai à personne que lorsque l'on regarde les diffs d'un article, le « supprimé » est en rouge et le « rajouté » en vert, sauf que quand on confond les couleurs c'est absolument pas évident de se repérer !
+Je ne souhaite pas me mêler de cette décision.
