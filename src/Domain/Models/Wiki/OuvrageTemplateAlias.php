@@ -105,7 +105,9 @@ interface OuvrageTemplateAlias
             'coauthors' => 'co-auteur',
             //            'editor' => '',
             //            'editor-link' => '',
-            //            'others' => '',
+            'others' => 'champ libre', // https://fr.wikipedia
+            'autres' => 'champ libre', // erroné, traduction de 'others'
+            //.org/wiki/Discussion_mod%C3%A8le:Ouvrage#Paramètre_"autres"
             'trans_title' => 'titre traduit',
             //            'type' => '',
             'edition' => "numéro d'édition",
@@ -147,5 +149,14 @@ interface OuvrageTemplateAlias
             'место' => 'lieu',
             'примечание' => 'citation',
             'язык' => 'lang',
+            // Wstat errors
+            'publication-place' => 'lieu',
+            'ville' => 'lieu',
+            'authors' => 'auteurs',
+            'total pages' => 'pages totales',
+            'consulter en ligne' => 'lire en ligne',
+            'orig-year' => 'année première édition',
+//            'nopp' =>  poubelle
+
         ];
 }
