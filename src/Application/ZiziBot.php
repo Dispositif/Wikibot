@@ -68,7 +68,7 @@ class ZiziBot extends Bot
      */
     private function generateTalkText(?string $toEditor = null, ?string $identation = ':')
     {
-        $to = ($toEditor) ? sprintf('@%s : ', $toEditor) : ''; // {{notif}}
+        $to = ($toEditor) ? sprintf('@[[User:%s|%s]] : ', $toEditor, $toEditor) : ''; // {{notif}}
         $sentence = TextUtil::mb_ucfirst($this->getRandomSentence());
         if (!$sentence) {
             throw new Exception('no sentence');
@@ -94,7 +94,7 @@ class ZiziBot extends Bot
     public function botContribs(): string
     {
         $url
-            = 'https://fr.wikipedia.org/w/api.php?action=query&list=usercontribs&ucuser=ZiziBot&ucnamespace=0&uclimit=40&ucprop=title|timestamp|comment&format=json';
+            = 'https://fr.wikipedia.org/w/api.php?action=query&list=usercontribs&ucuser='.getenv('BOT_NAME').'&ucnamespace=0&uclimit=40&ucprop=title|timestamp|comment&format=json';
 
         return file_get_contents($url);
     }

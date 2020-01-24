@@ -17,7 +17,7 @@ include __DIR__.'/../myBootstrap.php';
 
 $taskName = 'bot : suppression de mon signalement (erreurs corrigées)';
 
-$botName = 'CodexBot'; //ZiziBot';
+$botName = 'CodexBot';
 
 
 /**

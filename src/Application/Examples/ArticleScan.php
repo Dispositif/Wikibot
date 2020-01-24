@@ -24,8 +24,6 @@ include __DIR__.'/../myBootstrap.php';
  * From json list of articles => add to SQL TempRawOpti
  */
 $process = new ArticleScan();
-//$json = file_get_contents(__DIR__.'/../resources/titles.json');
-//$articles = json_decode($json, true);
 
 $articles = file(__DIR__.'/../resources/importISBN_nov.txt');
 
@@ -62,15 +60,6 @@ class ArticleScan
         $text = $page->getText();
         if (empty($text)) {
             echo "SKIP : texte vide\n";
-
-            return false;
-        }
-
-        // Skip AdQ
-        if (preg_match('#{{ ?En-tête label#i', $text) > 0) {
-            echo "SKIP : AdQ ou BA.\n";
-
-            //$this->db->skipArticle($title);
 
             return false;
         }
