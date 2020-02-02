@@ -159,6 +159,14 @@ class OuvrageComplete
 
         $originAuteur1 = $this->concatParamsAuteur1($this->origin);
         $bookAuteur1 = $this->concatParamsAuteur1($this->book);
+
+        // Check if wikilink in any of the author param
+        if (WikiTextUtil::isWikify($originAuteur1)) {
+            echo "lien auteur1 existe déjà\n";
+
+            return;
+        }
+
         //        dump($originAuteur1,$bookAuteur1, strpos($originAuteur1, $this->book->getParam('nom1')));
         // WP:"Paul Durand" — Bnf "Paul Durand,..."
         if (!empty($bookAuteur1) && !empty($originAuteur1)
@@ -250,7 +258,7 @@ class OuvrageComplete
      * @return bool
      * @throws Exception
      */
-    private function hasSameAuthors(): bool
+    public function hasSameAuthors(): bool
     {
         if ($this->authorsFromBook($this->origin) === $this->authorsFromBook($this->book)) {
             return true;
@@ -272,6 +280,9 @@ class OuvrageComplete
     }
 
     /**
+     * concatenation of parameters (firstname, lastname...) from every authors.
+     * Todo: return array for comparing mixed authors (bob henri == henri bob).
+     *
      * @param OuvrageTemplate $ouv
      *
      * @return string

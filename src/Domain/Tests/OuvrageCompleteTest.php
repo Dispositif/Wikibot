@@ -155,4 +155,40 @@ class OuvrageCompleteTest extends TestCase
             ],
         ];
     }
+
+    /**
+     * @dataProvider provideAuthors
+     *
+     * @throws Exception
+     */
+    public function testSameAuthors($originStr, $onlineStr, bool $same)
+    {
+        $origin = new OuvrageTemplate();
+        $origin->hydrateFromText($originStr);
+
+        $online = new OuvrageClean();
+        $online->hydrateFromText($onlineStr);
+
+        $comp = new OuvrageComplete($origin, $online);
+        $this::assertEquals(
+            $same,
+            $comp->hasSameAuthors()
+        );
+    }
+
+    public function provideAuthors(): array
+    {
+        return [
+            [
+                '{{Ouvrage|auteurs=Bob Martin|titre =Bla}}',
+                '{{Ouvrage|prénom1=Bob|nom1=Martin|titre =Bla}}',
+                true,
+            ],
+            [
+                '{{Ouvrage|auteurs=Bob Martin|titre =Bla}}',
+                '{{Ouvrage|prénom1=TATA|nom1=Martin|titre =Bla}}',
+                false,
+            ],
+        ];
+    }
 }

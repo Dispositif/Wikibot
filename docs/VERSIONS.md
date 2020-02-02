@@ -1,5 +1,6 @@
 ## Versions des règles de corrections/complètement ##
 
+* 0.64 : bug 'lien auteur' quand auteur déjà wikifié
 * 0.63 : complétion Wikidata (ISBN=>lien titre, ISNI=>lien auteur1)
 * 0.62 : mise à jour plages ISBN (+bug ISBN mexicain)
 * 0.61 : langue originale=fr (@Arroser)
