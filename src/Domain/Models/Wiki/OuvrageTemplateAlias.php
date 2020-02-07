@@ -16,6 +16,7 @@ interface OuvrageTemplateAlias
      */
     const PARAM_ALIAS
         = [
+            'mr' => 'math reviews', // alias non documenté
             'numéro dans la collection' => 'numéro dans collection',
             'lang' => 'langue',
             'lien langue' => 'langue',
