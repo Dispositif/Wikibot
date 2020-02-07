@@ -867,14 +867,12 @@ class OuvrageOptimize
             $editeurUrl = $matches[1];
         }
 
-        // abréviations communes
+        // Todo : traitement/suppression des abréviations communes :
         // ['éd. de ', 'éd. du ', 'éd.', 'ed.', 'Éd. de ', 'Éd.', 'édit.', 'Édit.', '(éd.)', '(ed.)', 'Ltd.']
 
         $editeurStr = WikiTextUtil::unWikify($editeur);
         // On garde minuscule sur éditeur, pour nuance Éditeur/éditeur permettant de supprimer "éditeur"
         // ex: "éditions Milan" => "Milan"
-
-        //        $editeurStr = TextUtil::mb_ucfirst($editeurStr);
 
         // Déconseillé : 'lien éditeur' (obsolete 2019)
         if (!empty($this->getParam('lien éditeur'))) {
@@ -884,14 +882,12 @@ class OuvrageOptimize
             $this->unsetParam('lien éditeur');
         }
 
-        //        if (isset($editeurUrl)) {
-        //            $editeurUrl = TextUtil::mb_ucfirst($editeurUrl);
-        //        }
         $newEditeur = $editeurStr;
-        if (isset($editeurUrl) && $editeurUrl !== $editeurStr) {
+        // mb_ucfirst pour éviter éditeur=[[Bla|bla]]
+        if (isset($editeurUrl) && TextUtil::mb_ucfirst($editeurUrl) !== TextUtil::mb_ucfirst($editeurStr)) {
             $newEditeur = '[['.$editeurUrl.'|'.$editeurStr.']]';
         }
-        if (isset($editeurUrl) && $editeurUrl === $editeurStr) {
+        if (isset($editeurUrl) && TextUtil::mb_ucfirst($editeurUrl) === TextUtil::mb_ucfirst($editeurStr)) {
             $newEditeur = '[['.$editeurStr.']]';
         }
 

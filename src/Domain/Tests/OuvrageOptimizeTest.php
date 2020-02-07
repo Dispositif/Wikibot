@@ -90,6 +90,7 @@ class OuvrageOptimizeTest extends TestCase
                 '{{Ouvrage|titre=|éditeur=|année=|isbn=}}',
             ],
             [
+                // lien éditeur
                 ['éditeur' => '[[Fu]]'],
                 '{{Ouvrage|titre=|éditeur=[[Fu]]|année=|isbn=}}',
             ],
@@ -100,6 +101,11 @@ class OuvrageOptimizeTest extends TestCase
             [
                 ['éditeur' => 'bar', 'lien éditeur' => 'fu'],
                 '{{Ouvrage|titre=|éditeur=[[fu|bar]]|année=|isbn=}}',
+            ],
+            [
+                // première majuscule sans importance
+                ['éditeur' => 'bar', 'lien éditeur' => 'Bar'],
+                '{{Ouvrage|titre=|éditeur=[[bar]]|année=|isbn=}}',
             ],
             [
                 ['éditeur' => '[[Fu]] [[Bar]]'],
