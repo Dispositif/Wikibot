@@ -58,7 +58,9 @@ class TypoTokenizer
             }
         );
         // don't use str_split() which cuts on 1 byte length (≠ multibytes chars)
-        $modText = str_replace($punctuationColl, ' PUNCTUATION ', $modText);
+        $modText = str_replace($punctuationColl, ' PATTERNPUNCTUATION ', $modText);
+
+        // "BUBBLES COMMA  DROPS COMMA  AND PARTICLES"
 
         // Split the string
         $tokens = preg_split('#[ ]+#', $modText);
@@ -67,13 +69,15 @@ class TypoTokenizer
             if (empty($tok)) {
                 continue;
             }
-            if (preg_match('#^(INITIAL|URL|AND|COMMA|BIBABREV|PUNCTUATION)$#', $tok, $matches) > 0) {
-                $res['pattern'] .= ' '.$tok;
-                if (in_array($matches[1], ['COMMA', 'PUNCTUATION']) || empty($matches[1])) {
+            if (preg_match('#^(PATTERNINITIAL|PATTERNURL|PATTERNAND|PATTERNCOMMA|PATTERNBIBABREV|PATTERNPUNCTUATION)$#', $tok, $matches) > 0) {
+
+                $shortpattern = str_replace('PATTERN','', $tok);
+                $res['pattern'] .= ' '.$shortpattern; // PATTERNAND -> AND
+                if (in_array($matches[1], ['PATTERNCOMMA', 'PATTERNPUNCTUATION']) || empty($matches[1])) {
                     $res['value'][] = '*';
                 } else {
-                    $res['value'][] = current($this->tokenValue[$matches[1]]);
-                    next($this->tokenValue[$matches[1]]);
+                    $res['value'][] = current($this->tokenValue[$shortpattern]);
+                    next($this->tokenValue[$shortpattern]);
                 }
                 //"J. R . R." => INITIAL (1 seule fois)
                 // $res = str_replace('INITIAL INITIAL', 'INITIAL', $res);
@@ -128,24 +132,24 @@ class TypoTokenizer
                     // '#https?\:\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+\#]*[\w\-\@?^=%&amp;/~\+#])?#'
                     $this->tokenValue['URL'][] = $match[0];
 
-                    return ' URL ';
+                    return ' PATTERNURL ';
                 },
                 // BIBABREV : "dir.", "trad.", "(dir.)", "[dir.]", etc.
                 // TODO: regex flaw : "(" not evaluated in BIBABREV. Example : "(dir.)"
                 '#\b[(\[]?(collectif|coll\.|dir\.|trad\.|coord\.|ill\.)[)\]]?#i' => function ($match) {
                     $this->tokenValue['BIBABREV'][] = $match[0]; // [1] = dir
 
-                    return ' BIBABREV ';
+                    return ' PATTERNBIBABREV ';
                 },
                 // AND
-                '# (et|and|&|with|avec|e) #' => function ($match) {
-                    $this->tokenValue['AND'][] = $match[1];
+                '# (et|and|&|with|avec|e) #i' => function ($match) {
+                    $this->tokenValue['AND'][] = $match[0];
 
-                    return ' AND ';
+                    return ' PATTERNAND ';
                 },
                 // COMMA
                 '#,#' => function () {
-                    return ' COMMA ';
+                    return ' PATTERNCOMMA ';
                 },
                 // INITIAL : 2) convert letter ("A.") or junior ("Jr.") or senior ("Sr.")
                 // extract initial before "." converted in PUNCTUATION
@@ -154,7 +158,7 @@ class TypoTokenizer
                 "#\b([A-Z]\.|[A-Z] |JR|Jr\.|Jr\b|Sr\.|Sr\b)#" => function ($match) {
                     $this->tokenValue['INITIAL'][] = $match[0];
 
-                    return ' INITIAL ';
+                    return ' PATTERNINITIAL ';
                 },
             ],
             $modText,
