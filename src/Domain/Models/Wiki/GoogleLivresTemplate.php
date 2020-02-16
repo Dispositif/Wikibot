@@ -187,7 +187,25 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
         // queryData precedence over fragmentData
         parse_str(implode('&', [$fragmentData, $queryData]), $val);
 
-        return $val;
+        return self::arrayKeysToLower($val);
+    }
+
+    /**
+     * Set all array keys to lower case.
+     * TODO: move to ArrayProcessTrait ?
+     *
+     * @param array $array
+     *
+     * @return array
+     */
+    private static function arrayKeysToLower(array $array): array
+    {
+        $res = [];
+        foreach ($array as $key => $val) {
+            $res[strtolower($key)] = $val;
+        }
+
+        return $res;
     }
 
     /**
