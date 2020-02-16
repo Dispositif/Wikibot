@@ -16,6 +16,12 @@ use App\Domain\Utils\WikiTextUtil;
 use Exception;
 use Normalizer;
 
+/**
+ * TODO verbose mode
+ * Class OuvrageComplete
+ *
+ * @package App\Domain
+ */
 class OuvrageComplete
 {
     const ADD_PRESENTATION_EN_LIGNE = true;

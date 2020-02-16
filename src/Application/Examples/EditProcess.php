@@ -26,14 +26,21 @@ use Throwable;
 include __DIR__.'/../myBootstrap.php';
 
 // sort of process management
+$count = 0; // erreurs successives
 while (true) {
     try {
         echo "*** NEW EDIT PROCESS\n";
         $process = new EditProcess();
         //        $process->verbose = true;
         $process->run();
+        $count = 0;
     } catch (\Throwable $e) {
+        $count++;
         echo $e->getMessage();
+        if ($count > 2) {
+            echo "\n3 erreurs à la suite => exit\n";
+            exit;
+        }
         unset($e);
     }
     unset($process);
@@ -305,7 +312,7 @@ class EditProcess
             '%s [%s/%s] %s %s : %s',
             $prefix,
             str_replace('v', '', $this->bot::getGitVersion()),
-            str_replace(['v0.','v1.'], '', $this->citationVersion),
+            str_replace(['v0.', 'v1.'], '', $this->citationVersion),
             self::TASK_NAME,
             $this->nbRows,
             $citeSummary

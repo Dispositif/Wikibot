@@ -18,8 +18,8 @@ class CompleteProcessTest extends TestCase
 {
     protected function setUp(): void
     {
-        // todo check ENV + move instanciation out of CompleteProcess
-        $this->markTestSkipped('all tests in this file are inactive for this server configuration!');
+        // todo check ENV
+        //$this->markTestSkipped('all tests in this file are inactive for this server configuration!');
     }
 
     public function testRun()
@@ -30,7 +30,7 @@ class CompleteProcessTest extends TestCase
         );
         $DbAdapterMock->method('sendCompletedData')->willReturn(true);
 
-        $complete = new CompleteProcess($DbAdapterMock);
+        $complete = new CompleteProcess($DbAdapterMock, false);
 
         $this::assertSame(
             true,

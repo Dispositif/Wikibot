@@ -18,20 +18,19 @@ use App\Domain\OuvrageFactory;
 use App\Domain\OuvrageOptimize;
 use App\Domain\Publisher\Wikidata2Ouvrage;
 use App\Domain\Utils\TemplateParser;
-use App\Infrastructure\DbAdapter;
 use Normalizer;
 use Throwable;
-
-include __DIR__.'/../myBootstrap.php';
-
-$dirty = new CompleteProcess(new DbAdapter());
-$dirty->run();
 
 /**
  * Class CompleteProcess
  */
 class CompleteProcess
 {
+    /**
+     * @var bool
+     */
+    public $verbose = false;
+
     /**
      * @var QueueInterface
      */
@@ -48,9 +47,10 @@ class CompleteProcess
      */
     private $ouvrage;
 
-    public function __construct(QueueInterface $queueAdapter)
+    public function __construct(QueueInterface $queueAdapter, ?bool $verbose = false)
     {
         $this->queueAdapter = $queueAdapter;
+        $this->verbose = (bool)$verbose;
     }
 
     public function run(?int $limit = 10000)
@@ -67,7 +67,9 @@ class CompleteProcess
                 Bot::getGitVersion() ?? '',
                 $this->raw
             );
-            $memory->echoMemory(true);
+            if ($this->verbose) {
+                $memory->echoMemory(true);
+            }
 
             // initialise variables
             $this->log = [];
@@ -137,11 +139,15 @@ class CompleteProcess
     private function onlineIsbnSearch(string $isbn, ?string $isbn10 = null)
     {
         online:
-        echo "sleep 10...\n";
+        if ($this->verbose) {
+            echo "sleep 10...\n";
+        }
         sleep(10);
 
         try {
-            dump('BIBLIO NAT FRANCE...');
+            if ($this->verbose) {
+                dump('BIBLIO NAT FRANCE...');
+            }
             // BnF sait pas trouver un vieux livre (10) d'après ISBN-13... FACEPALM !
             if ($isbn10) {
                 $bnfOuvrage = OuvrageFactory::BnfFromIsbn($isbn10);
@@ -154,8 +160,10 @@ class CompleteProcess
                 $this->completeOuvrage($bnfOuvrage);
 
                 // Wikidata requests from $infos (ISBN/ISNI)
-                if(!empty($bnfOuvrage->getInfos())) {
-                    dump('WIKIDATA...');
+                if (!empty($bnfOuvrage->getInfos())) {
+                    if ($this->verbose) {
+                        dump('WIKIDATA...');
+                    }
                     $wdComplete = new Wikidata2Ouvrage(clone $bnfOuvrage);
                     $this->completeOuvrage($wdComplete->getOuvrage());
                 }
@@ -171,27 +179,22 @@ class CompleteProcess
 
         if (!isset($bnfOuvrage) || !$this->skipGoogle($bnfOuvrage)) {
             try {
-                dump('GOOGLE...');
+                if ($this->verbose) {
+                    dump('GOOGLE...');
+                }
                 $googleOuvrage = OuvrageFactory::GoogleFromIsbn($isbn);
                 $this->completeOuvrage($googleOuvrage);
             } catch (Throwable $e) {
                 echo "*** ERREUR GOOGLE Isbn Search ***".$e->getMessage()."\n";
-                if (strpos($e->getMessage(), 'error 77: error setting certificate verify locations') !== false) {
-                    // todo exception & process manage
-                    exit;
-                }
-                if (strpos($e->getMessage(), 'Daily Limit Exceeded') !== false) {
-                    echo "sleep 3h\n";
-                    sleep(60 * 60 * 3);
-                    echo "Wake up\n";
-                    goto online;
-                }
+                throw $e;
             }
         }
 
         if (!isset($bnfOuvrage) && !isset($googleOuvrage)) {
             try {
-                dump('OpenLibrary...');
+                if ($this->verbose) {
+                    dump('OpenLibrary...');
+                }
                 $openLibraryOuvrage = OuvrageFactory::OpenLibraryFromIsbn($isbn);
                 if (!empty($openLibraryOuvrage)) {
                     $this->completeOuvrage($openLibraryOuvrage);
@@ -228,13 +231,17 @@ class CompleteProcess
 
     private function completeOuvrage(OuvrageTemplate $onlineOuvrage)
     {
-        dump($onlineOuvrage->serialize(true));
+        if ($this->verbose) {
+            dump($onlineOuvrage->serialize(true));
+        }
         $optimizer = new OuvrageOptimize($onlineOuvrage);
         $onlineOptimized = ($optimizer)->doTasks()->getOuvrage();
 
         $completer = new OuvrageComplete($this->ouvrage, $onlineOptimized);
         $this->ouvrage = $completer->getResult();
-        dump($completer->getLog());
+        if ($this->verbose) {
+            dump($completer->getLog());
+        }
         if ($completer->major) {
             $this->major = true;
         }
@@ -259,9 +266,12 @@ class CompleteProcess
             'isbn' => substr($isbn13, 0, 20),
             'version' => Bot::getGitVersion() ?? null,
         ];
-        dump($finalData);
+        if ($this->verbose) {
+            dump($finalData);
+        }
         // Json ?
         $result = $this->queueAdapter->sendCompletedData($finalData);
+
         dump($result); // bool
     }
 
