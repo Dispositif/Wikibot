@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Application\Examples;
 
+use App\Application\CompleteProcess;
 use App\Infrastructure\DbAdapter;
 
 include __DIR__.'/../myBootstrap.php';

@@ -1,17 +1,14 @@
 <?php
 /**
  * This file is part of dispositif/wikibot application
- * 2019 : Philippe M. <dispositif@gmail.com>
+ * 2019 © Philippe M. <dispositif@gmail.com>
  * For the full copyright and MIT license information, please view the LICENSE file.
  */
 
 declare(strict_types=1);
 
-namespace App\Application\Examples;
+namespace App\Application;
 
-use App\Application\Bot;
-use App\Application\Memory;
-use App\Application\QueueInterface;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\OuvrageComplete;
 use App\Domain\OuvrageFactory;
