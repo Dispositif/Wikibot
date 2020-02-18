@@ -73,6 +73,22 @@ class WikiTextUtil extends TextUtil
     }
 
     /**
+     * Strip external links (http://) from wiki text.
+     * "[http://google.fr Google]" => "Google"
+     * "bla [http://google.fr]" => "bla"
+     *
+     * @param string $text
+     *
+     * @return string
+     */
+    public static function stripExternalLink(string $text): string
+    {
+        $text = preg_replace('#\[(https?://[^][<>\s"]+) *((?<= )[^\n\]]*|)\]#i', '${2}', $text);
+
+        return trim($text);
+    }
+
+    /**
      * @param string $text
      *
      * @return bool

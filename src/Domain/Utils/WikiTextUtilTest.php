@@ -13,6 +13,25 @@ use PHPUnit\Framework\TestCase;
 
 class WikiTextUtilTest extends TestCase
 {
+    /**
+     * @dataProvider provideExternalLink
+     */
+    public function testStripExternalLink($text, $expected)
+    {
+        $this::assertSame(
+            $expected,
+            WikiTextUtil::stripExternalLink($text)
+        );
+    }
+
+    public function provideExternalLink(): array
+    {
+        return [
+            ['[[fu]] [http://google.fr bla] [http://google.com blo]', '[[fu]] bla blo'],
+            ['bla [http://google.fr]', 'bla'],
+        ];
+    }
+
     public function testUpperfirst()
     {
         $this::assertSame(
