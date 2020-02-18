@@ -11,7 +11,7 @@ namespace App\Application;
 
 interface QueueInterface
 {
-    public function getNewRaw(): ?string;
+    public function getNewRaw(): ?array;
 
     public function sendCompletedData(array $finalData): bool;
 }

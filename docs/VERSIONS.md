@@ -1,5 +1,7 @@
 ## Versions des règles de corrections/complètement ##
 
+* 0.68 : wikilien circulaire sur titre article (@Hégésippe)
+* 0.66 : alias inconnus : 'vol' et 'mr' (@Dfeldmann)
 * 0.65 : bug typo éditeur=[[Bla|bla]]
 * 0.64 : bug 'lien auteur' quand auteur déjà wikifié (@Evynrhud)
 * 0.63 : complétion Wikidata (ISBN=>lien titre, ISNI=>lien auteur1)

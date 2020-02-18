@@ -36,6 +36,8 @@ class CompleteProcess
      * @var string
      */
     private $raw = '';
+    private $page; // article title
+
     private $log = [];
     private $notCosmetic = false;
     private $major = false;
@@ -43,6 +45,7 @@ class CompleteProcess
      * @var OuvrageTemplate
      */
     private $ouvrage;
+
 
     public function __construct(QueueInterface $queueAdapter, ?bool $verbose = false)
     {
@@ -56,12 +59,15 @@ class CompleteProcess
         while ($limit > 0) {
             $limit--;
             sleep(1);
-            $this->raw = $this->getNewRaw();
+            $row = $this->getNewRow2Complete();
+            $this->raw = $row['raw'];
+            $this->page = $row['page'];
 
             echo sprintf(
-                "-------------------------------\n%s [%s]\n\n%s\n",
+                "-------------------------------\n%s [%s]\n%s\n%s\n",
                 date("Y-m-d H:i:s"),
                 Bot::getGitVersion() ?? '',
+                $this->page,
                 $this->raw
             );
             if ($this->verbose) {
@@ -89,7 +95,7 @@ class CompleteProcess
             }
 
             // Final optimizing (with online predictions)
-            $optimizer = new OuvrageOptimize($origin, null);
+            $optimizer = new OuvrageOptimize($origin, $this->page);
             $optimizer->doTasks();
             $this->ouvrage = $optimizer->getOuvrage();
             $this->log = array_merge($this->log, $optimizer->getLog());
@@ -117,20 +123,20 @@ class CompleteProcess
     }
 
     /**
-     * Get raw string to complete from AMQP queue, SQL Select or file reading.
+     * Get array (title+raw strings) to complete from AMQP queue, SQL Select or file reading.
      *
      * @return string|null
      * @throws \Exception
      */
-    private function getNewRaw(): ?string
+    private function getNewRow2Complete(): ?array
     {
-        $raw = $this->queueAdapter->getNewRaw();
-        if (!$raw) {
+        $row = $this->queueAdapter->getNewRaw();
+        if (empty($row) || empty($row['raw'])) {
             echo "STOP: no more queue to process \n";
             throw new \Exception('no more queue to process');
         }
 
-        return $raw;
+        return $row;
     }
 
     private function onlineIsbnSearch(string $isbn, ?string $isbn10 = null)
@@ -161,7 +167,7 @@ class CompleteProcess
                     if ($this->verbose) {
                         dump('WIKIDATA...');
                     }
-                    $wdComplete = new Wikidata2Ouvrage(clone $bnfOuvrage);
+                    $wdComplete = new Wikidata2Ouvrage(clone $bnfOuvrage, $this->page);
                     $this->completeOuvrage($wdComplete->getOuvrage());
                 }
             }
@@ -231,7 +237,7 @@ class CompleteProcess
         if ($this->verbose) {
             dump($onlineOuvrage->serialize(true));
         }
-        $optimizer = new OuvrageOptimize($onlineOuvrage);
+        $optimizer = new OuvrageOptimize($onlineOuvrage, $this->page);
         $onlineOptimized = ($optimizer)->doTasks()->getOuvrage();
 
         $completer = new OuvrageComplete($this->ouvrage, $onlineOptimized);

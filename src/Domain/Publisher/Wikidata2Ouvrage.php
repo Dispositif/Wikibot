@@ -10,15 +10,16 @@ declare(strict_types=1);
 namespace App\Domain\Publisher;
 
 use App\Domain\Models\Wiki\OuvrageTemplate;
+use App\Domain\Utils\TextUtil;
 use App\Domain\Utils\WikiTextUtil;
 use App\Infrastructure\WikidataAdapter;
+use Exception;
 use GuzzleHttp\Client;
 
 /**
  * Complete un OuvrageTemplate à partir des données Infos[] en faisant
  * des requêtes vers Wikidata (ISBN => article du titre livre et ISNI => article
  * de l'auteur).
- *
  * Class Wikidata2Ouvrage
  *
  * @package App\Domain\Publisher
@@ -37,15 +38,20 @@ class Wikidata2Ouvrage
      * @var array|null
      */
     private $data;
+    /**
+     * @var string|null
+     */
+    private $title; // article title
 
     /**
      * Wikidata2Ouvrage constructor.
      *
      * @param OuvrageTemplate $ouvrage
+     * @param string|null     $title
      *
-     * @throws \Exception
+     * @throws Exception
      */
-    public function __construct(OuvrageTemplate $ouvrage)
+    public function __construct(OuvrageTemplate $ouvrage, ?string $title = null)
     {
         // todo dependency injection
         $this->adapter = new WikidataAdapter(
@@ -53,6 +59,7 @@ class Wikidata2Ouvrage
         );
 
         $clone = clone $ouvrage;
+        $this->title = $title;
         $this->infos = $clone->getInfos();
         $clone->setInfos([]); // suppression Infos
         $clone->setSource('WikiData');
@@ -68,7 +75,7 @@ class Wikidata2Ouvrage
     /**
      * quick and dirty.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function complete(): void
     {
@@ -85,7 +92,7 @@ class Wikidata2Ouvrage
 
     /**
      * @return void
-     * @throws \Exception
+     * @throws Exception
      */
     private function completeAuthorLink(): void
     {
@@ -94,13 +101,13 @@ class Wikidata2Ouvrage
             && empty($this->ouvrage->getParam('lien auteur1'))
         ) {
             // ajout wikilien auteur1
-            // "https://fr.wikipedia.org/wiki/Michel_Houellebecq"
-            $lienTitre = str_replace(
-                ['https://fr.wikipedia.org/wiki/', '_'],
-                ['', ' '],
-                $this->data['articleAuthor']['value']
-            );
-            $lienTitre = urldecode($lienTitre);
+            $lienTitre = $this->wikiURL2title($this->data['articleAuthor']['value']);
+
+            if (TextUtil::mb_ucfirst($lienTitre) === TextUtil::mb_ucfirst($this->title)) {
+                // skip wikilink if this is the article title
+                return;
+            }
+
             $this->ouvrage->setParam('lien auteur1', $lienTitre);
             dump('Wikidata2Ouvrage: +lien auteur1='.$lienTitre);
             $this->log[] = '+lien auteur1';
@@ -108,7 +115,26 @@ class Wikidata2Ouvrage
     }
 
     /**
-     * @throws \Exception
+     * TODO : move to WikiTextUtil ?
+     * "https://fr.wikipedia.org/wiki/Michel_Houellebecq" => "Michel Houellebecq".
+     *
+     * @param $wikiURL
+     *
+     * @return string|null
+     */
+    private function wikiURL2title($wikiURL): ?string
+    {
+        $lienTitre = str_replace(
+            ['https://fr.wikipedia.org/wiki/', '_'],
+            ['', ' '],
+            $wikiURL
+        );
+
+        return trim(urldecode($lienTitre));
+    }
+
+    /**
+     * @throws Exception
      */
     private function completeTitleLink(): void
     {
@@ -118,12 +144,11 @@ class Wikidata2Ouvrage
         ) {
             // ajout wikilien titre
             // "https://fr.wikipedia.org/wiki/La_Carte_et_le_Territoire"
-            $lienTitre = str_replace(
-                ['https://fr.wikipedia.org/wiki/', '_'],
-                ['', ' '],
-                $this->data['articleBook']['value']
-            );
-            $lienTitre = urldecode($lienTitre);
+            $lienTitre = $this->wikiURL2title($this->data['articleBook']['value']);
+            if (TextUtil::mb_ucfirst($lienTitre) === TextUtil::mb_ucfirst($this->title)) {
+                // skip wikilink if this is the article title
+                return;
+            }
             $this->ouvrage->setParam('lien titre', $lienTitre);
             dump('Wikidata2Ouvrage: +lien titre='.$lienTitre);
             $this->log[] = '+lien titre';

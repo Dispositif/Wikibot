@@ -63,19 +63,20 @@ class DbAdapter implements QueueInterface
     }
 
     /**
-     * Get one new raw text (template) to complete.
+     * Get one new row (page, raw) to complete.
      *
-     * @return string|null
+     * @return array|null
      */
-    public function getNewRaw(): ?string
+    public function getNewRaw(): ?array
     {
         $raw = null;
 
         try {
-            $raw = $this->db->fetchColumn(
-                'SELECT raw FROM TempRawOpti 
+            $row = $this->db->fetchRow(
+                'SELECT page,raw FROM TempRawOpti 
                 WHERE raw <> "" AND (opti = "" OR optidate IS NULL OR optidate < :validDate ) AND (edited IS NULL)
-                ORDER BY priority DESC,id',
+                ORDER BY priority DESC,id
+                LIMIT 1',
                 [
                     'validDate' => self::OPTI_VALID_DATE,
                 ]
@@ -84,7 +85,7 @@ class DbAdapter implements QueueInterface
             echo "SQL : No more queue to process \n";
         }
 
-        return $raw;
+        return $row;
     }
 
     /**

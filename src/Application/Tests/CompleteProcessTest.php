@@ -32,7 +32,7 @@ class CompleteProcessTest extends TestCase
     {
         $DbAdapterMock = $this->createMock(DbAdapter::class);
         $DbAdapterMock->method('getNewRaw')->willReturn(
-            '{{Ouvrage |auteur=Pierre André|titre=Bla|}}'
+            ['page' => 'bla', 'raw' => '{{Ouvrage |auteur=Pierre André|titre=Bla|}}']
         );
         $DbAdapterMock->method('sendCompletedData')->willReturn(true);
 
