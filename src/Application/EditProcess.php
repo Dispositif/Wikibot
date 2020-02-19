@@ -34,7 +34,7 @@ class EditProcess
     const CITATION_LIMIT         = 150;
     const DELAY_BOTFLAG_SECONDS  = 30;
     const DELAY_NOBOT_IN_SECONDS = 120;
-    const ERROR_MSG_TEMPLATE     = __DIR__.'/../templates/message_errors.wiki';
+    const ERROR_MSG_TEMPLATE     = __DIR__.'/templates/message_errors.wiki';
 
     public $verbose = false;
     private $db;
@@ -360,6 +360,7 @@ class EditProcess
         }
         if (preg_match('#\+lire en ligne#', $data['modifs']) > 0) {
             $this->addSummaryTag('+lire en ligne');
+            $this->botFlag = false;
         }
         if (preg_match('#\+lien #', $data['modifs']) > 0) {
             $this->addSummaryTag('wikif');
@@ -374,7 +375,7 @@ class EditProcess
 
         // mention BnF si ajout donnée + ajout identifiant bnf=
         if (!empty($this->importantSummary) && preg_match('#BnF#i', $data['modifs'], $matches) > 0) {
-            $this->addSummaryTag('(BnF)');
+            $this->addSummaryTag('©BnF');
         }
     }
 
