@@ -36,6 +36,12 @@ class WikiPageAction
      * @var string
      */
     private $title;
+    /**
+     * Wiki namespace
+     *
+     * @var int
+     */
+    private $ns;
 
     /**
      * WikiPageAction constructor.
@@ -52,6 +58,7 @@ class WikiPageAction
 
         try {
             $this->page = $wiki->newPageGetter()->getFromTitle($title);
+            $this->ns = $this->page->getPageIdentifier()->getTitle()->getNs();
         } catch (Throwable $e) {
             throw new Exception('Erreur construct WikiPageAction '.$e->getMessage());
         }
@@ -72,6 +79,11 @@ class WikiPageAction
         $latest = $this->page->getRevisions()->getLatest();
 
         return ($latest) ? $latest->getContent()->getData() : null;
+    }
+
+    public function getNs(): ?int
+    {
+        return $this->ns;
     }
 
     public function getLastRevision(): ?Revision

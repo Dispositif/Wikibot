@@ -57,6 +57,12 @@ class ArticleScan
         echo $title."\n";
 
         $page = new WikiPageAction($this->wiki, $title);
+        $ns = $page->getNs();
+        if ($ns !== 0) {
+            echo "SKIP : namespace $ns";
+
+            return false;
+        }
         $text = $page->getText();
         if (empty($text)) {
             echo "SKIP : texte vide\n";

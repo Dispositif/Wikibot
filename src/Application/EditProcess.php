@@ -100,9 +100,15 @@ class EditProcess
             return false;
         }
 
-        // TODO : HACK
+        // HACK
         if (in_array($page->getLastEditor(), [getenv('BOT_NAME'), getenv('BOT_OWNER')])) {
             echo "SKIP : édité recemment par bot/dresseur.\n";
+            $this->db->skipArticle($title);
+
+            return false;
+        }
+        if ($page->getNs() !== 0) {
+            echo "SKIP : page n'est pas dans Main (ns 0)\n";
             $this->db->skipArticle($title);
 
             return false;
