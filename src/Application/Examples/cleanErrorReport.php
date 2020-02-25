@@ -14,10 +14,10 @@ use Mediawiki\DataModel\EditInfo;
 use Mediawiki\DataModel\Page;
 
 include __DIR__.'/../myBootstrap.php';
+//include __DIR__.'/../ZiziBot_Bootstrap.php';
+$botName = 'CodexBot';
 
 $taskName = 'bot : suppression de mon signalement (erreurs corrigées)';
-
-$botName = 'CodexBot';
 
 
 /**

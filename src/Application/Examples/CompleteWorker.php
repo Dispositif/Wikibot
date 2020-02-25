@@ -33,7 +33,6 @@ while (true) {
             echo "sleep 3h\n";
             sleep(60 * 60 * 3);
             echo "Wake up\n";
-            continue;
         }
         if ($count > 2) {
             echo "\n3 erreurs à la suite => exit\n";
@@ -43,6 +42,6 @@ while (true) {
         unset($e);
     }
     unset($process);
-    echo "Sleep 1 min\n";
-    sleep(60);
+    echo "Sleep 10 min\n";
+    sleep(60*10);
 }
