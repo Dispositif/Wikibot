@@ -25,8 +25,6 @@ use Throwable;
  */
 class Bot
 {
-    const WIKI_STATE_FILENAME = __DIR__.'/resources/wiki_state.json';
-
     const WATCHPAGE_FILENAME = __DIR__.'/resources/watch_pages.json';
 
     const EXIT_ON_CHECK_WATCHPAGE = true;
