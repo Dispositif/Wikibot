@@ -139,6 +139,6 @@ sleep(30);
 $wiki = ServiceFactory::wikiApi();
 $pageAction = new WikiPageAction($wiki, 'Utilisateur:ZiziBot/monitoring');
 
-$success = $pageAction->editPage($wikiText, new EditInfo('bot : mise à jour', true, true));
+$success = $pageAction->editPage($wikiText, new EditInfo('bot : mise à jour', false, false));
 dump($success);
 
