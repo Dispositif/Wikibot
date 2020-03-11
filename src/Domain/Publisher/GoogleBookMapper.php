@@ -61,7 +61,7 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
             return null;
         }
 
-        if (strlen($volume->subtitle) > 80) {
+        if (strlen($volume->subtitle) > 50) {
             return null;
         }
 
