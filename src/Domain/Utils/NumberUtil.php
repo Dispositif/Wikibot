@@ -29,7 +29,13 @@ class NumberUtil
             1 => 'I',
         ];
 
-    public static function arab2roman(int $number): ?string
+    /**
+     * @param int       $number
+     * @param bool|null $lowerSize
+     *
+     * @return string|null
+     */
+    public static function arab2roman(int $number, ?bool $lowerSize = false): ?string
     {
         if ($number <= 0) {
             return null;
@@ -40,6 +46,9 @@ class NumberUtil
                 $result .= $glyph;
                 $number -= $limit;
             }
+        }
+        if ($lowerSize) {
+            $result = strtolower($result);
         }
 
         return $result;

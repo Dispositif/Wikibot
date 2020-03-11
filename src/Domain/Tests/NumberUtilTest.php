@@ -35,4 +35,12 @@ class NumberUtilTest extends TestCase
             [-12, null],
         ];
     }
+
+    public function testArab2romanLowerSize()
+    {
+        $this::assertSame(
+            'xxiv',
+            NumberUtil::arab2roman(24, true)
+        );
+    }
 }
