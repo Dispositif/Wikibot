@@ -117,9 +117,10 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
                 unset($data['page autre']);
             }
         }
-
+        // q : keywords search / dq : quoted phrase search
+        // affichage Google : dq ignoré si q existe
         if (!empty($gooData['dq']) || !empty($gooData['q'])) {
-            $data['surligne'] = $gooData['dq'] ?? $gooData['q'];
+            $data['surligne'] = $gooData['q'] ?? $gooData['dq']; // q prévaut
             $data['surligne'] = self::googleUrlEncode($data['surligne']);
         }
 
@@ -154,11 +155,16 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
 
         $dat = [];
         // keep only a few parameters (+'q' ?)
-        $keeps = ['id', 'pg', 'printsec', 'dq'];
+        // q : keywords search / dq : quoted phrase search
+        $keeps = ['id', 'pg', 'printsec', 'q','dq'];
         foreach ($keeps as $keep) {
             if (!empty($gooDat[$keep])) {
                 $dat[$keep] = $gooDat[$keep];
             }
+        }
+        // gestion doublon inutile q= dq= car q= prévaut pour affichage
+        if(isset($dat['q']) && isset($dat['dq'])) {
+            unset($dat['dq']);
         }
 
         $googleURL = self::DEFAULT_GOOGLEBOOK_URL;
@@ -179,7 +185,7 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
      *
      * @return array
      */
-    private static function parseGoogleBookQuery(string $url): array
+    public static function parseGoogleBookQuery(string $url): array
     {
         // Note : Also datas in URL after the '#' !!! (URL fragment)
         $queryData = parse_url($url, PHP_URL_QUERY); // after ?
