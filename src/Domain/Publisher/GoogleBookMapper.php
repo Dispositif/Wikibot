@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Publisher;
 
+use App\Domain\Enums\Language;
 use Scriptotek\GoogleBooks\Volume;
 
 /**
@@ -25,9 +26,13 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
 
     // sous-titre non ajoutés :
     const SUBTITLE_FILTER = ['roman', 'récit', 'poèmes', 'biographie'];
+    /**
+     * @var bool|null
+     */
+    private $mapLanguageData = false;
 
     /**
-     * @param $volume Volume
+     * @param           $volume Volume
      *
      * @return array
      */
@@ -35,18 +40,28 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
     {
         return [
             // language : data not accurate !
-            // 'langue' => $this->langFilterByIsbn($volume),
+            'langue' => $this->langFilterByIsbn($volume),
             'auteur1' => $volume->authors[0],
             'auteur2' => $volume->authors[1] ?? null,
             'auteur3' => $volume->authors[2] ?? null,
             'titre' => $volume->title,
             'sous-titre' => $this->filterSubtitle($volume),
             'année' => $this->convertDate2Year($volume->publishedDate),
-            'pages totales' => (string) $volume->pageCount ?? null,
+            'pages totales' => (string)$volume->pageCount ?? null,
             'isbn' => $this->convertIsbn($volume),
             'présentation en ligne' => $this->presentationEnLigne($volume),
             'lire en ligne' => $this->lireEnLigne($volume),
         ];
+    }
+
+    /**
+     * Use the inconstant 'language' ?
+     *
+     * @param bool $useLanguage
+     */
+    public function mapLanguageData(bool $useLanguage)
+    {
+        $this->mapLanguageData = $useLanguage;
     }
 
     /**
@@ -79,7 +94,7 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
             return null;
         }
         if (preg_match('/[^0-9]?([12][0-9]{3})[^0-9]?/', $data, $matches) > 0) {
-            return (string) $matches[1];
+            return (string)$matches[1];
         }
 
         return null;
@@ -98,7 +113,7 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
         // so isbn-13 replace isbn-10
         // todo refac algo (if 2x isbn13?)
         $isbn = null;
-        $ids = (array) $volume->industryIdentifiers;
+        $ids = (array)$volume->industryIdentifiers;
         foreach ($ids as $id) {
             if (!isset($isbn) && in_array($id->type, ['ISBN_10', 'ISBN_13'])) {
                 $isbn = $id->identifier;
@@ -153,40 +168,47 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
         return sprintf('{{Google Livres|%s}}', $volume->id);
     }
 
-    /*
-     * Language data not consistant.
-     * -> comparing by ISBN code language.
+    /**
+     * /!\ Google Books language data not consistant !
+     * set $mapLanguageData to true to use that data in mapping.
+     *
+     * @param Volume $volume
+     *
+     * @return string|null
      */
-    //    private function langFilterByIsbn(Volume $volume): ?string
-    //    {
-    //        $isbn = $this->convertIsbn($volume);
-    //        if ($isbn) {
-    //            try {
-    //                $isbnMachine = new IsbnFacade($isbn);
-    //                $isbnMachine->validate();
-    //                $isbnLang = $isbnMachine->getCountryShortName();
-    //            } catch (\Throwable $e) {
-    //                unset($e);
-    //            }
-    //        }
-    //        if(isset($isbnLang)) {
-    //            echo "(ISBN lang: ".$isbnLang.")\n";
-    //        }else{
-    //            echo "(no ISBN lang)\n";
-    //        }
-    //
-    //        $gooLang = $volume->language;
-    //        // filtering lang because seems inconsistant
-    //        if (isset($isbnLang) && !empty($gooLang) && $gooLang !== $isbnLang) {
-    //            echo sprintf(
-    //                "*** Filtering Google langue=%s because ISBN langue=%s ",
-    //                $gooLang,
-    //                $isbnLang
-    //            );
-    //
-    //            return null;
-    //        }
-    //
-    //        return $gooLang;
-    //    }
+    private function langFilterByIsbn(Volume $volume): ?string
+    {
+        if (!$this->mapLanguageData) {
+            return null;
+        }
+//        $isbn = $this->convertIsbn($volume);
+//        if ($isbn) {
+//            try {
+//                $isbnMachine = new IsbnFacade($isbn);
+//                $isbnMachine->validate();
+//                $isbnLang = $isbnMachine->getCountryShortName();
+//            } catch (\Throwable $e) {
+//                unset($e);
+//            }
+//        }
+//        if (isset($isbnLang)) {
+//            echo "(ISBN lang: ".$isbnLang.")\n";
+//        } else {
+//            echo "(no ISBN lang)\n";
+//        }
+
+        $gooLang = $volume->language;
+        // filtering lang because seems inconsistant
+//        if (isset($isbnLang) && !empty($gooLang) && $gooLang !== $isbnLang) {
+//            echo sprintf(
+//                "*** Filtering Google langue=%s because ISBN langue=%s ",
+//                $gooLang,
+//                $isbnLang
+//            );
+//
+//            return null;
+//        }
+
+        return Language::all2wiki($gooLang);
+    }
 }

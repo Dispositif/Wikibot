@@ -43,6 +43,11 @@ class GoogleBooksAdapter extends AbstractBookApiAdapter implements BookApiInterf
         return $this->api->volumes->byIsbn($isbn);
     }
 
+    /**
+     * @param string $googleId
+     *
+     * @return \Scriptotek\GoogleBooks\Volume
+     */
     public function getDataByGoogleId(string $googleId)
     {
         return $this->api->volumes->get($googleId);
