@@ -13,8 +13,6 @@ use App\Domain\Models\Wiki\GoogleLivresTemplate;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\Publisher\GoogleBookMapper;
 use App\Domain\Utils\NumberUtil;
-use App\Domain\Utils\TextUtil;
-use App\Domain\Utils\WikiTextUtil;
 use App\Infrastructure\GoogleBooksAdapter;
 
 /**
@@ -57,7 +55,7 @@ class RefGoogleBook
 
         foreach ($refsData as $ref) {
             try {
-                $citation = $this->convertGBurl2OuvrageCitation($ref[1]);
+                $citation = $this->convertGBurl2OuvrageCitation($this->stripFinalPoint($ref[1]));
             } catch (\Exception $e) {
                 echo "Exception ".$e->getMessage();
                 continue;
@@ -79,12 +77,30 @@ class RefGoogleBook
     }
 
     /**
+     * Strip the final point (".") as in <ref> ending.
+     * TODO move to WikiRef or TextUtil class
+     *
+     * @param string $str
+     *
+     * @return string
+     */
+    private function stripFinalPoint(string $str): string
+    {
+        if (substr($str, -1, 1) === '.') {
+            return substr($str, 0, strlen($str) - 1);
+        }
+
+        return $str;
+    }
+
+    /**
      * Convert GoogleBooks URL to wiki-template {ouvrage} citation.
      *
      * @param string $url GoogleBooks URL
      *
      * @return string {{ouvrage}}
      * @throws \Exception
+     * @throws \Throwable
      */
     private function convertGBurl2OuvrageCitation(string $url): string
     {
@@ -97,7 +113,24 @@ class RefGoogleBook
             throw new \DomainException('Pas de ID Google Books');
         }
 
-        $ouvrage = $this->generateOuvrageFromGoogleData($gooDat['id']);
+        try {
+            $ouvrage = $this->generateOuvrageFromGoogleData($gooDat['id']);
+        } catch (\Throwable $e) {
+            // ID n'existe pas sur Google Books
+            if (strpos($e->getMessage(), '404 Not Found')
+                && strpos($e->getMessage(), '"message": "The volume ID could n')
+            ) {
+                return sprintf(
+                    '{{lien brisé |url= %s |titre= %s |brisé le=%s |CodexBot=1}}',
+                    $url,
+                    'ID introuvable sur Google Books',
+                    date('d-m-Y')
+                );
+            }
+            throw $e;
+        }
+
+
         $cleanUrl = GoogleLivresTemplate::simplifyGoogleUrl($url);
         $ouvrage->unsetParam('présentation en ligne');
         $ouvrage->setParam('lire en ligne', $cleanUrl);
@@ -120,11 +153,11 @@ class RefGoogleBook
             if (preg_match('#PR([0-9]+)$#', $gooDat['pg'], $matches)) {
                 // Exclusion de page=1, page=2 (vue par défaut sur Google Book)
                 if (intval($matches[1]) >= 3) {
-                    $page = NumberUtil::arab2roman(intval($matches[1]));
+                    $page = NumberUtil::arab2roman(intval($matches[1]), true);
                 }
             }
 
-            if (isset($page)) {
+            if (!empty($page)) {
                 $ouvrage->setParam('passage', $page);
                 // ajout commentaire '<!-- utile? -->' ?
             }
@@ -158,6 +191,7 @@ class RefGoogleBook
         $volume = $adapter->getDataByGoogleId($id);
 
         $mapper = new GoogleBookMapper();
+        $mapper->mapLanguageData(true);
         $data = $mapper->process($volume);
 
         // Generate wiki-template {ouvrage}
@@ -188,7 +222,6 @@ class RefGoogleBook
             PREG_SET_ORDER
         )
         ) {
-
             return $matches;
         }
 
