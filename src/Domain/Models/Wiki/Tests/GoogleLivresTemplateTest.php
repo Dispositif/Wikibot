@@ -34,6 +34,8 @@ class GoogleLivresTemplateTest extends TestCase
      *
      * @param $url
      * @param $expected
+     *
+     * @throws Exception
      */
     public function testSimplyGoogleBookUrl($url, $expected)
     {
@@ -46,6 +48,11 @@ class GoogleLivresTemplateTest extends TestCase
     public function provideSimplify()
     {
         return [
+            [
+                // strange format
+                'https://books.google.fr/books/about/Kate_Bush.html?id=YL0EDgAAQBAJ&printsec=frontcover&source=kp_read_button&redir_esc=y#v=onepage&q&f=false',
+                'https://books.google.fr/books?id=YL0EDgAAQBAJ&printsec=frontcover',
+            ],
             [
                 // uppercase "ID="
                 'https://books.google.fr/books?ID=26gcP_Yz-i8C&PG=PA56',

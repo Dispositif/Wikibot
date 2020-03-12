@@ -75,6 +75,9 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
         if (empty($gooDat['id'])) {
             throw new DomainException("no GoogleBook 'id' in URL");
         }
+        if(!preg_match('#[0-9A-Za-z_\-]{12}#', $gooDat['id'])) {
+            throw new DomainException("GoogleBook 'id' malformed [0-9A-Za-z_\-]{12}");
+        }
 
         $data = self::mapGooData($gooDat);
 
@@ -141,16 +144,21 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
      * @param string $url
      *
      * @return string URL
+     * @throws Exception
      */
     public static function simplifyGoogleUrl(string $url): string
     {
         if (!self::isGoogleBookURL($url)) {
-            throw new DomainException('not a Google Book URL');
+            // not DomainException for live testing with OuvrageOptimize
+            throw new Exception('not a Google Book URL');
         }
 
         $gooDat = self::parseGoogleBookQuery($url);
         if (empty($gooDat['id'])) {
             throw new DomainException("no GoogleBook 'id' in URL");
+        }
+        if(!preg_match('#[0-9A-Za-z_\-]{12}#', $gooDat['id'])) {
+            throw new DomainException("GoogleBook 'id' malformed");
         }
 
         $dat = [];
@@ -240,7 +248,9 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
      */
     public static function isGoogleBookURL(string $text): bool
     {
-        if (preg_match('#^https?://(books|play)\.google\.[a-z]{2,3}/(books)?(/reader)?\?id=#i', $text) > 0) {
+        if (preg_match('#^https?://(books|play)\.google\.[a-z]{2,3}/(books)?(books/[^?]+\.html)?(/reader)?\?id=#i',
+                       $text) >
+            0) {
             return true;
         }
 

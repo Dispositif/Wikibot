@@ -445,7 +445,21 @@ class OuvrageOptimize
             }
         }
 
-        $goo = GoogleLivresTemplate::simplifyGoogleUrl($url);
+        try {
+            $goo = GoogleLivresTemplate::simplifyGoogleUrl($url);
+        } catch (\DomainException $e) {
+            // ID manquant ou malformé
+            $errorValue = sprintf(
+                '%s <!-- ERREUR %s -->',
+                $url,
+                $e->getMessage()
+            );
+            $this->setParam($param, $errorValue);
+            $this->log('erreur URL');
+            $this->notCosmetic = true;
+            $this->major = true;
+        }
+
         if (!empty($goo) && $goo !== $url) {
             $this->setParam($param, $goo);
             $this->log('Google');
