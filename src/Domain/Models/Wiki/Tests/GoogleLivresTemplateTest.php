@@ -54,6 +54,11 @@ class GoogleLivresTemplateTest extends TestCase
                 'https://books.google.fr/books?id=YL0EDgAAQBAJ&printsec=frontcover',
             ],
             [
+                // Maroc : sous-domaine .co.ma
+                'https://books.google.co.ma/books?id=26gcP_Yz-i8C&PG=PA56',
+                'https://books.google.co.ma/books?id=26gcP_Yz-i8C&pg=PA56',
+            ],
+            [
                 // uppercase "ID="
                 'https://books.google.fr/books?ID=26gcP_Yz-i8C&PG=PA56',
                 'https://books.google.fr/books?id=26gcP_Yz-i8C&pg=PA56',

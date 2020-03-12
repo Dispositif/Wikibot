@@ -43,6 +43,7 @@ class RefGoogleBook
      * @param string $text Page wikitext
      *
      * @return string New wikitext
+     * @throws \Throwable
      */
     public function process(string $text): string
     {
@@ -123,7 +124,7 @@ class RefGoogleBook
                 return sprintf(
                     '{{lien brisé |url= %s |titre= %s |brisé le=%s |CodexBot=1}}',
                     $url,
-                    'ID introuvable sur Google Books',
+                    'Ouvrage inexistant sur Google Books',
                     date('d-m-Y')
                 );
             }
@@ -215,8 +216,9 @@ class RefGoogleBook
     private function extractAllGoogleRefs(string $text): array
     {
         // <ref>...</ref> or {{ref|...}}
+        // GoogleLivresTemplate::GOOGLEBOOK_URL_PATTERN
         if (preg_match_all(
-            '#(?:<ref[^>]*>|{{ref\|) ?(https?://(?:books|play)\.google\.[a-z]{2,3}/(?:books)?(?:/reader)?\?id=[^>\]} \n]+) ?(?:</ref>|}})#i',
+            '#(?:<ref[^>]*>|{{ref\|) ?('.GoogleLivresTemplate::GOOGLEBOOK_URL_PATTERN.'[^>\]} \n]+) ?(?:</ref>|}})#i',
             $text,
             $matches,
             PREG_SET_ORDER

@@ -29,12 +29,14 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
     const REQUIRED_PARAMETERS = ['id' => ''];
 
     const PARAM_ALIAS
-        = [
+                                 = [
             '1' => 'id',
             '2' => 'titre',
             'surligné' => 'surligne',
             'BuchID' => 'id',
         ];
+    // google.co.ma au Maroc
+    const GOOGLEBOOK_URL_PATTERN = 'https?://(?:books|play)\.google\.[a-z\.]{2,5}/(?:books)?(?:books/[^\?]+\.html)?(?:/reader)?\?id=';
 
     protected $parametersByOrder
         = ['id', 'titre', 'couv', 'page', 'romain', 'page autre', 'surligne'];
@@ -233,7 +235,9 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
     {
         $host = parse_url($url, PHP_URL_HOST);
         if (!empty($host) && preg_match('#\.[a-z]{2,3}$#', $host, $matches) > 0) {
-            return $matches[0]; // .fr
+
+            // Maroc : google.co.ma (sous-domaine!!)
+            return str_replace('.ma','.co.ma', $matches[0]); // .fr
         }
 
         return null;
@@ -248,9 +252,7 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
      */
     public static function isGoogleBookURL(string $text): bool
     {
-        if (preg_match('#^https?://(books|play)\.google\.[a-z]{2,3}/(books)?(books/[^?]+\.html)?(/reader)?\?id=#i',
-                       $text) >
-            0) {
+        if (preg_match('#^'.self::GOOGLEBOOK_URL_PATTERN.'[^>\]} \n]+$#i', $text) > 0) {
             return true;
         }
 
