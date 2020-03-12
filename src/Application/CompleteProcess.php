@@ -46,7 +46,6 @@ class CompleteProcess
      */
     private $ouvrage;
 
-
     public function __construct(QueueInterface $queueAdapter, ?bool $verbose = false)
     {
         $this->queueAdapter = $queueAdapter;
@@ -285,6 +284,10 @@ class CompleteProcess
      */
     private function serializeFinalOpti(): string
     {
+        // Améliore style compact : plus espacé
+        if ('|' === $this->ouvrage->userSeparator) {
+            $this->ouvrage->userSeparator = ' |';
+        }
         $finalOpti = $this->ouvrage->serialize(true);
         $finalOpti = Normalizer::normalize($finalOpti);
 
