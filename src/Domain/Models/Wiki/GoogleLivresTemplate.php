@@ -29,13 +29,13 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
     const REQUIRED_PARAMETERS = ['id' => ''];
 
     const PARAM_ALIAS
-                                 = [
+        = [
             '1' => 'id',
             '2' => 'titre',
             'surligné' => 'surligne',
             'BuchID' => 'id',
         ];
-    // google.co.ma au Maroc
+
     const GOOGLEBOOK_URL_PATTERN = 'https?://(?:books|play)\.google\.[a-z\.]{2,5}/(?:books)?(?:books/[^\?]+\.html)?(?:/reader)?\?id=';
 
     protected $parametersByOrder
@@ -77,7 +77,7 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
         if (empty($gooDat['id'])) {
             throw new DomainException("no GoogleBook 'id' in URL");
         }
-        if(!preg_match('#[0-9A-Za-z_\-]{12}#', $gooDat['id'])) {
+        if (!preg_match('#[0-9A-Za-z_\-]{12}#', $gooDat['id'])) {
             throw new DomainException("GoogleBook 'id' malformed [0-9A-Za-z_\-]{12}");
         }
 
@@ -159,21 +159,21 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
         if (empty($gooDat['id'])) {
             throw new DomainException("no GoogleBook 'id' in URL");
         }
-        if(!preg_match('#[0-9A-Za-z_\-]{12}#', $gooDat['id'])) {
+        if (!preg_match('#[0-9A-Za-z_\-]{12}#', $gooDat['id'])) {
             throw new DomainException("GoogleBook 'id' malformed");
         }
 
         $dat = [];
         // keep only a few parameters (+'q' ?)
         // q : keywords search / dq : quoted phrase search
-        $keeps = ['id', 'pg', 'printsec', 'q','dq'];
+        $keeps = ['id', 'pg', 'printsec', 'q', 'dq'];
         foreach ($keeps as $keep) {
             if (!empty($gooDat[$keep])) {
                 $dat[$keep] = $gooDat[$keep];
             }
         }
         // gestion doublon inutile q= dq= car q= prévaut pour affichage
-        if(isset($dat['q']) && isset($dat['dq'])) {
+        if (isset($dat['q']) && isset($dat['dq'])) {
             unset($dat['dq']);
         }
 
@@ -235,9 +235,8 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
     {
         $host = parse_url($url, PHP_URL_HOST);
         if (!empty($host) && preg_match('#\.[a-z]{2,3}$#', $host, $matches) > 0) {
-
             // Maroc : google.co.ma (sous-domaine!!)
-            return str_replace('.ma','.co.ma', $matches[0]); // .fr
+            return str_replace(['.ma', '.uk'], ['.co.ma', '.co.uk'], $matches[0]); // .fr
         }
 
         return null;
