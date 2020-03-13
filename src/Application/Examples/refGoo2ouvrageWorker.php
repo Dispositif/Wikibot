@@ -17,16 +17,10 @@ include __DIR__.'/../myBootstrap.php';
  */
 
 $wiki = ServiceFactory::wikiApi();
-$taskName = "Amélioration bibliographique : URL GoogleBooks ⇒ {ouvrage}"; // 😎
 
-// API CirrusSearch
-// https://fr.wikipedia.org/w/api.php?action=query&list=search&srsearch=%22https://books.google%22%20insource:/\%3Cref\%3Ehttps\:\/\/books\.google/&formatversion=2&format=json
+$taskName = "bot : Amélioration bibliographique : lien Google Books ⇒ {ouvrage}"; // 😎
 
 $bot = new Bot();
-
-// Get raw list of articles
-//$filename = __DIR__.'/../resources/plumeGoogleRef.txt';
-//$titles = file($filename);
 
 // Get page list from API CirrusSearch
 $cirrus
@@ -36,7 +30,7 @@ file_put_contents(__DIR__.'/log_refGoogleBot.json', $json);
 $myArray = json_decode($json, true);
 $result = $myArray['query']['search'];
 
-//$result = [0=>['title'=>'Hror']]; // pour tester juste un article
+//$result = [0=>['title'=>'Hror']];
 
 foreach ($result as $res) {
     $title = $res['title'];
@@ -58,8 +52,8 @@ foreach ($result as $res) {
         echo "SKIP : protection/3R.\n";
         continue;
     }
-    if ($bot->minutesSinceLastEdit($title) < 15) {
-        echo "SKIP : édition humaine dans les dernières 15 minutes.\n";
+    if ($bot->minutesSinceLastEdit($title) < 10) {
+        echo "SKIP : édition humaine dans les dernières 10 minutes.\n";
         continue;
     }
 
@@ -76,9 +70,9 @@ foreach ($result as $res) {
 //        continue;
 //    }
 
-    $result = $pageAction->editPage($newText, new EditInfo($taskName, true, false));
+    $result = $pageAction->editPage($newText, new EditInfo($taskName, true, true));
     dump($result);
-    echo "Sleep 180\n";
+    echo "Sleep 3min\n";
     sleep(180);
 }
 
