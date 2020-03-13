@@ -17,7 +17,7 @@ use Mediawiki\DataModel\EditInfo;
 use Simplon\Mysql\Mysql;
 use Simplon\Mysql\PDOConnector;
 
-include __DIR__.'/../myBootstrap.php';
+include __DIR__.'/../ZiziBot_Bootstrap.php'; //myBootstrap.php';
 
 /**
  * oué c'est dégoutant et pas MVC...

@@ -85,7 +85,7 @@ class RefGoogleBook
      *
      * @return string
      */
-    private function stripFinalPoint(string $str): string
+    public function stripFinalPoint(string $str): string
     {
         if (substr($str, -1, 1) === '.') {
             return substr($str, 0, strlen($str) - 1);
@@ -95,6 +95,7 @@ class RefGoogleBook
     }
 
     /**
+     * TODO : extract
      * Convert GoogleBooks URL to wiki-template {ouvrage} citation.
      *
      * @param string $url GoogleBooks URL
@@ -103,7 +104,7 @@ class RefGoogleBook
      * @throws \Exception
      * @throws \Throwable
      */
-    private function convertGBurl2OuvrageCitation(string $url): string
+    public function convertGBurl2OuvrageCitation(string $url): string
     {
         if (!GoogleLivresTemplate::isGoogleBookURL($url)) {
             throw new \DomainException('Pas de URL Google Books');
@@ -122,7 +123,7 @@ class RefGoogleBook
                 && strpos($e->getMessage(), '"message": "The volume ID could n')
             ) {
                 return sprintf(
-                    '{{lien brisé |url= %s |titre= %s |brisé le=%s |CodexBot=1}}',
+                    '{{lien brisé |url= %s |titre= %s |brisé le=%s}}',
                     $url,
                     'Ouvrage inexistant sur Google Books',
                     date('d-m-Y')

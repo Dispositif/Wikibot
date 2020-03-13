@@ -28,16 +28,19 @@ class ZiziBot extends Bot
     /**
      * Add a freaky response in the bottom of the talk page.
      *
-     * @return bool
+     * @param string|null $pageTitle
      *
+     * @return bool
      * @throws UsageException
-     * @throws Exception
      */
-    public function botTalk(): bool
+    public function botTalk(?string $pageTitle = null): bool
     {
         // ugly dependency
         $wiki = ServiceFactory::wikiApi();
-        $page = new WikiPageAction($wiki, 'Discussion utilisateur:'.getenv('BOT_NAME'));
+        if (!$pageTitle) {
+            $pageTitle = 'Discussion utilisateur:'.getenv('BOT_NAME');
+        }
+        $page = new WikiPageAction($wiki, $pageTitle);
         $last = $page->page->getRevisions()->getLatest();
 
         // No response if the last edition from bot or bot owner
@@ -48,14 +51,14 @@ class ZiziBot extends Bot
 
         $addText = $this->generateTalkText($last->getUser());
 
-        echo "Prepare to talk. Sleep 5 min...\n";
+        echo "Prepare to talk on $pageTitle / Sleep 5 min...\n";
         echo sprintf("-> %s \n", $addText);
         sleep(300);
 
         $editInfo = new EditInfo(static::BOT_TALK_SUMMARY);
         $success = $page->addToBottomOfThePage($addText, $editInfo);
 
-        return (bool) $success;
+        return (bool)$success;
     }
 
     /**
@@ -63,7 +66,6 @@ class ZiziBot extends Bot
      * @param string|null $identation
      *
      * @return string
-     *
      * @throws Exception
      */
     private function generateTalkText(?string $toEditor = null, ?string $identation = ':')
@@ -84,7 +86,7 @@ class ZiziBot extends Bot
             return null;
         }
 
-        return (string) trim($sentences[array_rand($sentences)]);
+        return (string)trim($sentences[array_rand($sentences)]);
     }
 
     /**
@@ -94,7 +96,8 @@ class ZiziBot extends Bot
     public function botContribs(): string
     {
         $url
-            = 'https://fr.wikipedia.org/w/api.php?action=query&list=usercontribs&ucuser='.getenv('BOT_NAME').'&ucnamespace=0&uclimit=40&ucprop=title|timestamp|comment&format=json';
+            = 'https://fr.wikipedia.org/w/api.php?action=query&list=usercontribs&ucuser='.getenv('BOT_NAME')
+            .'&ucnamespace=0&uclimit=40&ucprop=title|timestamp|comment&format=json';
 
         return file_get_contents($url);
     }
