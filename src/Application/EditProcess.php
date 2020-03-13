@@ -134,6 +134,15 @@ class EditProcess
             return false;
         }
 
+        // EXTERNAL DATA ANALYSIS (pas utile pour ce process)
+        try {
+            if (class_exists(DataAnalysis::class)) {
+                new DataAnalysis($this->wikiText, $title);
+            }
+        } catch (\Throwable $e) {
+            unset($e);
+        }
+
         // GET all article lines from db
         echo sprintf(">> %s rows to process\n", count($data));
 
@@ -322,7 +331,7 @@ class EditProcess
 
         // paramètre inconnu
         if (preg_match_all(
-                "#\|[^|]+<!-- ?(PARAMETRE [^>]+ N'EXISTE PAS|VALEUR SANS NOM DE PARAMETRE) ?-->#",
+                "#\|[^|]+<!-- ?(PARAMETRE [^>]+ N'EXISTE PAS|VALEUR SANS NOM DE PARAMETRE|ERREUR [^>]+) ?-->#",
                 $data['opti'],
                 $matches
             ) > 0
