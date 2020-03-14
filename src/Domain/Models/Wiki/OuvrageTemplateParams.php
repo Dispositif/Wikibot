@@ -200,8 +200,6 @@ trait OuvrageTemplateParams
             'année première édition',
             'réimpression',
             'pages totales',
-            'page', // temporaire
-            'pages', // temporaire
             'format livre',
             'format', // obsolete
             'passage',

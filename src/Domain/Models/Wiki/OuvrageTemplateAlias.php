@@ -50,8 +50,8 @@ interface OuvrageTemplateAlias
             'numéro édition' => "numéro d'édition",
             'origyear' => 'année première édition',
             'publi' => 'réimpression',
-            //            'pages' => 'pages totales', // doc - mis temporairement en paramètre normal
-            //            'page' => 'passage', // Doc - mis temporairement en paramètre normal
+            'pages' => 'pages totales', // doc - mis temporairement en paramètre normal
+            'page' => 'passage', // Doc - mis temporairement en paramètre normal
             //        'format' => 'format livre', //  ou 'format électronique' (pdf)
             'ISBN' => 'isbn',
             'isbn1' => 'isbn',
@@ -158,7 +158,10 @@ interface OuvrageTemplateAlias
             'total pages' => 'pages totales',
             'consulter en ligne' => 'lire en ligne',
             'orig-year' => 'année première édition',
-//            'nopp' =>  poubelle
+            // erreurs fréquentes
+            'coauteur' => 'co-auteur',
+
+            //            'nopp' =>  poubelle
 
         ];
 }
