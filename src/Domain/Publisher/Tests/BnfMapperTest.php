@@ -21,9 +21,6 @@ class BnfMapperTest extends TestCase
         $actual = $mapper->process($xml);
         $this::assertSame(
             [
-                //'bnf' => '35049657',
-                'isbn' => '2-85319-209-1',
-                'isbn2' => '2-33333-209-1',
                 'langue' => 'fr',
                 'langue originale' => 'it',
                 'langue titre' => null,
@@ -40,6 +37,9 @@ class BnfMapperTest extends TestCase
                 'éditeur' => 'Conseil international de la langue française / Université de la Réunion',
                 'date' => '1996',
                 'pages totales' => '622',
+                'isbn2' => '2-33333-209-1',
+                'isbn' => '2-85319-209-1',
+                //'bnf' => '35049657',
                 'infos' => [
                     'source' => 'BnF',
                     'sourceTag' => 'BnF:2019',

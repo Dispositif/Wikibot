@@ -48,10 +48,6 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
         }
 
         return [
-            //            'bnf' => $this->convertBnfIdent(), // pertinent si isbn ?
-            'isbn' => $this->xpath2string('//mxc:datafield[@tag="010"]/mxc:subfield[@code="a"][1]'),
-            'isbn2' => $this->xpath2string('//mxc:datafield[@tag="010"]/mxc:subfield[@code="a"][2]'),
-
             // Langue
             'langue' => $this->lang2wiki($this->xpath2string('//mxc:datafield[@tag="101"]/mxc:subfield[@code="a"][1]')),
             // c : Langue de l’œuvre originale
@@ -103,6 +99,10 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
             // 215
             'pages totales' => $this->convertPages(),
 
+            //            'bnf' => $this->convertBnfIdent(), // pertinent si isbn ?
+            'isbn2' => $this->xpath2string('//mxc:datafield[@tag="010"]/mxc:subfield[@code="a"][2]'),
+            'isbn' => $this->extractISBN(),
+
             // hidden data
             'infos' => [
                 'source' => 'BnF',
@@ -129,6 +129,25 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
 
         if (!empty($res)) {
             return implode($glue, $res);
+        }
+
+        return null;
+    }
+
+    private function extractISBN(): ?string
+    {
+        $isbn = $this->xpath2string('//mxc:datafield[@tag="010"]/mxc:subfield[@code="a"][1]');
+
+        // data pourrie fréquente :  "9789004232891, 9004232893"
+        if (preg_match('#([0-9]{13})#', $isbn, $matches)) {
+            return $matches[1];
+        }
+        if (preg_match('#([0-9]{10})#', $isbn, $matches)) {
+            return $matches[1];
+        }
+        // ISBN avec tiret
+        if (preg_match('#([0-9\-]{10,17})#', $isbn, $matches)) {
+            return $matches[1];
         }
 
         return null;
