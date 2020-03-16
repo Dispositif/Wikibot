@@ -49,6 +49,11 @@ class GoogleLivresTemplateTest extends TestCase
     {
         return [
             [
+                // 'id' in the middle
+                'https://books.google.fr/books?hl=fr&id=CWkrAQAAMAAJ&dq=La+dur%C3%A9e+d%27ensoleillement+n%27est+pas+suffisante+en+Afrique&focus=searchwithinvolume&q=ceintures',
+                'https://books.google.fr/books?id=CWkrAQAAMAAJ&q=ceintures',
+            ],
+            [
                 // strange format
                 'https://books.google.fr/books/about/Kate_Bush.html?id=YL0EDgAAQBAJ&printsec=frontcover&source=kp_read_button&redir_esc=y#v=onepage&q&f=false',
                 'https://books.google.fr/books?id=YL0EDgAAQBAJ&printsec=frontcover',

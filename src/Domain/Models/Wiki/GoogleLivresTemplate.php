@@ -36,8 +36,8 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
             'BuchID' => 'id',
         ];
 
-    const GOOGLEBOOK_URL_PATTERN = 'https?://(?:books|play)\.google\.[a-z\.]{2,5}/(?:books)?(?:books/[^\?]+\.html)?(?:/reader)?\?id=';
-
+    const GOOGLEBOOK_URL_PATTERN = 'https?://(?:books|play)\.google\.[a-z\.]{2,5}/(?:books)?(?:books/[^\?]+\.html)?(?:/reader)?\?(?:[a-zA-Z=&]+&)?id=';
+//hl=fr&
     protected $parametersByOrder
         = ['id', 'titre', 'couv', 'page', 'romain', 'page autre', 'surligne'];
 
@@ -134,8 +134,12 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
 
     /**
      * Instead of url_encode(). No UTF-8 encoding.
+     *
+     * @param string $str
+     *
+     * @return string
      */
-    private static function googleUrlEncode(string $str): string
+    public static function googleUrlEncode(string $str): string
     {
         return str_replace(' ', '+', trim(urldecode($str)));
     }
@@ -163,6 +167,14 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
             throw new DomainException("GoogleBook 'id' malformed");
         }
 
+        // clean encoding q= dq=
+//        if(isset($gooDat['q'])) {
+//            $gooDat['q'] = self::googleUrlEncode($gooDat['q']);
+//        }
+//        if(isset($gooDat['dq'])) {
+//            $gooDat['dq'] = self::googleUrlEncode($gooDat['dq']);
+//        }
+
         $dat = [];
         // keep only a few parameters (+'q' ?)
         // q : keywords search / dq : quoted phrase search
@@ -185,6 +197,7 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
             $googleURL = str_replace('.com', $gooDomain, $googleURL);
         }
 
+        // todo http_build_query process an urlencode, but a not encoded q= value is better
         return $googleURL.'?'.http_build_query($dat);
     }
 
