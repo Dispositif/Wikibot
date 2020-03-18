@@ -14,11 +14,64 @@ namespace App\Domain\Utils;
  */
 abstract class TextUtil
 {
+    const SKIP_PREDICT_PARAM = ['issue'];
+
     const NO_BREAK_SPACE = "\xC2\xA0"; // &#160;
 
     const NO_BREAK_THIN_SPACE = "\xE2\x80\xAF";
 
-    const ALL_PUNCTUATION = ['!', '"', '«', '»', '#', '$', '%', "'", '’', '´', '`', '^', '…', '‽', '(', ')', '*', '⁂', '+', '–', '—', '/', ':', ';', '?', '@', '[', '\\', ']', '_', '`', '{', '|', '¦', '}', '~', '<', '>', '№', '©', '®', '°', '†', '§', '∴', '∵', '¶', '•', '+'];
+    const ALL_PUNCTUATION
+        = [
+            '!',
+            '"',
+            '«',
+            '»',
+            '#',
+            '$',
+            '%',
+            "'",
+            '’',
+            '´',
+            '`',
+            '^',
+            '…',
+            '‽',
+            '(',
+            ')',
+            '*',
+            '⁂',
+            '+',
+            '–',
+            '—',
+            '/',
+            ':',
+            ';',
+            '?',
+            '@',
+            '[',
+            '\\',
+            ']',
+            '_',
+            '`',
+            '{',
+            '|',
+            '¦',
+            '}',
+            '~',
+            '<',
+            '>',
+            '№',
+            '©',
+            '®',
+            '°',
+            '†',
+            '§',
+            '∴',
+            '∵',
+            '¶',
+            '•',
+            '+',
+        ];
 
     // &#8239;
     //    const ELLIPSIS = '…';
@@ -35,7 +88,7 @@ abstract class TextUtil
     //    const TRADE = '™'; // &trade;
     //    const REG = '®'; // &reg;
     //    const COPY = '©'; // &copy;
-    const ALL_SPACES = "\xE2\x80\xAF|\xC2\xAD|\xC2\xA0|\\s"; // Used in regexps. Better than \s
+    const ALL_SPACES         = "\xE2\x80\xAF|\xC2\xAD|\xC2\xA0|\\s"; // Used in regexps. Better than \s
 
     /**
      * UTF8 first letter in upper case.
@@ -113,7 +166,7 @@ abstract class TextUtil
      *
      * @param string $str
      * @param array  $names
-     * @param int    $max   Maximum number of permutation/add/subtraction)
+     * @param int    $max Maximum number of permutation/add/subtraction)
      *
      * @return string|null
      */
@@ -134,7 +187,7 @@ abstract class TextUtil
                 $shortest = $lev;
             }
         }
-        if (isset($shortest) && $shortest <= $max) {
+        if (isset($shortest) && $shortest <= $max && !in_array($sanitized, self::SKIP_PREDICT_PARAM)) {
             return $closest;
         }
 

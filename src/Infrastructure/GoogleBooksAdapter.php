@@ -50,6 +50,7 @@ class GoogleBooksAdapter extends AbstractBookApiAdapter implements BookApiInterf
      */
     public function getDataByGoogleId(string $googleId)
     {
+        // todo count API request (quota)
         return $this->api->volumes->get($googleId);
     }
 

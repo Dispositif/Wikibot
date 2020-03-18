@@ -1,5 +1,6 @@
 ## Versions des règles de corrections/complètement ##
 
+* 0.70 : prédiction paramètre 'issue'
 * 0.69 : URL google (q/dq) + style compact plus espacé
 * 0.68 : wikilien circulaire sur titre article (@Hégésippe)
 * 0.66 : alias inconnus : 'vol' et 'mr' (@Dfeldmann)
