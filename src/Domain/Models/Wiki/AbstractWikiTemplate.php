@@ -66,9 +66,33 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
         }
     }
 
+    /**
+     * Get data from wiki-template. Also invalid param/values.
+     *
+     * @return array
+     */
+    public function toArray(): array
+    {
+        $allValue = array_merge($this->parametersValues, $this->parametersErrorFromHydrate ?? []);
+
+        return $this->deleteEmptyValueArray($allValue);
+    }
+
     public function getParamsAndAlias(): array
     {
         return array_merge($this->parametersByOrder, array_keys($this::PARAM_ALIAS));
+    }
+
+    /**
+     * Is the parameter's name valid ?
+     *
+     * @param string $paramName
+     *
+     * @return bool
+     */
+    public function isParamOrAlias(string $paramName): bool
+    {
+        return in_array($paramName, $this->getParamsAndAlias());
     }
 
     /**
@@ -235,7 +259,17 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
         // Gestion alias
         try {
             $this->checkParamName($name);
-            $name = $this->getAliasParam($name);
+            $name = $this->getAliasParam($name); // main parameter name
+
+            // Gestion des doublons de paramètres
+            if (!empty($this->getParam($name))) {
+                if (!empty($value)) {
+                    $this->log[] = "parameter $name en doublon";
+                    $this->parametersErrorFromHydrate[$name.'-doublon'] = $value;
+                }
+
+                return;
+            }
         } catch (Throwable $e) {
             unset($e);
             // hack : 1 => "ouvrage collectif"
@@ -245,6 +279,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
 
             return;
         }
+
 
         if (empty($value)) {
             // optional parameter

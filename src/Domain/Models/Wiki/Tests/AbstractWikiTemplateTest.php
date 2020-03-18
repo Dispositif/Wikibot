@@ -146,12 +146,7 @@ class AbstractWikiTemplateTest extends TestCase
         $lienWeb = new LienWebTemplate();
         $lienWeb->hydrate($data);
 
-        $lienWeb->hydrate(
-            [
-                'url' => '', // default parameter
-                'auteur2' => '', // optional parameter
-            ]
-        );
+        $lienWeb->setParam('url', '');
 
         $this::assertEquals(
             '{{lien web|titre=|url=|consulté le=}}',

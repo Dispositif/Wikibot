@@ -46,12 +46,12 @@ abstract class AbstractParametersObject
     }
 
     /**
-     * todo clean empty value ??
      *
      * @return array
      */
-    final public function toArray(): array
+    public function toArray(): array
     {
+        // todo ADD ERROR VALUE
         return $this->deleteEmptyValueArray($this->parametersValues);
     }
 

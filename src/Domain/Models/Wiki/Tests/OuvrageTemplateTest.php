@@ -14,6 +14,18 @@ use PHPUnit\Framework\TestCase;
 
 class OuvrageTemplateTest extends TestCase
 {
+    public function testDoublonAlias()
+    {
+        $ouvrage = new OuvrageTemplate();
+        $ouvrage->hydrateFromText(
+            "{{Ouvrage |titre=bla |volume=5 |vol=3}}"
+        );
+        $this::assertSame(
+            "{{Ouvrage |titre=bla |volume=5 |éditeur= |année= |isbn= |volume-doublon=3 <!--PARAMETRE 'volume-doublon' N'EXISTE PAS -->}}",
+            $ouvrage->serialize(true)
+        );
+    }
+
     /**
      * @dataProvider provideSpanInitial
      */
