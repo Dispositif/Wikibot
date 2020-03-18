@@ -244,5 +244,9 @@ trait OuvrageTemplateParams
             'extrait', // obsolete? => {{citation bloc}}
             'commentaire', // obsolete? => {{commentaire biblio}}
             'plume', // obsolète ou pas? (déc. 2019)
+
+            'archiveurl',
+            'archivedate',
+            'brisé le',
         ];
 }
