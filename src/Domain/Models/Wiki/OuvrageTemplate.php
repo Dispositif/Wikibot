@@ -29,7 +29,7 @@ class OuvrageTemplate extends AbstractWikiTemplate implements OuvrageTemplateAli
             'titre' => '', // obligatoire
             'éditeur' => '',
             'année' => '', // géré dans serialize
-            //            'pages totales' => '',
+            'pages totales' => '',
             //            'passage' => '', // pas pertinent sur biblio et liste oeuvres
             'isbn' => '',
         ];

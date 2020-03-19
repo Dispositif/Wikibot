@@ -34,7 +34,7 @@ class Wikidata2OuvrageTest extends TestCase
         $convert = new Wikidata2Ouvrage($ouvrage);
         $wdOuvrage = $convert->getOuvrage();
         $this::assertSame(
-            '{{Ouvrage|auteur1=Bob|lien auteur1=Michel Houellebecq|titre=Ma vie|lien titre=La Carte et le Territoire|éditeur=|année=|passage=407-408|isbn=}}',
+            '{{Ouvrage|auteur1=Bob|lien auteur1=Michel Houellebecq|titre=Ma vie|lien titre=La Carte et le Territoire|éditeur=|année=|passage=407-408 |pages totales=|isbn=}}',
             $wdOuvrage->serialize(true)
         );
 
@@ -42,7 +42,7 @@ class Wikidata2OuvrageTest extends TestCase
         $optimizer = new OuvrageOptimize($wdOuvrage, 'Bla');
         $optimizer->doTasks();
         $this::assertSame(
-            '{{Ouvrage|auteur1=Bob|lien auteur1=Michel Houellebecq|titre=Ma vie|lien titre=La Carte et le Territoire|éditeur=|année=|passage=407-408|isbn=}}',
+            '{{Ouvrage|auteur1=Bob|lien auteur1=Michel Houellebecq|titre=Ma vie|lien titre=La Carte et le Territoire|éditeur=|année=|passage=407-408 |pages totales=|isbn=}}',
             $optimizer->getOuvrage()->serialize(true)
         );
 

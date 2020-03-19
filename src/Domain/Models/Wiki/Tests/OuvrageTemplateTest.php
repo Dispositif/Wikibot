@@ -21,7 +21,7 @@ class OuvrageTemplateTest extends TestCase
             "{{Ouvrage |titre=bla |volume=5 |vol=3}}"
         );
         $this::assertSame(
-            "{{Ouvrage |titre=bla |volume=5 |éditeur= |année= |isbn= |volume-doublon=3 <!--PARAMETRE 'volume-doublon' N'EXISTE PAS -->}}",
+            "{{Ouvrage |titre=bla |volume=5 |éditeur= |année= |pages totales= |isbn= |volume-doublon=3 <!--PARAMETRE 'volume-doublon' N'EXISTE PAS -->}}",
             $ouvrage->serialize(true)
         );
     }
