@@ -26,7 +26,6 @@ class PublisherAction
      * import source from URL with Guzzle.
      *
      * @return string|null
-     *
      * @throws Exception
      */
     public function getHTMLSource(): string
@@ -40,7 +39,7 @@ class PublisherAction
         $response = $client->get($this->url);
 
         if (200 !== $response->getStatusCode()) {
-            throw new Exception('response error '.$response);
+            throw new Exception('response error '.$response->getStatusCode().' '.$response->getReasonPhrase());
         }
 
         return $response->getBody()->getContents();
@@ -52,7 +51,6 @@ class PublisherAction
      * @param string $html
      *
      * @return mixed
-     *
      * @throws Exception
      */
     public function extractLdJson(string $html)
@@ -71,13 +69,14 @@ class PublisherAction
             $data = json_decode($json, true);
 
             // filtrage : @type => BreadcrumbList (lemonde)
-            if ('BreadcrumbList' === $data['@type']) {
+            // TODO : c'est quoi ça ?
+            if (isset($data['@type']) && 'BreadcrumbList' === $data['@type']) {
                 continue;
             }
 
             return $data;
         }
 
-        throw new Exception('no results');
+        throw new Exception('extract LD-JSON no results');
     }
 }
