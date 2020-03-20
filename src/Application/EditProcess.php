@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Application;
 
+use App\Domain\RefGoogleBook;
 use App\Domain\Utils\WikiTextUtil;
 use App\Infrastructure\DbAdapter;
 use App\Infrastructure\ServiceFactory;
@@ -163,6 +164,16 @@ class EditProcess
             $this->db->skipArticle($title);
 
             return false;
+        }
+
+        // Conversion <ref>http//books.google
+
+        try {
+            $refGooConverter = new RefGoogleBook();
+            $this->wikiText = $refGooConverter->process($this->wikiText);
+        } catch (Throwable $e) {
+            echo $e->getMessage();
+            unset($e);
         }
 
         // EDIT THE PAGE

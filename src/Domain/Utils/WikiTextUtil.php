@@ -12,6 +12,24 @@ namespace App\Domain\Utils;
 class WikiTextUtil extends TextUtil
 {
     /**
+     * todo {{ref}}
+     *
+     * @param string $text
+     *
+     * @return array [0=>['<ref>fu</ref>', 'fu'], 1=> ...]
+     */
+    public static function extractAllRefs(string $text): array
+    {
+        // s = "\n" include in "." // m = ^multiline$
+        // Exclusion des imbrications
+        if (!preg_match_all('#<ref[^>]*>((?:(?!</ref>).)*)</ref>#ism', $text, $refs, PREG_SET_ORDER)) {
+            return [];
+        }
+
+        return $refs;
+    }
+
+    /**
      * remove wiki encoding : italic, bold, links [ ] and [[fu|bar]] => bar
      * replace non-breaking spaces
      * replace {{lang|en|fubar}} => fubar.
@@ -143,5 +161,21 @@ class WikiTextUtil extends TextUtil
         }
 
         return $text;
+    }
+
+    /**
+     * Strip the final point (".") as in <ref> ending.
+     *
+     * @param string $str
+     *
+     * @return string
+     */
+    public static function stripFinalPoint(string $str): string
+    {
+        if (substr($str, -1, 1) === '.') {
+            return substr($str, 0, strlen($str) - 1);
+        }
+
+        return $str;
     }
 }

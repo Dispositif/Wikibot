@@ -52,7 +52,13 @@ abstract class TemplateParser extends WikiTextUtil
             /**
              * @var AbstractWikiTemplate
              */
-            $tplObject = WikiTemplateFactory::create($tplName);
+            try{
+                $tplObject = WikiTemplateFactory::create($tplName);
+            }catch (\Throwable $e){
+                unset($e);
+                continue;
+            }
+
             if (!is_object($tplObject) || !is_subclass_of($tplObject, AbstractWikiTemplate::class)) {
                 continue;
             }

@@ -7,6 +7,7 @@ namespace App\Application\Examples;
 use App\Application\Bot;
 use App\Application\WikiPageAction;
 use App\Domain\RefGoogleBook;
+use App\Infrastructure\CirrusSearch;
 use App\Infrastructure\ServiceFactory;
 use Mediawiki\DataModel\EditInfo;
 
@@ -23,23 +24,21 @@ $taskName = "bot : Amélioration bibliographique : lien Google Books ⇒ {ouvrag
 $bot = new Bot();
 
 // Get page list from API CirrusSearch
-$cirrus
-    = 'https://fr.wikipedia.org/w/api.php?action=query&list=search&srsearch=%22https://books.google%22%20insource:/\%3Cref[^\%3E]*\%3Ehttps\:\/\/books\.google/&formatversion=2&format=json&srnamespace=0&srlimit=100&srqiprofile=popular_inclinks_pv&srsort=last_edit_desc';
-$json = file_get_contents($cirrus);
-file_put_contents(__DIR__.'/log_refGoogleBot.json', $json);
-$myArray = json_decode($json, true);
-$result = $myArray['query']['search'];
+//$cirrus
+//    = 'https://fr.wikipedia.org/w/api.php?action=query&list=search&srsearch=%22https://books.google%22%20insource:/\%3Cref[^\%3E]*\%3Ehttps\:\/\/books\.google/&formatversion=2&format=json&srnamespace=0&srlimit=100&srqiprofile=popular_inclinks_pv&srsort=last_edit_desc';
 
-//$result = [0=>['title'=>'Hror']];
+$cirrusURL
+    = 'https://fr.wikipedia.org/w/api.php?action=query&list=search&srsearch=%22https://books.google%22%20insource:/\%3Cref[^\%3E]*\%3Ehttps\:\/\/books\.google/&formatversion=2&format=json&srnamespace=0&srlimit=100&srsort=random';
 
-foreach ($result as $res) {
-    $title = $res['title'];
+$search = new CirrusSearch();
+$titles = $search->search($cirrusURL);
+
+foreach ($titles as $title) {
+    echo "$title \n";
     sleep(2);
 
     $bot->checkStopOnTalkpage(true);
 
-    $title = trim($title);
-    echo "$title \n";
 
     $pageAction = new WikiPageAction($wiki, $title); // throw Exception
     if ($pageAction->getNs() !== 0) {
@@ -65,14 +64,14 @@ foreach ($result as $res) {
         continue;
     }
 
-//    $ask = readline("*** ÉDITION ? [y/n]");
-//    if ('y' !== $ask) {
-//        continue;
-//    }
+    //    $ask = readline("*** ÉDITION ? [y/n]");
+    //    if ('y' !== $ask) {
+    //        continue;
+    //    }
 
     $result = $pageAction->editPage($newText, new EditInfo($taskName, true, true));
     dump($result);
-    echo "Sleep 3min\n";
-    sleep(180);
+    echo "Sleep 30\n";
+    sleep(30);
 }
 

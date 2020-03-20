@@ -13,6 +13,7 @@ use App\Domain\Models\Wiki\GoogleLivresTemplate;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\Publisher\GoogleBookMapper;
 use App\Domain\Utils\NumberUtil;
+use App\Domain\Utils\WikiTextUtil;
 use App\Infrastructure\GoogleBooksAdapter;
 
 /**
@@ -49,14 +50,14 @@ class RefGoogleBook
     {
         $refsData = $this->extractAllGoogleRefs($text);
         if (empty($refsData)) {
-            echo "Pas d'URL GB trouvée";
+            echo "Pas d'URL GB trouvée\n";
 
             return $text;
         }
 
         foreach ($refsData as $ref) {
             try {
-                $citation = $this->convertGBurl2OuvrageCitation($this->stripFinalPoint($ref[1]));
+                $citation = $this->convertGBurl2OuvrageCitation(WikiTextUtil::stripFinalPoint($ref[1]));
             } catch (\Exception $e) {
                 echo "Exception ".$e->getMessage();
                 continue;
@@ -75,23 +76,6 @@ class RefGoogleBook
         }
 
         return $text;
-    }
-
-    /**
-     * Strip the final point (".") as in <ref> ending.
-     * TODO move to WikiRef or TextUtil class
-     *
-     * @param string $str
-     *
-     * @return string
-     */
-    public function stripFinalPoint(string $str): string
-    {
-        if (substr($str, -1, 1) === '.') {
-            return substr($str, 0, strlen($str) - 1);
-        }
-
-        return $str;
     }
 
     /**
