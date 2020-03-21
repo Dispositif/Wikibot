@@ -17,28 +17,28 @@ use DateTime;
  *
  * @package App\Domain\Publisher
  */
-class LeMondeMapper extends AbstractBookMapper implements MapperInterface
+class LeMondeMapper extends WebMapper
 {
     public function process($data): array
     {
-        if ('NewsArticle' !== $data['@type']) {
+        if(!isset($data['JSON-LD'])) {
+            return [];
+        }
+        $ld = $data['JSON-LD'];
+
+        if ($ld && isset($ld['@type']) && 'NewsArticle' !== $ld['@type']) {
             throw new \Exception('not NewsArticle');
         }
 
         return [
             //            'langue' => 'fr',
             'périodique' => '[[Le Monde]]',
-            'titre' => trim(html_entity_decode($data['headline'])),
-            'lire en ligne' => $data['mainEntityOfPage']['@id'],
-            //            'auteur1' => '', // y'a pas. Pfff !
-            'date' => $this->convertDate($data['datePublished']), // 2020-03-20T04:31:07+01:00
+            'titre' => trim(html_entity_decode($ld['headline'])),
+            'lire en ligne' => $ld['mainEntityOfPage']['@id'],
+            'auteur1' =>  $data['meta']['og:article:author'] ?? null,
+            // ['meta']['og:article:content_tier'] === 'free'
+            'date' => $this->convertDate($ld['datePublished']), // 2020-03-20T04:31:07+01:00
         ];
     }
 
-    private function convertDate(string $str): string
-    {
-        $date = new DateTime($str);
-
-        return $date->format('d-m-Y');
-    }
 }

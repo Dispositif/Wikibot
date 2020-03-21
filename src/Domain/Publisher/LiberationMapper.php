@@ -18,10 +18,15 @@ use DateTime;
  *
  * @package App\Domain\Publisher
  */
-class LiberationMapper extends AbstractBookMapper implements MapperInterface
+class LiberationMapper extends WebMapper
 {
     public function process($data): array
     {
+        if(!isset($data['JSON-LD'])) {
+            return [];
+        }
+        $data = $data['JSON-LD'];
+
         return [
             //            'langue' => 'fr',
             'périodique' => '[[Libération (journal)|Libération]]',
@@ -36,39 +41,4 @@ class LiberationMapper extends AbstractBookMapper implements MapperInterface
         ];
     }
 
-    private function convertAuteur($data, $indice)
-    {
-        if (isset($data['author']) && isset($data['author'][$indice])
-            && (!isset($data['author'][$indice]['@type'])
-                || 'Person' === $data['author'][$indice]['@type'])
-        ) {
-            return html_entity_decode($data['author'][$indice]['name']);
-        }
-
-        return null;
-    }
-
-    private function convertInstitutionnel($data)
-    {
-        if (isset($data['author']) && isset($data['author'][0]) && isset($data['author'][0]['@type'])
-            && 'Person' !== $data['author'][0]['@type']
-        ) {
-            return html_entity_decode($data['author'][0]['name']);
-        }
-
-        return null;
-    }
-
-    /**
-     * @param string $str
-     *
-     * @return string
-     * @throws \Exception
-     */
-    private function convertDate(string $str): string
-    {
-        $date = new DateTime($str);
-
-        return $date->format('d-m-Y');
-    }
 }

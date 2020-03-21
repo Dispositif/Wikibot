@@ -55,8 +55,6 @@ class ArticleFromURL
      */
     private function process(): ?ArticleOrLienBriseInterface
     {
-        //$text = file_get_contents(__DIR__.'/../resources/tmp_news_figaro.html');
-
         $mapper = $this->selectMapper($this->url);
         if (!$mapper) {
             return null;
@@ -64,30 +62,31 @@ class ArticleFromURL
         sleep(10);
         $arrayLD = [];
         try {
-            $text = $this->publisherAction->getHTMLSource();
-            $arrayLD = $this->publisherAction->extractLdJson($text);
+            $html = $this->publisherAction->getHTMLSource();
+            $htmlData = $this->publisherAction->extractWebData($html);
         } catch (\Throwable $e) {
             if (strpos($e->getMessage(), '404') !== false) {
                 dump('****** lien brisé !!!!');
                 $lienBrise = WikiTemplateFactory::create('lien brisé');
                 $lienBrise->hydrate(['url' => $this->url, 'titre' => 'Article de presse', 'brisé le' => date('d-m-Y')]);
 
-                return $lienBrise;
+                return $lienBrise; // ok
             }
             echo "*** Erreur ".$e->getMessage()."\n";
 
             return null;
         }
 
-        if (empty($arrayLD)) {
-            echo "*** Pas de donnée Json-LD\n";
+        if (empty($htmlData)) {
+            echo "*** Pas de data Json-LD ou meta\n";
 
             return null;
         }
+        $htmlData['url'] = $this->url;
 
         // TODO : select the mapper
         try {
-            $articleData = $mapper->process($arrayLD);
+            $articleData = $mapper->process($htmlData);
         } catch (\Throwable $e) {
             echo sprintf(
                 "SKIP : %s %s:%s \n",
@@ -132,4 +131,5 @@ class ArticleFromURL
 
         return null;
     }
+
 }

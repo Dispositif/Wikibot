@@ -23,8 +23,9 @@ class PublisherActionTest extends TestCase
         $publisher = new PublisherAction('foo');
 
         $source = file_get_contents(__DIR__.'/exampleWebpage.html');
-        $actualArray = $publisher->extractLdJson($source);
-        $this::assertArrayHasKey('@type', $actualArray);
-        $this::assertArrayHasKey('headline', $actualArray);
+        $data = $publisher->extractWebData($source);
+        $jsonLd = $data['JSON-LD'];
+        $this::assertArrayHasKey('@type', $jsonLd);
+        $this::assertArrayHasKey('headline', $jsonLd);
     }
 }

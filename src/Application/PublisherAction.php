@@ -13,6 +13,12 @@ use App\Infrastructure\TagParser;
 use Exception;
 use GuzzleHttp\Client;
 
+/**
+ * todo Move Infra?
+ * Class PublisherAction
+ *
+ * @package App\Application
+ */
 class PublisherAction
 {
     private $url;
@@ -46,14 +52,28 @@ class PublisherAction
     }
 
     /**
+     * @param string $html
+     *
+     * @return array
+     * @throws Exception
+     */
+    public function extractWebData(string $html): array
+    {
+        $ld = $this->extractLdJson($html);
+        $meta = $this->getMetaTags($html);
+
+        return ['JSON-LD' => $ld, 'meta' => $meta];
+    }
+
+    /**
      * extract LD-JSON metadata from <script type="application/ld+json">.
      *
      * @param string $html
      *
-     * @return mixed
+     * @return array
      * @throws Exception
      */
-    public function extractLdJson(string $html)
+    private function extractLdJson(string $html): array
     {
         $parser = new TagParser();
         $results = $parser->importHtml($html)->xpathResults(
@@ -67,6 +87,9 @@ class PublisherAction
                 continue;
             }
             $data = json_decode($json, true);
+            if (!is_array($data)) {
+                return [];
+            }
 
             // filtrage : @type => BreadcrumbList (lemonde)
             // TODO : c'est quoi ça ?
@@ -77,6 +100,37 @@ class PublisherAction
             return $data;
         }
 
-        throw new Exception('extract LD-JSON no results');
+        return [];
+    }
+
+    /**
+     * todo move/refac/delete?
+     *
+     * @param string $str
+     *
+     * @return array
+     */
+    private function getMetaTags(string $str): array
+    {
+        $pattern = '
+  ~<\s*meta\s
+  # using lookahead to capture type to $1
+    (?=[^>]*?
+    \b(?:name|property|http-equiv)\s*=\s*
+    (?|"\s*([^"]*?)\s*"|\'\s*([^\']*?)\s*\'|
+    ([^"\'>]*?)(?=\s*/?\s*>|\s\w+\s*=))
+  )
+  # capture content to $2
+  [^>]*?\bcontent\s*=\s*
+    (?|"\s*([^"]*?)\s*"|\'\s*([^\']*?)\s*\'|
+    ([^"\'>]*?)(?=\s*/?\s*>|\s\w+\s*=))
+  [^>]*>
+  ~ix';
+
+        if (preg_match_all($pattern, $str, $out)) {
+            return array_combine($out[1], $out[2]);
+        }
+
+        return [];
     }
 }
