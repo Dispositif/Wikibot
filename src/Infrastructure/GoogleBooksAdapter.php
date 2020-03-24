@@ -52,7 +52,16 @@ class GoogleBooksAdapter extends AbstractBookApiAdapter implements BookApiInterf
     public function getDataByIsbn(string $isbn)
     {
         $this->checkGoogleQuota();
+
         return $this->api->volumes->byIsbn($isbn);
+    }
+
+    private function checkGoogleQuota()
+    {
+        if ($this->quotaCounter->getCount() > 1000) {
+            throw new \DomainException('Quota Google 1000 dépassé');
+        }
+        $this->quotaCounter->increment();
     }
 
     /**
@@ -63,14 +72,8 @@ class GoogleBooksAdapter extends AbstractBookApiAdapter implements BookApiInterf
     public function getDataByGoogleId(string $googleId)
     {
         $this->checkGoogleQuota();
-        return $this->api->volumes->get($googleId);
-    }
 
-    private function checkGoogleQuota(){
-        if($this->quotaCounter->getCount() > 1000 ){
-            throw new \DomainException('Quota Google 1000 dépassé');
-        }
-        $this->quotaCounter->increment();
+        return $this->api->volumes->get($googleId);
     }
 
     /**

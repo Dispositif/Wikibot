@@ -22,7 +22,7 @@ use Throwable;
  */
 class GoogleQuota
 {
-    const FILENAME        = __DIR__.'/resources/googlequota.json';
+    const FILENAME        = __DIR__.'/resources/google_quota.json';
     const REBOOT_TIMEZONE = 'America/Los_Angeles';
 
     /**
@@ -47,7 +47,7 @@ class GoogleQuota
     {
         $data = $this->getFileData();
         $this->lastDate = new \DateTime($data['date'], new \DateTimeZone(self::REBOOT_TIMEZONE));
-        $this->count = (int) $data['count'];
+        $this->count = (int)$data['count'];
 
         // Today reboot date/time of the quota
         $todayBoot = new \DateTime();
@@ -58,23 +58,23 @@ class GoogleQuota
     }
 
     /**
-     * @return int
+     * @return array
+     * @throws ConfigException
      */
-    public function getCount(): int
+    private function getFileData(): array
     {
-        $this->checkNewDay();
+        if (!file_exists(static::FILENAME)) {
+            return ['date' => '2020-01-01T00:00:20-07:00', 'count' => 0];
+        }
 
-        return $this->count;
-    }
+        try {
+            $json = file_get_contents(self::FILENAME);
+            $array = json_decode($json, true);
+        } catch (Throwable $e) {
+            throw new ConfigException('file malformed.');
+        }
 
-    /**
-     *
-     */
-    public function increment(): void
-    {
-        $this->checkNewDay();
-        $this->count = $this->count + 1;
-        $this->saveFile();
+        return $array;
     }
 
     private function checkNewDay(): void
@@ -111,23 +111,22 @@ class GoogleQuota
     }
 
     /**
-     * @return array
-     * @throws ConfigException
+     * @return int
      */
-    private function getFileData(): array
+    public function getCount(): int
     {
-        if (!file_exists(static::FILENAME)) {
-            // todo create file ?
-            throw new ConfigException('No GoogleQuota file found.');
-        }
+        $this->checkNewDay();
 
-        try {
-            $json = file_get_contents(self::FILENAME);
-            $array = json_decode($json, true);
-        } catch (Throwable $e) {
-            throw new ConfigException('file malformed.');
-        }
+        return $this->count;
+    }
 
-        return $array;
+    /**
+     *
+     */
+    public function increment(): void
+    {
+        $this->checkNewDay();
+        $this->count = $this->count + 1;
+        $this->saveFile();
     }
 }
