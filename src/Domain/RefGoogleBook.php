@@ -181,7 +181,7 @@ class RefGoogleBook
         $data = $mapper->process($volume);
 
         // Generate wiki-template {ouvrage}
-        $ouvrage = new OuvrageTemplate();
+        $ouvrage = \App\Domain\WikiTemplateFactory::create('ouvrage');
         $ouvrage->hydrate($data);
 
         // cache

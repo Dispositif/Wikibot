@@ -7,6 +7,7 @@ namespace App\Domain\Publisher\Tests;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\OuvrageOptimize;
 use App\Domain\Publisher\Wikidata2Ouvrage;
+use App\Domain\WikiTemplateFactory;
 use PHPUnit\Framework\TestCase;
 
 include __DIR__.'/../../../Application/myBootstrap.php';
@@ -21,7 +22,7 @@ class Wikidata2OuvrageTest extends TestCase
         $this::markTestSkipped("test d'integration avec requete WIKIDATA");
         // besoin bootstrap user-agent pour requete ?
 
-        $ouvrage = new OuvrageTemplate();
+        $ouvrage = WikiTemplateFactory::create('ouvrage');
         $ouvrage->hydrateFromText('{{Ouvrage|auteur=Bob|titre=Ma vie|passage=407-408}}');
         // Houellebecq : La carte et le Territoire
         $ouvrage->setInfos(

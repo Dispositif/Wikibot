@@ -38,7 +38,7 @@ class TemplateConverter
      */
     public static function ArticleFromOuvrage(OuvrageTemplate $ouvrage): ?ArticleTemplate
     {
-        $article = new ArticleTemplate();
+        $article = \App\Domain\WikiTemplateFactory::create('article');
         try {
             $data = self::convertDataOuvrage2Article($ouvrage->toArray());
 

@@ -100,10 +100,10 @@ class ArticleFromURL
 
 
         if (!empty($articleData)) {
-            $article = new ArticleTemplate();
+            $article = WikiTemplateFactory::create('article');
             $article->hydrate($articleData);
 
-            return $article;
+            return $article; // ok
         }
 
         return null;

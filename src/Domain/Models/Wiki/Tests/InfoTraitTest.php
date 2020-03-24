@@ -19,7 +19,7 @@ class InfoTraitTest extends TestCase
      */
     public function testInfoTrait()
     {
-        $ouvrage = new OuvrageTemplate();
+        $ouvrage = \App\Domain\WikiTemplateFactory::create('ouvrage');
         $ouvrage->hydrate(
             [
                 'auteur' => 'Michou',

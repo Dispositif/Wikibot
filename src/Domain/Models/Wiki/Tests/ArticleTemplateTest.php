@@ -60,7 +60,7 @@ class ArticleTemplateTest extends TestCase
      */
     public function testConvertFromOuvrage(string $ouvrageSerial, string $articleSerial)
     {
-        $ouvrage = new OuvrageTemplate();
+        $ouvrage = \App\Domain\WikiTemplateFactory::create('ouvrage');
         $ouvrage->hydrateFromText($ouvrageSerial);
 
         $article = TemplateConverter::ArticleFromOuvrage($ouvrage);

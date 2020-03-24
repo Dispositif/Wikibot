@@ -11,6 +11,7 @@ namespace App\Domain\Models\Wiki\Tests;
 
 use App\Domain\Models\Wiki\LienWebTemplate;
 use App\Domain\Models\Wiki\OuvrageTemplate;
+use App\Domain\WikiTemplateFactory;
 use Exception;
 use PHPUnit\Framework\TestCase;
 
@@ -18,7 +19,7 @@ class AbstractWikiTemplateTest extends TestCase
 {
     public function testOuvrageSerialize()
     {
-        $ouvrage = new OuvrageTemplate();
+        $ouvrage = WikiTemplateFactory::create('ouvrage');
         $ouvrage->hydrate(
             [
                 'nom1' => 'Michou',
@@ -50,7 +51,7 @@ class AbstractWikiTemplateTest extends TestCase
             'titre' => 'foo bar',
         ];
 
-        $lienWeb = new LienWebTemplate();
+        $lienWeb = WikiTemplateFactory::create('lien web');
         $lienWeb->hydrate($data);
 
         $this::assertEquals(
@@ -85,7 +86,7 @@ class AbstractWikiTemplateTest extends TestCase
             'titre' => 'Foo bar',
         ];
 
-        $lienWeb = new LienWebTemplate();
+        $lienWeb = WikiTemplateFactory::create('lien web');
         $lienWeb->hydrate($data);
         $this::assertEquals(
             [
@@ -103,7 +104,7 @@ class AbstractWikiTemplateTest extends TestCase
     //        $data = [
     //            'fu' => 'bar',
     //        ];
-    //        $lienWeb = new LienWebTemplate();
+    //        $lienWeb = \App\Domain\WikiTemplateFactory::create('lien web');
     //        $this::expectException(\Exception::class);
     //        // no parameter "fu" in template "lien web"
     //        $lienWeb->hydrate($data);
@@ -111,7 +112,7 @@ class AbstractWikiTemplateTest extends TestCase
 
     public function testAliasParameter()
     {
-        $lienWeb = new LienWebTemplate();
+        $lienWeb = WikiTemplateFactory::create('lien web');
         $lienWeb->hydrate(
             [
                 'lang' => 'fr',
@@ -125,7 +126,7 @@ class AbstractWikiTemplateTest extends TestCase
 
     public function testMagicGetter()
     {
-        $lienWeb = new LienWebTemplate();
+        $lienWeb = WikiTemplateFactory::create('lien web');
         $lienWeb->hydrate(
             [
                 'url' => 'bla',
@@ -143,7 +144,7 @@ class AbstractWikiTemplateTest extends TestCase
             'url' => 'http://google.com',
         ];
 
-        $lienWeb = new LienWebTemplate();
+        $lienWeb = WikiTemplateFactory::create('lien web');
         $lienWeb->hydrate($data);
 
         $lienWeb->setParam('url', '');
@@ -161,7 +162,7 @@ class AbstractWikiTemplateTest extends TestCase
             'langue' => 'fr',
         ];
 
-        $lienWeb = new LienWebTemplate();
+        $lienWeb = WikiTemplateFactory::create('lien web');
         $lienWeb->hydrate($data);
         $lienWeb->setParamOrderByUser(['url', 'langue', 'titre']);
 
