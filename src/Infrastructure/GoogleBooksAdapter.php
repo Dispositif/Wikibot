@@ -24,6 +24,11 @@ class GoogleBooksAdapter extends AbstractBookApiAdapter implements BookApiInterf
     protected $mapper;
 
     // todo inject + factory
+    /**
+     * @var GoogleQuota
+     */
+    private $quotaCounter;
+
     public function __construct()
     {
         $api = new GoogleBooks(
@@ -36,10 +41,17 @@ class GoogleBooksAdapter extends AbstractBookApiAdapter implements BookApiInterf
         // 'country' => 'FR' (ISO-3166 Country Codes?)
         $this->api = $api;
         $this->mapper = new GoogleBookMapper();
+        $this->quotaCounter = new GoogleQuota();
     }
 
+    /**
+     * @param string $isbn
+     *
+     * @return mixed
+     */
     public function getDataByIsbn(string $isbn)
     {
+        $this->checkGoogleQuota();
         return $this->api->volumes->byIsbn($isbn);
     }
 
@@ -50,8 +62,15 @@ class GoogleBooksAdapter extends AbstractBookApiAdapter implements BookApiInterf
      */
     public function getDataByGoogleId(string $googleId)
     {
-        // todo count API request (quota)
+        $this->checkGoogleQuota();
         return $this->api->volumes->get($googleId);
+    }
+
+    private function checkGoogleQuota(){
+        if($this->quotaCounter->getCount() > 1000 ){
+            throw new \DomainException('Quota Google 1000 dépassé');
+        }
+        $this->quotaCounter->increment();
     }
 
     /**
