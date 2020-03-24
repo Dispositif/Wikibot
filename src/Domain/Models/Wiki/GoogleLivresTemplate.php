@@ -185,9 +185,10 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
             }
         }
         // gestion doublon inutile q= dq= car q= prévaut pour affichage
-        if (isset($dat['q']) && isset($dat['dq'])) {
-            unset($dat['dq']);
-        }
+        // FIXED : https://fr.wikipedia.org/w/index.php?title=Foudre_de_Catatumbo&diff=next&oldid=168721836&diffmode=source
+//        if (isset($dat['q']) && isset($dat['dq'])) {
+//            unset($dat['dq']);
+//        }
 
         $googleURL = self::DEFAULT_GOOGLEBOOK_URL;
 
