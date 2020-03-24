@@ -15,6 +15,7 @@ use App\Infrastructure\DbAdapter;
 use App\Infrastructure\ServiceFactory;
 use Exception;
 use LogicException;
+use Mediawiki\Api\UsageException;
 use Mediawiki\DataModel\EditInfo;
 use Normalizer;
 use Throwable;
@@ -54,25 +55,51 @@ class EditProcess
     private $minorFlag = true;
     // Bot flag on edit
     private $botFlag = true;
+    /**
+     * @var Memory
+     */
+    private $memory;
+    /**
+     * @var RefGoogleBook
+     */
+    private $refGooConverter;
+    /**
+     * @var DataAnalysis|null
+     */
+    private $dataAnalysis;
 
-    public function __construct()
+    public function __construct(DbAdapter $dbAdapter, Bot $bot, Memory $memory, RefGoogleBook $refGoogleBook,
+        ?DataAnalysis $dataAnalysis=null)
     {
-        $this->db = new DbAdapter();
-        $this->bot = new Bot();
+        $this->db = $dbAdapter;
+        $this->bot = $bot;
+        $this->memory = $memory;
+        $this->refGooConverter = $refGoogleBook;
+        if($dataAnalysis) {
+            $this->dataAnalysis = $dataAnalysis;
+        }
 
         $this->wikiLogin(true);
     }
 
+    /**
+     * @param bool $forceLogin
+     *
+     * @throws UsageException
+     */
+    private function wikiLogin($forceLogin = false): void
+    {
+        $this->wiki = ServiceFactory::wikiApi($forceLogin);
+    }
+
     public function run(): void
     {
-        $memory = new Memory();
         while (true) {
             echo "\n-------------------------------------\n\n";
             echo date("Y-m-d H:i")."\n";
             if ($this->verbose) {
-                $memory->echoMemory(true);
+                $this->memory->echoMemory(true);
             }
-
             $this->pageProcess();
         }
     }
@@ -87,7 +114,7 @@ class EditProcess
 
         if (empty($data)) {
             echo "SKIP : no row to process\n";
-            throw new \Exception('no row to process');
+            throw new Exception('no row to process');
         }
 
         try {
@@ -137,10 +164,10 @@ class EditProcess
 
         // EXTERNAL DATA ANALYSIS (pas utile pour ce process)
         try {
-            if (class_exists(DataAnalysis::class)) {
-                new DataAnalysis($this->wikiText, $title);
+            if (!is_null($this->dataAnalysis)) {
+                $this->dataAnalysis->process($this->wikiText, $title);
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             unset($e);
         }
 
@@ -169,8 +196,7 @@ class EditProcess
         // Conversion <ref>http//books.google
 
         try {
-            $refGooConverter = new RefGoogleBook();
-            $this->wikiText = $refGooConverter->process($this->wikiText);
+            $this->wikiText = $this->refGooConverter->process($this->wikiText);
         } catch (Throwable $e) {
             echo $e->getMessage();
             unset($e);
@@ -193,11 +219,11 @@ class EditProcess
         try {
             $editInfo = new EditInfo($miniSummary, $this->minorFlag, $this->botFlag);
             $success = $page->editPage(Normalizer::normalize($this->wikiText), $editInfo);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             // Invalid CSRF token.
             if (strpos($e->getMessage(), 'Invalid CSRF token') !== false) {
                 echo "*** Invalid CSRF token \n";
-                throw new \Exception('Invalid CSRF token');
+                throw new Exception('Invalid CSRF token');
             } else {
                 dump($e); // todo log
                 sleep(60);
@@ -242,6 +268,23 @@ class EditProcess
         return $success;
     }
 
+    /**
+     * @throws UsageException
+     */
+    private function initialize(): void
+    {
+        // initialisation vars
+        $this->botFlag = true;
+        $this->errorWarning = [];
+        $this->wikiText = null;
+        $this->citationSummary = [];
+        $this->importantSummary = [];
+        $this->minorFlag = true;
+        $this->nbRows = 0;
+
+        $this->bot->checkStopOnTalkpage(true);
+    }
+
     private function dataProcess(array $data): bool
     {
         $origin = $data['raw'];
@@ -281,50 +324,6 @@ class EditProcess
         $this->nbRows++;
 
         return true;
-    }
-
-    /**
-     * Generate wiki edition summary.
-     *
-     * @return string
-     */
-    public function generateSummary(): string
-    {
-        // Start summary with "Bot" when using botflag, else "*"
-        $prefix = ($this->botFlag) ? 'bot' : '☆';
-        // add "/!\" when errorWarning
-        $prefix .= (!empty($this->errorWarning)) ? ' ⚠' : '';
-
-
-        // basic modifs
-        $citeSummary = implode(' ', $this->citationSummary);
-        // replace by list of modifs to verify by humans
-        if (!empty($this->importantSummary)) {
-            $citeSummary = implode(', ', $this->importantSummary);
-        }
-
-        $summary = sprintf(
-            '%s [%s/%s] %s %s : %s',
-            $prefix,
-            str_replace('v', '', $this->bot::getGitVersion()),
-            str_replace(['v0.', 'v1.'], '', $this->citationVersion),
-            self::TASK_NAME,
-            $this->nbRows,
-            $citeSummary
-        );
-
-        if (!empty($this->importantSummary)) {
-            $summary .= '...';
-        }
-
-        // shrink long summary if no important details to verify
-        if (empty($this->importantSummary)) {
-            $length = strlen($summary);
-            $summary = mb_substr($summary, 0, 80);
-            $summary .= ($length > strlen($summary)) ? '…' : '';
-        }
-
-        return $summary;
     }
 
     /**
@@ -430,6 +429,50 @@ class EditProcess
     }
 
     /**
+     * Generate wiki edition summary.
+     *
+     * @return string
+     */
+    public function generateSummary(): string
+    {
+        // Start summary with "Bot" when using botflag, else "*"
+        $prefix = ($this->botFlag) ? 'bot' : '☆';
+        // add "/!\" when errorWarning
+        $prefix .= (!empty($this->errorWarning)) ? ' ⚠' : '';
+
+
+        // basic modifs
+        $citeSummary = implode(' ', $this->citationSummary);
+        // replace by list of modifs to verify by humans
+        if (!empty($this->importantSummary)) {
+            $citeSummary = implode(', ', $this->importantSummary);
+        }
+
+        $summary = sprintf(
+            '%s [%s/%s] %s %s : %s',
+            $prefix,
+            str_replace('v', '', $this->bot::getGitVersion()),
+            str_replace(['v0.', 'v1.'], '', $this->citationVersion),
+            self::TASK_NAME,
+            $this->nbRows,
+            $citeSummary
+        );
+
+        if (!empty($this->importantSummary)) {
+            $summary .= '...';
+        }
+
+        // shrink long summary if no important details to verify
+        if (empty($this->importantSummary)) {
+            $length = strlen($summary);
+            $summary = mb_substr($summary, 0, 80);
+            $summary .= ($length > strlen($summary)) ? '…' : '';
+        }
+
+        return $summary;
+    }
+
+    /**
      * @param array $rows Collection of citations
      *
      * @return bool
@@ -463,7 +506,7 @@ class EditProcess
                     $id
                 );
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             unset($e);
         }
 
@@ -486,33 +529,6 @@ class EditProcess
 
             return false;
         }
-    }
-
-    /**
-     * @throws \Mediawiki\Api\UsageException
-     */
-    private function initialize(): void
-    {
-        // initialisation vars
-        $this->botFlag = true;
-        $this->errorWarning = [];
-        $this->wikiText = null;
-        $this->citationSummary = [];
-        $this->importantSummary = [];
-        $this->minorFlag = true;
-        $this->nbRows = 0;
-
-        $this->bot->checkStopOnTalkpage(true);
-    }
-
-    /**
-     * @param bool $forceLogin
-     *
-     * @throws \Mediawiki\Api\UsageException
-     */
-    private function wikiLogin($forceLogin = false): void
-    {
-        $this->wiki = ServiceFactory::wikiApi($forceLogin);
     }
 
 }

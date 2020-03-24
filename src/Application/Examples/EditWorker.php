@@ -9,7 +9,13 @@ declare(strict_types=1);
 
 namespace App\Application\Examples;
 
+use App\Application\Bot;
+use App\Application\DataAnalysis;
 use App\Application\EditProcess;
+use App\Application\Memory;
+use App\Domain\RefGoogleBook;
+use App\Infrastructure\DbAdapter;
+use Throwable;
 
 include __DIR__.'/../myBootstrap.php';
 
@@ -18,11 +24,11 @@ $count = 0; // erreurs successives
 while (true) {
     try {
         echo "*** NEW EDIT PROCESS\n";
-        $process = new EditProcess();
+        $process = new EditProcess(new DbAdapter(), new Bot(), new Memory(), new RefGoogleBook(), new DataAnalysis());
         $process->verbose = true;
         $process->run();
         $count = 0;
-    } catch (\Throwable $e) {
+    } catch (Throwable $e) {
         $count++;
         echo $e->getMessage();
         if ($count > 2) {

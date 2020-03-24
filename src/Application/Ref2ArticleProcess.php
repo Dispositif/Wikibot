@@ -38,7 +38,7 @@ class Ref2ArticleProcess
 
         foreach ($refs as $ref) {
             $url = WikiTextUtil::stripFinalPoint(trim($ref[1]));
-            $converter = new ArticleFromURL($url);
+            $converter = new ArticleFromURL(new PublisherAction($url));
             $articleOrLienBrise = $converter->getResult();
 
             if (!$articleOrLienBrise instanceof ArticleOrLienBriseInterface) {

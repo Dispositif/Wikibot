@@ -94,7 +94,6 @@ class ServiceFactory
      * @param bool|null $forceLogin
      *
      * @return MediawikiFactory
-     *
      * @throws UsageException
      */
     public static function wikiApi(?bool $forceLogin = false): MediawikiFactory

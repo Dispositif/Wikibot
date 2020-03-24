@@ -28,6 +28,11 @@ class PublisherAction
         $this->url = $url;
     }
 
+    public function getUrl(): ?string
+    {
+        return $this->url;
+    }
+
     /**
      * import source from URL with Guzzle.
      *

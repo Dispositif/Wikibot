@@ -15,6 +15,8 @@ use App\Domain\OuvrageFactory;
 use App\Domain\OuvrageOptimize;
 use App\Domain\Publisher\Wikidata2Ouvrage;
 use App\Domain\Utils\TemplateParser;
+use App\Infrastructure\WikidataAdapter;
+use GuzzleHttp\Client;
 use Normalizer;
 use Throwable;
 
@@ -166,7 +168,11 @@ class CompleteProcess
                     if ($this->verbose) {
                         dump('WIKIDATA...');
                     }
-                    $wdComplete = new Wikidata2Ouvrage(clone $bnfOuvrage, $this->page);
+                    // TODO move to factory
+                    $wikidataAdapter = new WikidataAdapter(
+                        new Client(['timeout' => 5, 'headers' => ['User-Agent' => getenv('USER_AGENT')]])
+                    );
+                    $wdComplete = new Wikidata2Ouvrage($wikidataAdapter, clone $bnfOuvrage, $this->page);
                     $this->completeOuvrage($wdComplete->getOuvrage());
                 }
             }

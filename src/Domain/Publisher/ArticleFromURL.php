@@ -11,9 +11,9 @@ namespace App\Domain\Publisher;
 
 use App\Application\PublisherAction;
 use App\Domain\Models\Wiki\ArticleOrLienBriseInterface;
-use App\Domain\Models\Wiki\ArticleTemplate;
 use App\Domain\WikiTemplateFactory;
 use Exception;
+use Throwable;
 
 /**
  * news URL to {{Article}}.
@@ -33,10 +33,10 @@ class ArticleFromURL
      */
     private $url;
 
-    public function __construct(string $url)
+    public function __construct(PublisherAction $publisher)
     {
-        $this->url = $url;
-        $this->publisherAction = new PublisherAction($url);
+        $this->publisherAction = $publisher;
+        $this->url = $publisher->getUrl();
         try {
             $this->article = $this->process();
         } catch (Exception $e) {
@@ -45,17 +45,12 @@ class ArticleFromURL
         }
     }
 
-    public function getResult(): ?ArticleOrLienBriseInterface
-    {
-        return $this->article;
-    }
-
     /**
      * @throws Exception
      */
     private function process(): ?ArticleOrLienBriseInterface
     {
-        $mapper = $this->selectMapper($this->url);
+        $mapper = PublisherMapperFactory::fromURL($this->url);
         if (!$mapper) {
             return null;
         }
@@ -64,7 +59,7 @@ class ArticleFromURL
         try {
             $html = $this->publisherAction->getHTMLSource();
             $htmlData = $this->publisherAction->extractWebData($html);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             if (strpos($e->getMessage(), '404') !== false) {
                 dump('****** lien brisé !!!!');
                 $lienBrise = WikiTemplateFactory::create('lien brisé');
@@ -84,10 +79,9 @@ class ArticleFromURL
         }
         $htmlData['url'] = $this->url;
 
-        // TODO : select the mapper
         try {
             $articleData = $mapper->process($htmlData);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             echo sprintf(
                 "SKIP : %s %s:%s \n",
                 $e->getMessage(),
@@ -97,7 +91,6 @@ class ArticleFromURL
 
             return null;
         }
-
 
         if (!empty($articleData)) {
             $article = WikiTemplateFactory::create('article');
@@ -109,30 +102,9 @@ class ArticleFromURL
         return null;
     }
 
-    /**
-     * todo refac factory/builder
-     *
-     * @param $url
-     *
-     * @return MapperInterface|null
-     */
-    private function selectMapper($url): ?MapperInterface
+    public function getResult(): ?ArticleOrLienBriseInterface
     {
-        if (preg_match('#^https?://(www\.)?lemonde\.fr/[^ ]+$#i', $url)) {
-            return new LeMondeMapper();
-        }
-        if (preg_match('#^https?://(www\.)?lefigaro\.fr/[^ ]+$#i', $url)) {
-            return new FigaroMapper();
-        }
-        if (preg_match('#^https?://(www\.)?liberation\.fr/[^ ]+$#i', $url)) {
-            return new LiberationMapper();
-        }
-        if (preg_match('#^https?://(www\.)?la-croix\.com/[^ ]+$#i', $url)) {
-            return new LaCroixMapper();
-        }
-
-
-        return null;
+        return $this->article;
     }
 
 }

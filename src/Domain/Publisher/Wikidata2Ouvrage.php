@@ -46,17 +46,15 @@ class Wikidata2Ouvrage
     /**
      * Wikidata2Ouvrage constructor.
      *
+     * @param WikidataAdapter $wdAdapter
      * @param OuvrageTemplate $ouvrage
      * @param string|null     $title
      *
      * @throws Exception
      */
-    public function __construct(OuvrageTemplate $ouvrage, ?string $title = null)
+    public function __construct(WikidataAdapter $wdAdapter, OuvrageTemplate $ouvrage, ?string $title = null)
     {
-        // todo dependency injection
-        $this->adapter = new WikidataAdapter(
-            new Client(['timeout' => 5, 'headers' => ['User-Agent' => getenv('USER_AGENT')]])
-        );
+        $this->adapter = $wdAdapter;
 
         $clone = clone $ouvrage;
         $this->title = $title;

@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Domain\Publisher\Tests;
 
-use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\OuvrageOptimize;
 use App\Domain\Publisher\Wikidata2Ouvrage;
 use App\Domain\WikiTemplateFactory;
+use App\Infrastructure\WikidataAdapter;
+use GuzzleHttp\Client;
 use PHPUnit\Framework\TestCase;
 
 include __DIR__.'/../../../Application/myBootstrap.php';
@@ -32,7 +33,10 @@ class Wikidata2OuvrageTest extends TestCase
             ]
         );
 
-        $convert = new Wikidata2Ouvrage($ouvrage);
+        $wikidataAdapter = new WikidataAdapter(
+            new Client(['timeout' => 5, 'headers' => ['User-Agent' => getenv('USER_AGENT')]])
+        );
+        $convert = new Wikidata2Ouvrage($wikidataAdapter, $ouvrage);
         $wdOuvrage = $convert->getOuvrage();
         $this::assertSame(
             '{{Ouvrage|auteur1=Bob|lien auteur1=Michel Houellebecq|titre=Ma vie|lien titre=La Carte et le Territoire|éditeur=|année=|passage=407-408 |pages totales=|isbn=}}',
@@ -46,6 +50,5 @@ class Wikidata2OuvrageTest extends TestCase
             '{{Ouvrage|auteur1=Bob|lien auteur1=Michel Houellebecq|titre=Ma vie|lien titre=La Carte et le Territoire|éditeur=|année=|passage=407-408 |pages totales=|isbn=}}',
             $optimizer->getOuvrage()->serialize(true)
         );
-
     }
 }
