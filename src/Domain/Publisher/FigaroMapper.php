@@ -18,9 +18,11 @@ namespace App\Domain\Publisher;
  */
 class FigaroMapper extends WebMapper
 {
+    const PERIODIQUE = '[[Le Figaro]]';
+
     public function process($data): array
     {
-        if(!isset($data['JSON-LD'])) {
+        if (!isset($data['JSON-LD'])) {
             return [];
         }
         $data = $data['JSON-LD'];
@@ -39,7 +41,7 @@ class FigaroMapper extends WebMapper
 
         return [
             //            'langue' => 'fr',
-            'périodique' => '[[Le Figaro]]',
+            'périodique' => static::PERIODIQUE,
             //           'acces' =>  $data['isAccessibleForFree'],
             'titre' => html_entity_decode($data['headline']),
             'lire en ligne' => $data['mainEntityOfPage']['@id'],

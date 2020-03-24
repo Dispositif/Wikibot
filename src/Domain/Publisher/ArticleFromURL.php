@@ -127,6 +127,9 @@ class ArticleFromURL
         if (preg_match('#^https?://(www\.)?liberation\.fr/[^ ]+$#i', $url)) {
             return new LiberationMapper();
         }
+        if (preg_match('#^https?://(www\.)?la-croix\.com/[^ ]+$#i', $url)) {
+            return new LaCroixMapper();
+        }
 
 
         return null;

@@ -22,7 +22,7 @@ class WebMapper implements MapperInterface
 {
     public function process($data): array
     {
-        if(!isset($data['JSON-LD'])) {
+        if (!isset($data['JSON-LD'])) {
             return [];
         }
         $data = $data['JSON-LD'];
@@ -55,6 +55,17 @@ class WebMapper implements MapperInterface
 
     protected function convertAuteur($data, $indice)
     {
+        // author ['name'=>'Bob','@type'=>'Person']
+        if (0 === $indice
+            && isset($data['author'])
+            && isset($data['author']['name'])
+            && (!isset($data['author']['@type'])
+                || 'Person' === $data['author']['@type'])
+        ) {
+            return html_entity_decode($data['author']['name']);
+        }
+
+        // author [ 0 => ['name'=>'Bob'], 1=> ...]
         if (isset($data['author']) && isset($data['author'][$indice])
             && (!isset($data['author'][$indice]['@type'])
                 || 'Person' === $data['author'][$indice]['@type'])
