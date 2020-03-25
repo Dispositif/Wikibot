@@ -78,11 +78,6 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
         return $this->deleteEmptyValueArray($allValue);
     }
 
-    public function getParamsAndAlias(): array
-    {
-        return array_merge($this->parametersByOrder, array_keys($this::PARAM_ALIAS));
-    }
-
     /**
      * Is the parameter's name valid ?
      *
@@ -95,63 +90,9 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
         return in_array($paramName, $this->getParamsAndAlias());
     }
 
-    /**
-     * @param string $name
-     *
-     * @return string|null
-     * @throws Exception
-     */
-    public function getParam(string $name): ?string
+    public function getParamsAndAlias(): array
     {
-        try {
-            $this->checkParamName($name);
-        } catch (Exception $e) {
-            return null;
-        }
-        $name = $this->getAliasParam($name);
-
-        return ($this->parametersValues[$name]) ?? null;
-    }
-
-    /**
-     * TODO return bool + log() ?
-     * todo check keyNum <= count($parametersByOrder).
-     *
-     * @param $name string|int
-     *
-     * @throws Exception
-     */
-    protected function checkParamName($name): void
-    {
-        // todo verify/useless ?
-        if (is_int($name)) {
-            $name = (string)$name;
-        }
-
-        // that parameter exists in template ?
-        if (in_array($name, $this->parametersByOrder)
-            || array_key_exists($name, static::PARAM_ALIAS)
-        ) {
-            return;
-        }
-
-        // keyNum parameter ?
-        //        if (!in_array($name, ['1', '2', '3', '4'])) {
-        throw new Exception(sprintf('no parameter "%s" in template "%s"', $name, get_called_class()));
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return string
-     */
-    public function getAliasParam(string $name): string
-    {
-        if (array_key_exists($name, static::PARAM_ALIAS)) {
-            $name = static::PARAM_ALIAS[$name];
-        }
-
-        return $name;
+        return array_merge($this->parametersByOrder, array_keys($this::PARAM_ALIAS));
     }
 
     /**
@@ -303,6 +244,65 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     }
 
     /**
+     * @param string $name
+     *
+     * @return string|null
+     * @throws Exception
+     */
+    public function getParam(string $name): ?string
+    {
+        try {
+            $this->checkParamName($name);
+        } catch (Exception $e) {
+            return null;
+        }
+        $name = $this->getAliasParam($name);
+
+        return ($this->parametersValues[$name]) ?? null;
+    }
+
+    /**
+     * TODO return bool + log() ?
+     * todo check keyNum <= count($parametersByOrder).
+     *
+     * @param $name string|int
+     *
+     * @throws Exception
+     */
+    protected function checkParamName($name): void
+    {
+        // todo verify/useless ?
+        if (is_int($name)) {
+            $name = (string)$name;
+        }
+
+        // that parameter exists in template ?
+        if (in_array($name, $this->parametersByOrder)
+            || array_key_exists($name, static::PARAM_ALIAS)
+        ) {
+            return;
+        }
+
+        // keyNum parameter ?
+        //        if (!in_array($name, ['1', '2', '3', '4'])) {
+        throw new Exception(sprintf('no parameter "%s" in template "%s"', $name, get_called_class()));
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return string
+     */
+    public function getAliasParam(string $name): string
+    {
+        if (array_key_exists($name, static::PARAM_ALIAS)) {
+            $name = static::PARAM_ALIAS[$name];
+        }
+
+        return $name;
+    }
+
+    /**
      * Define the serialize order of parameters (from user initial choice).
      * default : $params = ['param1'=>'', 'param2' => '', ...]
      * OK with $params = ['a','b','c'].
@@ -344,6 +344,12 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
         $paramsByRenderOrder = $this->paramsByRenderOrder($cleanOrder);
         $paramsByRenderOrder = $this->filterEmptyNotRequired($paramsByRenderOrder);
 
+        // max caractères des paramètres (valides)
+        $maxChars = 0;
+        foreach (array_keys($paramsByRenderOrder) as $paramName) {
+            $maxChars = max($maxChars, mb_strlen($paramName));
+        }
+
         // TODO : $option to add or not the wrong parameters ?
         // Using the wrong parameters+value from user input ?
         $paramsByRenderOrder = $this->mergeWrongParametersFromUser($paramsByRenderOrder);
@@ -353,9 +359,18 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
             $string .= ($this->userSeparator) ?? '|';
 
             if (!in_array($paramName, ['0', '1', '2', '3', '4', '5'])) {
-                $string .= $paramName.'=';
-                // {{template|1=blabla}} -> {{template|blabla}}
+                $string .= $paramName;
+                // espacements multiples pour style étendu : "auteur    = Bla"
+                if ($this->userSeparator && false !== strpos($this->userSeparator, "\n")) {
+                    $spaceNb = max(0, $maxChars - mb_strlen($paramName));
+                    $string .= str_repeat(' ', $spaceNb);
+                    $string .= ' = ';
+                } else {
+                    // style condensé "auteur=Bla"
+                    $string .= '=';
+                }
             }
+            // {{template|1=blabla}} -> {{template|blabla}}
             $string .= $paramValue;
         }
         // expanded model -> "\n}}"
