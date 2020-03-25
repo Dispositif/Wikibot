@@ -1,5 +1,6 @@
 ## Versions des règles de corrections/complètement ##
 
+* 0.72 : URL Google (q/dq) (@Pierre cb) + espacements style indenté
 * 0.71 : 'pages totales' au minimum
 * 0.70 : prédiction 'issue'. +archiveurl (@Pierre cb)
 * 0.69 : URL google (q/dq) + style compact plus espacé
