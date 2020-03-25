@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Application;
 
 use App\Domain\Models\Wiki\ArticleOrLienBriseInterface;
+use App\Domain\Models\Wiki\LienBriseTemplate;
 use App\Domain\Publisher\ArticleFromURL;
 use App\Domain\Utils\WikiTextUtil;
 
@@ -20,6 +21,10 @@ use App\Domain\Utils\WikiTextUtil;
  */
 class Ref2ArticleProcess
 {
+    /**
+     * @var bool
+     */
+    private $warning = false;
 
     /**
      * Change tous les <ref>http://libe|lemonde|figaro</ref> en {article}.
@@ -44,11 +49,20 @@ class Ref2ArticleProcess
             if (!$articleOrLienBrise instanceof ArticleOrLienBriseInterface) {
                 continue;
             }
+            if($articleOrLienBrise instanceof LienBriseTemplate){
+                $this->warning = true;
+            }
+
             $serial = $articleOrLienBrise->serialize(true);
             $text = $this->replaceRefInText($ref, $serial, $text);
         }
 
         return $text;
+    }
+
+    public function hasWarning():bool
+    {
+        return (bool)$this->warning;
     }
 
     private function replaceRefInText(array $ref, string $replace, string $text)
