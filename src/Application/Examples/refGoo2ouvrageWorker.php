@@ -8,6 +8,7 @@ use App\Application\Bot;
 use App\Application\WikiPageAction;
 use App\Domain\RefGoogleBook;
 use App\Infrastructure\CirrusSearch;
+use App\Infrastructure\GoogleApiQuota;
 use App\Infrastructure\ServiceFactory;
 use Mediawiki\DataModel\EditInfo;
 
@@ -32,6 +33,8 @@ $cirrusURL
 
 $search = new CirrusSearch();
 $titles = $search->search($cirrusURL);
+
+dump('Google quota : ', (new GoogleApiQuota())->getCount());
 
 foreach ($titles as $title) {
     echo "$title \n";

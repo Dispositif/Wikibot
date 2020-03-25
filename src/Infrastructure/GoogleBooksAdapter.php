@@ -25,7 +25,7 @@ class GoogleBooksAdapter extends AbstractBookApiAdapter implements BookApiInterf
 
     // todo inject + factory
     /**
-     * @var GoogleQuota
+     * @var GoogleApiQuota
      */
     private $quotaCounter;
 
@@ -41,7 +41,7 @@ class GoogleBooksAdapter extends AbstractBookApiAdapter implements BookApiInterf
         // 'country' => 'FR' (ISO-3166 Country Codes?)
         $this->api = $api;
         $this->mapper = new GoogleBookMapper();
-        $this->quotaCounter = new GoogleQuota();
+        $this->quotaCounter = new GoogleApiQuota();
     }
 
     /**
