@@ -51,7 +51,7 @@ class GoogleLivresTemplateTest extends TestCase
             [
                 // 'id' in the middle
                 'https://books.google.fr/books?hl=fr&id=CWkrAQAAMAAJ&dq=La+dur%C3%A9e+d%27ensoleillement+n%27est+pas+suffisante+en+Afrique&focus=searchwithinvolume&q=ceintures',
-                'https://books.google.fr/books?id=CWkrAQAAMAAJ&q=ceintures&dq=La+dur%C3%A9e+d%27ensoleillement+n%27est+pas+suffisante+en+Afrique',
+                'https://books.google.fr/books?id=CWkrAQAAMAAJ&q=ceintures',
             ],
             [
                 // strange format
@@ -71,7 +71,7 @@ class GoogleLivresTemplateTest extends TestCase
             [
                 // common pattern
                 'https://books.google.fr/books?id=26gcP_Yz-i8C&pg=PA56&lpg=PA56&dq=André+Poznanski&source=bl&ots=tuFKKbkpUS&sig=ACfU3U058ij4qQHFsXX_KX01YK81SLCCBw&hl=fr&sa=X&ved=2ahUKEwiB6tHVtKbkAhULNRoKHbOeDXU4ChDoATAAegQICBAB#v=onepage&q=André%20Poznanski&f=false',
-                'https://books.google.fr/books?id=26gcP_Yz-i8C&pg=PA56&q=Andr%C3%A9+Poznanski&dq=Andr%C3%A9+Poznanski'
+                'https://books.google.fr/books?id=26gcP_Yz-i8C&pg=PA56&dq=Andr%C3%A9+Poznanski'
             ],
             [
                 // pattern 'http://' and '/books/reader'
@@ -81,7 +81,7 @@ class GoogleLivresTemplateTest extends TestCase
             [
                 // pattern rare : https://books.google.com/?id=-0h134NR1s0C
                 'https://books.google.com/?id=-0h134NR1s0C&pg=PA167&lpg=PA167&dq=Prairie+Shores+apartments+Michael+Reese#v=onepage&q=Prairie%20Shores%20apartments%20Michael%20Reese&f=false',
-                'https://books.google.com/books?id=-0h134NR1s0C&pg=PA167&q=Prairie+Shores+apartments+Michael+Reese&dq=Prairie+Shores+apartments+Michael+Reese',
+                'https://books.google.com/books?id=-0h134NR1s0C&pg=PA167&dq=Prairie+Shores+apartments+Michael+Reese',
             ],
             [
                 // frontcover

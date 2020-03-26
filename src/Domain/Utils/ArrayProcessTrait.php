@@ -12,6 +12,23 @@ namespace App\Domain\Utils;
 trait ArrayProcessTrait
 {
     /**
+     * Set all array keys to lower case.
+     *
+     * @param array $array
+     *
+     * @return array
+     */
+    private static function arrayKeysToLower(array $array): array
+    {
+        $res = [];
+        foreach ($array as $key => $val) {
+            $res[mb_strtolower($key)] = $val;
+        }
+
+        return $res;
+    }
+
+    /**
      * Delete keys with empty string value "".
      *
      * @param array $myArray

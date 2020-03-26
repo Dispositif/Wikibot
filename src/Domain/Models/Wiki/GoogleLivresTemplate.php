@@ -9,20 +9,21 @@ declare(strict_types=1);
 
 namespace App\Domain\Models\Wiki;
 
+use App\Domain\Utils\ArrayProcessTrait;
 use DomainException;
 use Exception;
 
 /**
  * https://fr.wikipedia.org/wiki/Mod%C3%A8le:Google_Livres
- * Le premier paramètre (ou id) est obligatoire. L
+ * Le premier paramètre (ou id) est obligatoire.
  * Le deuxième (ou titre) est requis si on ne veut pas fabriquer le lien brut (inclusion {{ouvrage}} 'Lire en ligne')
  * Class GoogleLivresTemplate.
  */
 class GoogleLivresTemplate extends AbstractWikiTemplate
 {
-    const DEFAULT_GOOGLEBOOK_URL = 'https://books.google.com/books';
+    use ArrayProcessTrait;
 
-    const ALLOW_USER_ORDER = false;
+    const DEFAULT_GOOGLEBOOK_URL = 'https://books.google.com/books';
 
     const MODEL_NAME = 'Google Livres';
 
@@ -37,25 +38,9 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
         ];
 
     const GOOGLEBOOK_URL_PATTERN = 'https?://(?:books|play)\.google\.[a-z\.]{2,5}/(?:books)?(?:books/[^\?]+\.html)?(?:/reader)?\?(?:[a-zA-Z=&]+&)?id=';
-//hl=fr&
+
     protected $parametersByOrder
         = ['id', 'titre', 'couv', 'page', 'romain', 'page autre', 'surligne'];
-
-    /**
-     * Serialize the wiki-template.
-     * Improvement : force param order : id/titre/...
-     *
-     * @param bool|null $cleanOrder
-     *
-     * @return string
-     */
-    public function serialize(?bool $cleanOrder = true): string
-    {
-        $text = parent::serialize();
-
-        // Documentation suggère non affichage de ces 2 paramètres
-        return str_replace(['id=', 'titre='], '', $text);
-    }
 
     /**
      * Create {Google Book} from URL.
@@ -87,6 +72,40 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
         $templ->hydrate($data);
 
         return $templ;
+    }
+
+    /**
+     * Check google URL pattern.
+     *
+     * @param string $text
+     *
+     * @return bool
+     */
+    public static function isGoogleBookURL(string $text): bool
+    {
+        if (preg_match('#^'.self::GOOGLEBOOK_URL_PATTERN.'[^>\]} \n]+$#i', $text) > 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Parse URL argument from ?query and #fragment.
+     *
+     * @param string $url
+     *
+     * @return array
+     */
+    public static function parseGoogleBookQuery(string $url): array
+    {
+        // Note : Also datas in URL after the '#' !!! (URL fragment)
+        $queryData = parse_url($url, PHP_URL_QUERY); // after ?
+        $fragmentData = parse_url($url, PHP_URL_FRAGMENT); // after #
+        // queryData precedence over fragmentData
+        parse_str(implode('&', [$fragmentData, $queryData]), $val);
+
+        return self::arrayKeysToLower($val);
     }
 
     /**
@@ -168,12 +187,12 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
         }
 
         // clean encoding q= dq=
-//        if(isset($gooDat['q'])) {
-//            $gooDat['q'] = self::googleUrlEncode($gooDat['q']);
-//        }
-//        if(isset($gooDat['dq'])) {
-//            $gooDat['dq'] = self::googleUrlEncode($gooDat['dq']);
-//        }
+        //                if(isset($gooDat['q'])) {
+        //                    $gooDat['q'] = self::googleUrlEncode($gooDat['q']);
+        //                }
+        //                if(isset($gooDat['dq'])) {
+        //                    $gooDat['dq'] = self::googleUrlEncode($gooDat['dq']);
+        //                }
 
         $dat = [];
         // keep only a few parameters (+'q' ?)
@@ -184,11 +203,31 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
                 $dat[$keep] = $gooDat[$keep];
             }
         }
-        // gestion doublon inutile q= dq= car q= prévaut pour affichage
-        // FIXED : https://fr.wikipedia.org/w/index.php?title=Foudre_de_Catatumbo&diff=next&oldid=168721836&diffmode=source
-//        if (isset($dat['q']) && isset($dat['dq'])) {
-//            unset($dat['dq']);
-//        }
+
+        // 1 exemple : https://fr.wikipedia.org/w/index.php?title=Foudre_de_Catatumbo&diff=next&oldid=168721836&diffmode=source
+        // 1. mettre URL &dq= pour final
+        //
+        // 2. si q!=dq (changement ultérieur formulaire recherche) alors q= prévaut pour résultat final
+        // 2. mettre URL &q pour final
+        //
+        // 3. Recherche global sur http://books.google.fr => pg= dq= (#q= avec q==dq)
+        // 3. dans ce cas (q==dq), url final avec seulement dq= donne résultat OK
+        //
+        // 4 . if you use a url without &redir_esc=y#v=onepage for a book with "Preview" available,
+        // usually &dq shows the highlighted text in full page view whereas &q shows the snippet view (so you have to
+        // click on the snippet to see the full page).
+        // &dq allows highlighting in books where there is "Preview" available and &pg=PTx is in the URL
+        //
+        // #v=onepage ou #v=snippet
+        if (isset($dat['q']) && isset($dat['dq'])) {
+            // si q==dq alors dq prévaut pour affichage (sinon affichage différent avec url seulement q=)
+            if ($dat['q'] === $dat['dq']) {
+                unset($dat['q']);
+            } // si q!=dq (exemple : nouveaux mots clés dans formulaire recherche) alors q= prévaut pour résultat final
+            else {
+                unset($dat['dq']);
+            }
+        }
 
         $googleURL = self::DEFAULT_GOOGLEBOOK_URL;
 
@@ -198,44 +237,8 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
             $googleURL = str_replace('.com', $gooDomain, $googleURL);
         }
 
-        // todo http_build_query process an urlencode, but a not encoded q= value is better
+        // todo http_build_query process an urlencode, but a not encoded q= value ("fu+bar") is beautiful
         return $googleURL.'?'.http_build_query($dat);
-    }
-
-    /**
-     * Parse URL argument from ?query and #fragment.
-     *
-     * @param string $url
-     *
-     * @return array
-     */
-    public static function parseGoogleBookQuery(string $url): array
-    {
-        // Note : Also datas in URL after the '#' !!! (URL fragment)
-        $queryData = parse_url($url, PHP_URL_QUERY); // after ?
-        $fragmentData = parse_url($url, PHP_URL_FRAGMENT); // after #
-        // queryData precedence over fragmentData
-        parse_str(implode('&', [$fragmentData, $queryData]), $val);
-
-        return self::arrayKeysToLower($val);
-    }
-
-    /**
-     * Set all array keys to lower case.
-     * TODO: move to ArrayProcessTrait ?
-     *
-     * @param array $array
-     *
-     * @return array
-     */
-    private static function arrayKeysToLower(array $array): array
-    {
-        $res = [];
-        foreach ($array as $key => $val) {
-            $res[strtolower($key)] = $val;
-        }
-
-        return $res;
     }
 
     /**
@@ -257,22 +260,6 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
     }
 
     /**
-     * Check google URL pattern.
-     *
-     * @param string $text
-     *
-     * @return bool
-     */
-    public static function isGoogleBookURL(string $text): bool
-    {
-        if (preg_match('#^'.self::GOOGLEBOOK_URL_PATTERN.'[^>\]} \n]+$#i', $text) > 0) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
      * Check if Google URL or wiki {Google Books} template.
      *
      * @param string $text
@@ -289,5 +276,21 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
         }
 
         return false;
+    }
+
+    /**
+     * Serialize the wiki-template.
+     * Improvement : force param order : id/titre/...
+     *
+     * @param bool|null $cleanOrder
+     *
+     * @return string
+     */
+    public function serialize(?bool $cleanOrder = true): string
+    {
+        $text = parent::serialize();
+
+        // Documentation suggère non affichage de ces 2 paramètres
+        return str_replace(['id=', 'titre='], '', $text);
     }
 }
