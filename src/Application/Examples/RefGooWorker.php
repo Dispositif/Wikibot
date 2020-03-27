@@ -32,9 +32,9 @@ class RefGooWorker extends AbstractBotTaskWorker
             .'&srsearch=%22https://books.google%22%20insource:/\%3Cref[^\%3E]*\%3Ehttps\:\/\/books\.google/&formatversion=2&format=json&srnamespace=0'
             .'&srlimit=100&srqiprofile=popular_inclinks_pv&srsort=last_edit_desc';
 
-        $search = $this->cirrusSearch;
+        $this->pageListGenerator->setUrl($cirrusURL);
 
-        return $search->search($cirrusURL);
+        return $this->pageListGenerator->getPageTitles();
     }
 
     protected function processDomain(string $title, ?string $text): ?string

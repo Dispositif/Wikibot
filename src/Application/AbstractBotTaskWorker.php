@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace App\Application;
 
-use App\Infrastructure\CirrusSearch;
+use App\Infrastructure\PageListInterface;
 use Mediawiki\Api\MediawikiFactory;
 use Mediawiki\Api\UsageException;
 use Mediawiki\DataModel\EditInfo;
@@ -19,9 +19,9 @@ abstract class AbstractBotTaskWorker
     const TASK_NAME           = "bot : Amélioration bibliographique";
     const SLEEP_AFTER_EDITION = 60;
     /**
-     * @var CirrusSearch|null
+     * @var PageListInterface
      */
-    protected $cirrusSearch;
+    protected $pageListGenerator;
     /**
      * @var WikiBotConfig
      */
@@ -45,14 +45,14 @@ abstract class AbstractBotTaskWorker
      *
      * @param WikiBotConfig     $bot
      * @param MediawikiFactory  $wiki
-     * @param CirrusSearch|null $cirrus
+     * @param PageListInterface $pagesGen
      */
-    public function __construct(WikiBotConfig $bot, MediawikiFactory $wiki, ?CirrusSearch $cirrus = null)
+    public function __construct(WikiBotConfig $bot, MediawikiFactory $wiki, ?PageListInterface $pagesGen = null)
     {
         $this->wiki = $wiki;
         $this->bot = $bot;
-        if ($cirrus) {
-            $this->cirrusSearch = $cirrus;
+        if ($pagesGen) {
+            $this->pageListGenerator = $pagesGen;
         }
 
         $this->run();
@@ -67,7 +67,14 @@ abstract class AbstractBotTaskWorker
         }
     }
 
-    abstract protected function getTitles(): array;
+    protected function getTitles(): array
+    {
+        if ($this->pageListGenerator) {
+            return $this->pageListGenerator->getPageTitles();
+        }
+
+        return [];
+    }
 
     /**
      * @param string $title

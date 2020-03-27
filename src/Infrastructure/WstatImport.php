@@ -17,7 +17,7 @@ use GuzzleHttp\Client;
  * https://wstat.fr/template/index.php?title=Ouvrage&query=inclusions&param=isbn&start=50000&limit=50&format=json
  * Class WstatImport.
  */
-class WstatImport
+class WstatImport implements PageListInterface
 {
     const MAX_IMPORT = 50000;
 
@@ -132,5 +132,10 @@ class WstatImport
         }
 
         return $response->getBody()->getContents();
+    }
+
+    public function getPageTitles(): array
+    {
+        // TODO: Implement getPageTitles() method.
     }
 }

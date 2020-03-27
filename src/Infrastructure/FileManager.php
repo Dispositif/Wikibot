@@ -9,7 +9,12 @@ declare(strict_types=1);
 
 namespace App\Infrastructure;
 
-class FileManager
+class FileManager implements PageListInterface
 {
     use CsvTrait;
+
+    public function getPageTitles(): array
+    {
+        // TODO: Implement getPageTitles() method.
+    }
 }

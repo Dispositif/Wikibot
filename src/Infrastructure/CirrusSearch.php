@@ -10,24 +10,52 @@ declare(strict_types=1);
 
 namespace App\Infrastructure;
 
+use App\Domain\Exceptions\ConfigException;
+
 /**
  * Dirty.
  * Class CirrusSearch
  *
  * @package App\Infrastructure
  */
-class CirrusSearch
+class CirrusSearch implements PageListInterface
 {
     /**
-     * todo REFAC : move to API library
+     * @var string
+     */
+    private $url;
+
+    /**
+     * CirrusSearch constructor.
      *
-     * @param string $url
+     * @param string|null $url
+     */
+    public function __construct(?string $url = null)
+    {
+        $this->url = $url;
+    }
+
+    public function setUrl(string $url)
+    {
+        $this->url = $url;
+    }
+
+    /**
+     * TODO: use Wiki API library or Guzzle
      *
      * @return array
+     * @throws ConfigException
      */
-    public function search(string $url): array
+    public function getPageTitles(): array
     {
-        $json = file_get_contents($url);
+        if (!$this->url) {
+            throw new ConfigException('CirrusSearch null URL');
+        }
+
+        $json = file_get_contents($this->url);
+        if (false === $json) {
+            return [];
+        }
 
         $myArray = json_decode($json, true);
         $result = $myArray['query']['search'];
