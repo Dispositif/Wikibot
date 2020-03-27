@@ -15,7 +15,7 @@ use App\Infrastructure\CirrusSearch;
 use App\Infrastructure\ServiceFactory;
 use Mediawiki\DataModel\EditInfo;
 
-include __DIR__.'/../ZiziBot_Bootstrap.php'; // myBootstrap.php';
+include __DIR__.'/../myBootstrap.php';
 
 $wiki = ServiceFactory::wikiApi();
 

@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace App\Application\Examples;
 
-use App\Application\Bot;
+use App\Application\WikiBotConfig;
 use App\Application\WikiPageAction;
 use App\Domain\Utils\TemplateParser;
 use App\Infrastructure\DbAdapter;
@@ -46,7 +46,7 @@ class ArticleScan
     {
         $this->wiki = ServiceFactory::wikiApi();
         $this->db = new DbAdapter();
-        $this->bot = new Bot();
+        $this->bot = new WikiBotConfig();
     }
 
     public function pageScan(string $title, ?int $priority = 0): bool

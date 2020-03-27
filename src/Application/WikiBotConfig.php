@@ -21,9 +21,9 @@ use Throwable;
 /**
  * Define wiki configuration of the bot.
  * See also .env file for parameters.
- * Class Bot.
+ * Class WikiBotConfig.
  */
-class Bot
+class WikiBotConfig
 {
     const WATCHPAGE_FILENAME = __DIR__.'/resources/watch_pages.json';
 
@@ -126,14 +126,14 @@ class Bot
             );
             if (class_exists(SMS::class)) {
                 try {
-                    new SMS('Bot stop by '.$lastEditor);
+                    new SMS('WikiBotConfig stop by '.$lastEditor);
                 } catch (Exception $e) {
                     unset($e);
                 }
             }
-            if ($botTalk && class_exists(ZiziBot::class)) {
+            if ($botTalk && class_exists(ZiziBotConfig::class)) {
                 try {
-                    (new ZiziBot())->botTalk();
+                    (new ZiziBotConfig())->botTalk();
                 } catch (Throwable $e) {
                     unset($e);
                 }

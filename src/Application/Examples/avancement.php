@@ -47,7 +47,7 @@ $pageNb = (int)$monitor['pages'];
 
 $newText = <<<EOF
 <div style="background:#EBF6E9;border:2px solid grey;padding:10px;border-radius:10px;">
-{{Requête en cours}} : [[Utilisateur:ZiziBot/features|Améliorations bibliographiques sur citations {ouvrage} (ISBN)]]
+{{Requête en cours}} : [[Utilisateur:ZiziBotConfig/features|Améliorations bibliographiques sur citations {ouvrage} (ISBN)]]
  {{progression|##PAGEEDITED##|174569}}
 <div align="center"><small>{{formatnum:##PAGEEDITED##}} articles traités sur {{formatnum:174569}} (ISBN)</small></div>
 <div align="center"><small>{{formatnum:##NUMBER##}} citations analysées sur {{formatnum:930427}}
@@ -59,7 +59,7 @@ $newText = str_replace('##NUMBER##', $number, $newText);
 $newText = str_replace('##PAGEEDITED##', $pageNb, $newText);
 
 // Put content on wiki
-$title = 'Utilisateur:ZiziBot/task';
+$title = 'Utilisateur:ZiziBotConfig/task';
 $summary = 'bot : mise à jour';
 
 echo "Mise à jour avancement ?\n";

@@ -57,7 +57,7 @@ class WorkerCommand extends Command
             $workerName = strtolower($workerName);
         }
 
-        $bot = new Bot();
+        $bot = new WikiBotConfig();
 
 //        if ('wstat' === $workerName) {
 //            $worker = new WstatWorker();

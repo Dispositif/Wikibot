@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace App\Application\Examples;
 
-use App\Application\Bot;
+use App\Application\WikiBotConfig;
 use App\Application\DataAnalysis;
 use App\Application\EditProcess;
 use App\Application\Memory;
@@ -24,7 +24,7 @@ $count = 0; // erreurs successives
 while (true) {
     try {
         echo "*** NEW EDIT PROCESS\n";
-        $process = new EditProcess(new DbAdapter(), new Bot(), new Memory(), new RefGoogleBook(), new DataAnalysis());
+        $process = new EditProcess(new DbAdapter(), new WikiBotConfig(), new Memory(), new RefGoogleBook(), new DataAnalysis());
         $process->verbose = true;
         $process->run();
         $count = 0;

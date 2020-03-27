@@ -53,7 +53,7 @@ class EditProcess
 
     // Minor flag on edit
     private $minorFlag = true;
-    // Bot flag on edit
+    // WikiBotConfig flag on edit
     private $botFlag = true;
     /**
      * @var Memory
@@ -68,7 +68,7 @@ class EditProcess
      */
     private $dataAnalysis;
 
-    public function __construct(DbAdapter $dbAdapter, Bot $bot, Memory $memory, RefGoogleBook $refGoogleBook,
+    public function __construct(DbAdapter $dbAdapter, WikiBotConfig $bot, Memory $memory, RefGoogleBook $refGoogleBook,
         ?DataAnalysis $dataAnalysis=null)
     {
         $this->db = $dbAdapter;
@@ -143,7 +143,7 @@ class EditProcess
         }
         $this->wikiText = $page->getText();
 
-        if (BOT::isEditionRestricted($this->wikiText)) {
+        if (WikiBotConfig::isEditionRestricted($this->wikiText)) {
             echo "SKIP : protection/3R.\n";
             $this->db->skipArticle($title);
         }
@@ -435,7 +435,7 @@ class EditProcess
      */
     public function generateSummary(): string
     {
-        // Start summary with "Bot" when using botflag, else "*"
+        // Start summary with "WikiBotConfig" when using botflag, else "*"
         $prefix = ($this->botFlag) ? 'bot' : '☆';
         // add "/!\" when errorWarning
         $prefix .= (!empty($this->errorWarning)) ? ' ⚠' : '';

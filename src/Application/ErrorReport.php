@@ -55,7 +55,7 @@ class ErrorReport
      *
      * @return string
      */
-    public function deleteAllReports(string $text, ?string $botName='ZiziBot'): string
+    public function deleteAllReports(string $text, ?string $botName='ZiziBotConfig'): string
     {
         $pattern = sprintf(
             '#== Ouvrage avec erreur de paramètre ==(.*)Le robot \[\[Utilisateur:%s\|%s\]\] \(\[\[Discussion utilisateur:%s\|discuter\]\]\) [0-9a-zéà: ]+ \(CET\)[\n]*#s',

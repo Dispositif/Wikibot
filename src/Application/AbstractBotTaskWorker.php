@@ -1,0 +1,172 @@
+<?php
+/**
+ * This file is part of dispositif/wikibot application
+ * 2019 © Philippe M. <dispositif@gmail.com>
+ * For the full copyright and MIT license information, please view the LICENSE file.
+ */
+
+declare(strict_types=1);
+
+namespace App\Application;
+
+use App\Infrastructure\CirrusSearch;
+use Mediawiki\Api\MediawikiFactory;
+use Mediawiki\Api\UsageException;
+use Mediawiki\DataModel\EditInfo;
+
+abstract class AbstractBotTaskWorker
+{
+    const TASK_NAME           = "bot : Amélioration bibliographique";
+    const SLEEP_AFTER_EDITION = 60;
+    /**
+     * @var CirrusSearch|null
+     */
+    protected $cirrusSearch;
+    /**
+     * @var WikiBotConfig
+     */
+    protected $bot;
+    /**
+     * @var MediawikiFactory
+     */
+    protected $wiki;
+    /**
+     * @var WikiPageAction
+     */
+    protected $pageAction;
+    // TODO : move taskName, botFlag... to to WikiBotConfig
+    protected $taskName;
+    protected $minorFlag = false;
+    protected $botFlag = false;
+    protected $modeAuto = false;
+
+    /**
+     * Goo2ouvrageWorker constructor.
+     *
+     * @param WikiBotConfig     $bot
+     * @param MediawikiFactory  $wiki
+     * @param CirrusSearch|null $cirrus
+     */
+    public function __construct(WikiBotConfig $bot, MediawikiFactory $wiki, ?CirrusSearch $cirrus = null)
+    {
+        $this->wiki = $wiki;
+        $this->bot = $bot;
+        if ($cirrus) {
+            $this->cirrusSearch = $cirrus;
+        }
+
+        $this->run();
+    }
+
+    public function run()
+    {
+        $titles = $this->getTitles();
+
+        foreach ($titles as $title) {
+            $this->titleProcess($title);
+        }
+    }
+
+    abstract protected function getTitles(): array;
+
+    /**
+     * @param string $title
+     *
+     * @throws UsageException
+     * @throws Throwable
+     */
+    protected function titleProcess(string $title): void
+    {
+        echo "$title \n";
+        sleep(2);
+
+        $this->taskName = static::TASK_NAME;
+
+        $text = $this->getText($title);
+        if (!$this->checkAllowedEdition($title, $text)) {
+            return;
+        }
+
+        $newText = $this->processDomain($title, $text);
+
+        if (empty($newText) || $newText === $text) {
+            echo "Skip identique ou vide\n";
+
+            return;
+        }
+
+        if (!$this->modeAuto) {
+            $ask = readline("*** ÉDITION ? [y/n/auto]");
+            if ('auto' === $ask) {
+                $this->modeAuto = true;
+            } elseif ('y' !== $ask) {
+                return;
+            }
+        }
+
+        $this->doEdition($newText);
+    }
+
+    /**
+     * todo DI
+     *
+     * @param string $title
+     *
+     * @return string|null
+     * @throws Exception
+     * @throws \Exception
+     */
+    protected function getText(string $title): ?string
+    {
+        $this->pageAction = new WikiPageAction($this->wiki, $title); // throw Exception
+        if ($this->pageAction->getNs() !== 0) {
+            throw new Exception("La page n'est pas dans Main (ns!==0)");
+        }
+
+        return $this->pageAction->getText();
+    }
+
+    /**
+     * Controle droit d'edition.
+     *
+     * @param string $title
+     * @param string $text
+     *
+     * @return bool
+     * @throws UsageException
+     */
+    protected function checkAllowedEdition(string $title, string $text): bool
+    {
+        // CONTROLES EDITION
+        $this->bot->checkStopOnTalkpage(true);
+
+        if (WikiBotConfig::isEditionRestricted($text)) {
+            echo "SKIP : protection/3R.\n";
+
+            return false;
+        }
+        if ($this->bot->minutesSinceLastEdit($title) < 4) {
+            echo "SKIP : édition humaine dans les dernières 4 minutes.\n";
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * return $newText for editing
+     */
+    abstract protected function processDomain(string $title, ?string $text): ?string;
+
+    protected function doEdition(string $newText): void
+    {
+        $result = $this->pageAction->editPage(
+            $newText,
+            new EditInfo($this->taskName, $this->minorFlag, $this->botFlag)
+        );
+        dump($result);
+        echo "Sleep ".(string)static::SLEEP_AFTER_EDITION."\n";
+        sleep(static::SLEEP_AFTER_EDITION);
+    }
+}

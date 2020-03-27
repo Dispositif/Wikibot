@@ -82,7 +82,7 @@ class Monitor
 
         $stat = '0';
         $suffix = '';
-        if (!in_array($pageAction->getLastEditor(), ['CodexBot', 'ZiziBot', getenv('BOT_NAME'), getenv('BOT_OWNER')])) {
+        if (!in_array($pageAction->getLastEditor(), ['CodexBot', 'ZiziBotConfig', getenv('BOT_NAME'), getenv('BOT_OWNER')])) {
             $stat = $this->checkAltered($data, $text);
             $suffix = '[found]';
         }

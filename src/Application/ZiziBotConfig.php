@@ -16,10 +16,10 @@ use Mediawiki\Api\UsageException;
 use Mediawiki\DataModel\EditInfo;
 
 /**
- * Freaky customization of Bot class
- * Class ZiziBot.
+ * Freaky customization of WikiBotConfig class
+ * Class ZiziBotConfig.
  */
-class ZiziBot extends Bot
+class ZiziBotConfig extends WikiBotConfig
 {
     const BOT_TALK_SUMMARY = 'Réponse artificielle';
 

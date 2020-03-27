@@ -67,7 +67,7 @@ class CompleteProcess
             echo sprintf(
                 "-------------------------------\n%s [%s]\n%s\n%s\n",
                 date("Y-m-d H:i:s"),
-                Bot::getGitVersion() ?? '',
+                WikiBotConfig::getGitVersion() ?? '',
                 $this->page,
                 $this->raw
             );
@@ -272,7 +272,7 @@ class CompleteProcess
             'notcosmetic' => ($this->notCosmetic) ? 1 : 0,
             'major' => ($this->major) ? 1 : 0,
             'isbn' => substr($isbn13, 0, 20),
-            'version' => Bot::getGitVersion() ?? null,
+            'version' => WikiBotConfig::getGitVersion() ?? null,
         ];
         if ($this->verbose) {
             dump($finalData);

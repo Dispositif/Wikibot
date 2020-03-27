@@ -9,18 +9,18 @@ declare(strict_types=1);
 
 namespace App\Application\Tests;
 
-use App\Application\Bot;
+use App\Application\WikiBotConfig;
 use PHPUnit\Framework\TestCase;
 
 class BotTest extends TestCase
 {
     public function testIsEditionRestricted()
     {
-        $this::assertFalse(Bot::isEditionRestricted('bla bla'));
-        $this::assertTrue(Bot::isEditionRestricted('{{Protection|blabla}} bla'));
-        $this::assertTrue(Bot::isEditionRestricted('{{3R}} bla'));
-        $this::assertTrue(Bot::isEditionRestricted('{{nobots}} bla'));
-        $this::assertTrue(Bot::isEditionRestricted('{{bots|deny=Bob,FuBot}} bla', 'FuBot'));
-        $this::assertFalse(Bot::isEditionRestricted('{{bots|deny=Bob,FuBot}} bla'));
+        $this::assertFalse(WikiBotConfig::isEditionRestricted('bla bla'));
+        $this::assertTrue(WikiBotConfig::isEditionRestricted('{{Protection|blabla}} bla'));
+        $this::assertTrue(WikiBotConfig::isEditionRestricted('{{3R}} bla'));
+        $this::assertTrue(WikiBotConfig::isEditionRestricted('{{nobots}} bla'));
+        $this::assertTrue(WikiBotConfig::isEditionRestricted('{{bots|deny=Bob,FuBot}} bla', 'FuBot'));
+        $this::assertFalse(WikiBotConfig::isEditionRestricted('{{bots|deny=Bob,FuBot}} bla'));
     }
 }

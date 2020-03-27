@@ -31,7 +31,7 @@ try{
 }
 
 // Put content on wiki
-$title = 'Utilisateur:ZiziBot/features';
+$title = 'Utilisateur:ZiziBotConfig/features';
 $summary = 'bot : Update from Github';
 
 $wiki = ServiceFactory::wikiApi();
