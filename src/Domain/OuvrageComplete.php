@@ -105,12 +105,12 @@ class OuvrageComplete
 
         // completion automatique
         foreach ($this->book->toArray() as $param => $value) {
-            if (empty($this->origin->getParam($param))) {
+            if (!$this->origin->hasParamValue($param)) {
                 if (in_array($param, $skipParam)) {
                     continue;
                 }
                 // skip 'année' if 'date' not empty
-                if ('année' === $param && !empty($this->origin->getParam('date'))) {
+                if ('année' === $param && $this->origin->hasParamValue('date')) {
                     continue;
                 }
 
@@ -157,7 +157,7 @@ class OuvrageComplete
         if (empty($lienAuteur1)) {
             return;
         }
-        if (!empty($this->origin->getParam('lien auteur1'))) {
+        if ($this->origin->hasParamValue('lien auteur1')) {
             echo "lien auteur1 existe déjà\n";
 
             return;
@@ -216,8 +216,8 @@ class OuvrageComplete
     private function googleBookProcess()
     {
         // si déjà lire/présentation en ligne => on touche à rien
-        if (!empty($this->origin->getParam('lire en ligne'))
-            || !empty($this->origin->getParam('présentation en ligne'))
+        if ($this->origin->hasParamValue('lire en ligne')
+            || $this->origin->hasParamValue('présentation en ligne')
         ) {
             return;
         }
@@ -329,7 +329,7 @@ class OuvrageComplete
      */
     private function hasSameISBN(): bool
     {
-        if (empty($this->origin->getParam('isbn')) || empty($this->book->getParam('isbn'))) {
+        if (!$this->origin->hasParamValue('isbn') || !$this->book->hasParamValue('isbn')) {
             return false;
         }
         // TODO replace with calcul isbn13
@@ -350,16 +350,16 @@ class OuvrageComplete
      */
     private function processSousTitre()
     {
-        if (empty($this->book->getParam('sous-titre'))) {
+        if (!$this->book->hasParamValue('sous-titre')) {
             return;
         }
 
         // Skip pour éviter conflit entre 'sous-titre' et 'collection' ou 'titre volume'
-        if (!empty($this->origin->getParam('titre volume'))
-            || !empty($this->origin->getParam('titre chapitre'))
-            || !empty($this->origin->getParam('titre tome'))
-            || !empty($this->origin->getParam('collection'))
-            || !empty($this->origin->getParam('nature ouvrage'))
+        if ($this->origin->hasParamValue('titre volume')
+            || $this->origin->hasParamValue('titre chapitre')
+            || $this->origin->hasParamValue('titre tome')
+            || $this->origin->hasParamValue('collection')
+            || $this->origin->hasParamValue('nature ouvrage')
         ) {
             return;
         }
@@ -367,7 +367,7 @@ class OuvrageComplete
         // simple : titres identiques mais sous-titre manquant
         if ($this->stripAll($this->origin->getParam('titre')) === $this->stripAll($this->book->getParam('titre'))) {
             // même titre mais sous-titre manquant
-            if (empty($this->origin->getParam('sous-titre'))) {
+            if (!$this->origin->hasParamValue('sous-titre')) {
                 $this->origin->setParam('sous-titre', $this->book->getParam('sous-titre'));
                 $this->log('++sous-titre');
                 $this->major = true;
@@ -379,7 +379,7 @@ class OuvrageComplete
 
         // compliqué : sous-titre inclus dans titre original => on copie titre/sous-titre de book
         if ($this->charsFromBigTitle($this->origin) === $this->charsFromBigTitle($this->book)) {
-            if (empty($this->origin->getParam('sous-titre'))) {
+            if (!$this->origin->hasParamValue('sous-titre')) {
                 $this->origin->setParam('titre', $this->book->getParam('titre'));
                 $this->origin->setParam('sous-titre', $this->book->getParam('sous-titre'));
                 $this->log('>sous-titre');

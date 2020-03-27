@@ -123,7 +123,7 @@ class RefGoogleBook
         $ouvrage->userSeparator = ' |';
 
         // Si titre absent
-        if (empty($ouvrage->getParam('titre'))) {
+        if (!$ouvrage->hasParamValue('titre')) {
             throw new \DomainException("Ouvrage sans titre (data Google?)");
         }
 

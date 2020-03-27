@@ -124,6 +124,47 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     }
 
     /**
+     * TODO return bool + log() ?
+     * todo check keyNum <= count($parametersByOrder).
+     *
+     * @param $name string|int
+     *
+     * @throws Exception
+     */
+    protected function checkParamName($name): void
+    {
+        // todo verify/useless ?
+        if (is_int($name)) {
+            $name = (string)$name;
+        }
+
+        // that parameter exists in template ?
+        if (in_array($name, $this->parametersByOrder)
+            || array_key_exists($name, static::PARAM_ALIAS)
+        ) {
+            return;
+        }
+
+        // keyNum parameter ?
+        //        if (!in_array($name, ['1', '2', '3', '4'])) {
+        throw new Exception(sprintf('no parameter "%s" in template "%s"', $name, get_called_class()));
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return string
+     */
+    public function getAliasParam(string $name): string
+    {
+        if (array_key_exists($name, static::PARAM_ALIAS)) {
+            $name = static::PARAM_ALIAS[$name];
+        }
+
+        return $name;
+    }
+
+    /**
      * @param $param
      *
      * @return string|null
@@ -203,7 +244,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
             $name = $this->getAliasParam($name); // main parameter name
 
             // Gestion des doublons de paramètres
-            if (!empty($this->getParam($name))) {
+            if ($this->hasParamValue($name)) {
                 if (!empty($value)) {
                     $this->log[] = "parameter $name en doublon";
                     $this->parametersErrorFromHydrate[$name.'-doublon'] = $value;
@@ -262,47 +303,6 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     }
 
     /**
-     * TODO return bool + log() ?
-     * todo check keyNum <= count($parametersByOrder).
-     *
-     * @param $name string|int
-     *
-     * @throws Exception
-     */
-    protected function checkParamName($name): void
-    {
-        // todo verify/useless ?
-        if (is_int($name)) {
-            $name = (string)$name;
-        }
-
-        // that parameter exists in template ?
-        if (in_array($name, $this->parametersByOrder)
-            || array_key_exists($name, static::PARAM_ALIAS)
-        ) {
-            return;
-        }
-
-        // keyNum parameter ?
-        //        if (!in_array($name, ['1', '2', '3', '4'])) {
-        throw new Exception(sprintf('no parameter "%s" in template "%s"', $name, get_called_class()));
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return string
-     */
-    public function getAliasParam(string $name): string
-    {
-        if (array_key_exists($name, static::PARAM_ALIAS)) {
-            $name = static::PARAM_ALIAS[$name];
-        }
-
-        return $name;
-    }
-
-    /**
      * Define the serialize order of parameters (from user initial choice).
      * default : $params = ['param1'=>'', 'param2' => '', ...]
      * OK with $params = ['a','b','c'].
@@ -329,6 +329,26 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
             }
         }
         $this->paramOrderByUser = $validParams;
+    }
+
+    /**
+     * For a parameter, check is the value exists (not empty).
+     *
+     * @param string $name
+     *
+     * @return bool
+     */
+    public function hasParamValue(string $name): bool
+    {
+        try {
+            if (!empty(trim($this->getParam($name)))) {
+                return true;
+            }
+        } catch (\Throwable $e) {
+            unset($e);
+        }
+
+        return false;
     }
 
     /**

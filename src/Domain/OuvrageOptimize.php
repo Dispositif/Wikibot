@@ -290,7 +290,7 @@ class OuvrageOptimize
 
         // Si $isbn13 et 'isbn2' correspond à ISBN-13 => suppression
         if (isset($isbn13)
-            && !empty($this->getParam('isbn2'))
+            && $this->hasParamValue('isbn2')
             && $this->stripIsbn($this->getParam('isbn2')) === $this->stripIsbn($isbn13)
         ) {
             $this->unsetParam('isbn2');
@@ -316,14 +316,14 @@ class OuvrageOptimize
                 $this->setParam('isbn2', $isbn10pretty);
             }
             // sinon dans 'isbn3'
-            if (!empty($this->getParam('isbn2'))
+            if ($this->hasParamValue('isbn2')
                 && $this->stripIsbn($this->getParam('isbn2')) !== $stripIsbn
                 && empty($this->getParam('isbn3'))
             ) {
                 $this->setParam('isbn3', $isbn10pretty);
             }
             // delete 'isbn10' (en attendant modification modèle)
-            if (!empty($this->getParam('isbn10')) && $this->stripIsbn($this->getParam('isbn10')) === $stripIsbn) {
+            if ($this->hasParamValue('isbn10') && $this->stripIsbn($this->getParam('isbn10')) === $stripIsbn) {
                 $this->unsetParam('isbn10');
             }
         }
@@ -387,7 +387,7 @@ class OuvrageOptimize
     private function detectColon($param): bool
     {
         // > 0 don't count a starting colon ":bla"
-        if (!empty($this->getParam($param)) && mb_strrpos($this->getParam('titre'), ':') > 0) {
+        if ($this->hasParamValue($param) && mb_strrpos($this->getParam('titre'), ':') > 0) {
             return true;
         }
 
@@ -405,7 +405,7 @@ class OuvrageOptimize
             return;
         }
         // Que faire si déjà un sous-titre ?
-        if (!empty($this->getParam('sous-titre'))) {
+        if ($this->hasParamValue('sous-titre')) {
             return;
         }
 
@@ -508,7 +508,7 @@ class OuvrageOptimize
         // dewikification
         $params = ['date', 'année', 'mois', 'jour'];
         foreach ($params as $param) {
-            if (!empty($this->getParam($param)) && WikiTextUtil::isWikify(' '.$this->getParam($param))) {
+            if ($this->hasParamValue($param) && WikiTextUtil::isWikify(' '.$this->getParam($param))) {
                 $this->setParam($param, WikiTextUtil::unWikify($this->getParam($param)));
             }
         }
@@ -580,6 +580,11 @@ class OuvrageOptimize
         return $this->ouvrage->getParam($name);
     }
 
+    private function hasParamValue(string $name):bool
+    {
+        return $this->ouvrage->hasParamValue($name);
+    }
+
     private function setParam($name, $value)
     {
         // todo : overwrite setParam() ?
@@ -627,7 +632,7 @@ class OuvrageOptimize
 
     private function upperCaseFirstLetter($param)
     {
-        if (empty($this->getParam($param))) {
+        if (!$this->hasParamValue($param)) {
             return;
         }
         $newValue = TextUtil::mb_ucfirst(trim($this->getParam($param)));
@@ -713,7 +718,7 @@ class OuvrageOptimize
     protected function externalTemplates()
     {
         // "extrait=bla" => {{citation bloc|bla}}
-        if (!empty($this->getParam('extrait'))) {
+        if ($this->hasParamValue('extrait')) {
             $extrait = $this->getParam('extrait');
             // todo bug {{citation bloc}} si "=" ou "|" dans texte de citation
             // Legacy : use {{début citation}} ... {{fin citation}}
@@ -741,7 +746,7 @@ class OuvrageOptimize
         }
 
         // "commentaire=bla" => {{Commentaire biblio|1=bla}}
-        if (!empty($this->getParam('commentaire'))) {
+        if ($this->hasParamValue('commentaire')) {
             $commentaire = $this->getParam('commentaire');
             $this->ouvrage->externalTemplates[] = (object)[
                 'template' => 'commentaire biblio',
@@ -814,7 +819,7 @@ class OuvrageOptimize
             return true;
         }
         // Complétion langue ?
-        if (!empty($this->getParam('langue')) && empty($this->original->getParam('langue'))
+        if ($this->hasParamValue('langue') && !$this->original->hasParamValue('langue')
             && self::WIKI_LANGUAGE !== $this->getParam('langue')
         ) {
             return true;
@@ -889,7 +894,7 @@ class OuvrageOptimize
         // ex: "éditions Milan" => "Milan"
 
         // Déconseillé : 'lien éditeur' (obsolete 2019)
-        if (!empty($this->getParam('lien éditeur'))) {
+        if ($this->hasParamValue('lien éditeur')) {
             if (empty($editeurUrl)) {
                 $editeurUrl = $this->getParam('lien éditeur');
             }

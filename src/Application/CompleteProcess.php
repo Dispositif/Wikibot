@@ -108,8 +108,8 @@ class CompleteProcess
             $isbn = $origin->getParam('isbn') ?? null; // avant mise en forme EAN>ISBN
             $isbn10 = $origin->getParam('isbn2') ?? $origin->getParam('isbn10') ?? null;
             if (!empty($isbn)
-                && empty($origin->getParam('isbn invalide'))
-                && empty($origin->getParam('isbn erroné'))
+                && !$origin->hasParamValue('isbn invalide')
+                && !$origin->hasParamValue('isbn erroné')
             ) {
                 $this->onlineIsbnSearch($isbn, $isbn10);
             }
@@ -303,9 +303,9 @@ class CompleteProcess
     private function skipGoogle($bnfOuvrage): bool
     {
         if ($bnfOuvrage instanceOf OuvrageTemplate
-            && !empty($bnfOuvrage->getParam('titre'))
-            && (!empty($this->ouvrage->getParam('lire en ligne'))
-                || !empty($this->ouvrage->getParam('présentation en ligne')))
+            && $bnfOuvrage->hasParamValue('titre')
+            && ($this->ouvrage->hasParamValue('lire en ligne')
+                || $this->ouvrage->hasParamValue('présentation en ligne'))
         ) {
             return true;
         }
