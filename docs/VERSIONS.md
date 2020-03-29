@@ -1,5 +1,6 @@
 ## Versions des règles de corrections/complètement ##
 
+* 0.74 : bug langue turc 'tr' [RSVartanian]
 * 0.73 : URL Google (q/dq)
 * 0.72 : URL Google (q/dq) (@Pierre cb) + espacements style indenté
 * 0.71 : 'pages totales' au minimum

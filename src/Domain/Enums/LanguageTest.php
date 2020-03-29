@@ -41,6 +41,7 @@ class LanguageTest extends TestCase
             ['english', 'en'],
             ['ENGLISH', 'en'],
             ['Afrikaans', 'af'],
+            ['turc', 'tr']
         ];
     }
 }
