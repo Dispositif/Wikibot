@@ -37,7 +37,7 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
             'BuchID' => 'id',
         ];
 
-    const GOOGLEBOOK_URL_PATTERN = 'https?://(?:books|play)\.google\.[a-z\.]{2,5}/(?:books)?(?:books/[^\?]+\.html)?(?:/reader)?\?(?:[a-zA-Z=&]+&)?id=';
+    const GOOGLEBOOK_URL_PATTERN = 'https?://(?:books|play)\.google\.[a-z\.]{2,6}/(?:books)?(?:books/[^\?]+\.html)?(?:/reader)?\?(?:[a-zA-Z=&]+&)?id=';
 
     protected $parametersByOrder
         = ['id', 'titre', 'couv', 'page', 'romain', 'page autre', 'surligne'];
@@ -253,7 +253,7 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
         $host = parse_url($url, PHP_URL_HOST);
         if (!empty($host) && preg_match('#\.[a-z]{2,3}$#', $host, $matches) > 0) {
             // Maroc : google.co.ma (sous-domaine!!)
-            return str_replace(['.ma', '.uk'], ['.co.ma', '.co.uk'], $matches[0]); // .fr
+            return str_replace(['.ma', '.uk','.au'], ['.co.ma', '.co.uk','.com.au'], $matches[0]); // .fr
         }
 
         return null;

@@ -49,6 +49,11 @@ class GoogleLivresTemplateTest extends TestCase
     {
         return [
             [
+                // .com.au
+                'https://books.google.com.au/books?id=QHrQoDLNBUIC&pg=PT19&lpg=PT19&dq=Iotape+of+Commagene&source=web&ots=aZ3hKg3uDr&sig=Y_zdZhNP-qNZE6WIDNivPPm-Urg&hl=en&sa=X&oi=book_result&resnum=8&ct=result',
+                'https://books.google.com.au/books?id=QHrQoDLNBUIC&pg=PT19&dq=Iotape+of+Commagene',
+            ],
+            [
                 // 'id' in the middle
                 'https://books.google.fr/books?hl=fr&id=CWkrAQAAMAAJ&dq=La+dur%C3%A9e+d%27ensoleillement+n%27est+pas+suffisante+en+Afrique&focus=searchwithinvolume&q=ceintures',
                 'https://books.google.fr/books?id=CWkrAQAAMAAJ&q=ceintures',

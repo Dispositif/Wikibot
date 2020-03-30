@@ -32,7 +32,7 @@ class ArticleTemplate extends AbstractWikiTemplate implements ArticleTemplateAli
             //            'numéro' => '',
             'date' => '', // <!-- Paramètre obligatoire -->
             'pages' => '',
-            'issn' => '',
+//            'issn' => '', // Inutile ? https://fr.wikipedia.org/wiki/Discussion_mod%C3%A8le:Article#ISSN
             //            'e-issn' => '',
             'lire en ligne' => '',
             //            'consulté le' => '', // 16 mars 2020
