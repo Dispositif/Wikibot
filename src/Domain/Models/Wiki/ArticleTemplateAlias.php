@@ -112,5 +112,7 @@ interface ArticleTemplateAlias
             'author' => 'auteur',
             'authorlink' => 'lien auteur',
             'coauthors' => 'co-auteur',
+
+            'type' => 'nature article',
         ];
 }

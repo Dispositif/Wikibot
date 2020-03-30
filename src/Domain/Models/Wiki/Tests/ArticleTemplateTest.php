@@ -34,7 +34,7 @@ class ArticleTemplateTest extends TestCase
         return [
             [
                 ['titre' => 'bla'],
-                '{{Article |auteur1= |titre=bla |périodique= |date= |pages= |issn= |lire en ligne=}}',
+                '{{Article |auteur1= |titre=bla |périodique= |date= |pages= |lire en ligne=}}',
             ],
             [
                 // {{article | langue = en | auteur1 = T. Breeze | auteur2 = A. Bailey | auteur3 = K. Balcombe | auteur4 = S. Potts | titre = Pollination services in the UK: How important are honeybees? | journal = Agriculture, Ecosystems and Environment | date = août 2011 | doi = 10.1016/j.agee.2011.03.020 }}
@@ -50,7 +50,7 @@ class ArticleTemplateTest extends TestCase
                     'date' => 'août 2011',
                     'doi' => '10.1016/j.agee.2011.03.020',
                 ],
-                '{{Article |langue=en |auteur1=T. Breeze |auteur2=A. Bailey |auteur3=K. Balcombe |auteur4=S. Potts |titre=Pollination services in the UK: How important are honeybees? |périodique=Agriculture, Ecosystems and Environment |numéro=13 |date=août 2011 |pages= |issn= |lire en ligne= |doi=10.1016/j.agee.2011.03.020}}',
+                '{{Article |langue=en |auteur1=T. Breeze |auteur2=A. Bailey |auteur3=K. Balcombe |auteur4=S. Potts |titre=Pollination services in the UK: How important are honeybees? |périodique=Agriculture, Ecosystems and Environment |numéro=13 |date=août 2011 |pages= |lire en ligne= |doi=10.1016/j.agee.2011.03.020}}',
             ],
         ];
     }
@@ -75,11 +75,11 @@ class ArticleTemplateTest extends TestCase
         return [
             [
                 '{{Ouvrage|langue=en|auteur=Barry Walfish|lire en ligne=https://www.jstor.org/stable/1453892|titre=The Two Commentaries of Abraham Ibn Ezra on the Book of Esther|périodique=The Jewish Quarterly Review, New Series|tome=79|numéro=4|mois=avril|année=1989|passage=323-343|éditeur=University of Pennsylvania Press}}',
-                "{{Article |langue=en |auteur1=Barry Walfish |titre=The Two Commentaries of Abraham Ibn Ezra on the Book of Esther |périodique=The Jewish Quarterly Review, New Series |éditeur=University of Pennsylvania Press |volume=79 |numéro=4 |date=avril 1989 |pages=323-343 |issn= |lire en ligne=https://www.jstor.org/stable/1453892}}",
+                "{{Article |langue=en |auteur1=Barry Walfish |titre=The Two Commentaries of Abraham Ibn Ezra on the Book of Esther |périodique=The Jewish Quarterly Review, New Series |éditeur=University of Pennsylvania Press |volume=79 |numéro=4 |date=avril 1989 |pages=323-343 |lire en ligne=https://www.jstor.org/stable/1453892}}",
             ],
             [
                 "{{Ouvrage|langue=en|auteur=Hans Vlieghe|titre=Flemish Art and Architecture, 1585-1700|périodique=The Burlington Magazine|lieu=New Haven|éditeur=Yale University Press|année=1998|lire en ligne={{Google Livres|AS_NXFoY0M4C}}|isbn=978-0-30010-469-1|pages totales=339}}",
-                "{{Article |langue=en |auteur1=Hans Vlieghe |titre=Flemish Art and Architecture, 1585-1700 |périodique=The Burlington Magazine |lieu=New Haven |éditeur=Yale University Press |date=1998 |pages=339 |issn= |isbn=978-0-30010-469-1 |lire en ligne={{Google Livres|AS_NXFoY0M4C}}}}",
+                "{{Article |langue=en |auteur1=Hans Vlieghe |titre=Flemish Art and Architecture, 1585-1700 |périodique=The Burlington Magazine |lieu=New Haven |éditeur=Yale University Press |date=1998 |pages=339 |isbn=978-0-30010-469-1 |lire en ligne={{Google Livres|AS_NXFoY0M4C}}}}",
             ],
             [
                 "{{Ouvrage|nom1=Collectif|prénom2=Alphonse|nom2= Wollbrett|directeur2=oui|titre=Le canton de Bouxwiller|lieu= Saverne|éditeur=SHASE|année=1978|issn=0245-8411|périodique=Pays d'Alsace|numéro=103bis}}",

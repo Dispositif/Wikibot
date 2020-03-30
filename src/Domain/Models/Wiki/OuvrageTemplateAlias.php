@@ -111,7 +111,7 @@ interface OuvrageTemplateAlias
             'autres' => 'champ libre', // erroné, traduction de 'others'
             //.org/wiki/Discussion_mod%C3%A8le:Ouvrage#Paramètre_"autres"
             'trans_title' => 'titre traduit',
-            //            'type' => '',
+            'type' => 'nature ouvrage',
             'edition' => "numéro d'édition",
             //            'series' => '',
             'date' => 'date',
