@@ -92,10 +92,12 @@ class ArticleFromURL
             return null;
         }
 
-        if (!empty($articleData)) {
+        if (!empty($articleData) && !empty($articleData['titre'])) {
             $article = WikiTemplateFactory::create('article');
             $article->hydrate($articleData);
-
+            if(!$article->hasParamValue('lire en ligne')) {
+                $article->setParam('lire en ligne', $this->url);
+            }
             return $article; // ok
         }
 

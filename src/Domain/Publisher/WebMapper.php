@@ -45,7 +45,7 @@ class WebMapper implements MapperInterface
             //           'acces' =>  $data['isAccessibleForFree'],
             'titre' => html_entity_decode($data['headline']),
             'lire en ligne' => $data['mainEntityOfPage']['@id'],
-            'date' => $this->convertDate($data['datePublished']), // 2020-03-19T19:13:01.000Z
+            'date' => $this->convertDate($data['datePublished'] ?? null), // 2020-03-19T19:13:01.000Z
             'auteur1' => $this->convertAuteur($data, 0),
             'auteur2' => $this->convertAuteur($data, 1),
             'auteur3' => $this->convertAuteur($data, 2),
@@ -91,11 +91,17 @@ class WebMapper implements MapperInterface
      * @param string $str
      *
      * @return string
-     * @throws \Exception
      */
-    protected function convertDate(string $str): string
+    protected function convertDate(?string $str): ?string
     {
-        $date = new DateTime($str);
+        if (empty($str)) {
+            return null;
+        }
+        try {
+            $date = new DateTime($str);
+        } catch (\Exception $e) {
+            return null;
+        }
 
         return $date->format('d-m-Y');
     }

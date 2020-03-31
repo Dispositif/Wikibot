@@ -54,7 +54,7 @@ class WebMapperTest extends TestCase
                 'périodique' => '[[Le Monde]]',
                 'titre' => 'Coronavirus : la Californie placée à son tour en confinement',
                 'lire en ligne' => 'https://www.lemonde.fr/planete/article/2020/03/20/coronavirus-la-californie-placee-en-confinement_6033754_3244.html',
-                'auteur1' => 'Le Monde avec AFP',
+                'auteur1' => "''Le Monde'' avec [[Agence France-Presse|AFP]]",
                 'date' => '20-03-2020',
             ],
             $actual

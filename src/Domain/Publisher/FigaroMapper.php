@@ -43,7 +43,7 @@ class FigaroMapper extends WebMapper
             //            'langue' => 'fr',
             'périodique' => static::PERIODIQUE,
             //           'acces' =>  $data['isAccessibleForFree'],
-            'titre' => html_entity_decode($data['headline']),
+            'titre' => html_entity_decode($data['headline'] ?? ''),
             'lire en ligne' => $data['mainEntityOfPage']['@id'],
             'date' => $this->convertDate($data['datePublished']), // 2020-03-19T19:13:01.000Z
             'auteur1' => $this->convertAuteur($data, 0),
