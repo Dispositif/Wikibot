@@ -39,6 +39,23 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
 
     const GOOGLEBOOK_URL_PATTERN = 'https?://(?:books|play)\.google\.[a-z\.]{2,6}/(?:books)?(?:books/[^\?]+\.html)?(?:/reader)?\?(?:[a-zA-Z=&]+&)?id=';
 
+    const TRACKING_PARAMETERS
+        = [
+            'xtor',
+            'ved',
+            'ots',
+            'sig',
+            'source',
+            'utm_source',
+            'utm_medium',
+            'utm_campaign',
+            'utm_term',
+            'utm_content',
+        ];
+    /**
+     * @var array
+     */
+
     protected $parametersByOrder
         = ['id', 'titre', 'couv', 'page', 'romain', 'page autre', 'surligne'];
 
@@ -106,6 +123,18 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
         parse_str(implode('&', [$fragmentData, $queryData]), $val);
 
         return self::arrayKeysToLower($val);
+    }
+
+    public static function isTrackingUrl(string $url): bool
+    {
+        $data = self::parseGoogleBookQuery($url);
+        foreach ($data as $param => $value) {
+            if (in_array($param, self::TRACKING_PARAMETERS)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -253,7 +282,7 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
         $host = parse_url($url, PHP_URL_HOST);
         if (!empty($host) && preg_match('#\.[a-z]{2,3}$#', $host, $matches) > 0) {
             // Maroc : google.co.ma (sous-domaine!!)
-            return str_replace(['.ma', '.uk','.au'], ['.co.ma', '.co.uk','.com.au'], $matches[0]); // .fr
+            return str_replace(['.ma', '.uk', '.au'], ['.co.ma', '.co.uk', '.com.au'], $matches[0]); // .fr
         }
 
         return null;

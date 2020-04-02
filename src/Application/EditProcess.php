@@ -377,6 +377,9 @@ class EditProcess
         if (preg_match('#\+lieu#', $data['modifs']) > 0) {
             $this->addSummaryTag('+lieu');
         }
+        if (preg_match('#tracking#', $data['modifs']) > 0) {
+            $this->addSummaryTag('tracking');
+        }
         if (preg_match('#présentation en ligne#', $data['modifs']) > 0) {
             $this->addSummaryTag('+présentation en ligne');
         }

@@ -101,6 +101,20 @@ class GoogleLivresTemplateTest extends TestCase
         ];
     }
 
+    public function testIsTrackingUrl()
+    {
+        $url = 'https://books.google.com.au/books?id=QHrQoDLNBUIC&pg=PT19&lpg=PT19&dq=Iotape+of+Commagene&source=web&ots=aZ3hKg3uDr&sig=Y_zdZhNP-qNZE6WIDNivPPm-Urg&hl=en&sa=X&oi=book_result&resnum=8&ct=result';
+        $this::assertSame(
+            true,
+            GoogleLivresTemplate::isTrackingUrl($url)
+        );
+        $url = 'https://books.google.com.au/books?id=QHrQoDLNBUIC&pg=PT19';
+        $this::assertSame(
+            false,
+            GoogleLivresTemplate::isTrackingUrl($url)
+        );
+    }
+
     /**
      * @dataProvider provideGoogleUrl
      *
