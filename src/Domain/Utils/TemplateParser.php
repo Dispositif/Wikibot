@@ -294,4 +294,20 @@ abstract class TemplateParser extends WikiTextUtil
 
         return ' |';
     }
+
+    /**
+     * Detect if "param     = bla".
+     *
+     * @param string $tplText
+     *
+     * @return bool
+     */
+    public static function isMultispacedTemplate(string $tplText):bool
+    {
+        // detect 4 spaces chars
+        if (preg_match('#{{[^}]+ {4}[^}]+}}#i', $tplText)) {
+            return true;
+        }
+        return false;
+    }
 }

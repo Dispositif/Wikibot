@@ -39,6 +39,10 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     public $parametersErrorFromHydrate;
 
     public $userSeparator; // todo move to WikiRef
+    /**
+     * @var bool
+     */
+    public $userMultiSpaced = false;
 
     /**
      * optional
@@ -48,6 +52,10 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     //protected $parametersByOrder = [];
 
     protected $paramOrderByUser = [];
+    /**
+     * @var bool
+     */
+
 
     /**
      * AbstractWikiTemplate constructor.
@@ -209,6 +217,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     public function detectUserSeparator($text): void
     {
         $this->userSeparator = TemplateParser::findUserStyleSeparator($text);
+        $this->userMultiSpaced = TemplateParser::isMultispacedTemplate($text);
     }
 
     /**
@@ -380,13 +389,17 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
 
             if (!in_array($paramName, ['0', '1', '2', '3', '4', '5'])) {
                 $string .= $paramName;
-                // espacements multiples pour style étendu : "auteur    = Bla"
-                if ($this->userSeparator && false !== strpos($this->userSeparator, "\n")) {
+
+                // MultiSpaced : espacements multiples pour style étendu : "auteur    = Bla"
+                if ($this->userSeparator
+                    && false !== strpos($this->userSeparator, "\n")
+                    && $this->userMultiSpaced
+                ) {
                     $spaceNb = max(0, $maxChars - mb_strlen($paramName));
                     $string .= str_repeat(' ', $spaceNb);
                     $string .= ' = ';
                 } else {
-                    // style condensé "auteur=Bla"
+                    // style condensé "auteur=Bla" ou non multiSpaced
                     $string .= '=';
                 }
             }

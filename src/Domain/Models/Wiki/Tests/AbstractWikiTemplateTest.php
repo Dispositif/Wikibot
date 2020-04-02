@@ -67,6 +67,19 @@ class AbstractWikiTemplateTest extends TestCase
         $lienWeb->userSeparator = "\n|";
         $this::assertEquals(
             '{{lien web
+|url=http://google.com
+|auteur1=Bob
+|date=2010-11-25
+|consulté le=
+|titre=Foo bar
+}}',
+            $lienWeb->serialize()
+        );
+
+        $lienWeb->userMultiSpaced = true;
+        $lienWeb->userSeparator = "\n|";
+        $this::assertEquals(
+            '{{lien web
 |url         = http://google.com
 |auteur1     = Bob
 |date        = 2010-11-25
