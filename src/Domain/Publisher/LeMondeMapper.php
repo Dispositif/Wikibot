@@ -56,9 +56,9 @@ class LeMondeMapper extends WebMapper
         if ('Le Monde' === $str) {
             return null;
         }
-
         $str = str_replace('Le Monde', "''Le Monde''", $str);
-        $str = str_replace('AFP', '[[Agence France-Presse|AFP]]', $str);
+
+        $str = $this->wikifyPressAgency($str);
 
         return $str;
     }

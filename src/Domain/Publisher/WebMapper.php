@@ -105,4 +105,29 @@ class WebMapper implements MapperInterface
 
         return $date->format('d-m-Y');
     }
+
+    /**
+     * Wikification des noms/acronymes d'agences de presse.
+     *
+     * @param string $str
+     *
+     * @return string
+     */
+    protected function wikifyPressAgency(string $str): string
+    {
+        // skip potential wikilinks
+        if (strpos($str, '[') !== false) {
+            return $str;
+        }
+        $str = preg_replace('#\b(AFP)\b#', '[[Agence France-Presse|AFP]]', $str);
+        $str = str_replace('Reuters', '[[Reuters]]', $str);
+        $str = str_replace('Associated Press', '[[Associated Press]]', $str);
+        $str = preg_replace('#\b(PA)\b#', '[[Press Association|PA]]', $str);
+        $str = preg_replace('#\b(AP)\b#', '[[Associated Press|AP]]', $str);
+        $str = str_replace('Xinhua', '[[Xinhua]]', $str);
+        $str = preg_replace('#\b(ATS)\b#', '[[Agence télégraphique suisse|ATS]]', $str);
+        $str = preg_replace('#\b(PC|CP)\b#', '[[La Presse canadienne|PC]]', $str);
+
+        return $str;
+    }
 }
