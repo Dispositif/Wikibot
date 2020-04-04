@@ -60,7 +60,9 @@ class ArticleFromURL
             $html = $this->publisherAction->getHTMLSource();
             $htmlData = $this->publisherAction->extractWebData($html);
         } catch (Throwable $e) {
-            if (strpos($e->getMessage(), '404') !== false) {
+            if (strpos($e->getMessage(), '404') !== false
+            || strpos($e->getMessage(), '410 Gone') !== false
+            ) {
                 dump('****** lien brisé !!!!');
                 $lienBrise = WikiTemplateFactory::create('lien brisé');
                 $lienBrise->hydrate(['url' => $this->url, 'titre' => 'Article de presse', 'brisé le' => date('d-m-Y')]);

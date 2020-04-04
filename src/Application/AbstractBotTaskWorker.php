@@ -170,7 +170,7 @@ abstract class AbstractBotTaskWorker
     {
         $result = $this->pageAction->editPage(
             $newText,
-            new EditInfo($this->taskName, $this->minorFlag, $this->botFlag)
+            new EditInfo($this->taskName, $this->minorFlag, $this->botFlag, 5)
         );
         dump($result);
         echo "Sleep ".(string)static::SLEEP_AFTER_EDITION."\n";

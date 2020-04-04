@@ -83,8 +83,8 @@ foreach ($talkTitles as $talkTitle) {
     echo $taskName."\n";
     $newText = $report->deleteAllReports($talkText, $botName);
     if ($newText !== $talkText) {
-        $result = $talkAction->editPage($newText, new EditInfo($taskName, false, true));
+        $result = $talkAction->editPage($newText, new EditInfo($taskName, false, true, 5));
         dump($result);
-        sleep(180);
+        sleep(20);
     }
 }

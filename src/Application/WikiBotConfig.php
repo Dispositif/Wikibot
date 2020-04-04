@@ -29,6 +29,9 @@ class WikiBotConfig
 
     const EXIT_ON_CHECK_WATCHPAGE = true;
 
+    // do not stop if they play with {stop} on bot talk page
+    const BLACKLIST_EDITOR  = ['NB80'];
+
     const BOT_FLAG = false;
 
     const MODE_AUTO = false;
@@ -42,6 +45,8 @@ class WikiBotConfig
     const EDIT_LAPS_AUTOBOT = 60;
 
     const EDIT_LAPS_FLAGBOT = 8;
+
+
 
     public $taskName = 'Améliorations bibliographiques';
 
@@ -124,6 +129,10 @@ class WikiBotConfig
                 "\n*** STOP ON TALK PAGE BY %s ***\n\n",
                 $lastEditor
             );
+            if(in_array($lastEditor, self::BLACKLIST_EDITOR)){
+                return;
+            }
+
             if (class_exists(SMS::class)) {
                 try {
                     new SMS('WikiBotConfig stop by '.$lastEditor);

@@ -44,16 +44,20 @@ class ZiziBotConfig extends WikiBotConfig
         $last = $page->page->getRevisions()->getLatest();
 
         // No response if the last edition from bot or bot owner
-        if (!$last->getUser() || in_array($last->getUser(), [getenv('BOT_NAME'), getenv('BOT_OWNER')])) {
+        if (!$last->getUser()
+            || in_array($last->getUser(), [getenv('BOT_NAME'), getenv('BOT_OWNER')])
+            || 'Flow talk page manager' === $last->getUser()
+        ) {
             // compare with timestamp
             return false;
         }
 
-        $addText = $this->generateTalkText($last->getUser());
+        $identation = $this->predictTalkIndentation($page->getText(), $last->getUser()); // ':::'
+        $addText = $this->generateTalkText($last->getUser(), $identation);
 
-        echo "Prepare to talk on $pageTitle / Sleep 5 min...\n";
+        echo "Prepare to talk on $pageTitle / Sleep 3 min...\n";
         echo sprintf("-> %s \n", $addText);
-        sleep(300);
+        sleep(180);
 
         $editInfo = new EditInfo(static::BOT_TALK_SUMMARY);
         $success = $page->addToBottomOfThePage($addText, $editInfo);
@@ -70,6 +74,9 @@ class ZiziBotConfig extends WikiBotConfig
      */
     private function generateTalkText(?string $toEditor = null, ?string $identation = ':')
     {
+        if($toEditor === 'Flow talk page manager'){
+            $toEditor = null;
+        }
         $to = ($toEditor) ? sprintf('@[[User:%s|%s]] : ', $toEditor, $toEditor) : ''; // {{notif}}
         $sentence = TextUtil::mb_ucfirst($this->getRandomSentence());
         if (!$sentence) {
@@ -77,6 +84,40 @@ class ZiziBotConfig extends WikiBotConfig
         }
 
         return sprintf('%s%s%s --~~~~', $identation, $to, $sentence);
+    }
+
+    /**
+     * Stupid ":::" talk page indentation prediction.
+     *
+     * @param string $text
+     * @param string $author
+     *
+     * @return string ":::"
+     */
+    private function predictTalkIndentation(string $text, ?string $author = null): string
+    {
+        // extract last line
+        $lines = explode("\n", trim($text));
+        $lastLine = $lines[count($lines) - 1];
+        if (preg_match('#^(:*).+#', $lastLine, $matches)) {
+            if (!empty($matches[1])) {
+                $nextIdent = $matches[1].':';
+                if (empty($author)) {
+
+                    return $nextIdent;
+                }
+                // search author signature link to check that he wrote on the page bottom
+                if (preg_match(
+                    '#\[\[(?:User|Utilisateur|Utilisatrice)\:'.preg_quote($author).'[|\]]#i',
+                    $matches[0]
+                )
+                ) {
+                    return $nextIdent;
+                }
+            }
+        }
+
+        return ':';
     }
 
     private function getRandomSentence(): ?string

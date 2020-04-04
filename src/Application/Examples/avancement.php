@@ -47,10 +47,12 @@ $pageNb = (int)$monitor['pages'];
 
 $newText = <<<EOF
 <div style="background:#EBF6E9;border:2px solid grey;padding:10px;border-radius:10px;">
-{{Requête en cours}} : [[Utilisateur:ZiziBotConfig/features|Améliorations bibliographiques sur citations {ouvrage} (ISBN)]]
+{{Requête en cours}} : [[Utilisateur:ZiziBot/features|Améliorations bibliographiques sur citations {ouvrage} (ISBN, 
+1 an)]]
  {{progression|##PAGEEDITED##|174569}}
-<div align="center"><small>{{formatnum:##PAGEEDITED##}} articles traités sur {{formatnum:174569}} (ISBN)</small></div>
-<div align="center"><small>{{formatnum:##NUMBER##}} citations analysées sur {{formatnum:930427}}
+<div align="center"><small>{{formatnum:##PAGEEDITED##}} articles WP traités sur {{formatnum:182348}} contenant un ISBN
+</small></div>
+<div align="center"><small>{{formatnum:##NUMBER##}} citations analysées sur {{formatnum:978085}}
 </small></div>
 </div>
 EOF;
@@ -59,12 +61,12 @@ $newText = str_replace('##NUMBER##', $number, $newText);
 $newText = str_replace('##PAGEEDITED##', $pageNb, $newText);
 
 // Put content on wiki
-$title = 'Utilisateur:ZiziBotConfig/task';
+$title = 'Utilisateur:ZiziBot/task';
 $summary = 'bot : mise à jour';
 
 echo "Mise à jour avancement ?\n";
-echo "sleep 60...\n";
-sleep(60);
+echo "sleep 20...\n";
+sleep(20);
 
 $wiki = ServiceFactory::wikiApi();
 $page = new WikiPageAction($wiki, $title);
