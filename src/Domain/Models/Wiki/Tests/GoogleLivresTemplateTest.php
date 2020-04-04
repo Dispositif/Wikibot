@@ -49,6 +49,11 @@ class GoogleLivresTemplateTest extends TestCase
     {
         return [
             [
+                // q= empty , dq= not empty => delete q and dq
+                'https://books.google.fr/books?id=cAUvWtW7x7kC&printsec=frontcover&dq=Joanne+environs+Paris&hl=fr&ei=0Fl6TeqeIsek8QOnpeioBA&sa=X&oi=book_result&ct=result&resnum=1&ved=0CC8Q6AEwAA#v=onepage&q&f=false',
+                'https://books.google.fr/books?id=cAUvWtW7x7kC&printsec=frontcover',
+            ],
+            [
                 // .com.au
                 'https://books.google.com.au/books?id=QHrQoDLNBUIC&pg=PT19&lpg=PT19&dq=Iotape+of+Commagene&source=web&ots=aZ3hKg3uDr&sig=Y_zdZhNP-qNZE6WIDNivPPm-Urg&hl=en&sa=X&oi=book_result&resnum=8&ct=result',
                 'https://books.google.com.au/books?id=QHrQoDLNBUIC&pg=PT19&dq=Iotape+of+Commagene',
@@ -59,7 +64,7 @@ class GoogleLivresTemplateTest extends TestCase
                 'https://books.google.fr/books?id=CWkrAQAAMAAJ&q=ceintures',
             ],
             [
-                // strange format
+                // 3 : strange format
                 'https://books.google.fr/books/about/Kate_Bush.html?id=YL0EDgAAQBAJ&printsec=frontcover&source=kp_read_button&redir_esc=y#v=onepage&q&f=false',
                 'https://books.google.fr/books?id=YL0EDgAAQBAJ&printsec=frontcover',
             ],
@@ -76,7 +81,7 @@ class GoogleLivresTemplateTest extends TestCase
             [
                 // common pattern
                 'https://books.google.fr/books?id=26gcP_Yz-i8C&pg=PA56&lpg=PA56&dq=André+Poznanski&source=bl&ots=tuFKKbkpUS&sig=ACfU3U058ij4qQHFsXX_KX01YK81SLCCBw&hl=fr&sa=X&ved=2ahUKEwiB6tHVtKbkAhULNRoKHbOeDXU4ChDoATAAegQICBAB#v=onepage&q=André%20Poznanski&f=false',
-                'https://books.google.fr/books?id=26gcP_Yz-i8C&pg=PA56&dq=Andr%C3%A9+Poznanski'
+                'https://books.google.fr/books?id=26gcP_Yz-i8C&pg=PA56&dq=Andr%C3%A9+Poznanski',
             ],
             [
                 // pattern 'http://' and '/books/reader'
@@ -103,7 +108,8 @@ class GoogleLivresTemplateTest extends TestCase
 
     public function testIsTrackingUrl()
     {
-        $url = 'https://books.google.com.au/books?id=QHrQoDLNBUIC&pg=PT19&lpg=PT19&dq=Iotape+of+Commagene&source=web&ots=aZ3hKg3uDr&sig=Y_zdZhNP-qNZE6WIDNivPPm-Urg&hl=en&sa=X&oi=book_result&resnum=8&ct=result';
+        $url
+            = 'https://books.google.com.au/books?id=QHrQoDLNBUIC&pg=PT19&lpg=PT19&dq=Iotape+of+Commagene&source=web&ots=aZ3hKg3uDr&sig=Y_zdZhNP-qNZE6WIDNivPPm-Urg&hl=en&sa=X&oi=book_result&resnum=8&ct=result';
         $this::assertSame(
             true,
             GoogleLivresTemplate::isTrackingUrl($url)

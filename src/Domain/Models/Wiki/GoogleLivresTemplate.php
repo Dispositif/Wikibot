@@ -226,9 +226,10 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
         $dat = [];
         // keep only a few parameters (+'q' ?)
         // q : keywords search / dq : quoted phrase search
+        // q can be empty !!!!
         $keeps = ['id', 'pg', 'printsec', 'q', 'dq'];
         foreach ($keeps as $keep) {
-            if (!empty($gooDat[$keep])) {
+            if (isset($gooDat[$keep])) {
                 $dat[$keep] = $gooDat[$keep];
             }
         }
@@ -256,6 +257,12 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
             else {
                 unset($dat['dq']);
             }
+        }
+        if(empty($dat['q'])) {
+            unset($dat['q']);
+        }
+        if(empty($dat['dq'])) {
+            unset($dat['dq']);
         }
 
         $googleURL = self::DEFAULT_GOOGLEBOOK_URL;
