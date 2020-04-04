@@ -33,6 +33,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
      * todo : modify to [a,b,c] ?
      */
     const REQUIRED_PARAMETERS = [];
+    const COMMENT_STRIPPED    = '<!-- Paramètre obligatoire -->';
 
     public $log = [];
 
@@ -206,6 +207,8 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
      */
     public function hydrateFromText(string $tplText)
     {
+        $tplText = str_ireplace(static::COMMENT_STRIPPED, '', $tplText);
+
         if (WikiTextUtil::isCommented($tplText)) {
             throw new DomainException('HTML comment tag detected');
         }

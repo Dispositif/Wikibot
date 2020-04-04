@@ -147,6 +147,8 @@ class WikiTextUtil extends TextUtil
      */
     public static function isCommented(string $text): bool
     {
+        $text = str_replace('<!-- Paramètre obligatoire -->', '', $text);
+
         //ou preg_match('#<\!--(?!-->).*-->#s', '', $text); // plus lourd mais précis
         return (preg_match('#<!--[^>]*-->#', $text) > 0) ? true : false;
     }
