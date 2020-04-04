@@ -25,7 +25,15 @@ use Throwable;
  */
 class CompleteProcess
 {
-    const ISBN_SKIP = ['9782918758440'];
+    /**
+     * Exclusion requête BnF/Google/etc
+     * Format EAN ou ISBN10 sans tiret.
+     */
+    const ISBN_EAN_SKIP
+        = [
+            '9782918758440', // Profils de lignes du réseau ferré français vol.2
+            '9782918758341', // Profils de lignes du réseau ferré français vol.1
+        ];
     /**
      * @var bool
      */
@@ -141,12 +149,30 @@ class CompleteProcess
         return $row;
     }
 
+    /**
+     * @param string      $isbn
+     * @param string|null $isbn10
+     *
+     * @return bool
+     */
+    private function isIsbnSkipped(string $isbn, ?string $isbn10 = null): bool
+    {
+        if (in_array(str_replace('-', '', $isbn), self::ISBN_EAN_SKIP)
+            || (!is_null($isbn10)
+                && in_array(str_replace('-', '', $isbn10), self::ISBN_EAN_SKIP))
+        ) {
+            return true;
+        }
+
+        return false;
+    }
+
     private function onlineIsbnSearch(string $isbn, ?string $isbn10 = null)
     {
-        if (in_array(str_replace('-', '', $isbn), self::ISBN_SKIP)
-            || ($isbn10 && in_array(str_replace('-', '', $isbn10), self::ISBN_SKIP))
-        ) {
-            //todo vérifier logique
+        if ($this->isIsbnSkipped($isbn, $isbn10)) {
+            echo "*** SKIP THAT ISBN ***\n";
+
+            // Vérifier logique return
             return;
         }
 
@@ -298,10 +324,10 @@ class CompleteProcess
      */
     private function serializeFinalOpti(): string
     {
-//        // Améliore style compact : plus espacé
-//        if ('|' === $this->ouvrage->userSeparator) {
-//            $this->ouvrage->userSeparator = ' |';
-//        }
+        //        // Améliore style compact : plus espacé
+        //        if ('|' === $this->ouvrage->userSeparator) {
+        //            $this->ouvrage->userSeparator = ' |';
+        //        }
         $finalOpti = $this->ouvrage->serialize(true);
         $finalOpti = Normalizer::normalize($finalOpti);
 

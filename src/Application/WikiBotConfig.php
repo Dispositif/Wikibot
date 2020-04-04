@@ -27,7 +27,7 @@ class WikiBotConfig
 {
     const WATCHPAGE_FILENAME = __DIR__.'/resources/watch_pages.json';
 
-    const EXIT_ON_CHECK_WATCHPAGE = true;
+    const EXIT_ON_CHECK_WATCHPAGE = false;
 
     // do not stop if they play with {stop} on bot talk page
     const BLACKLIST_EDITOR  = ['NB80'];
@@ -129,7 +129,7 @@ class WikiBotConfig
                 "\n*** STOP ON TALK PAGE BY %s ***\n\n",
                 $lastEditor
             );
-            if(in_array($lastEditor, self::BLACKLIST_EDITOR)){
+            if(in_array($lastEditor, static::BLACKLIST_EDITOR)){
                 return;
             }
 
@@ -174,7 +174,7 @@ class WikiBotConfig
                 // Ask? Mettre à jour $watchPages ?
                 echo "Replace with $title => '$pageTime'";
 
-                if (self::EXIT_ON_CHECK_WATCHPAGE) {
+                if (static::EXIT_ON_CHECK_WATCHPAGE) {
                     echo "EXIT_ON_CHECK_WATCHPAGE\n";
 
                     throw new \DomainException('exit from check watchpages');
