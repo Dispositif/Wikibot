@@ -25,6 +25,7 @@ use Throwable;
  */
 class CompleteProcess
 {
+    const ISBN_SKIP = ['9782918758440'];
     /**
      * @var bool
      */
@@ -142,6 +143,13 @@ class CompleteProcess
 
     private function onlineIsbnSearch(string $isbn, ?string $isbn10 = null)
     {
+        if (in_array(str_replace('-', '', $isbn), self::ISBN_SKIP)
+            || ($isbn10 && in_array(str_replace('-', '', $isbn10), self::ISBN_SKIP))
+        ) {
+            //todo vérifier logique
+            return;
+        }
+
         online:
         if ($this->verbose) {
             echo "sleep 10...\n";
@@ -290,10 +298,10 @@ class CompleteProcess
      */
     private function serializeFinalOpti(): string
     {
-        // Améliore style compact : plus espacé
-        if ('|' === $this->ouvrage->userSeparator) {
-            $this->ouvrage->userSeparator = ' |';
-        }
+//        // Améliore style compact : plus espacé
+//        if ('|' === $this->ouvrage->userSeparator) {
+//            $this->ouvrage->userSeparator = ' |';
+//        }
         $finalOpti = $this->ouvrage->serialize(true);
         $finalOpti = Normalizer::normalize($finalOpti);
 

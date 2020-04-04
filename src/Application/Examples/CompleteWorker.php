@@ -11,6 +11,7 @@ namespace App\Application\Examples;
 
 use App\Application\CompleteProcess;
 use App\Infrastructure\DbAdapter;
+use App\Infrastructure\GoogleApiQuota;
 
 include __DIR__.'/../myBootstrap.php';
 
@@ -19,6 +20,7 @@ $count = 0;
 while (true) {
     try {
         echo "*** NEW COMPLETE PROCESS\n";
+        dump('Google quota : ', (new GoogleApiQuota())->getCount());
         $process = new CompleteProcess(new DbAdapter(), true);
         $process->run();
         $count = 0; // reinitialise boucle erreur
@@ -30,7 +32,12 @@ while (true) {
             exit;
         }
         if (strpos($e->getMessage(), 'Daily Limit Exceeded') !== false) {
-            echo "sleep 3h\n";
+            echo "Daily Limit Exceeded : sleep 3h\n";
+            sleep(60 * 60 * 3);
+            echo "Wake up\n";
+        }
+        if(strpos($e->getMessage(), 'Quota Google') !== false){
+            echo "Google Quota dépassé : sleep 3h\n";
             sleep(60 * 60 * 3);
             echo "Wake up\n";
         }

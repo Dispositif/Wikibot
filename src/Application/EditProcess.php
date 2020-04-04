@@ -217,7 +217,7 @@ class EditProcess
         pageEdit:
 
         try {
-            $editInfo = new EditInfo($miniSummary, $this->minorFlag, $this->botFlag);
+            $editInfo = new EditInfo($miniSummary, $this->minorFlag, $this->botFlag, 5);
             $success = $page->editPage(Normalizer::normalize($this->wikiText), $editInfo);
         } catch (Throwable $e) {
             // Invalid CSRF token.
@@ -524,7 +524,7 @@ class EditProcess
         // Edit wiki talk page
         try {
             $talkPage = new WikiPageAction($this->wiki, 'Discussion:'.$mainTitle);
-            $editInfo = new EditInfo('Signalement erreur {ouvrage}', false, false);
+            $editInfo = new EditInfo('Signalement erreur {ouvrage}', false, false, 5);
 
             return $talkPage->addToBottomOrCreatePage($errorMessage, $editInfo);
         } catch (Throwable $e) {

@@ -464,7 +464,7 @@ class OuvrageOptimize
             $this->setParam($param, $goo);
             // cleaned tracking parameters in Google URL ?
             if(GoogleLivresTemplate::isTrackingUrl($url)){
-                $this->log('Google');
+                $this->log('tracking');
                 $this->notCosmetic = true;
             }
         }
