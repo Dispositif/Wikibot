@@ -74,6 +74,40 @@ class WikiTextUtil extends TextUtil
     }
 
     /**
+     * Generate wikilink from string.
+     *
+     * @param string      $strLink
+     * @param string|null $page
+     *
+     * @return string
+     */
+    public static function wikilink(string $strLink, ?string $page = null): string
+    {
+        $strLink = trim($strLink);
+        $page = trim($page);
+
+        // fu_bar => [[fu_bar]] / Fu, fu => [[fu]]
+        if (empty($page) || self::str2WikiTitle($strLink) === self::str2WikiTitle($page)) {
+            return '[['.$strLink.']]';
+        }
+
+        // fu, bar => [[Bar|fu]]
+        return sprintf(
+            '[[%s|%s]]',
+            self::str2WikiTitle($page),
+            $strLink
+        );
+    }
+
+    /**
+     * "fu_bar_ " => "Fu bar".
+     */
+    private static function str2WikiTitle(string $str): string
+    {
+        return TextUtil::mb_ucfirst(trim(str_replace('_', ' ', $str)));
+    }
+
+    /**
      * Get page titles from wiki encoded links.
      * (but not others projects links like [[wikt:bla]].
      *

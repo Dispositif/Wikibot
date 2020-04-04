@@ -99,8 +99,13 @@ class OuvrageOptimizeTest extends TestCase
                 '{{Ouvrage|titre=|éditeur=[[Fu|Bar]] bla|année=|pages totales=|isbn=}}',
             ],
             [
+                // fusion 'lien auteur', 'lien titre'
+                ['auteur' => 'Bob', 'lien auteur' => 'Bob (artiste)', 'titre' => 'bla', 'lien titre'=>'Bla'],
+                '{{Ouvrage|auteur1=[[Bob (artiste)|Bob]]|titre=[[bla]]|éditeur=|année=|pages totales=|isbn=}}',
+            ],
+            [
                 ['éditeur' => 'bar', 'lien éditeur' => 'fu'],
-                '{{Ouvrage|titre=|éditeur=[[fu|bar]]|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=|éditeur=[[Fu|bar]]|année=|pages totales=|isbn=}}',
             ],
             [
                 // première majuscule sans importance

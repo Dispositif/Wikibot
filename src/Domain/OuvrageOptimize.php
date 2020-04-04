@@ -65,6 +65,7 @@ class OuvrageOptimize
         $this->processLang('langue originale');
 
         $this->processTitle();
+        $this->convertLienAuteurTitre();
         $this->processEditeur();
         $this->processDates();
         $this->externalTemplates();
@@ -124,23 +125,6 @@ class OuvrageOptimize
         $this->setParam('bnf', $bnf);
     }
 
-    //    private function convertRoman(string $param): void
-    //    {
-    //        $value = $this->getParam($param);
-    //        // note : strval() condition because intval('4c') = 4
-    // opti : $number can also be of type double
-    //        if ($value && intval($value) > 0 && intval($value) <= 10 && strval(intval($value)) === $value) {
-    //            $number = abs(intval($value));
-    //            $roman = NumberUtil::arab2roman($number);
-    //            //            if ($number > 10) {
-    //            //                $roman = '{{'.$roman.'}}';
-    //            //            }
-    //            $this->setParam($param, $roman);
-    //            $this->log('romain');
-    //            $this->notCosmetic = true;
-    //        }
-    //    }
-
     /**
      * @throws Exception
      */
@@ -148,6 +132,25 @@ class OuvrageOptimize
     {
         $this->distinguishAuthors();
         //$this->fusionFirstNameAndName(); // desactived : no consensus
+    }
+
+    private function convertLienAuteurTitre(): void
+    {
+        $auteurParams = ['auteur1', 'auteur2', 'auteur2', 'titre'];
+        foreach ($auteurParams as $auteurParam) {
+            if ($this->hasParamValue($auteurParam)
+                && $this->hasParamValue('lien '.$auteurParam)
+            ) {
+                $this->setParam(
+                    $auteurParam,
+                    WikiTextUtil::wikilink(
+                        $this->getParam($auteurParam),
+                        $this->getParam('lien '.$auteurParam)
+                    )
+                );
+                $this->unsetParam('lien '.$auteurParam);
+            }
+        }
     }
 
     /**
@@ -463,7 +466,7 @@ class OuvrageOptimize
         if (!empty($goo) && $goo !== $url) {
             $this->setParam($param, $goo);
             // cleaned tracking parameters in Google URL ?
-            if(GoogleLivresTemplate::isTrackingUrl($url)){
+            if (GoogleLivresTemplate::isTrackingUrl($url)) {
                 $this->log('tracking');
                 $this->notCosmetic = true;
             }
@@ -583,7 +586,7 @@ class OuvrageOptimize
         return $this->ouvrage->getParam($name);
     }
 
-    private function hasParamValue(string $name):bool
+    private function hasParamValue(string $name): bool
     {
         return $this->ouvrage->hasParamValue($name);
     }
@@ -905,12 +908,8 @@ class OuvrageOptimize
         }
 
         $newEditeur = $editeurStr;
-        // mb_ucfirst pour éviter éditeur=[[Bla|bla]]
-        if (isset($editeurUrl) && TextUtil::mb_ucfirst($editeurUrl) !== TextUtil::mb_ucfirst($editeurStr)) {
-            $newEditeur = '[['.$editeurUrl.'|'.$editeurStr.']]';
-        }
-        if (isset($editeurUrl) && TextUtil::mb_ucfirst($editeurUrl) === TextUtil::mb_ucfirst($editeurStr)) {
-            $newEditeur = '[['.$editeurStr.']]';
+        if (!empty($editeurUrl)) {
+            $newEditeur = WikiTextUtil::wikilink($editeurStr, $editeurUrl);
         }
 
         if ($newEditeur !== $editeur) {
