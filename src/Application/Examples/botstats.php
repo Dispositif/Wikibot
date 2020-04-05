@@ -116,8 +116,6 @@ de l'article</td><td style="text-align: center;">version<br>du bot</td>
 #monitor#
 </table>
 
-Mise à jour : #currentdate#
-
 <small>Pourcentage de citations modifiées. Date du passage bot. Certaines corrections humaines ne sont pas listées (typo majuscule/minuscule, correction suite à signalement du bot).</small>
 wiki;
 
@@ -128,7 +126,7 @@ foreach($data as $key => $dat){
 
 echo LC_ALL;
 
-
+//Mise à jour : #currentdate#
 //dump('stop');die;
 
 

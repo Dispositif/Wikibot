@@ -39,6 +39,7 @@ abstract class AbstractBotTaskWorker
     protected $minorFlag = false;
     protected $botFlag = false;
     protected $modeAuto = false;
+    protected $maxLag = 5;
 
     /**
      * Goo2ouvrageWorker constructor.
@@ -170,7 +171,7 @@ abstract class AbstractBotTaskWorker
     {
         $result = $this->pageAction->editPage(
             $newText,
-            new EditInfo($this->taskName, $this->minorFlag, $this->botFlag, 5)
+            new EditInfo($this->taskName, $this->minorFlag, $this->botFlag, $this->maxLag)
         );
         dump($result);
         echo "Sleep ".(string)static::SLEEP_AFTER_EDITION."\n";

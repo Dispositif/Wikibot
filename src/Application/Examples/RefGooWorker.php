@@ -19,9 +19,9 @@ use App\Domain\RefGoogleBook;
  */
 class RefGooWorker extends AbstractBotTaskWorker
 {
-    const TASK_NAME           = "bot : Amélioration bibliographique : lien Google Books ⇒ {ouvrage}"; // 😎
+    const TASK_NAME           = "Amélioration bibliographique : lien Google Books ⇒ {ouvrage}"; // 😎
     const SLEEP_AFTER_EDITION = 20;
-    protected $botFlag = true;
+    protected $botFlag = false;
 
     protected $modeAuto = true;
 
@@ -30,8 +30,8 @@ class RefGooWorker extends AbstractBotTaskWorker
         $cirrusURL
             = 'https://fr.wikipedia.org/w/api.php?action=query&list=search'
             .'&srsearch=%22https://books.google%22%20insource:/\%3Cref[^\%3E]*\%3Ehttps\:\/\/books\.google/&formatversion=2&format=json&srnamespace=0'
-            .'&srlimit=100&srqiprofile=popular_inclinks_pv&srsort=last_edit_desc';
-
+//            .'&srlimit=100&srqiprofile=popular_inclinks_pv&srsort=last_edit_desc';
+            .'&srlimit=100&srsort=random';
         $this->pageListGenerator->setUrl($cirrusURL);
 
         return $this->pageListGenerator->getPageTitles();
