@@ -224,16 +224,17 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     }
 
     /**
-     * @param array $data
+     * @param array     $data
+     * @param bool|null $noError mode strict
      *
      * @return AbstractWikiTemplate
      * @throws Exception
      */
-    public function hydrate(array $data): self
+    public function hydrate(array $data, ?bool $noError = false): self
     {
         foreach ($data as $name => $value) {
             if (is_string($value)) {
-                $this->hydrateTemplateParameter($name, $value);
+                $this->hydrateTemplateParameter($name, $value, $noError);
             }
         }
 
@@ -243,12 +244,11 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     }
 
     /**
-     * @param        $name  string|int
-     * @param string $value
-     *
-     * @throws Exception
+     * @param           $name    string|int
+     * @param string    $value
+     * @param bool|null $noError mode strict
      */
-    protected function hydrateTemplateParameter($name, string $value): void
+    protected function hydrateTemplateParameter($name, string $value, ?bool $noError = false): void
     {
         // Gestion alias
         try {
@@ -269,7 +269,9 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
             // hack : 1 => "ouvrage collectif"
             $name = (string)$name;
             $this->log[] = "parameter $name not found";
-            $this->parametersErrorFromHydrate[$name] = $value;
+            if (!$noError) {
+                $this->parametersErrorFromHydrate[$name] = $value;
+            }
 
             return;
         }

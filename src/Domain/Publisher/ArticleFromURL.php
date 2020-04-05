@@ -61,11 +61,18 @@ class ArticleFromURL
             $htmlData = $this->publisherAction->extractWebData($html);
         } catch (Throwable $e) {
             if (strpos($e->getMessage(), '404') !== false
-            || strpos($e->getMessage(), '410 Gone') !== false
+                || strpos($e->getMessage(), '410 Gone') !== false
             ) {
                 dump('****** lien brisé !!!!');
                 $lienBrise = WikiTemplateFactory::create('lien brisé');
-                $lienBrise->hydrate(['url' => $this->url, 'titre' => 'Article de presse', 'brisé le' => date('d-m-Y')]);
+                $lienBrise->hydrate(
+                    [
+                        'url' => $this->url,
+                        'titre' => 'Article de presse',
+                        'brisé le' => date('d-m-Y'),
+                    ],
+                    true
+                );
 
                 return $lienBrise; // ok
             }
@@ -96,10 +103,11 @@ class ArticleFromURL
 
         if (!empty($articleData) && !empty($articleData['titre'])) {
             $article = WikiTemplateFactory::create('article');
-            $article->hydrate($articleData);
-            if(!$article->hasParamValue('lire en ligne')) {
+            $article->hydrate($articleData, true);
+            if (!$article->hasParamValue('lire en ligne')) {
                 $article->setParam('lire en ligne', $this->url);
             }
+
             return $article; // ok
         }
 

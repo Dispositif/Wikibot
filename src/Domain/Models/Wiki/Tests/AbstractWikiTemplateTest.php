@@ -9,8 +9,6 @@ declare(strict_types=1);
 
 namespace App\Domain\Models\Wiki\Tests;
 
-use App\Domain\Models\Wiki\LienWebTemplate;
-use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\WikiTemplateFactory;
 use Exception;
 use PHPUnit\Framework\TestCase;
@@ -54,18 +52,18 @@ class AbstractWikiTemplateTest extends TestCase
         $lienWeb = WikiTemplateFactory::create('lien web');
         $lienWeb->hydrate($data);
 
-        $this::assertEquals(
+        $this::assertSame(
             '{{lien web|auteur1=Bob|titre=Foo bar|url=http://google.com|date=2010-11-25|consulté le=}}',
             $lienWeb->serialize(true)
         );
 
-        $this::assertEquals(
+        $this::assertSame(
             '{{lien web|url=http://google.com|auteur1=Bob|date=2010-11-25|consulté le=|titre=Foo bar}}',
             $lienWeb->serialize()
         );
 
         $lienWeb->userSeparator = "\n|";
-        $this::assertEquals(
+        $this::assertSame(
             '{{lien web
 |url=http://google.com
 |auteur1=Bob
@@ -78,7 +76,7 @@ class AbstractWikiTemplateTest extends TestCase
 
         $lienWeb->userMultiSpaced = true;
         $lienWeb->userSeparator = "\n|";
-        $this::assertEquals(
+        $this::assertSame(
             '{{lien web
 |url         = http://google.com
 |auteur1     = Bob
@@ -90,38 +88,28 @@ class AbstractWikiTemplateTest extends TestCase
         );
     }
 
-    public function testToArray()
+    public function testToArrayNoError()
     {
         $data = [
             'url' => 'http://google.com',
             'auteur1' => 'Bob',
             'date' => '2010-11-25',
             'titre' => 'Foo bar',
+            'fu' => 'bar',
         ];
 
         $lienWeb = WikiTemplateFactory::create('lien web');
-        $lienWeb->hydrate($data);
-        $this::assertEquals(
+        $lienWeb->hydrate($data, true);
+        $this::assertSame(
             [
+                'titre' => 'Foo bar',
                 'url' => 'http://google.com',
                 'auteur1' => 'Bob',
                 'date' => '2010-11-25',
-                'titre' => 'Foo bar',
             ],
             $lienWeb->toArray()
         );
     }
-
-    //    public function testUnknownParameter()
-    //    {
-    //        $data = [
-    //            'fu' => 'bar',
-    //        ];
-    //        $lienWeb = \App\Domain\WikiTemplateFactory::create('lien web');
-    //        $this::expectException(\Exception::class);
-    //        // no parameter "fu" in template "lien web"
-    //        $lienWeb->hydrate($data);
-    //    }
 
     public function testAliasParameter()
     {
@@ -131,7 +119,7 @@ class AbstractWikiTemplateTest extends TestCase
                 'lang' => 'fr',
             ]
         );
-        $this::assertEquals(
+        $this::assertSame(
             '{{lien web|langue=fr|titre=|url=|consulté le=}}',
             $lienWeb->serialize()
         );
@@ -145,7 +133,7 @@ class AbstractWikiTemplateTest extends TestCase
                 'url' => 'bla',
             ]
         );
-        $this::assertEquals(
+        $this::assertSame(
             'bla',
             $lienWeb->url
         );
@@ -162,7 +150,7 @@ class AbstractWikiTemplateTest extends TestCase
 
         $lienWeb->setParam('url', '');
 
-        $this::assertEquals(
+        $this::assertSame(
             '{{lien web|titre=|url=|consulté le=}}',
             $lienWeb->serialize(true)
         );
@@ -179,7 +167,7 @@ class AbstractWikiTemplateTest extends TestCase
         $lienWeb->hydrate($data);
         $lienWeb->setParamOrderByUser(['url', 'langue', 'titre']);
 
-        $this::assertEquals(
+        $this::assertSame(
             '{{lien web|langue=fr|titre=|url=http://google.com|consulté le=}}',
             $lienWeb->serialize(true)
         );
