@@ -281,6 +281,11 @@ class CompleteProcess
 
         $completer = new OuvrageComplete($this->ouvrage, $onlineOptimized);
         $this->ouvrage = $completer->getResult();
+
+        // todo move that optimizing in OuvrageComplete ?
+        $optimizer = new OuvrageOptimize($this->ouvrage, $this->page);
+        $this->ouvrage = $optimizer->doTasks()->getOuvrage();
+
         if ($this->verbose) {
             dump($completer->getLog());
         }
