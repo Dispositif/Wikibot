@@ -21,7 +21,7 @@ use Exception;
 include __DIR__.'/../myBootstrap.php';
 
 /**
- * From json list of articles => add to SQL TempRawOpti
+ * From json list of articles => add to SQL page_ouvrages
  */
 $process = new ArticleScan();
 
@@ -94,7 +94,7 @@ class ArticleScan
             }
         }
 
-        $result = $this->db->insertTempRawOpti($data);
+        $result = $this->db->insertPageOuvrages($data);
         dump($result);
 
         return !empty($result);

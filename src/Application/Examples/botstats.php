@@ -31,31 +31,31 @@ $pdo = $pdo->connect('utf8', ['port' => getenv('MYSQL_PORT')]);
 $db = new Mysql($pdo);
 $data = [];
 
-$monitor = $db->fetchRow('select count(id) from temprawopti where optidate is null and edited is null');
+$monitor = $db->fetchRow('select count(id) from page_ouvrages where optidate is null and edited is null');
 $data['not analyzed citation'] = (int)$monitor['count(id)'];
 
-$monitor = $db->fetchRow('select count(id) from temprawopti where optidate is not null');
+$monitor = $db->fetchRow('select count(id) from page_ouvrages where optidate is not null');
 $data['analyzed citation'] = (int)$monitor['count(id)'];
 
-$monitor = $db->fetchRow('select count(distinct page) as n from temprawopti where skip=1 and edited is null');
+$monitor = $db->fetchRow('select count(distinct page) as n from page_ouvrages where skip=1 and edited is null');
 $data['skip pages'] = (int)$monitor['n'];
 
-$monitor = $db->fetchRow('select count(distinct page) as n from temprawopti where edited is true');
+$monitor = $db->fetchRow('select count(distinct page) as n from page_ouvrages where edited is true');
 $data['edited pages'] = (int)$monitor['n'];
 
-$monitor = $db->fetchRow('select count(id) from temprawopti where optidate > SUBDATE(NOW(),1)');
+$monitor = $db->fetchRow('select count(id) from page_ouvrages where optidate > SUBDATE(NOW(),1)');
 $data['analyzed citation 24H'] = (int)$monitor['count(id)'];
 
-$monitor = $db->fetchRow('select count(id) as n from temprawopti where edited > SUBDATE(NOW(),1)');
+$monitor = $db->fetchRow('select count(id) as n from page_ouvrages where edited > SUBDATE(NOW(),1)');
 $data['edited citations 24H'] = (int)$monitor['n'];
 
-$monitor = $db->fetchRow('select count(distinct page) as n from temprawopti where edited > SUBDATE(NOW(),1)');
+$monitor = $db->fetchRow('select count(distinct page) as n from page_ouvrages where edited > SUBDATE(NOW(),1)');
 $data['edited pages 24H'] = (int)$monitor['n'];
 
-$monitor = $db->fetchRow('SELECT count(distinct A.page) FROM TempRawOpti A
+$monitor = $db->fetchRow('SELECT count(distinct A.page) FROM page_ouvrages A
                 WHERE notcosmetic=1.
                 AND NOT EXISTS
-                    (SELECT B.* FROM TempRawOpti B
+                    (SELECT B.* FROM page_ouvrages B
                     WHERE (
                         B.edited IS NOT NULL
                         OR B.optidate < "2019-11-20 14:00:00"
@@ -70,7 +70,7 @@ $data['waiting pages'] = (int)$monitor['count(distinct A.page)'];
 $data['currentdate'] = DateUtil::dateEnglish2french((new DateTime())->format('j F Y \à H\:i').' (CEST)');
 
 // modifs récentes sur ouvrage édité
-$monitor = $db->fetchRowMany('select distinct page,edited,altered,version from temprawopti 
+$monitor = $db->fetchRowMany('select distinct page,edited,altered,version from page_ouvrages 
 where edited is not null and edited>"2019-11-26 06:00:00" and altered>0 ORDER BY edited DESC LIMIT 60');
 
 
@@ -104,7 +104,6 @@ dump($data);
 //* articles en attente édition : #waiting pages#
 
 $wikiText = <<<wiki
-== Surveillance ==
 Dernières corrections humaines sur citations après passage du bot :
 
 <table style="border:1px solid grey;padding:10px;margin:5px;">

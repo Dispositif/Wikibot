@@ -46,12 +46,12 @@ class DbAdapter implements QueueInterface
      * @return array|bool
      * @throws Exception
      */
-    public function insertTempRawOpti(array $datas)
+    public function insertPageOuvrages(array $datas)
     {
         // check if article already in db
         $page = $datas[0]['page'];
         $count = $this->db->fetchRowMany(
-            'SELECT id from TempRawOpti WHERE page=:page',
+            'SELECT id from page_ouvrages WHERE page=:page',
             ['page' => $page]
         );
         if (null !== $count) {
@@ -59,7 +59,7 @@ class DbAdapter implements QueueInterface
         }
 
         // add the citations
-        return $this->db->insertMany('TempRawOpti', $datas);
+        return $this->db->insertMany('page_ouvrages', $datas);
     }
 
     /**
@@ -73,7 +73,7 @@ class DbAdapter implements QueueInterface
 
         try {
             $row = $this->db->fetchRow(
-                'SELECT page,raw FROM TempRawOpti 
+                'SELECT page,raw FROM page_ouvrages 
                 WHERE raw <> "" AND (opti = "" OR optidate IS NULL OR optidate < :validDate ) AND (edited IS NULL)
                 ORDER BY priority DESC,id
                 LIMIT 1',
@@ -99,7 +99,7 @@ class DbAdapter implements QueueInterface
     {
         try {
             $result = $this->db->update(
-                'TempRawOpti',
+                'page_ouvrages',
                 ['raw' => $finalData['raw']], // condition
                 $finalData
             );
@@ -130,10 +130,10 @@ class DbAdapter implements QueueInterface
         try {
             $pageInfo = $this->pdoConn->query(
                 '
-                SELECT A.page FROM TempRawOpti A
+                SELECT A.page FROM page_ouvrages A
                 WHERE notcosmetic=1. 
                 AND NOT EXISTS
-                    (SELECT B.* FROM TempRawOpti B
+                    (SELECT B.* FROM page_ouvrages B
                     WHERE (
                         B.edited IS NOT NULL 
                         OR B.optidate < "'.self::OPTI_VALID_DATE.'" 
@@ -159,7 +159,7 @@ class DbAdapter implements QueueInterface
 
             // Order by optidate for first version in edit commentary ?
             $data = $this->db->fetchRowMany(
-                'SELECT * FROM TempRawOpti WHERE page=:page ORDER BY optidate DESC',
+                'SELECT * FROM page_ouvrages WHERE page=:page ORDER BY optidate DESC',
                 ['page' => $page]
             );
             $json = json_encode($data);
@@ -174,7 +174,7 @@ class DbAdapter implements QueueInterface
     {
         try {
             $result = $this->db->update(
-                'TempRawOpti',
+                'page_ouvrages',
                 ['page' => $title], // condition
                 ['skip' => true]
             );
@@ -191,7 +191,7 @@ class DbAdapter implements QueueInterface
     {
         try {
             $result = $this->db->update(
-                'TempRawOpti',
+                'page_ouvrages',
                 ['id' => $id], // condition
                 ['skip' => true]
             );
@@ -215,7 +215,7 @@ class DbAdapter implements QueueInterface
     {
         try {
             $result = $this->db->update(
-                'TempRawOpti',
+                'page_ouvrages',
                 ['id' => $data['id']], // condition
                 ['edited' => date('Y-m-d H:i:s')]
             );
@@ -294,8 +294,8 @@ class DbAdapter implements QueueInterface
 
         try {
             $data = $this->db->fetchRowMany(
-                'SELECT id,page,raw,opti,optidate,edited,verify,skip FROM TempRawOpti WHERE page = (
-                    SELECT page FROM TempRawOpti
+                'SELECT id,page,raw,opti,optidate,edited,verify,skip FROM page_ouvrages WHERE page = (
+                    SELECT page FROM page_ouvrages
                     WHERE edited IS NOT NULL 
                     and edited > :afterDate and edited < :beforeDate
                     and (verify is null or verify < :nextVerifyDate )
@@ -322,7 +322,7 @@ class DbAdapter implements QueueInterface
 
         try {
             $result = $this->db->update(
-                'TempRawOpti',
+                'page_ouvrages',
                 ['page' => $data['page']], // condition
                 $data
             );

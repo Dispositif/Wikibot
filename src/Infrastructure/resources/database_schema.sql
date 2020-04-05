@@ -1,4 +1,4 @@
-CREATE TABLE `TempRawOpti`
+CREATE TABLE `page_ouvrages`
 (
     `id`            int(11) unsigned NOT NULL AUTO_INCREMENT,
     `page`          varchar(150)     NOT NULL DEFAULT '',

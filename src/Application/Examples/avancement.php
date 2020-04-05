@@ -39,10 +39,10 @@ $pdo = new PDOConnector(
 $pdo = $pdo->connect('utf8', ['port' => getenv('MYSQL_PORT')]);
 $db = new Mysql($pdo);
 
-$monitor = $db->fetchRow('select count(id) from temprawopti where optidate is not null');
+$monitor = $db->fetchRow('select count(id) from page_ouvrages where optidate is not null');
 $number = (int)$monitor['count(id)'];
 
-$monitor = $db->fetchRow('select count(distinct page) as pages from temprawopti where optidate is not null and isbn<>""');
+$monitor = $db->fetchRow('select count(distinct page) as pages from page_ouvrages where optidate is not null and isbn<>""');
 $pageNb = (int)$monitor['pages'];
 
 $newText = <<<EOF
