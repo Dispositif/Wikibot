@@ -3,6 +3,13 @@
   "version": "1",
   "type": "project",
   "license": "MIT",
+  "description": "",
+  "keywords": [
+    "bibliography",
+    "wikipedia",
+    "CodexBot",
+    "frwiki"
+  ],
   "require": {
     "php": ">=7.2",
     "addwiki/mediawiki-api": "^0.7.3",
@@ -21,7 +28,8 @@
     "ext-libxml": "*",
     "hnhdigital-os/laravel-git-info": "^1.0",
     "ext-intl": "*",
-    "koff/transliterator": "^3.0"
+    "koff/transliterator": "^3.0",
+    "ext-readline": "*"
   },
   "autoload": {
     "psr-4": {
