@@ -102,9 +102,9 @@ class ServiceFactory
             return self::$wikiApi;
         }
 
-        self::$api = new MediawikiApi(getenv('API_URL'));
+        self::$api = new MediawikiApi(getenv('WIKI_API_URL'));
         self::$api->login(
-            new ApiUser(getenv('API_USERNAME'), getenv('API_PASSWORD'))
+            new ApiUser(getenv('WIKI_API_USERNAME'), getenv('WIKI_API_PASSWORD'))
         );
 
         self::$wikiApi = new MediawikiFactory(self::$api);
