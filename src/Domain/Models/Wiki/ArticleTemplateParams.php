@@ -209,5 +209,7 @@ trait ArticleTemplateParams
             'id',
             'libellé',
             'plume',
+
+            'note', // pour afficher message bot
         ];
 }

@@ -248,5 +248,7 @@ trait OuvrageTemplateParams
             'archiveurl',
             'archivedate',
             'brisé le',
+
+            'note', // pour afficher message bot
         ];
 }
