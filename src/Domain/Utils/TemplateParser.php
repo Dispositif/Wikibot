@@ -121,7 +121,7 @@ abstract class TemplateParser extends WikiTextUtil
         $tplFounded = self::findFirstTemplateInText($tplName, $text);
 
         // $matches[0] : {{template|...}}
-        if (null === $tplFounded) {
+        if ($tplFounded === null) {
             throw new LogicException("Template $tplName not found in text");
         }
         // $matches[1] : url=blabla|titre=Popo

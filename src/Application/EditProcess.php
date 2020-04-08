@@ -68,14 +68,18 @@ class EditProcess
      */
     private $dataAnalysis;
 
-    public function __construct(DbAdapter $dbAdapter, WikiBotConfig $bot, Memory $memory, RefGoogleBook $refGoogleBook,
-        ?DataAnalysis $dataAnalysis=null)
-    {
+    public function __construct(
+        DbAdapter $dbAdapter,
+        WikiBotConfig $bot,
+        Memory $memory,
+        RefGoogleBook $refGoogleBook,
+        ?DataAnalysis $dataAnalysis = null
+    ) {
         $this->db = $dbAdapter;
         $this->bot = $bot;
         $this->memory = $memory;
         $this->refGooConverter = $refGoogleBook;
-        if($dataAnalysis) {
+        if ($dataAnalysis) {
             $this->dataAnalysis = $dataAnalysis;
         }
 
@@ -164,7 +168,7 @@ class EditProcess
 
         // EXTERNAL DATA ANALYSIS (pas utile pour ce process)
         try {
-            if (!is_null($this->dataAnalysis)) {
+            if (null !== $this->dataAnalysis) {
                 $this->dataAnalysis->process($this->wikiText, $title);
             }
         } catch (Throwable $e) {

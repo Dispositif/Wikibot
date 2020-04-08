@@ -158,7 +158,7 @@ class CompleteProcess
     private function isIsbnSkipped(string $isbn, ?string $isbn10 = null): bool
     {
         if (in_array(str_replace('-', '', $isbn), self::ISBN_EAN_SKIP)
-            || (!is_null($isbn10)
+            || ($isbn10 !== null
                 && in_array(str_replace('-', '', $isbn10), self::ISBN_EAN_SKIP))
         ) {
             return true;

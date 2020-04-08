@@ -40,7 +40,7 @@ trait ArrayProcessTrait
         return array_filter(
             $myArray,
             function ($value) {
-                return !is_null($value) && '' !== $value;
+                return (null !== $value && '' !== $value);
             }
         );
     }
@@ -68,7 +68,7 @@ trait ArrayProcessTrait
                 $lastFantasy = $param;
                 continue;
             }
-            if (is_null($lastFantasy) && !in_array($param, $fantasyOrder)) {
+            if (($lastFantasy === null) && !in_array($param, $fantasyOrder)) {
                 $firstParameters[] = $param;
                 continue;
             }

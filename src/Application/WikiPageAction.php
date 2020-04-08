@@ -60,7 +60,7 @@ class WikiPageAction
             $this->page = $wiki->newPageGetter()->getFromTitle($title);
             $this->ns = $this->page->getPageIdentifier()->getTitle()->getNs();
         } catch (Throwable $e) {
-            throw new Exception('Erreur construct WikiPageAction '.$e->getMessage());
+            throw new Exception('Erreur construct WikiPageAction '.$e->getMessage().$e->getFile().$e->getLine());
         }
     }
 

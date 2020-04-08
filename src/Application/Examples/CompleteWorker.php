@@ -37,8 +37,8 @@ while (true) {
             echo "Wake up\n";
         }
         if(strpos($e->getMessage(), 'Quota Google') !== false){
-            echo "Google Quota dépassé : sleep 3h\n";
-            sleep(60 * 60 * 3);
+            echo "Google Quota dépassé : sleep 6h\n";
+            sleep(60 * 60 * 6);
             echo "Wake up\n";
         }
         if ($count > 2) {
