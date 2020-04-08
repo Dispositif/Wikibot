@@ -48,7 +48,7 @@ EOF;
 
     public function testDeleteAllReports()
     {
-        $botName = 'ZiziBot';
+        $botName = 'CodexBot';
         $text = file_get_contents(__DIR__.'/../resources/fixture_error_report.wiki');
         $report = new ErrorReport();
         $this::assertSame(

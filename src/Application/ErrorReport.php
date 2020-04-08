@@ -29,7 +29,7 @@ class ErrorReport
             ) > 0
         ) {
             // FIXED zizibot : des '<nowiki>' supplémentaires ajoutés à quelques rapports
-            return str_replace('<nowiki>','', $matches[1]);
+            return str_replace('<nowiki>', '', $matches[1]);
         }
 
         return null;
@@ -55,10 +55,10 @@ class ErrorReport
      *
      * @return string
      */
-    public function deleteAllReports(string $text, ?string $botName='ZiziBotConfig'): string
+    public function deleteAllReports(string $text, ?string $botName = 'CodexBot'): string
     {
         $pattern = sprintf(
-            '#== Ouvrage avec erreur de paramètre ==(.*)Le robot \[\[Utilisateur:%s\|%s\]\] \(\[\[Discussion utilisateur:%s\|discuter\]\]\) [0-9a-zéà: ]+ \(CET\)[\n]*#s',
+            '#== Ouvrage avec erreur de paramètre ==(.*)Le robot \[\[Utilisateur:%s\|%s\]\] \(\[\[Discussion utilisateur:%s\|discuter\]\]\) [0-9a-zéà: ]+ \([A-Z]+\)[\n]*#s',
             $botName,
             $botName,
             $botName

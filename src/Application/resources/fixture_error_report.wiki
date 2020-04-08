@@ -7,17 +7,17 @@ Erat autem diritatis eius hoc quoque indicium nec obscurum nec latens, quod ludi
 
 == Ouvrage avec erreur de paramètre ==
 
-[[Image:Robot icon.svg|70px|right|alt=tête de robot souriante]][[Catégorie:Signalement ZiziBot|Archaeoglobus]]
+[[Image:Robot icon.svg|70px|right|alt=tête de robot souriante]][[Catégorie:Signalement CodexBot|Frank Spitzer]]
 Bonjour Humains !
 
-Lors de la vérification des mentions bibliographiques de cet article, j'ai détecté des erreurs de paramètre du modèle {{m|ouvrage}} que je ne parviens pas corriger moi-même.
-J'ai signalé ces erreurs avec des [[Commentaire (informatique)|commentaires HTML]] (invisibles) que je copie ci-dessous :
+En vérifiant les mentions bibliographiques de cet article ([https://fr.wikipedia.org/w/index.php?title=Frank_Spitzer&diff=168958052 diff]), j'ai détecté des erreurs de paramètre du
+modèle <nowiki>{{Ouvrage}}</nowiki> ([[Modèle:Ouvrage#Explication des paramètres|documentation]]) que je ne parviens
+pas à corriger moi-même. J'ai signalé ces erreurs avec des commentaires (invisibles) que je copie ci-dessous :
 
-* <span style="background:#FCDFE8"><nowiki>|editor=JT Staley, MP Bryant, N Pfennig, and JG Holt, eds. <!--PARAMETRE 'editor' N'EXISTE PAS --></nowiki></span>
-* <span style="background:#FCDFE8"><nowiki>|editor=DR Boone and RW Castenholz, eds. <!--PARAMETRE 'editor' N'EXISTE PAS --></nowiki></span>
+* <span style="background:#FCDFE8"><nowiki>|series=Graduate Texts in Mathematics <!--PARAMETRE 'series' N'EXISTE PAS --></nowiki></span>
 
-Une fois la correction réalisée, merci de supprimer ce message. <br>
-Le robot [[Utilisateur:ZiziBot|ZiziBot]] ([[Discussion utilisateur:ZiziBot|discuter]]) 29 novembre 2019 à 00:09 (CET)
+Je supprimerai ce message après les corrections.<br />
+Le robot [[Utilisateur:CodexBot|CodexBot]] ([[Discussion utilisateur:CodexBot|discuter]]) 30 mars 2020 à 10:44 (CEST)
 
 == Blabla ==
 

@@ -80,9 +80,9 @@ foreach ($talkTitles as $talkTitle) {
 
     // suppression message PD
     deletePDmessage:
-    echo $taskName."\n";
     $newText = $report->deleteAllReports($talkText, $botName);
     if ($newText !== $talkText) {
+        echo $taskName."\n";
         $result = $talkAction->editPage($newText, new EditInfo($taskName, false, true, 5));
         dump($result);
         sleep(20);
