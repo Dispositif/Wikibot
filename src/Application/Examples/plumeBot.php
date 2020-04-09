@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Examples;
 
-use App\Application\Bot;
+use App\Application\WikiBotConfig;
 use App\Application\WikiPageAction;
 use App\Infrastructure\ServiceFactory;
 use Mediawiki\DataModel\EditInfo;
@@ -16,13 +16,14 @@ include __DIR__.'/../ZiziBot_Bootstrap.php'; // myBootstrap.php';
  */
 
 $wiki = ServiceFactory::wikiApi();
-$taskName = "bot # Correction {ouvrage} : vol=>volume";
+$taskName = "bot # Erreur BnF sur langue/traduction";
 
-$bot = new Bot();
+$bot = new WikiBotConfig();
 
 // Get raw list of articles
 $filename = __DIR__.'/../resources/plume.txt';
 $titles = file($filename);
+$auto = false;
 
 $valid = [];
 foreach ($titles as $title) {
@@ -34,7 +35,7 @@ foreach ($titles as $title) {
     echo "$title \n";
 
     $pageAction = new WikiPageAction($wiki, $title);
-    if($pageAction->getNs() !== 0 ) {
+    if ($pageAction->getNs() !== 0) {
         throw new \Exception("La page n'est pas dans Main (ns!==0)");
     }
     $text = $pageAction->getText();
@@ -66,10 +67,15 @@ foreach ($titles as $title) {
         continue;
     }
 
-//    $ask = readline("*** ÉDITION ? [y/n]");
-//    if( 'y' !== $ask){
-//        continue;
-//    }
+    if (!$auto) {
+        $ask = readline("*** ÉDITION ? [y/n/auto]");
+        if ('auto' === $ask) {
+            $auto = true;
+        }
+        if ('y' !== $ask && 'auto' !== $ask) {
+            continue;
+        }
+    }
 
     $result = $pageAction->editPage($newText, new EditInfo($taskName, true, true));
     dump($result);

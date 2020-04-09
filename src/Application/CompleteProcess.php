@@ -228,7 +228,10 @@ class CompleteProcess
                 $this->completeOuvrage($googleOuvrage);
             } catch (Throwable $e) {
                 echo "*** ERREUR GOOGLE Isbn Search ***".$e->getMessage()."\n";
-                throw $e;
+                if( strpos($e->getMessage(), 'Could not resolve host: www.googleapis.com') === false) {
+                    throw $e;
+                }
+                unset($e);
             }
         }
 
