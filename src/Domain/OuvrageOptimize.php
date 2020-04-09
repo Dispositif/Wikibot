@@ -105,13 +105,16 @@ class OuvrageOptimize
             $this->notCosmetic = true;
         }
 
-        // french translation : "London"->"Londres"
-        $manager = new FileManager();
-        $row = $manager->findCSVline(__DIR__.'/resources/traduction_ville.csv', $location);
-        if (!empty($row) && !empty($row[1])) {
-            $this->setParam('lieu', $row[1]);
-            $this->log('lieu francisé');
-            $this->notCosmetic = true;
+        // translation : "London"->"Londres" seulement si langue=fr
+        if($this->hasParamValue('langue')
+        && $this->getParam('langue') === self::WIKI_LANGUAGE ) {
+            $manager = new FileManager();
+            $row = $manager->findCSVline(__DIR__.'/resources/traduction_ville.csv', $location);
+            if (!empty($row) && !empty($row[1])) {
+                $this->setParam('lieu', $row[1]);
+                $this->log('lieu francisé');
+                $this->notCosmetic = true;
+            }
         }
     }
 

@@ -1,5 +1,9 @@
 ## Versions des règles de corrections/complètement ##
 
+* 0.78 : ordre 'lieu,éditeur', pas traduction ville si !fr [Éduarel]
+* 0.77 : wikif [auteur], [titre]
+* 0.76 : améliore URL google (q=empty)
+* 0.75 : style indenté avec espaces multiples
 * 0.74 : bug langue turc 'tr' [RSVartanian]
 * 0.73 : URL Google (q/dq)
 * 0.72 : URL Google (q/dq) (@Pierre cb) + espacements style indenté
