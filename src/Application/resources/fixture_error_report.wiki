@@ -14,7 +14,8 @@ En vérifiant les mentions bibliographiques de cet article ([https://fr.wikipedi
 modèle <nowiki>{{Ouvrage}}</nowiki> ([[Modèle:Ouvrage#Explication des paramètres|documentation]]) que je ne parviens
 pas à corriger moi-même. J'ai signalé ces erreurs avec des commentaires (invisibles) que je copie ci-dessous :
 
-* <span style="background:#FCDFE8"><nowiki>|series=Graduate Texts in Mathematics <!--PARAMETRE 'series' N'EXISTE PAS --></nowiki></span>
+* <span style="background:#FCDFE8"><nowiki>|editor=JT Staley, MP Bryant, N Pfennig, and JG Holt, eds. <!--PARAMETRE 'editor' N'EXISTE PAS --></nowiki></span>
+* <span style="background:#FCDFE8"><nowiki>|editor=DR Boone and RW Castenholz, eds. <!--PARAMETRE 'editor' N'EXISTE PAS --></nowiki></span>
 
 Je supprimerai ce message après les corrections.<br />
 Le robot [[Utilisateur:CodexBot|CodexBot]] ([[Discussion utilisateur:CodexBot|discuter]]) 30 mars 2020 à 10:44 (CEST)
