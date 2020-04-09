@@ -118,20 +118,27 @@ class OuvrageOptimizeTest extends TestCase
             ],
             // Lieu
             [
+                # 15
                 ['lieu' => '[[paris]]'],
-                '{{Ouvrage|titre=|éditeur=|lieu=Paris|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=|lieu=Paris|éditeur=|année=|pages totales=|isbn=}}',
             ],
             [
+                # lieu non traduit
                 ['lieu' => 'London'],
-                '{{Ouvrage|titre=|éditeur=|lieu=Londres|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=|lieu=London|éditeur=|année=|pages totales=|isbn=}}',
+            ],
+            [
+                # lieu traduit
+                ['lieu' => 'London', 'langue'=> 'fr'],
+                '{{Ouvrage|langue=fr|titre=|lieu=Londres|éditeur=|année=|pages totales=|isbn=}}',
             ],
             [
                 ['lieu' => 'Köln'],
-                '{{Ouvrage|titre=|éditeur=|lieu=Cologne|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=|lieu=Köln|éditeur=|année=|pages totales=|isbn=}}',
             ],
             [
                 ['lieu' => 'Fu'],
-                '{{Ouvrage|titre=|éditeur=|lieu=Fu|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=|lieu=Fu|éditeur=|année=|pages totales=|isbn=}}',
             ],
             [
                 // date

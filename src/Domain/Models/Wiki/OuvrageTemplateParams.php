@@ -185,10 +185,10 @@ trait OuvrageTemplateParams
             'tome',
             'titre volume',
             'titre tome', // alias 'titre volume' à utilisé avec 'tome'
+            'lieu',
             'éditeur',
             'lien éditeur', // obsolète
             'collection',
-            'lieu',
             'nature ouvrage',
             'série',
             'numéro dans collection',
