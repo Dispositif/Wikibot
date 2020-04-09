@@ -41,7 +41,6 @@ class WikiTextUtil extends TextUtil
      */
     public static function unWikify(string $text, ?bool $stripcomment = true): string
     {
-        // todo remove HTML tags ?
         if (true === $stripcomment) {
             $text = self::removeHTMLcomments($text);
         }
@@ -59,7 +58,10 @@ class WikiTextUtil extends TextUtil
                 $text
             )
         );
-        $text = str_replace(['<small>', '</small>'], '', $text); // ??
+        // {{Lien|Jeffrey Robinson}} => Jeffrey Robinson
+        $text = preg_replace('#{{ ?lien ?\| ?([^|}]+) ?}}#i', '${1}', $text);
+
+        $text = strip_tags($text, '<sup><sub>');
 
         return $text;
     }

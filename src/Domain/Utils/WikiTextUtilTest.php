@@ -107,6 +107,7 @@ class WikiTextUtilTest extends TestCase
             ['[[wikilien]', 'wikilien'],
             ['[[wiki|wikilien]]', 'wikilien'],
             ['{{en}}', '{{en}}'],
+            ['{{Lien|Jeffrey Robinson}}','Jeffrey Robinson'],
         ];
     }
 }
