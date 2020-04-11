@@ -204,3 +204,281 @@ Une attitude complotiste est une réaction saine à une situation malsaine.
 Les contributeurs humains ne supportent pas la moindre erreur venant des bots.
 Bonjour, j'apprendrai à personne que lorsque l'on regarde les diffs d'un article, le « supprimé » est en rouge et le « rajouté » en vert, sauf que quand on confond les couleurs c'est absolument pas évident de se repérer !
 Je ne souhaite pas me mêler de cette décision.
+Effectivement si on s’amuse à rajouter de la vacuité provenant des soi-disant réseaux sociaux, vaut mieux préférer corriger des trucs sur WP…
+Ce genre de gros pavé illisible que personne va lire, sans illustration, et qui n'interesse personne hors les spécialistes du sujet.
+N'oublions pas qu'il existe plus de 2 millions d'articles sur Wikipédia francophone
+Je pense que si on positionne un dispositif de statistiques de consultation de cette page, nous saurons si elle est lue ou pas, si elle intéresse ou pas.
+Je ne suis pas certain que cette mise en valeur augmente significativement le nombre de lecteurs
+Si je comprends, le statut de recommandation serait indu, n'ayant pas été validé par un sondage.
+Wikipédia est un reflet de la société.
+C'est redondant à mon avis.
+Ce qui fait la force de WP par rapport aux encyclopédies classiques, c'est d'être très réactif.
+L'intention est louable
+Je ne vois pas trop le problème
+Je ne vais pas pleurer sur les Rastignac qui se brûlent les ailes en cherchant à détourner Wikipédia de son but encyclopédique.
+Ce serait ouvrir la boite de Pandore pour des limitations futures sur d'autres choses et à la fin nous n'aurons plus accès à rien ou presque.
+De toute façon, dès lors qu'un contournement de ces propositions est possible ça ne sert à rien de les adopter parce qu'au final ça fera deux poids deux mesures entre ceux qui sauront comment faire pour contourner (et qui donc arriveront à leurs fins quand même) et les autres.
+Ne voyant pas du tout de quoi tu parles, j'apprécierai un exemple de ce que tu préconises.
+Tu présupposes que tous ceux qui vont ajouter une note soient au courant de cette façon de faire, alors qu'un grand nombre d'utilisateurs ne connaissent pas notre cuisine interne.
+Je ne vois pas le problème, ni en quoi ma solution simple serait incompatible avec des appels de groupe complexes.
+C'est un argument, effectivement. Maintenant, ce n'est qu'une solution hypothétique à un problème tout aussi hypothétique.
+Pas de raison d'être contre. Pas mal de wiki ont ce truc.
+Certains contributeurs font un tas de petites modifications non adéquates et c'est difficiles de les reverter facilement.
+Évitons les complications et les procédures inutiles pour une fonctionnalité technique somme toute banale.
+A partir d'un certain seuil, cela devrait être automatique.
+On ne va pas créer une usine a gaz pour cela, alors que quiconque le désir peut le faire (via un script ou manuellement).
+{{pour}} : c'est plus logique.
+{{Pour}} C'est la solution la moins lourde à gérer.
+Je comprends l'argument mais c'est le cas de toutes les fonctionalités de Wikipédia.
+Une révocation est une action violente pour qui la subit.
+Une annulation, même motivée, est déjà violente, alors une révocation...
+Ok. Je comprends votre point de vue mais je pense que cette prise de décision manque alors de clarté et touche plus à la permission d'utiliser un outil (qui ne semble pas parfait) plutôt que de la permission de faire une action (révoquer plusieurs modifications à la fois).
+Je pense que la question de ne pose même pas.
+Dans ce genre de cas, demander est un préalable évident pour moi.
+L'utilisateur doit connaitre l'existence de l'outil, des capacités et limitations, ce qui est favorisé par une démarche volontaire, et probablement pas les cas avec une attribution automatique.
+C'est bien lourd pour juste faciliter la vie. Si la fonction n'est pas mise automatiquement.
+Autre façon de faire (narrée par Irønie), que je ne désapprouve pas.
+D'une certaine façon, nos administrateurs ont pouvoir de ''justice''. Je fais confiance à chacun d'eux.
+Des explications sur le fonctionnement de Wikidata et son utilisation sur Wikipédia sont consultables sur la page « [[Wikipédia:Wikidata]] ».
+Ce système n'a pas besoin de l'assentiment de la communauté francophone pour être opérationnelle
+Réponse: Pour les wikipédias qui ont déjà le système, c'est elles qui l'ont demandé. Pour les autres, le système sera mis à disposition et chacun se débrouille.
+Mieux vaut être sûr qu'une discussion ait eu lieu une fois, histoire d'éviter les problèmes par la suite.
+Je me posais exactement la même question. Dans tous les cas, est-ce qu'un sondage ne suffirait pas ?
+Réponse: Vu que cela va entraîner pas mal de changement sur les articles et dans la documentation, mieux vaut une décision, à mon avis. Sans compter qu'il y aura des résistances à utiliser le système Wikidata (en majorité en anglais, besoin de changer de site à chaque modification,...), mieux vaut une décision claire de la communauté.
+cela fait des mois que ça se discute ici, sans jamais que quiconque ne s'y soit sérieusement opposé
+La discussion a été éparse et n'a jamais eu la forme d'une réflexion nourrie, pesant les avantages et inconvénients.
+Il n’est pas trop tôt pour entamer une discussion, ça pourrait rendre caduc la nécessité d'une prise de discussion si il y avait concensus à l’issue de la discussion.
+Ce qui est marrant, c’est quand il faut sourcer un article du portail des maths. Les démonstrations et les théorèmes, surtout.
+Dans ces cas là, effectivement on peut utiliser les crochets, de façon exceptionnelle, ou alors placer les références à un endroit moins gênant si c'est possible, dans les textes expliquant ces démonstrations et théorèmes.
+Nous sommes là pour le corriger dans les très rare cas où la situation se présente. D'ailleurs, selon moi, le typographie proposée (pour celle des crochets) n'a rien de valable, outre sa laideur, elle n'est reconnue par absolument personne pour marquer des notes dans la typographie française.
+Ne voyant pas du tout de quoi tu parles, j'apprécierai un exemple de ce que tu préconises.
+Pour moi, mieux vaut une typographie valable dans tous les cas.
+Nous sommes là pour le corriger dans les très rare cas où la situation se présente.
+Ce sont des subtilités que seuls quelques wikipédiens sont capables de gérer.
+Comment gères-tu ce type de [[France#Patrimoine_artistique_et_.C3.A9v.C3.A9nements_culturels|sourçage de qualité]] en physique ou en maths ?
+Je ne vois pas le problème, ni en quoi ma solution simple serait incompatible avec des appels de groupe complexes. Même en maths ou en physique, les équations et valeurs doivent être entourées de phrases explicatives, qui permettent de localiser la référence hors de la position ambiguë
+C'est un argument, effectivement. Maintenant, ce n'est qu'une solution hypothétique à un problème tout aussi hypothétique.
+Bref pour moi il n'y a pas de problème réel, il faut faire preuve d'imagination dans les 3 cas qu'on rencontrera un jour, peut-être, donc pas besoin d'amocher tout le reste préventivement.
+Le crochet est un des éléments clés de la syntaxe wiki, et plus globalement de la culture web, nier son existence, c'est aussi un peu nier la spécificité de Wikipédia, et le renouveau qu'elle apporte dans le domaine de l'encyclopédie, mais également des règles typographiques, ou de mise en page.
+L'imprimerie nationale a ses recommandations a elle, mais elles sont destinées à des éditions papier et ne prennent pas en compte les nouvelles technologies.
+En bref, il me semble que Wikipédia a ses règles, qui ne sont pas forcément celles des autres, mais ces lois sont basées sur une culture originairement numérique et une logique d'accessibilité...
+Même étonnement : quel est donc le problème ?
+Autrement dit, il s'agit simplement d'inverser la situation actuelle et de revenir au comportement par défaut de mediawiki, ce qui ne remet en rien en cause le respect des préférences personnelles puisque celles-ci continueraient à être gérées
+Il s'agit juste de ne pas imposer par défaut à tous les visiteurs de la Wikipédia francophone la plus risquée des deux solutions possibles.
+D'autre part, un autre rappel: la phase de discussion est surtout là pour permettre d'aboutir à une formulation de décision à proposer aux wikipédiens qui trancheront.
+Sur le sujet de l'ergonomie, je tiens juste à rajouter que diverses études montrent que la lecture sur écran demande un effort cognitif plus important, est plus lente et/ou fatigue plus. De multiples facteurs sont en cause bien évidemment, mais il me semble que tout « alourdissement de la lecture » sur un site comme Wikipédia doit être mûrement pensé.
+Excellente proposition. Et je dis tout de suite que je suis pour.
+Ça me semble raisonnable, mais je suis traditionnellement contre les votes à la majorité pour tout ce qui concerne le main.
+Oui, c’est exactement ça, l’intendance suivra ! Cordialement
+Oui, ayons confiance. Ce n'est pas parce que moi, toi ou un autre ne savent pas le faire qu'il ne faut pas prendre une décision dans l'absolu, à charge pour les gens plus compétents d'atteindre petit à petit ce qui a été décidé.
+Attention: soyez conscients que, selon les cas, il peut s'agir d'une modification technique qui ne peut pas être
+réalisée localement et qui relève des développeurs de mediawiki. Or, l'acceptation d'une demande d'évolution sur [https://phabricator.wikimedia.org/ bugzilla] n'a rien d'évident. Les contributeurs qui se prononceront gagneront à savoir au moins si ce qui est proposé est immédiatement faisable ou si sa mise en place est totalement incertaine.
+Je suis d’accord. Le dernier est faisable localement en javascript, mais ça tiendrait plus du bidouillage qu’autre chose…
+Mais il faut le savoir à l'avance et donc ne pas repousser à « ensuite » la mise au point des solutions techniques {{clin}}
+Je vous rappelle que les questions de complexité croissante de la syntaxe sont assez sensibles et que cela risque fort d'être très dissuasif.
+Cela ne semble présenter que des désavantages, d'abord en ne facilitant plus le clic (cf. argumentaire de Lgd ci-dessus), ensuite en étant techniquement complexe, et enfin c'est une solution jamais vue de mémoire d'homme (du moins, pour moi) !
+J'insiste encore une fois sur le souci majeur de ne pas compromettre (mais d'améliorer au contraire) la lisibilité de l'interface pour les lecteurs, sur le risque d'effets de bords imprévus avec la multiplication des options offertes aux contributeurs, et enfin sur le souci également majeur de ne pas complexifier les choses pour les contributeurs à un moment où l'édition des articles est jugée déjà trop difficile.
+Pas besoin de chercher de midi à quatorze heures, pour complexifier une question qui était à la base simple…
+Pas compris, désolé. Les lecteurs non connectés n'ont accès à aucune forme de paramètrage, ni par les préférences ni par un common.css personnel.
+En marge, je pense qu'il faudrait une introduction avançant les quelques enjeux et les quelques arguments pour/contre, de manière à centrer la question sur son énoncé et les modalités.
+Merci pour cette proposition {{sourire}}
+Je l'avais compris comme ça {{clin}}
+Je l'avais compris comme ça {{Clin d'oeil}}. Je viens également d'ajouter quelque-chose à propos des {{refnec}}, peut-être pas évident pour le wikipédien, mais à l'usage constaté pas si simples pour le lecteur.
+On ne va pas recommencer à faire du sur-place, pitié {{clin}}
+Demander aux gens de continuer à utiliser un modèle dont le rendu est totalement invisible, je ne pense pas que ce soit très réaliste ? <small>Même si l'idée de lancer le culte de la virgule rose invisible me plairait beaucoup</small>
+Grumble ! Quel con ! Donc y’a pas de solution ?
+Je suis neutre quant à poser une telle question, mais pour moi, il s'agit d'un problème différent : d'une part il s'agit de l'affichage par défaut pour tous et pour tout, d'autres part il s'agit d'une fonctionnalité d'affichage locale offerte aux contributeurs.
+Effectivement, il peut y avoir une influence directe... Je reste de toute façon assez neutre sur le fond
+Je ne dis pas que la question ne se pose pas et qu'il ne faudra pas voir comment y répondre. Mais AMHA pas dans un premier temps.
+Selon la réponse qui sera donnée à cette question, les exceptions éventuelles à envisager dans un deuxième temps ne relèvent pas des mêmes problèmes (au moins techniques).
+Petit aparté concernant « l'usage dans les publications scientifiques », il existe tellement de variantes selon les domaines/langues/revues/éditeurs que cela me semble difficile de généraliser.
+On se laisse une journée pour voir s’il y a des remarques particulières, et si non, on passe à l’action ?
+All right
+Je me borne donc à ronchonner ici et écrire sur cette page le souhait que je ne peux faire valoir sur la page de vote : que, comme pour toutes les pages techniques ou non de Wikipédia, le contenu de ces pages se traite par discussion polie et ouverte
+Bon après, il n'y a pas mort d'homme, ça reste une question horriblement mineure
+La modification envisagée étant loin d'être transparente (visuellement), une décision prise par une petite poignée de contributeurs/admins sur des pages de maintenance technique aurait sans doute été fortement critiquée pour son absence d'avis communautaire...
+Ouaip, je comprends ça aussi. Bof je joue la drama queen mais je m'en fiche un peu au fond, c'est juste pour rappeler qu'une consultation bien fichue devrait en principe contenir systématiquement, sous une forme ou une autre, l'option « Ne rien décider du tout ».
+Ne rien décider du tout, c’est il me semble la proposition C.
+Je suis bien d’accord que l’argumentation n’est pas obligatoire, mais le problème ici c’est qu’il n’y a pas d’argument
+Tu estimes qu'il n'y a pas d'argument :) 70% actuellement ne sont pas d'accord.
+Autant fermer wikipedia et supprimer [[WP:FOI]] dans ce cas...
+Ce sont plutôt les avis en faveur de cette modification qui me surprennent par leur ampleur relative. On pouvait s'attendre à beaucoup, beaucoup, beaucoup moins. C'est encourageant, dans l'absolu.
+Oui, un certain mécanisme associe le temps qui coule et le refus instinctif de regarder l'intérêt du changement.
+C'est effroyablement vrai, mais absolument pas politiquement correct. Mesurer le délai pertinent pour qu'un optimum d'avis mesurés soient en jeu est un vrai souci.
+A chaque fois que j'ai pu le faire, et que l'affaire était d'importance et méritait d'être sérieusement considérée, Ironie m'a semblé faire preuve de la sorte de jugement fin et posé qui est nécessaire à un administrateur
+Mais, en examinant la chose, je continue d'avoir confiance dans Ironie pour faire preuve d'esprit de jugement, au delà des liens, positifs ou négatifs, qu'il a pu établir par ce biais.
+Je ne crois pas, car je ne l'ai jamais vu agir ainsi, qu'Ironie use de son esprit sardonique et irrévérencieux dans ce genre de circonstances.
+Je suis totalement d'accord avec ça.
+Je pensais davantage aux espaces de discussion, où les conversations avec d'autres contributeurs sont parfois assez musclées, mais il y a très certainement des cas où je pourrais écrire une connerie dans l'espace principal et le regretter immédiatement après l'avoir publiée.
+Y-a-t-il réèlement lieu de faire une telle distinction ? Les enjeux sont amha les mêmes. Amicalement,
+C'est l'essence même de WP (les suivis d'historiques) et quasiment un principe fondateur. Tout contributeur est censé savoir ce qu'il fait en participant à ce projet.
+Je vois là — dans le contexte actuel ennoncé d'ailleurs clairement dans la proposition — poindre une tentative de modification profonde du fonctionnement de cette encyclopédie à des fins personnelles (au sens large).
+Je veux bien que vous me donniez un exemple de situation
+Je ne vais pas pleurer sur les [[Eugène de Rastignac|Rastignac]] qui se brûlent les ailes en cherchant à détourner Wikipédia de son but encyclopédique.
+Fausse bonne idée, même si l'intention est louable.
+Donc la communauté, sur cet aspect technique et juridique, n'a pas à se prononcer.
+La solution proposée me semble pas envisageable car elle complique le travail et le crédit d'auteur des contributeurs pour un gain minime
+J'avoue que je suis tombé sur le séant quand j'ai vu passer le diff en question il y a quelques minutes...
+Qu'un admin s'amuse à faire joujou avec des faux-nez pour des expériences et/ou imposer un point de vue, c'est déjà gros, mais quand en plus il se fait prendre sur une manip aussi ridicule, il faut à mon avis sévir. On n'est plus au niveau du simple abus d'outils
+Techniquement, aussi, il n'y a pas abus des outils. Mais peut on encore faire confiance à quelqu'un qui joue de la sorte avec WP ? Ça me semble un sujet de discussion intéressant, quelle qu'en soit l'issue.
+Franchement, à la vue du résultat, je suis franchement de l'avis de LittleTony87 ci-dessus.
+Autant le blocage indéfini dans le cas présent serait plus qu'inutile, autant une absence de sanction donnerait blanc-seing à tout comportement totalement identique qui serait découvert ultérieurement en créant une jurisprudence plutôt mauvaise.
+Et bien là je suis carrément scié... Complètement d'accord avec LT87, il faut sanctionner ce comportement parfaitement inadmissible.
+On vient de franchir un sacré niveau dans l'impudence, je n'en reviens pas moi non plus !
+On vient de franchir un sacré niveau dans l'impudence, je n'en reviens pas moi non plus ! Il me semble inutile de passer des semaines sur ce contributeur qui a fait déjà perdre beaucoup de temps à la communauté ; je suis même profondément navré pour tous ces contributeurs ou ceux des questions techniques — qui méritent au passage de chaleureuses félicitations — qui ont pris de leur temps pour lui expliquer comment répondre sur une page de discussion, comment créer une page de brouillon, comment modifier la documentation d'un modèle, à quoi sert « à faire », etc.
+Un comble pour quelqu'un qui connaît parfaitement les rouages de Wikipedia !
+Les expériences ont du bon, mais celles qui se font sur le dos du projet sont à bannir
+ça montre quelque part une étrange façon de contribuer au projet, et un certain mépris des avis de la communauté
+Je précise qu'il n'est aucunement dans mes intentions, malgré cette étrange remarque récente, d'effectuer « quelques relances amicales [...] l'invitant à mieux s'exprimer ».
+On peut en effet attendre le 25, quitte, par exemple, à lui demander de ne pas utiliser ses outils d'ici là. La bonne ou mauvaise volonté qui s'ensuivra pourra toujours influer sur la décision finale.
+Bon, les mesures proposées me semblent raisonnables mais il faudrait peut-être garder le sens des proportions, l'« expérience » n'était qu'une proposition en page de discussion <small>(incidemment, il est d'ailleurs assez savoureux qu'elle ait été signalée par l'auteur d'[[épilation à la pelle]])</small>, pas un ajout dans un article, il n'y a eu aucune tentative de faire nombre en participant aux mêmes votes ou discussions, ni effort pour « pousser » un point de vue et toutes les contributions en question étaient de qualité.
+J'ai cependant du mal à y voir le scandale du siècle ni aucune urgence particulière.
+Jusqu'à maintenant, tout le monde semble d'accord pour 1 mois/indef, est-ce que ça pose un problème à quelqu'un ?
+Ne soyez pas surpris de voir une vingtaine de messages ainsi déposés et, surtout, n'y voyez aucune « manœuvre complotiste » {{Clin d'œil}}. Bien cordialement
+La dernière fois que quelqu’un a fait ça, on l’a envoyé chier aussi sec.
+Malheureusement, à moins d'une reconnaissance automatique des langues, c'est pour le moment impossible.
+Je n'ai pas de certitude sur l'interprétation du code. Mais il semble absurde de mettre un tel modèle de formatage du texte dans un élément qui n'a pas vocation à être visible mais simplement lu par un logiciel.
+Dans ce cas, ton alternative conviendrait parfaitement. N'hésite pas à expliquer au contributeur, qui a peut-être fait une telle modification par inattention, que cette dernière n'apparaît pas pertinente et peu altérer l'accessibilité, raison d'être de ce paramètre descriptif des images.
+Logique... un grand merci ! je vais donc rétablir, comme j'écrivais mes alternatives !
+Si oui à la deuxième question, ne faudrait-il pas modifier le modèle Lien en conséquence ? Cordialement,
+Salut. Je ne comprends pas bien la question : le lien rouge qui apparaît est le lien vers l'article français inexistant. Il n'y a donc pas lieu de lire dans une autre langue.
+Le mieux à l'insertion des modèles Lien est d'utiliser tous les paramètres disponibles (langue, trad, fr et texte), l'écriture compacte étant aussi permise bien sûr mais moins explicite pour les novices.
+Mon avis personnel sur ta question serait de mettre le modèle Langue autour du Lien si le texte est dans une autre langue que le français mais pas davantage que pour les autres passages ou expressions dans une autre langue dans la page concernée.
+Cela est surtout valable pour les articles ayant une forte probabilité d'être crées/admissibles, dans l'optique de la conversion future en lien interne classique.
+Ça risque de créer des conflits. La solution d'Ideawipik de mettre le modèle lang dans le paramètre texte me semble la meilleure idée.
+Pour bien comprendre le risque de créer des conflits concerne les lecteurs automatiques, c'est cela ?
+Non, cela ne poserait pas de problème au bot en l'état. Il peut gérer des paramètres contenant des modèles. La seule ambiguïté concerne la question de syntaxe de mon dernier message, histoire de programmer le bot en conséquence.
+Donc quel est le consensus général pour cette pratique ?
+Je ne comprends pas que dans l'atelier accessibilité on dise que lang ne doit pas perdurer.
+Il y a plusieurs choses que je ne comprends pas, en fait ^^
+Où est le problème ?
+J'ai du mal à suivre la logique, désolé.
+J'abandonne de tenter de m'expliquer. Il reste qu'une forme est préférable. Bonne soirée.
+J'abandonne de tenter de m'expliquer. Il reste qu'une forme est préférable. Bonne soirée.
+J'abandonne de tenter de m'expliquer. Il reste qu'une forme est préférable. Bonne soirée.
+je fais partie de ceux qui ne comprennent pas.
+Je ne dis pas qu'il ne faut pas, je dis qu'une forme (avec le modèle lang) est préférable à l'autre. Mais je dois être mauvais en explications donc, je confirme que j'abandonne.
+Par contre, la bonne méthode est de l'inclure dans le paramètre <code>texte</code>.
+l'accessibilité n'est pas contemplée dans le code du modèle lien » : dans le cas contraire il aurait fallu deux paramètres puisque, par exemple, un article écrit en anglais peut avoir un titre russe ou japonais. <code>langue texte</code> n'existe pas.
+Pour ce qui est de la conversion, seul un dresseur peut te répondre. La contrainte forte étant les titres avec des parenthèses.
+Peut-être qu'il faudrait demander à un bot de corriger ça.
+En revanche pour la conversion automatisée, notamment si l'article a été crée sur frwiki sous un titre non francophone identique au texte à afficher (paramètre <code>texte</code> hors modèle Langue éventuel), je n'ai pas la réponse en termes d'accessibilité à la question déjà posée plus haut et reformulée par Daehan à  la fin de son message du 25 mars 2020 à 22:28.
+Je me permets de remettre en question certains points (chui chiant, mais c'est pas méchant :)
+Un utilisateur de lien peut avoir utilisé une forme dans un article, un autre utilisateur la forme trad et fr avec les titres dans les deux langues dans un autre article.
+100 % {{OK}} avec toi. Des éventualités à considérer : les petits malins qui s'amusent à corriger les redirections sans discernement
+J'ai trouver un bon concurrent {{clin}} ; j'aime bien également les réponses factuelles. Réponses dans le texte, entre les lignes.
+J'avoue que j'ai un peu de mal à comprendre toute cette excitation soudaine.
+est techniquement totalement en panne : cela a son importance dans la mesure où les uns et les autres s'en remettent finalement à des arguments techniques (généralement mal maîtrisés) alors que, tout bêtement, il n'y a aucun développement en cours ni envisagé, bref aucune réponse technique à attendre au moins à moyen terme ;
+se passe finalement plutôt bien (à l'échelle des psychodrames wikipédiens) dans une quasi indifférence générale
+Ce que je ne comprends toujours pas après une récente discussion avec Akeron, c'est : quel est diable l'intérêt de provoquer un nouvel épisode toujours aussi marginal d'une querelle marginale dont les enjeux sont minuscules ?
+Bien avant la création de ce modèle, la pression éditoriale et contributrice (ou si vous préférez, un certain consensus) avait conduit à multiplier les usages d'un premier modèle de modification des titres d'articles, beaucoup plus problématique côté accessibilité et robustesse du rendu, reposant sur un bricolage javascript : {{Titre incorrect}} (et son alias {{Titre}}). Cela afin d'y mettre de l'italique, des mises en exposants, des minuscules initiales etc.
+Constatant ces bricolages déplorables mais soucieux de permettre aux contributeurs d'assouvir leur passion pour la précision typographique, les développeurs de mediawiki se sont résolus à mettre en place un mécanisme plus solide, via un magic word : DISPLAYTITLE.
+Après, il y a différents usages plus ou moins habiles de ces modèles (en ne prenant surtout pas parti pour ou contre la pertinence des détails typographiques, sinon, on ne s'en sort pas) :
+comme le font les articles de biologie/zoologie/plantologie, c'est à dire intelligemment et de manière transparente pour le contributeur, sans complication de syntaxe
+En effet, d'un côté c'est mal de compliquer la syntaxe wiki de la source de l'article avec un modèle énigmatique, mais d'un autre, c'est bien de produire un titre d'article sémantisé et accessible et non un galimatias du genre « 2e ».
+comme cela se fait un peu au pifomètre dans beaucoup d'autres articles où il s'agit d'un titre d'oeuvre, à propos desquels on ne parvient pas à se décider à passer par l'infobox et à gérer la chose comme pour les articles de biologie.
+Il faut arbitrer entre au moins trois exigences immédiates, également fortes et tout aussi légitimes, que de bêtes limitations techniques dues à certains choix fondamentaux de mediawiki rendent parfois contradictoires
+d'une part sémantiser et accessibiliser Wikipédia pour en favoriser l'accès mais aussi la réutilisabilité et la pérennité, d'autre part permettre le respect de ce qu'une part des contributeurs considèrent comme des normes typographiques qu'il faut suivre bien qu'on ne soit plus sur le même media que l'imprimé, et enfin conserver une raisonnable facilité d'édition des articles et d'appropriation de la syntaxe de ceux-ci. Pas simple, pas si simple... Cordialement,
+Le microcosme wikipédien en est tombé à ce niveau-là, à tout personnaliser sans qu'on sache trop pourquoi ? C'est étonnant et un peu embêtant. Ce n'est pas vraiment encourageant, non plus.
+Depuis plusieurs années, les prises de décision rencontrent des difficultés récurrentes.
+Mais devant l'indifférence générale (à part od†n), j'avoue que j'avais laissé tomber.
+Sur un mode plus constructif : mettre à jour les pages d'aide pour enlever ce qui donne un résultat problématique quand il s'agit des syntaxes wiki ala-attributs de présentation HTML serait vraiment nécessaire à présent.
+Sinon, les gens vont inévitablement continuer à les utiliser, alors que le but est d'en réduire l'usage. Il va sans doute falloir créer des classes, pour cela. Enfin, peut-être. La question de quelle syntaxe est intuitive pour les contributeurs n'a pas vraiment été prise en compte par les développeurs...
+Quoi qu'il en soit, si jamais j'aperçois du code problématique, je dégaine les colts et je tire {{lol}}
+Merci, c'est bon d'avoir des pros dans le coin {{clin}}
+Pour une fois qu'on a un processus de qualification des articles explicite, documenté et rigoureux (mais améliorable), pourquoi diable ne pas en faire bénéficier le lecteur ?
+Les raisons du non m'échappent complètement, surtout cette idée que ce serait à voir au cas par cas ou que ce serait une surcharge.
+Pour te répondre un peu brutalement mais très simplement : je me demande s'il n'y a pas une position un peu moins con que celles des agités de l'un ou de l'autre bord, dans l'intérêt de ce projet. Elle est forcément suspect, dans une approche des choses devenue binaire.
+Mais si tu pouvais quand même demander le statut de bot ? Au moins, ça éviterait en lisant les RC de voir que vous continuez à vous agiter sur la question ? Ça ne pourrait qu'aider à vous lâcher la grappe {{Clin d'oeil}}.
+Mais si tu pouvais quand même demander le statut de bot ? Au moins, ça éviterait en lisant les RC de voir que vous continuez à vous agiter sur la question ? Ça ne pourrait qu'aider à vous lâcher la grappe {{Clin d'oeil}}.
+Mais si tu pouvais quand même demander le statut de bot ? Au moins, ça éviterait en lisant les RC de voir que vous continuez à vous agiter sur la question ? Ça ne pourrait qu'aider à vous lâcher la grappe {{Clin d'oeil}}.
+Un jour de mauvaise humeur, il se peut je procède au blocage indef (et idiot) de ce bot non déclaré, ce qui ne serait que l'application formelle et indiscutable des règles de base de Wikipédia sur les modifications massives : quand on veut jouer au con...
+Mais bon, tout cela est laissé au hasard des initiatives désordonnées de qui passe par là...
+Un petit point d'historique {{Clin d'oeil}} ?
+Bien avant la création de ce modèle, la pression éditoriale et contributrice (ou si vous préférez, un certain ''consensus'') avait conduit à multiplier les usages d'un premier modèle de modification des titres d'articles, beaucoup plus problématique côté accessibilité et robustesse du rendu, reposant sur un bricolage javascript
+Constatant ces bricolages déplorables mais soucieux de permettre aux contributeurs d'assouvir leur passion pour la précision typographique, les développeurs de mediawiki se sont résolus à mettre en place un mécanisme plus solide, via un ''magic word''
+Il faut arbitrer entre au moins trois exigences immédiates, également fortes et tout aussi légitimes, que de bêtes limitations techniques dues à certains choix fondamentaux de mediawiki rendent parfois contradictoires
+Ce serait en effet une tentative de compromis peut-être à même d'éteindre un conflit assez ridicule. Mais hélas, elle pose exactement le même problème que s'il s'agissait de le faire pour la version en ligne des articles
+Mis à part de très rares exceptions à regarder de plus près, c'est le plus souvent signe d'une mauvaise conception éditoriale des infobox ou d'une mauvaise utilisation de celles-ci.
+Je crains plus une décision global sur le sujet (recommandation ou autre, inévitablement appliquée par la suite au pied de la lettre) qu'un traitement informel au cas par cas, en l'absence de réel problème massif.
+C'est évidemment à éviter le plus possible.
+Après être contre, cela signifie pas supprimer tout les doublons de manière bête et méchante (j'en ai l'impression pourtant).
+Bah, c'est la différence entre «on peut» et «on veut». Wikipédia, c'est l'idée d'une encyclopédie libre, mais aussi d'une encyclopédie collaborative créée de toutes pièces.
+C'est assez typiquement le stade où, à force que tu tiennes à être absolument décalé pour des raisons qui m'échappent, je cesse pour ma part de te lire.
+Bref, tu as commis une énorme connerie, là, pour être clair mais vulgaire. Cette discussion pas inutile s'en serait passée.
+Bref, tu as commis une énorme connerie, là, pour être clair mais vulgaire.
+Bref, tu as commis une énorme connerie, là, pour être clair mais vulgaire.
+J'ai l'impression que l'on a trops l'habitude, apres des recherches recentes poussees sur des sujets delicat de s'appercevoir que tel ou tel n'avait pas toutes les information a sa disposition ou a choisi de les ignorer.
+Ce n'est pas une question relevant des admins, puisqu'elle est éditoriale, mais cela ne fait pas de mal de le souligner
+En effet, du point de vue immédiat de la protection de Wikipédia vis à vis d'éditions contraires à ses principes, on est dans le cas assez criant d'une édition relevant du vandalisme, s'agissant de substituer au terme exclusif retenu dans la littérature de référence sur le sujet un terme lui-même identifié par celle-ci comme relevant de la propagande.
+Mais si cela pose un problème quelque-part à quelqu'un, il n'y a évidemment pas de souci pour que cette mesure soit rectifiée, dans la mesure où l'intervenant gèrerait la suite, évidemment aussi {{Clin d'oeil}}. Cordialement,
+D'une manière générale, Wikpédia (fr.wp) semble très bien aller et se débrouiller sans histoires avec cette question périphérique tant qu'aucun troll ne revient réveiller un faux problème auquel la quasi-totatité des contributeurs sont indifférents, et que la Communauté et le fonctionnement de l'outil s'accordent aujourd'hui à considérer comme heureusement endormi.
+C'est un bricolage, du point de vue technique (comme souvent récupéré depuis en.wp en toute bonne foi mais sans trop connaître les enjeux).
+C'est un bricolage, du point de vue technique (comme souvent récupéré depuis en.wp en toute bonne foi mais sans trop connaître les enjeux).
+C'est un bricolage, du point de vue technique (comme souvent récupéré depuis en.wp en toute bonne foi mais sans trop connaître les enjeux).
+Mais il semble que la sensibilité du moment sur fr.wp soit à adopter ces bricolages, faute d'un endroit où en discuter et de moyens de les valider.
+Mais il semble que la sensibilité du moment sur fr.wp soit à adopter ces bricolages, faute d'un endroit où en discuter et de moyens de les valider.
+Mais il semble que la sensibilité du moment sur fr.wp soit à adopter ces bricolages, faute d'un endroit où en discuter et de moyens de les valider.
+Un bricolage technique, quelque-soit la manière de le bricoler, restera un bricolage, c'est à dire un truc qui marche parfois, parfois pas, généralement mal et plus globalement avec beaucoup d’insatisfactions.
+Un bricolage technique, quelque-soit la manière de le bricoler, restera un bricolage, c'est à dire un truc qui marche parfois, parfois pas, généralement mal et plus globalement avec beaucoup d’insatisfactions.
+Un bricolage technique, quelque-soit la manière de le bricoler, restera un bricolage, c'est à dire un truc qui marche parfois, parfois pas, généralement mal et plus globalement avec beaucoup d’insatisfactions.
+Wikipédia est ce que ses contributeurs en font : en matière technique, comme ils sont généralement des internautes confrontés à des questions techniques qui les dépassent un peu, ça donne ce que ça donne. Ce n'est pas forcément un problème, cela dit.
+Wikipédia est ce que ses contributeurs en font : en matière technique, comme ils sont généralement des internautes confrontés à des questions techniques qui les dépassent un peu, ça donne ce que ça donne. Ce n'est pas forcément un problème, cela dit.
+Wikipédia est ce que ses contributeurs en font : en matière technique, comme ils sont généralement des internautes confrontés à des questions techniques qui les dépassent un peu, ça donne ce que ça donne. Ce n'est pas forcément un problème, cela dit.
+Ce n'est pas forcément un problème, cela dit. Par contre, il est inévitable que ça ne marche pas bien sans que ce soit forcément un problème, vu que ça répond immédiatement à un besoin exprimé. Cordialement,
+Ce n'est pas forcément un problème, cela dit. Par contre, il est inévitable que ça ne marche pas bien sans que ce soit forcément un problème, vu que ça répond immédiatement à un besoin exprimé. Cordialement,
+Ce n'est pas forcément un problème, cela dit. Par contre, il est inévitable que ça ne marche pas bien sans que ce soit forcément un problème, vu que ça répond immédiatement à un besoin exprimé. Cordialement,
+Ce n'est pas forcément un problème, cela dit. Par contre, il est inévitable que ça ne marche pas bien sans que ce soit forcément un problème, vu que ça répond immédiatement à un besoin exprimé. Cordialement,
+Je voulais juste dire que si toi et d'autres et d'autres du bord opposé, vous pouviez éviter de rallumer inutilement la guerre du feu pour une bricole sans intérêt, ce serait bien. Bref, qu'on a autre chose à faire (mais cela ne semble pas un avis consensuel, à ce ce que je lis ci-après, je suppose que je vais devoir m'abstenir par la suite, donc).
+Je voulais juste dire que si toi et d'autres et d'autres du bord opposé, vous pouviez éviter de rallumer inutilement la guerre du feu pour une bricole sans intérêt, ce serait bien. Bref, qu'on a autre chose à faire (mais cela ne semble pas un avis consensuel, à ce ce que je lis ci-après, je suppose que je vais devoir m'abstenir par la suite, donc).
+Je voulais juste dire que si toi et d'autres et d'autres du bord opposé, vous pouviez éviter de rallumer inutilement la guerre du feu pour une bricole sans intérêt, ce serait bien. Bref, qu'on a autre chose à faire (mais cela ne semble pas un avis consensuel, à ce ce que je lis ci-après, je suppose que je vais devoir m'abstenir par la suite, donc).
+La requête est justifiée dans la mesure où il est d'usage sur wikipédia de ne pas faire de modifications en masse non consensuelles (car cela finit toujours pas dégénérer) et de bloquer les contributeurs qui s'y adonnent malgré de nombreux avertissements.
+La requête est justifiée dans la mesure où il est d'usage sur wikipédia de ne pas faire de modifications en masse non consensuelles (car cela finit toujours pas dégénérer) et de bloquer les contributeurs qui s'y adonnent malgré de nombreux avertissements.
+La seule chose qui est vaguement problématique, ce sont les modifications en masse, n'est-ce pas ?
+La seule chose qui est vaguement problématique, ce sont les modifications en masse, n'est-ce pas ?
+La seule chose qui est vaguement problématique, ce sont les modifications en masse, n'est-ce pas ?
+Comme souvent, j'ai le sentiment qu'on s'excite ponctuellement pour pas grand-chose.
+Comme souvent, j'ai le sentiment qu'on s'excite ponctuellement pour pas grand-chose.
+Comme souvent, j'ai le sentiment qu'on s'excite ponctuellement pour pas grand-chose.
+Il y a inévitablement de temps en temps un couac (heureusement, les gens qui s'en occupent ne sont pas supposés être parfaits, ils ont le même droit à l'erreur que n'importe qui ici, etc.). Heureusement encore, Wikipédia a des mécanismes de rattrapage des couacs et des erreurs (par exemple, une restauration au vol avec la PàS qui va bien, qui ne devraient pas faire tant de bruit : c'est juste normal). Quel est exactement le problème ?
+Heureusement encore, Wikipédia a des mécanismes de rattrapage des couacs et des erreurs (par exemple, une restauration au vol avec la PàS qui va bien, qui ne devraient pas faire tant de bruit : c'est juste normal). Quel est exactement le problème ?
+Heureusement encore, Wikipédia a des mécanismes de rattrapage des couacs et des erreurs (par exemple, une restauration au vol avec la PàS qui va bien, qui ne devraient pas faire tant de bruit : c'est juste normal). Quel est exactement le problème ?
+Mais il y a des couacs occasionnels et inévitables, qui ne sont pas pour autant dramatiques (rien n'est jamais définitif sur Wikipédia). Ne sautez pas d'un problème ponctuel à une généralisation, cela n'aide pas. Cordialement,
+Mais il y a des couacs occasionnels et inévitables, qui ne sont pas pour autant dramatiques (rien n'est jamais définitif sur Wikipédia). Ne sautez pas d'un problème ponctuel à une généralisation, cela n'aide pas. Cordialement,
+Mais il y a des couacs occasionnels et inévitables, qui ne sont pas pour autant dramatiques (rien n'est jamais définitif sur Wikipédia). Ne sautez pas d'un problème ponctuel à une généralisation, cela n'aide pas. Cordialement,
+Par ailleurs, quels sont les exemples réels de cette situation ? Cordialement,
+Par ailleurs, quels sont les exemples réels de cette situation ? Cordialement,
+Inutilement inutile.
+Quant à "l'urgence" de modifier un article pas vraiment problématique, j'aime assez '''[[Wikipédia:Il n'y a pas d'urgence|cette réflexion]]'''. Cdlt.
+Ce n'est pas de déployer le modèle qui compte, c'est de l'exploiter (car un modèle de métadonnées qui ne sert à  rien... ne sert à rien {{Clin d'oeil}}).
+Ce n'est pas de déployer le modèle qui compte, c'est de l'exploiter (car un modèle de métadonnées qui ne sert à  rien... ne sert à rien {{Clin d'oeil}}).
+Or, le souci est qu'il s'agit d'un format inventé au sein de Wikipédia, totalement inconnu ailleurs, dénué d'outils externes : seul l'exploitent quelques rares outils wikipédo-wikipédiens, quand ils ont été mis en place localement comme sur de.wp.
+Or, le souci est qu'il s'agit d'un format inventé au sein de Wikipédia, totalement inconnu ailleurs, dénué d'outils externes : seul l'exploitent quelques rares outils wikipédo-wikipédiens, quand ils ont été mis en place localement comme sur de.wp.
+Pour la saisie des métadonnées : l'autre aspect de l'idée est justement de ne pas à avoir à le faire, en exploitant automatiquement les données déjà présentes dans les infobox (biographiques en particulier).
+Cette possibilité suscitait jusqu'ici assez peu d'intérêt, mais si des gens sont prêts eà mettre la main à la pâte, c'est un projet à lancer. Cordialement,
+Wikipédia est en permanence exposée au double risque de lecture un peu naïve de son fatras de règles, recommandations et autres pages méta par des gens soucieux de bien faire dans un univers compliqué, et d'utilisation malintentionnée de celui-ci par quelques trolls ponctuels jouant avec le système.
+. Il s'avère de temps à autre nécessaire de rappeler que les règles ne sont là que dans la mesure où elles ne sont pas obstructives (c'est un principe fondateur), mais au quotidien, le tout semble généralement résister assez sainement à « l'abus d'excès de formalisme ».
+Il faut trouver un juste milieu, ne pas tomber dans les excès, mais il faudra sans doute accepter une certaine quantité, voire une quantité certaine, de modèles dans les articles. Une question aussi complexe, où il s'agit de placer un curseur au bon endroit, se gère difficilement par des "pour" et des "contre".
+En fait, il s'agit bien ici d'un type de modèle posant un problème particulier, en sus de la difficulté d'édition liée à une syntaxe déroutante
+Attention à ne pas confondre deux problèmes proches, parfois cumulés dans un même modèle
+La génération de texte rédigé automatiquement est un souci effectivement criant, mais aisément réglable en évitant tout simplement de créer ce genre de modèles.
+Cela se heurtera à l'idée (à laquelle les gens sont apparemment très attachés) d'une stricte séparation entre le « contenu encyclopédique » et la « cuisine interne ».
+La forme conditionne la manière dont le fond est perçu ; elle le conditionne d'autant plus que Wikipédia est un média écrit. Pour le dire vite, la forme des interventions dans les coulissses a des conséquences sur la manière dont les ajouts de fond sont perçus sur la scène -les articles.
+Encore une fois, Wikipédia suscite beaucoup de malentendus et d'incompréhensions, souvent faute de contacts directs ou d'explications. Avant d'exposer quelqu'un en place publique au pilori, un peu de prudence devrait s'imposer. Les Wikipédiens, mais c'est compréhensible, ont à vrai dire beaucoup de mal à comprendre à quel point ce qui leur semble évident peut être déroutant.
+Pour ma part, ne connaissant pas les tenants et les aboutissants, je me contenterai de ne rien affirmer ni de ne rien juger a priori, ne serait-ce que pour ne pas compliquer inutilement les choses {{Clin d'oeil}}
+Par ailleurs, si la présence de modèles dans des titres constitue une gêne marginale, elle a aussi des justifications et son utilité selon les cas.
+Ce n'est pas pour autant un obstacle à la publication de contenus. Il suffit que le site mette en place ce qui est nécessaire pour  fournir au navigateur de l'utilisateur les informations idoines pour que chaque lecteur ait une déclinaison du contenu respectueuse de ses choix.
+Bref, des options sont ouvertes. Cordialement,
+Il y a en effet une erreur qui ne peut pas être détectée automatiquement via des catégories de maintenance, et qui a fini par s'accumuler : l'usage simultané de plusieurs de ces modèles dans le même article (les limites techniques imposées par mediawiki font en effet qu'ils ne sont pas cumulables. Si plusieurs sont utilisés dans un article, seul le dernier dans l'ordre du code est pris en compte).
+Oui. Froidement: oui, on garde la solution non accessible pour le moment. Améliorer l'accessibilité nécessite de déterminer où faire porter efficacement les améliorations à un moment donné {{Clin d'oeil}}. Cordialement,
+Tout simplement parce qu'on ne peut pas fournir une autre solution robuste accessible et admissible par les contributeurs pour le moment. Veux-tu lancer une PDD proposant de supprimer tous les contenus reposant sur ces modèles ? Non, n'est-ce pas ? Donc, on fait avec du contenu peu ou plutôt pas accessible (et même pire). Pour le moment. Et sans souci. Cordialement,
+Franchement, depuis que je connais Wikipédia, tout va de mal en pis. Le français recule constamment face à l'impérialisme linguistique anglo-saxon (jusqu'aux bureaucrates pourtant gardiens du temple qui adoptent des pseudos à la consonance scandaleuse, quand ils ne sont pas ouvertement traîtres à la Cause).
+On ne parle même plus de neutralité de point de vue et de consensus dans une oligarchie qui confisque ce projet à des fins carriéristes inavouables.
+je ne saisis pas vraiment à quoi tu fais allusion, mais loin de moi l'idée d'une quelconque guerre de quoi que ce soit {{rire}}
+La priorité est-elle la résolution d'un conflit ou bien le respect de pure forme d'un règlement qui est lui-même soumis à [[Wikipédia:De l'interprétation créative des règles ]] ? Il me semble vraiment que tout est affaire de circonstances et de bonne volonté {{Clin d'oeil}}.
+Et encore : le modèle laisse pour le moment un gros souci d'utlisabilité des titres dans des pages de portails et de projets, sans parler des pages utilisateurs, en raison d'une tolérance AMHA excessive qui fait que le sous-titre n'y est pas imposé (parce qu'on veut « faire joli »).
+On part donc de très très loin. Cordialement,
+Éviter les arguments techniques dans ce qui est avant tout une question de choix éditoriaux serait sans doute préférable {{Clin d'oeil}}.
+Mais aborder cela sous de mauvaises raisons techniques ne me semble pas très utile. C'est d'abord un choix éditorial à faire sur la rédaction des contenus, au cas par cas, indépendamment de ces considérations techniques.
+on pourrait aussi bien qualifier de bancal un outil qui n'est pas capable de s'adapter à l'existant.
+Nous pourrions débattre de longues heures sur le côté bancal de nos conventions culturelles que nous appelons un système de discussion.
