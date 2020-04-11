@@ -36,6 +36,7 @@ ncbi.nlm.nih.gov:
     template: article
 lefigaro.fr:
     template: auto
+    articleDetectType: 'NewsArticle'
     périodique: '[[Le Figaro]]'
     site: '[[Le Figaro|lefigaro.fr]]'
 lavoixdunord.fr:

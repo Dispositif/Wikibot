@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace App\Application\Examples;
 
 use App\Application\PublisherAction;
-use App\Domain\Models\Wiki\ArticleTemplate;
 use App\Domain\Models\Wiki\LienWebTemplate;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\Publisher\WebMapper;
@@ -52,17 +51,17 @@ if (!isset($config[$domain])) {
 $pref = $config[$domain] ?? [];
 $pref = is_array($pref) ? $pref : [];
 
-if($pref === 'desactived' || isset($pref['desactived'])) {
+if ($pref === 'desactived' || isset($pref['desactived'])) {
     dump('DESACTIVED');
     die;
 }
 
 
 $publish = new PublisherAction($url);
-try{
+try {
     $html = $publish->getHTMLSource();
     $data = $publish->extractWebData($html);
-}catch (\Throwable $e){
+} catch (\Throwable $e) {
     // TODO : reprendre ArticleFromUrl:65
     throw $e;
 }
@@ -88,10 +87,9 @@ $template = WikiTemplateFactory::create($templateName);
 $template->userSeparator = " |";
 
 
-
 // Logique : remplacement titre périodique ou nom du site
 
-if (!empty($pref['site']) &&  $template instanceof LienWebTemplate) {
+if (!empty($pref['site']) && $template instanceof LienWebTemplate) {
     $res['site'] = $pref['site'];
 }
 if (!empty($pref['périodique']) && (!empty($res['périodique']) || $template instanceof OuvrageTemplate)) {
