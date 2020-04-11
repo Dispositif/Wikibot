@@ -17,9 +17,9 @@ use Mediawiki\DataModel\EditInfo;
 
 /**
  * Freaky customization of WikiBotConfig class
- * Class ZiziBotConfig.
+ * Class TalkBotConfig.
  */
-class ZiziBotConfig extends WikiBotConfig
+class TalkBotConfig extends WikiBotConfig
 {
     const BOT_TALK_SUMMARY = 'Réponse artificielle';
 
@@ -74,7 +74,7 @@ class ZiziBotConfig extends WikiBotConfig
      */
     private function generateTalkText(?string $toEditor = null, ?string $identation = ':')
     {
-        if($toEditor === 'Flow talk page manager'){
+        if ($toEditor === 'Flow talk page manager') {
             $toEditor = null;
         }
         $to = ($toEditor) ? sprintf('@[[User:%s|%s]] : ', $toEditor, $toEditor) : ''; // {{notif}}
@@ -103,7 +103,6 @@ class ZiziBotConfig extends WikiBotConfig
             if (!empty($matches[1])) {
                 $nextIdent = $matches[1].':';
                 if (empty($author)) {
-
                     return $nextIdent;
                 }
                 // search author signature link to check that he wrote on the page bottom

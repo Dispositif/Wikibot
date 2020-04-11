@@ -140,9 +140,9 @@ class WikiBotConfig
                     unset($e);
                 }
             }
-            if ($botTalk && class_exists(ZiziBotConfig::class)) {
+            if ($botTalk && class_exists(TalkBotConfig::class)) {
                 try {
-                    (new ZiziBotConfig())->botTalk();
+                    (new TalkBotConfig())->botTalk();
                 } catch (Throwable $e) {
                     unset($e);
                 }
