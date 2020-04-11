@@ -34,7 +34,7 @@ class ArticleTemplateTest extends TestCase
         return [
             [
                 ['titre' => 'bla'],
-                '{{Article |auteur1= |titre=bla |périodique= |date= |pages= |lire en ligne=}}',
+                '{{Article |auteur1= |titre=bla |périodique= |date= |lire en ligne=}}',
             ],
             [
                 // {{article | langue = en | auteur1 = T. Breeze | auteur2 = A. Bailey | auteur3 = K. Balcombe | auteur4 = S. Potts | titre = Pollination services in the UK: How important are honeybees? | journal = Agriculture, Ecosystems and Environment | date = août 2011 | doi = 10.1016/j.agee.2011.03.020 }}
@@ -50,7 +50,7 @@ class ArticleTemplateTest extends TestCase
                     'date' => 'août 2011',
                     'doi' => '10.1016/j.agee.2011.03.020',
                 ],
-                '{{Article |langue=en |auteur1=T. Breeze |auteur2=A. Bailey |auteur3=K. Balcombe |auteur4=S. Potts |titre=Pollination services in the UK: How important are honeybees? |périodique=Agriculture, Ecosystems and Environment |numéro=13 |date=août 2011 |pages= |lire en ligne= |doi=10.1016/j.agee.2011.03.020}}',
+                '{{Article |langue=en |auteur1=T. Breeze |auteur2=A. Bailey |auteur3=K. Balcombe |auteur4=S. Potts |titre=Pollination services in the UK: How important are honeybees? |périodique=Agriculture, Ecosystems and Environment |numéro=13 |date=août 2011 |lire en ligne= |doi=10.1016/j.agee.2011.03.020}}',
             ],
         ];
     }
@@ -83,7 +83,7 @@ class ArticleTemplateTest extends TestCase
             ],
             [
                 "{{Ouvrage|nom1=Collectif|prénom2=Alphonse|nom2= Wollbrett|directeur2=oui|titre=Le canton de Bouxwiller|lieu= Saverne|éditeur=SHASE|année=1978|issn=0245-8411|périodique=Pays d'Alsace|numéro=103bis}}",
-                "{{Article |auteur1= |nom1=Collectif |prénom2=Alphonse |nom2=Wollbrett |directeur2=oui |titre=Le canton de Bouxwiller |périodique=Pays d'Alsace |lieu=Saverne |éditeur=SHASE |numéro=103bis |date=1978 |pages= |issn=0245-8411 |lire en ligne=}}",
+                "{{Article |auteur1= |nom1=Collectif |prénom2=Alphonse |nom2=Wollbrett |directeur2=oui |titre=Le canton de Bouxwiller |périodique=Pays d'Alsace |lieu=Saverne |éditeur=SHASE |numéro=103bis |date=1978 |issn=0245-8411 |lire en ligne=}}",
             ],
         ];
     }
