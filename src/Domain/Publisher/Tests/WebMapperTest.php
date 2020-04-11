@@ -35,7 +35,59 @@ class WebMapperTest extends TestCase
     {
         return [
             [
-                __DIR__.'/fixture_web_figaro.html',
+                __DIR__.'/fixture_lemonde.html',
+                [
+                    'DATA-TYPE' => 'JSON-LD',
+                    'DATA-ARTICLE' => true,
+                    'périodique' => 'Le Monde',
+                    'titre' => 'Coronavirus : la Californie placée à son tour en confinement',
+                    'url' => 'https://www.lemonde.fr/planete/article/2020/03/20/coronavirus-la-californie-placee-en-confinement_6033754_3244.html',
+                    'date' => '20-03-2020',
+                ],
+            ],
+            [
+                __DIR__.'/fixture_journalsOpenEdition.html',
+                [
+
+                    'DATA-TYPE' => 'Open Graph/Dublin Core',
+                    'DATA-ARTICLE' => true,
+                    'titre' => 'Alger',
+                    'url' => 'http://journals.openedition.org/encyclopedieberbere/2434',
+                    'consulté le' => '11-04-2020',
+                    'date' => '01-07-1986',
+                    'url-access' => 'limité',
+                    'périodique' => 'Encyclopédie berbère',
+                    'et al.' => 'oui',
+                    'auteur1' => 'Camps, G.; Leglay, M.',
+                    'numéro' => '4',
+                    'page' => '447–472',
+                    'éditeur' => 'Éditions Peeters',
+                    'issn' => '1015-7344',
+                    'isbn' => '2-85744-282-3',
+                ],
+            ],
+            [
+                __DIR__.'/fixture_pubmed.html',
+                [
+                    'DATA-TYPE' => 'Open Graph/Dublin Core',
+                    'DATA-ARTICLE' => true,
+                    'site' => 'PubMed Central (PMC)',
+                    'titre' => 'The Diesel Exhaust in Miners Study: A Nested Case–Control Study of Lung Cancer and Diesel Exhaust',
+                    'url' => 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3369553/',
+                    'consulté le' => '11-04-2020',
+                    'date' => '06-06-2012',
+                    'périodique' => 'JNCI Journal of the National Cancer Institute',
+                    'et al.' => 'oui',
+                    'auteur1' => 'Debra T. Silverman, Claudine M. Samanic',
+                    'volume' => '104',
+                    'numéro' => '11',
+                    'page' => '855',
+                    'doi' => '10.1093/jnci/djs034',
+                    'pmid' => '22393209',
+                ],
+            ],
+            [
+                __DIR__.'/fixture_figaro.html',
                 [
                     'DATA-TYPE' => 'JSON-LD',
                     'DATA-ARTICLE' => true,
@@ -48,18 +100,7 @@ class WebMapperTest extends TestCase
                 ],
             ],
             [
-                __DIR__.'/fixture_web_lemonde.html',
-                [
-                    'DATA-TYPE' => 'JSON-LD',
-                    'DATA-ARTICLE' => true,
-                    'périodique' => 'Le Monde',
-                    'titre' => 'Coronavirus : la Californie placée à son tour en confinement',
-                    'url' => 'https://www.lemonde.fr/planete/article/2020/03/20/coronavirus-la-californie-placee-en-confinement_6033754_3244.html',
-                    'date' => '20-03-2020',
-                ],
-            ],
-            [
-                __DIR__.'/fixture_web_liberation.html',
+                __DIR__.'/fixture_liberation.html',
                 [
                     'DATA-TYPE' => 'JSON-LD',
                     'DATA-ARTICLE' => true,
@@ -71,6 +112,7 @@ class WebMapperTest extends TestCase
                     'url-access' => 'ouvert',
                 ],
             ],
+
         ];
     }
 

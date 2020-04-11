@@ -73,10 +73,10 @@ class WebMapper implements MapperInterface
             'DATA-TYPE' => 'JSON-LD',
             'DATA-ARTICLE' => $jsonLD['@type'] === 'NewsArticle',
             'périodique' => $jsonLD['publisher']['name'] ?? null,
-            'titre' => html_entity_decode($jsonLD['headline']), // obligatoire
+            'titre' => $this->clean($jsonLD['headline']), // obligatoire
             'url' => $jsonLD['url'] ?? $jsonLD['mainEntityOfPage']['@id'] ?? null,
             'date' => $this->convertDate($jsonLD['datePublished'] ?? $jsonLD['dateCreated'] ?? null), //
-        // 2020-03-19T19:13:01.000Z
+            // 2020-03-19T19:13:01.000Z
             'auteur1' => $this->wikifyPressAgency($this->convertAuteur($jsonLD, 0)),
             'auteur2' => $this->convertAuteur($jsonLD, 1),
             'auteur3' => $this->convertAuteur($jsonLD, 2),
@@ -213,7 +213,7 @@ class WebMapper implements MapperInterface
         if ($str === null) {
             return null;
         }
-        $str = str_replace(['&apos;', "\n"], ["'", ' '], $str);
+        $str = str_replace(['&apos;', "\n", "&#10;"], ["'", '', ' '], $str);
 
         return html_entity_decode($str);
     }
@@ -334,7 +334,7 @@ class WebMapper implements MapperInterface
      */
     protected function wikifyPressAgency(?string $str): ?string
     {
-        if(empty($str)){
+        if (empty($str)) {
             return null;
         }
         // skip potential wikilinks
