@@ -22,7 +22,7 @@ use DateTime;
  */
 class WebMapper implements MapperInterface
 {
-    use ArrayProcessTrait;
+    use ArrayProcessTrait, WebOGMapperTrait, WebLDMapperTrait;
 
     public function process($data): array
     {
@@ -65,80 +65,6 @@ class WebMapper implements MapperInterface
     protected function checkJSONLD(array $jsonLD): bool
     {
         return isset($jsonLD['headline']) && isset($jsonLD['@type']);
-    }
-
-    protected function mapArticleDataFromJSONLD(array $jsonLD): array
-    {
-        return [
-            'DATA-TYPE' => 'JSON-LD',
-            'DATA-ARTICLE' => $jsonLD['@type'] === 'NewsArticle',
-            'périodique' => $jsonLD['publisher']['name'] ?? null,
-            'titre' => $this->clean($jsonLD['headline']), // obligatoire
-            'url' => $jsonLD['url'] ?? $jsonLD['mainEntityOfPage']['@id'] ?? null,
-            'date' => $this->convertDate($jsonLD['datePublished'] ?? $jsonLD['dateCreated'] ?? null), //
-            // 2020-03-19T19:13:01.000Z
-            'auteur1' => $this->wikifyPressAgency($this->convertAuteur($jsonLD, 0)),
-            'auteur2' => $this->convertAuteur($jsonLD, 1),
-            'auteur3' => $this->convertAuteur($jsonLD, 2),
-            'auteur institutionnel' => $this->convertInstitutionnel($jsonLD),
-            'url-access' => $this->convertURLaccess($jsonLD),
-        ];
-    }
-
-    /**
-     * Mapping from Open Graph and Dublin Core meta tags
-     * https://ogp.me/
-     * https://www.dublincore.org/schemas/
-     *
-     * @param array $meta
-     *
-     * @return array
-     */
-    protected function mapLienwebFromOpenGraph(array $meta): array
-    {
-        return [
-            'DATA-TYPE' => 'Open Graph/Dublin Core',
-            'DATA-ARTICLE' => $this->isAnArticle($meta['og:type'] ?? ''),
-            'site' => $this->clean($meta['og:site_name'] ?? null),
-            'titre' => $this->clean($meta['og:title'] ?? $meta['twitter:title'] ?? $meta['DC.title'] ?? null),
-            'url' => $meta['og:url'] ?? $meta['URL'] ?? null,
-            'langue' => $this->convertLangue(
-                $meta['og:locale'] ?? $meta['DC.language'] ?? $meta['citation_language'] ?? null
-            ),
-            'consulté le' => date('d-m-Y'),
-            'auteur' => $this->clean(
-                $meta['og:article:author'] ?? $meta['article:author'] ?? $meta['citation_author'] ?? null
-            ),
-            'format' => $this->convertOGtype2format($meta['og:type'] ?? null),
-            'date' => $this->convertDate(
-                $meta['og:article:published_time'] ??
-                $meta['article:published_time'] ?? $meta['DC.date'] ?? $meta['citation_date'] ?? null
-            ),
-            'url-access' => $this->convertURLaccess($meta),
-
-            // DUBLIN CORE ONLY
-            'périodique' => $this->clean($meta['DC.isPartOf'] ?? $meta['citation_journal_title'] ?? null),
-            'et al.' => $this->authorsEtAl(
-                $meta['citation_authors'] ?? $meta['DC.Contributor'] ?? null,
-                true
-            ),
-            'auteur1' => $this->wikifyPressAgency(
-                $this->clean(
-                    $this->authorsEtAl(
-                        $meta['citation_authors'] ?? $meta['DC.Contributor'] ?? null
-                    )
-                )
-            ),
-            'volume' => $meta['citation_volume'] ?? null,
-            'numéro' => $meta['citation_issue'] ?? null,
-            'page' => $this->convertDCpage($meta),
-            'doi' => $meta['citation_doi'] ?? null,
-            'éditeur' => $meta['DC.publisher'] ?? null, // Persée dégeulasse todo?
-            'pmid' => $meta['citation_pmid'] ?? null,
-            'issn' => $meta["citation_issn"] ?? null,
-            'isbn' => $meta["citation_isbn"] ?? null,
-            // "prism.eIssn" => "2262-7197"
-        ];
     }
 
     protected function isAnArticle(?string $str): bool
