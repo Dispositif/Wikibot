@@ -41,6 +41,11 @@ class RefWebWorker extends RefBotWorker
 
     public function processRefContent($refContent): string
     {
+        // todo Temporary Skip URL : move where ?
+        if(preg_match('#books\.google#', $refContent)){
+            return $refContent;
+        }
+
         try {
             $result = $this->transformer->process($refContent);
         } catch (Throwable $e) {

@@ -29,9 +29,10 @@ class RefGooWorker extends AbstractBotTaskWorker
     {
         $cirrusURL
             = 'https://fr.wikipedia.org/w/api.php?action=query&list=search'
-            .'&srsearch=%22https://books.google%22%20insource:/\%3Cref[^\%3E]*\%3Ehttps\:\/\/books\.google/&formatversion=2&format=json&srnamespace=0'
-//            .'&srlimit=100&srqiprofile=popular_inclinks_pv&srsort=last_edit_desc';
-            .'&srlimit=100&srsort=random';
+            .'&srsearch=%22https://books.google%22%20insource:/\%3Cref[^\%3E]*\%3Ehttps\:\/\/books\.google/'
+            .'&formatversion=2&format=json&srnamespace=0'
+            .'&srlimit=100&srqiprofile=popular_inclinks_pv&srsort=last_edit_desc';
+//            .'&srlimit=100&srsort=random';
         $this->pageListGenerator->setUrl($cirrusURL);
 
         return $this->pageListGenerator->getPageTitles();
