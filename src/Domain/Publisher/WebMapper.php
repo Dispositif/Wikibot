@@ -43,16 +43,6 @@ class WebMapper implements MapperInterface
         return $this->postProcess($dat);
     }
 
-    protected function postProcess(array $dat): array
-    {
-        $dat = $this->deleteEmptyValueArray($dat);
-        if (isset($dat['langue']) && 'fr' === $dat['langue']) {
-            unset($dat['langue']);
-        }
-
-        return $dat;
-    }
-
     protected function processMapping($data): array
     {
         if (!empty($data['JSON-LD'])) {
@@ -79,6 +69,27 @@ class WebMapper implements MapperInterface
         return isset($jsonLD['headline']) && isset($jsonLD['@type']);
     }
 
+    /**
+     * todo Refac/move domain special mapping
+     *
+     * @param array $dat
+     *
+     * @return array
+     */
+    protected function postProcess(array $dat): array
+    {
+        $dat = $this->deleteEmptyValueArray($dat);
+        if (isset($dat['langue']) && 'fr' === $dat['langue']) {
+            unset($dat['langue']);
+        }
+
+        if (isset($dat['site']) && $dat['site'] === 'Gallica') {
+            unset($dat['format']); // "vidéo"...
+        }
+
+        return $dat;
+    }
+
     protected function isAnArticle(?string $str): bool
     {
         if (in_array($str, ['article', 'journalArticle'])) {
@@ -95,7 +106,7 @@ class WebMapper implements MapperInterface
             return $data['isAccessibleForFree'] ? 'ouvert' : 'limité';
         }
         if (isset($data['DC.rights'])) {
-            return ($data['DC.rights'] === 'free') ? 'ouvert' : 'limité';
+            return (in_array($data['DC.rights'], ['free', 'public domain'])) ? 'ouvert' : 'limité';
         }
         if (isset($data['og:article:content_tier'])) {
             return ($data['og:article:content_tier'] === 'free') ? 'ouvert' : 'limité';
@@ -151,7 +162,7 @@ class WebMapper implements MapperInterface
         if ($str === null) {
             return null;
         }
-        $str = str_replace(['&apos;', "\n", "&#10;"], ["'", '', ' '], $str);
+        $str = str_replace(['&apos;', "\n", "&#10;", "|"], ["'", '', ' ', '/'], $str);
 
         return html_entity_decode($str);
     }
@@ -214,7 +225,7 @@ class WebMapper implements MapperInterface
             && (!isset($data['author'][$indice]['@type'])
                 || 'Person' === $data['author'][$indice]['@type'])
         ) {
-            if (is_string($data['author'][$indice]['name'])) {
+            if (isset($data['author'][$indice]['name']) && is_string($data['author'][$indice]['name'])) {
                 return html_entity_decode($data['author'][$indice]['name']);
             }
 
