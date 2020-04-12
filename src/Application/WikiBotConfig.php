@@ -10,12 +10,14 @@ declare(strict_types=1);
 namespace App\Application;
 
 use App\Domain\Exceptions\ConfigException;
+use App\Infrastructure\Logger;
 use App\Infrastructure\ServiceFactory;
 use App\Infrastructure\SMS;
 use Bluora\LaravelGitInfo\GitInfo;
 use DateInterval;
 use DateTimeImmutable;
 use Exception;
+use Psr\Log\LoggerInterface;
 use Throwable;
 
 /**
@@ -47,7 +49,6 @@ class WikiBotConfig
     const EDIT_LAPS_FLAGBOT = 8;
 
 
-
     public $taskName = 'Améliorations bibliographiques';
 
     public static $gitVersion;
@@ -56,9 +57,14 @@ class WikiBotConfig
      * @var DateTimeImmutable
      */
     private $lastCheckStopDate;
+    /**
+     * @var LoggerInterface
+     */
+    public $log;
 
     public function __construct()
     {
+        $this->log = new Logger();
         ini_set('user_agent', getenv('USER_AGENT'));
     }
 

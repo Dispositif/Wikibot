@@ -6,6 +6,7 @@ namespace App\Domain\Publisher\Tests;
 
 use App\Application\PublisherAction;
 use App\Domain\Publisher\WebMapper;
+use App\Infrastructure\Logger;
 use PHPUnit\Framework\TestCase;
 
 class WebMapperTest extends TestCase
@@ -26,7 +27,7 @@ class WebMapperTest extends TestCase
 
         $publiAction = new PublisherAction('bla');
         $htmlData = $publiAction->extractWebData($html);
-        $mapper = new WebMapper();
+        $mapper = new WebMapper(new Logger());
 
         $this::assertSame($expected, $mapper->process($htmlData));
     }

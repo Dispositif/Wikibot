@@ -11,7 +11,9 @@ namespace App\Domain\Publisher;
 
 use App\Domain\Enums\Language;
 use App\Domain\Utils\ArrayProcessTrait;
+use App\Infrastructure\Logger;
 use DateTime;
+use Psr\Log\LoggerInterface;
 
 /**
  * Generic mapper for press/revue article on web.
@@ -23,6 +25,16 @@ use DateTime;
 class WebMapper implements MapperInterface
 {
     use ArrayProcessTrait, WebOGMapperTrait, WebLDMapperTrait;
+
+    /**
+     * @var Logger
+     */
+    private $log;
+
+    public function __construct(LoggerInterface $log)
+    {
+        $this->log = $log;
+    }
 
     public function process($data): array
     {
