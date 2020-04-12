@@ -54,6 +54,7 @@ $newText = <<<EOF
 </small></div>
 <div align="center"><small>{{formatnum:##NUMBER##}} citations analysées sur {{formatnum:978085}}
 </small></div>
+{{Requête en cours}} : Complétion de références transformée en {ouvrage}, {article} ou {lien web} [https://fr.wikipedia.org/w/index.php?title=Lynchage&diff=prev&oldid=169428793].
 </div>
 EOF;
 

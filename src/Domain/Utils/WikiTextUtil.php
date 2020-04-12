@@ -78,26 +78,26 @@ class WikiTextUtil extends TextUtil
     /**
      * Generate wikilink from string.
      *
-     * @param string      $strLink
+     * @param string      $label
      * @param string|null $page
      *
      * @return string
      */
-    public static function wikilink(string $strLink, ?string $page = null): string
+    public static function wikilink(string $label, ?string $page = null): string
     {
-        $strLink = trim($strLink);
+        $label = trim($label);
         $page = trim($page);
 
         // fu_bar => [[fu_bar]] / Fu, fu => [[fu]]
-        if (empty($page) || self::str2WikiTitle($strLink) === self::str2WikiTitle($page)) {
-            return '[['.$strLink.']]';
+        if (empty($page) || self::str2WikiTitle($label) === self::str2WikiTitle($page)) {
+            return '[['.$label.']]';
         }
 
         // fu, bar => [[Bar|fu]]
         return sprintf(
             '[[%s|%s]]',
             self::str2WikiTitle($page),
-            $strLink
+            $label
         );
     }
 

@@ -443,9 +443,9 @@ class EditProcess
     public function generateSummary(): string
     {
         // Start summary with "WikiBotConfig" when using botflag, else "*"
-        $prefix = ($this->botFlag) ? 'bot' : '☆';
+        $prefix = ($this->botFlag) ? 'bot' : '☆'; //🧐 🤖
         // add "/!\" when errorWarning
-        $prefix .= (!empty($this->errorWarning)) ? ' ⚠' : '';
+        $prefix .= (!empty($this->errorWarning)) ? ' ⚠️' : '';
 
 
         // basic modifs

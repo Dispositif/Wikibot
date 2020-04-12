@@ -15,6 +15,10 @@ tests/build/
 /coverage.xml
 /src/Application/resources/typo_patterns/
 
+# Config
+/.env.zizibot
+/src/Application/ZiziBot_Bootstrap.php
+
 
 # Created by https://www.gitignore.io/api/osx,phpstorm
 # Edit at https://www.gitignore.io/?templates=osx,phpstorm
@@ -129,4 +133,3 @@ fabric.properties
 .idea/sonarlint
 
 # End of https://www.gitignore.io/api/osx,phpstorm
-/.env.zizibot
