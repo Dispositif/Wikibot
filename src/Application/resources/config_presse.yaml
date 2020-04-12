@@ -1,0 +1,81 @@
+# URL validées pour traitement automatique par CodexBot
+# https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Le_Bistro/29_mars_2020#Les_100_sites_de_presse/revue_des_{articles}
+
+# Sous-domaine : http://www.test.com/tutu => test.com mais http://bla.test.com => blabla.test.com
+# si y'a pas d'espace, les guillemets sont facultatifs
+
+lemonde.fr:
+    périodique: '[[Le Monde]]'
+    site: '[[Le Monde|Le Monde.fr]]'
+    template: auto
+
+leparisien.fr:
+    périodique: '[[Le Parisien]]'
+    template: auto
+
+nytimes.com:
+    périodique: '[[The New York Times]]'
+    site: nytimes.com
+    template: auto
+
+movies.nytimes.com:
+    site: nytimes.com
+persee.fr:
+    éditeur: '[[Persée (portail)|Persée]]'
+    template: article
+lequipe.fr:
+    site: '[[L''Équipe]]'
+    template: 'lien web'
+letemps.ch:
+    périodique: '[[Le Temps (quotidien suisse)|Le Temps]]'
+    template: auto
+strategies.fr:
+    site: '[[Stratégies]]'
+cairn.info:
+    desactived
+# 403 forbidden :  Contact: DataAccess@datadome.co
+ncbi.nlm.nih.gov:
+    # PubMed Central
+    template: article
+lefigaro.fr:
+    template: auto
+    articleDetectType: 'NewsArticle'
+    périodique: '[[Le Figaro]]'
+    site: '[[Le Figaro|lefigaro.fr]]'
+lavoixdunord.fr:
+    périodique: '[[La Voix du Nord]]'
+    template: 'auto'
+liberation.fr:
+    périodique: '[[Libération (journal)|Libération]]'
+    template: 'auto'
+journals.openedition.org:
+    template: 'auto'
+gallica.bnf.fr:
+    site: '[[Gallica]]'
+courrierinternational.com:
+    template: auto
+    articleDetectType: 'article'
+ladepeche.fr:
+    template: auto
+    site: '[[La Dépêche du Midi|La Dépêche]]'
+    périodique: '[[La Dépêche du Midi|La Dépêche]]'
+
+theguardian.com:
+lesechos.fr:
+    template: auto
+    périodiques: '[[Les Échos]]'
+
+archives.org:
+    # caca URL proposée ne retient pas mot de recherche
+    desactived
+    site: ''
+sports-reference.com:
+    site: '[[Sports Reference]]'
+ouest-france.fr:
+letempsarchives.ch:
+jstor.org:
+wrestleview.com:
+la-croix.com:
+    périodique: '[[La Croix]]'
+    template: auto
+

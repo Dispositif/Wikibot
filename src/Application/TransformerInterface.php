@@ -8,11 +8,10 @@
 declare(strict_types=1);
 
 
-namespace App\Domain\Publisher;
+namespace App\Application;
 
 
-class LaCroixMapper extends FigaroMapper
+interface TransformerInterface
 {
-    const PERIODIQUE = '[[La Croix]]';
-
+    public function process(string $text);
 }

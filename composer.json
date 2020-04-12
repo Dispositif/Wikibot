@@ -29,7 +29,8 @@
     "hnhdigital-os/laravel-git-info": "^1.0",
     "ext-intl": "*",
     "koff/transliterator": "^3.0",
-    "ext-readline": "*"
+    "ext-readline": "*",
+    "symfony/yaml": "4.*"
   },
   "autoload": {
     "psr-4": {
