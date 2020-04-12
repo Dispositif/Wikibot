@@ -132,7 +132,7 @@ class OuvrageComplete
         $this->processSousTitre();
 
         if ($this->notCosmetic && 'BnF' === $this->book->getSource()) {
-            $this->log('(BnF)');
+            $this->log('@BnF');
         }
 
         return true;

@@ -28,7 +28,7 @@ class WebMapper implements MapperInterface
     use ArrayProcessTrait, WebOGMapperTrait, WebLDMapperTrait;
 
     /**
-     * @var Logger
+     * @var LoggerInterface
      */
     private $log;
 

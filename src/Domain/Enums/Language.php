@@ -22,25 +22,11 @@ abstract class Language
     {
     }
 
-    /**
-     * @param string $lang
-     *
-     * @return bool
-     */
-    private static function isWikiLang(string $lang): bool
+    public static function all2wiki(?string $lang): ?string
     {
-        /*
-         * @var $liste_frlang []
-         */
-        if (LanguageData::LANG_FRWIKI && in_array($lang, LanguageData::LANG_FRWIKI)) {
-            return true;
+        if (empty($lang)) {
+            return null;
         }
-
-        return false;
-    }
-
-    public static function all2wiki(string $lang): ?string
-    {
         $lower = mb_strtolower($lang);
         if (self::isWikiLang($lower)) {
             return $lower;
@@ -61,6 +47,23 @@ abstract class Language
         return null;
     }
 
+    /**
+     * @param string $lang
+     *
+     * @return bool
+     */
+    private static function isWikiLang(string $lang): bool
+    {
+        /*
+         * @var $liste_frlang []
+         */
+        if (LanguageData::LANG_FRWIKI && in_array($lang, LanguageData::LANG_FRWIKI)) {
+            return true;
+        }
+
+        return false;
+    }
+
     public static function iso2b2wiki(string $lang): ?string
     {
         $lang = strtolower($lang);
@@ -68,6 +71,16 @@ abstract class Language
             if (!empty(LanguageData::ISO2B_TO_FRENCH[$lang])) {
                 return self::longFrench2wiki(LanguageData::ISO2B_TO_FRENCH[$lang]);
             }
+        }
+
+        return null;
+    }
+
+    private static function longFrench2wiki(string $lang): ?string
+    {
+        $lang = mb_strtolower($lang);
+        if (LanguageData::FRENCH_TO_FRWIKI && array_key_exists($lang, LanguageData::FRENCH_TO_FRWIKI)) {
+            return LanguageData::FRENCH_TO_FRWIKI[$lang];
         }
 
         return null;
@@ -83,16 +96,6 @@ abstract class Language
         $lang = ucfirst(mb_strtolower($lang));
         if (LanguageData::ENGLISH_TO_FRENCH && array_key_exists($lang, LanguageData::ENGLISH_TO_FRENCH)) {
             return self::longFrench2wiki(LanguageData::ENGLISH_TO_FRENCH[$lang]);
-        }
-
-        return null;
-    }
-
-    private static function longFrench2wiki(string $lang): ?string
-    {
-        $lang = mb_strtolower($lang);
-        if (LanguageData::FRENCH_TO_FRWIKI && array_key_exists($lang, LanguageData::FRENCH_TO_FRWIKI)) {
-            return LanguageData::FRENCH_TO_FRWIKI[$lang];
         }
 
         return null;

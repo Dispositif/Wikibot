@@ -137,5 +137,6 @@ class WstatImport implements PageListInterface
     public function getPageTitles(): array
     {
         // TODO: Implement getPageTitles() method.
+        return [];
     }
 }

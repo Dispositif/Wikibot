@@ -18,7 +18,7 @@ namespace App\Domain\Models\Wiki;
  */
 class OuvrageTemplate extends AbstractWikiTemplate implements OuvrageTemplateAlias
 {
-    use OuvrageTemplateParams, InfoTrait;
+    use OuvrageTemplateParams;
 
     const MODEL_NAME = 'Ouvrage'; // todo
 
@@ -135,7 +135,7 @@ class OuvrageTemplate extends AbstractWikiTemplate implements OuvrageTemplateAli
     public function getSpanInitial(): string
     {
         // Identifiant paramétré
-        if (null !== $this->getParam('id')) {
+        if (!empty($this->getParam('id'))) {
             return $this->getParam('id');
         }
 

@@ -61,7 +61,7 @@ class OpenLibraryAdapter extends AbstractBookApiAdapter implements BookApiInterf
             return null;
         }
         $json = Normalizer::normalize($json);
-        $allData = json_decode($json, true) ?? null;
+        $allData = json_decode($json, true) ?? [];
         // Warning : response structure is different with jscmd = data/details
         return $allData[array_key_first($allData)] ?? null;
     }

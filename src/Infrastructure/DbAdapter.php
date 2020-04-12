@@ -25,11 +25,9 @@ use Throwable;
  */
 class DbAdapter implements QueueInterface
 {
+const OPTI_VALID_DATE = '2019-11-20 14:00:00';
     protected $db;
-
-    protected $pdoConn;
-
-    const OPTI_VALID_DATE = '2019-11-20 14:00:00'; // v.34 sous-titre sans maj
+    protected $pdoConn; // v.34 sous-titre sans maj
 
     public function __construct()
     {
@@ -69,9 +67,6 @@ class DbAdapter implements QueueInterface
      */
     public function getNewRaw(): ?array
     {
-        $raw = null;
-        $row = null;
-
         try {
             $row = $this->db->fetchRow(
                 'SELECT page,raw FROM page_ouvrages 
@@ -86,7 +81,7 @@ class DbAdapter implements QueueInterface
             echo "SQL : No more queue to process \n";
         }
 
-        return $row;
+        return $row ?? null;
     }
 
     /**

@@ -147,9 +147,14 @@ class EditProcess
         }
         $this->wikiText = $page->getText();
 
+        if (empty($this->wikiText)) {
+            return false;
+        }
         if (WikiBotConfig::isEditionRestricted($this->wikiText)) {
             echo "SKIP : protection/3R.\n";
             $this->db->skipArticle($title);
+
+            return false;
         }
 
         if ($this->bot->minutesSinceLastEdit($title) < 15) {

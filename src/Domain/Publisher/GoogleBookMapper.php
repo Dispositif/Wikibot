@@ -178,7 +178,7 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
      */
     private function langFilterByIsbn(Volume $volume): ?string
     {
-        if (!$this->mapLanguageData) {
+        if ($this->mapLanguageData !== true) {
             return null;
         }
 //        $isbn = $this->convertIsbn($volume);

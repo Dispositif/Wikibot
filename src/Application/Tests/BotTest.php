@@ -19,7 +19,7 @@ class BotTest extends TestCase
      *
      * @param      $bool
      * @param      $text
-     * @param null $botName
+     * @param      $botName
      */
     public function testIsEditionRestricted($bool, $text, $botName = null)
     {

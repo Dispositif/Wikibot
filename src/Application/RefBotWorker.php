@@ -21,6 +21,11 @@ abstract class RefBotWorker extends AbstractBotTaskWorker
     protected $warning = false;
     protected $botFlagOnPage;
 
+    public function hasWarning(): bool
+    {
+        return (bool)$this->warning;
+    }
+
     /**
      * @inheritDoc
      * @throws Exception
@@ -57,6 +62,8 @@ abstract class RefBotWorker extends AbstractBotTaskWorker
         return $text;
     }
 
+    public abstract function processRefContent($refContent): string;
+
     protected function replaceRefInText(array $ref, string $replace, string $text)
     {
         if (WikiTextUtil::stripFinalPoint(trim($replace)) === WikiTextUtil::stripFinalPoint(trim($ref[1]))) {
@@ -70,10 +77,5 @@ abstract class RefBotWorker extends AbstractBotTaskWorker
         $this->log->debug(Color::BG_LIGHT_GREEN."++".Color::NORMAL." $result \n\n");
 
         return str_replace($ref[0], $result, $text);
-    }
-
-    public function hasWarning(): bool
-    {
-        return (bool)$this->warning;
     }
 }

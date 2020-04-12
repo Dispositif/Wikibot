@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace App\Application\Examples;
 
-use App\Application\Memory;
 use App\Application\WikiPageAction;
 use App\Domain\Utils\WikiTextUtil;
 use App\Infrastructure\DbAdapter;
@@ -46,7 +45,7 @@ class Monitor
         $this->wiki = ServiceFactory::wikiApi();
     }
 
-    public function run()
+    public function run(): void
     {
         while (true) {
             echo "\n-----MONITOR------------------------\n\n";
@@ -57,18 +56,22 @@ class Monitor
         }
     }
 
-    private function pageProcess()
+    private function pageProcess(): void
     {
         $data = $this->db->getMonitor();
         if (empty($data)) {
-            echo "new data vide\n";
-            exit();
+            echo "new data vide. Sleep 1h\n";
+            sleep(60 * 60);
+
+            return;
         }
 
         $title = $data[0]['page'];
         if ($title === $this->lastTitle) {
-            echo "end\n";
-            exit;
+            echo "end. Sleep 1h\n";
+            sleep(60 * 60);
+
+            return;
         }
         echo "$title \n";
 

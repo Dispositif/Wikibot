@@ -31,7 +31,7 @@ class RefWebTransformer implements TransformerInterface
 
     public $skipUnauthorised = true;
     /**
-     * @var Logger
+     * @var LoggerInterface
      */
     protected $log;
     private $config;

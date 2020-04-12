@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Application;
 
+use App\Domain\Exceptions\ConfigException;
 use App\Domain\Utils\TextUtil;
 use App\Infrastructure\ServiceFactory;
 use Exception;
@@ -52,7 +53,7 @@ class TalkBotConfig extends WikiBotConfig
             return false;
         }
 
-        $identation = $this->predictTalkIndentation($page->getText(), $last->getUser()); // ':::'
+        $identation = $this->predictTalkIndentation($page->getText() ?? '', $last->getUser()); // ':::'
         $addText = $this->generateTalkText($last->getUser(), $identation);
 
         echo "Prepare to talk on $pageTitle / Sleep 3 min...\n";
@@ -119,11 +120,15 @@ class TalkBotConfig extends WikiBotConfig
         return ':';
     }
 
-    private function getRandomSentence(): ?string
+    /**
+     * @return string|null
+     * @throws ConfigException
+     */
+    private function getRandomSentence(): string
     {
         $sentences = file(self::BOT_TALK_FILE);
         if (!$sentences) {
-            return null;
+            throw new ConfigException('Pas de phrases disponibles pour TalkBot');
         }
 
         return (string)trim($sentences[array_rand($sentences)]);

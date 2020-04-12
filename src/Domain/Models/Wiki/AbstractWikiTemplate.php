@@ -22,7 +22,7 @@ use Throwable;
  */
 abstract class AbstractWikiTemplate extends AbstractParametersObject
 {
-    use ArrayProcessTrait;
+    use ArrayProcessTrait, InfoTrait;
 
     const MODEL_NAME = '';
 
@@ -300,6 +300,26 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     }
 
     /**
+     * For a parameter, check is the value exists (not empty).
+     *
+     * @param string $name
+     *
+     * @return bool
+     */
+    public function hasParamValue(string $name): bool
+    {
+        try {
+            if (!empty(trim($this->getParam($name)))) {
+                return true;
+            }
+        } catch (Throwable $e) {
+            unset($e);
+        }
+
+        return false;
+    }
+
+    /**
      * @param string $name
      *
      * @return string|null
@@ -344,26 +364,6 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
             }
         }
         $this->paramOrderByUser = $validParams;
-    }
-
-    /**
-     * For a parameter, check is the value exists (not empty).
-     *
-     * @param string $name
-     *
-     * @return bool
-     */
-    public function hasParamValue(string $name): bool
-    {
-        try {
-            if (!empty(trim($this->getParam($name)))) {
-                return true;
-            }
-        } catch (Throwable $e) {
-            unset($e);
-        }
-
-        return false;
     }
 
     /**

@@ -82,7 +82,7 @@ WHERE {
      *
      * @param string $isni
      *
-     * @return null
+     * @return array|null
      * @throws Exception
      */
     public function searchByISNI(string $isni): ?array

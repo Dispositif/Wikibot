@@ -18,7 +18,7 @@ use Exception;
  */
 class ArticleTemplate extends AbstractWikiTemplate implements ArticleTemplateAlias, ArticleOrLienBriseInterface
 {
-    use ArticleTemplateParams, InfoTrait;
+    use ArticleTemplateParams;
 
     const MODEL_NAME = 'Article';
 
@@ -45,8 +45,6 @@ class ArticleTemplate extends AbstractWikiTemplate implements ArticleTemplateAli
     public $userSeparator = ' |';
 
     public $externalTemplates = [];
-
-    private $source;
 
     /**
      * @param bool|null $cleanOrder
@@ -83,23 +81,23 @@ class ArticleTemplate extends AbstractWikiTemplate implements ArticleTemplateAli
         return $res;
     }
 
-    /**
-     * Pas de serialization année vide si date non vide.
-     *
-     * @param string $serial
-     *
-     * @return string
-     */
-    private function anneeOrDateSerialize(string $serial): string
-    {
-        if (preg_match("#\|[\n ]*année=[\n ]*\|#", $serial) > 0
-            && preg_match("#\|[\n ]*date=#", $serial) > 0
-        ) {
-            $serial = preg_replace("#\|[\n ]*année=[\n ]*#", '', $serial);
-        }
-
-        return $serial;
-    }
+//    /**
+//     * Pas de serialization année vide si date non vide.
+//     *
+//     * @param string $serial
+//     *
+//     * @return string
+//     */
+//    private function anneeOrDateSerialize(string $serial): string
+//    {
+//        if (preg_match("#\|[\n ]*année=[\n ]*\|#", $serial) > 0
+//            && preg_match("#\|[\n ]*date=#", $serial) > 0
+//        ) {
+//            $serial = preg_replace("#\|[\n ]*année=[\n ]*#", '', $serial);
+//        }
+//
+//        return $serial;
+//    }
 
     /**
      * Propose fubar pour un <ref name="fubar"> ou un {{article|'id=fubar'}}.
@@ -120,7 +118,7 @@ class ArticleTemplate extends AbstractWikiTemplate implements ArticleTemplateAli
             TextUtil::stripPunctuation(
                 TextUtil::stripAccents(
                     WikiTextUtil::unWikify(
-                        $this->getParam('périodique')
+                        $this->getParam('périodique') ?? ''
                     )
                 )
             )

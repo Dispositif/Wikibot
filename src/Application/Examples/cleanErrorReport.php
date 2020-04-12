@@ -70,7 +70,7 @@ foreach ($talkTitles as $talkTitle) {
 
     $mainTitle = str_replace('Discussion:', '', $talkTitle);
     $articleAction = new WikiPageAction($wiki, $mainTitle);
-    $articleText = $articleAction->getText();
+    $articleText = $articleAction->getText() ?? '';
     $count = $report->countErrorInText($errors, $articleText);
 
     if ($count > 0) {

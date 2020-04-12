@@ -199,7 +199,8 @@ class OuvrageOptimize
                 ['auteur', 'auteurs', 'prénom1', 'nom1']
             );
             // iterate and edit new values
-            for ($i = 0; $i < count($res); ++$i) {
+            $count = count($res);
+            for ($i = 0; $i < $count; ++$i) {
                 $this->setParam(sprintf('auteur%s', $i + 1), $res[$i]);
             }
             $this->log('distinction auteurs');

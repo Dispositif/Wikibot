@@ -39,7 +39,6 @@ $log->debug = true;
 $log->verbose = true;
 $trans = new RefWebTransformer($log);
 $trans->skipUnauthorised = false;
-$trans->verbose = true;
 $result = $trans->process($url);
 
 echo $result."\n";

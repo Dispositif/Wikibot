@@ -21,9 +21,7 @@ use Exception;
 class WikiRef
 {
     /**
-     * string TemplateParser::class.
-     *
-     * @var TemplateParser
+     * @var string
      */
     private $wikiTextUtil;
 

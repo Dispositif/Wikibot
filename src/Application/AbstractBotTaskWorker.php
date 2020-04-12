@@ -44,7 +44,7 @@ abstract class AbstractBotTaskWorker
     protected $modeAuto = false;
     protected $maxLag = 5;
     /**
-     * @var Logger
+     * @var Logger|\Psr\Log\LoggerInterface
      */
     protected $log;
 
@@ -66,6 +66,10 @@ abstract class AbstractBotTaskWorker
         $this->setUpInConstructor();
 
         $this->run();
+    }
+
+    protected function setUpInConstructor(): void
+    {
     }
 
     public function run()
@@ -102,7 +106,7 @@ abstract class AbstractBotTaskWorker
         $this->taskName = static::TASK_NAME;
 
         $text = $this->getText($title);
-        if (!$this->checkAllowedEdition($title, $text)) {
+        if (empty($text) || !$this->checkAllowedEdition($title, $text)) {
             return;
         }
 
@@ -176,7 +180,7 @@ abstract class AbstractBotTaskWorker
     /**
      * return $newText for editing
      */
-    abstract protected function processDomain(string $title, ?string $text): ?string;
+    abstract protected function processDomain(string $title, string $text): ?string;
 
     protected function doEdition(string $newText): void
     {
@@ -187,9 +191,5 @@ abstract class AbstractBotTaskWorker
         dump($result);
         echo "Sleep ".(string)static::SLEEP_AFTER_EDITION."\n";
         sleep(static::SLEEP_AFTER_EDITION);
-    }
-
-    protected function setUpInConstructor(): void
-    {
     }
 }

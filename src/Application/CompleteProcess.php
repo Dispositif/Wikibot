@@ -136,10 +136,10 @@ class CompleteProcess
     /**
      * Get array (title+raw strings) to complete from AMQP queue, SQL Select or file reading.
      *
-     * @return string|null
+     * @return array
      * @throws Exception
      */
-    private function getNewRow2Complete(): ?array
+    private function getNewRow2Complete(): array
     {
         $row = $this->queueAdapter->getNewRaw();
         if (empty($row) || empty($row['raw'])) {

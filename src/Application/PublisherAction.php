@@ -36,6 +36,7 @@ class PublisherAction
     /**
      * import source from URL with Guzzle.
      *todo DI Client
+     *
      * @return string|null
      * @throws Exception
      */
@@ -133,7 +134,9 @@ class PublisherAction
   ~ix';
 
         if (preg_match_all($pattern, $str, $out)) {
-            return array_combine($out[1], $out[2]);
+            $combine = array_combine($out[1], $out[2]);
+
+            return $combine ? $combine : [];
         }
 
         return [];

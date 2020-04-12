@@ -57,13 +57,15 @@ class ArticleTemplateTest extends TestCase
 
     /**
      * @dataProvider provideConvertOuvrage2Article
+     * @throws \Exception
      */
     public function testConvertFromOuvrage(string $ouvrageSerial, string $articleSerial)
     {
         $ouvrage = WikiTemplateFactory::create('ouvrage');
         $ouvrage->hydrateFromText($ouvrageSerial);
 
-        $article = TemplateConverter::ArticleFromOuvrage($ouvrage);
+        /** @noinspection PhpParamsInspection */
+        $article = TemplateConverter::ArticleFromOuvrage(/** @scrutinizer ignore-type */ $ouvrage);
         $this::assertSame(
             $articleSerial,
             $article->serialize(true)
