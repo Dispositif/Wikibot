@@ -28,8 +28,11 @@ class WebMapperTest extends TestCase
         $publiAction = new PublisherAction('bla');
         $htmlData = $publiAction->extractWebData($html);
         $mapper = new WebMapper(new Logger());
-
-        $this::assertSame($expected, $mapper->process($htmlData));
+        $data = $mapper->process($htmlData);
+        if (isset($data['consulté le'])) {
+            $data['consulté le'] = '11-04-2020';// unit testing date...
+        }
+        $this::assertSame($expected, $data);
     }
 
     public function provideMappingFromFile()

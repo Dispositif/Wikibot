@@ -8,13 +8,16 @@ lemonde.fr:
     périodique: '[[Le Monde]]'
     site: '[[Le Monde|Le Monde.fr]]'
     template: auto
+
 leparisien.fr:
     périodique: '[[Le Parisien]]'
     template: auto
+
 nytimes.com:
     périodique: '[[The New York Times]]'
     site: nytimes.com
     template: auto
+
 movies.nytimes.com:
     site: nytimes.com
 persee.fr:
@@ -44,9 +47,30 @@ lavoixdunord.fr:
     template: 'auto'
 liberation.fr:
     périodique: '[[Libération (journal)|Libération]]'
+    template: 'auto'
 journals.openedition.org:
     template: 'auto'
+gallica.bnf.fr:
+    site: '[[Gallica]]'
+courrierinternational.com:
+    template: auto
+    articleDetectType: 'article'
+ladepeche.fr:
+    template: auto
+    site: '[[La Dépêche du Midi|La Dépêche]]'
+    périodique: '[[La Dépêche du Midi|La Dépêche]]'
+
 theguardian.com:
+lesechos.fr:
+    template: auto
+    périodiques: '[[Les Échos]]'
+
+archives.org:
+    # caca URL proposée ne retient pas mot de recherche
+    desactived
+    site: ''
+sports-reference.com:
+    site: '[[Sports Reference]]'
 ouest-france.fr:
 letempsarchives.ch:
 jstor.org:

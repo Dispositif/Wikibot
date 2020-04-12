@@ -60,9 +60,15 @@ abstract class RefBotWorker extends AbstractBotTaskWorker
 
     protected function replaceRefInText(array $ref, string $replace, string $text)
     {
+        if (WikiTextUtil::stripFinalPoint(trim($replace)) === WikiTextUtil::stripFinalPoint(trim($ref[1]))) {
+            //            echo Color::BG_LIGHT_GRAY."xx".Color::NORMAL." ".$ref[1]."\n";
+            return $text;
+        }
+
         $replace .= '.'; // ending point
         $result = str_replace($ref[1], $replace, $ref[0]);
-        echo "$result \n";
+        $this->log->debug(Color::BG_LIGHT_RED."--".Color::NORMAL." ".$ref[0]."\n");
+        $this->log->debug(Color::BG_LIGHT_GREEN."++".Color::NORMAL." $result \n\n");
 
         return str_replace($ref[0], $result, $text);
     }

@@ -9,12 +9,9 @@ declare(strict_types=1);
 
 namespace App\Application\Examples;
 
-use App\Application\PublisherAction;
-use App\Domain\Models\Wiki\LienWebTemplate;
-use App\Domain\Models\Wiki\OuvrageTemplate;
-use App\Domain\Publisher\WebMapper;
-use App\Domain\WikiTemplateFactory;
-use Symfony\Component\Yaml\Yaml;
+use App\Application\Color;
+use App\Application\RefWebTransformer;
+use App\Infrastructure\Logger;
 
 require_once __DIR__.'/../myBootstrap.php';
 
@@ -29,81 +26,24 @@ require_once __DIR__.'/../myBootstrap.php';
  * https://www.lemonde.fr/cinema/article/2018/10/31/fahrenheit-11-9-donald-trump-dans-le-viseur-de-michael-moore_5376892_3476.html
  */
 
+
 $url = $argv[1];
 if (empty($url)) {
     die("php testPress.php 'http://...'\n");
 }
 
-// -___________________________
-$config = Yaml::parseFile(__DIR__.'/config_presse.yaml');
+echo Color::BG_LIGHT_RED.$url.Color::NORMAL."\n";
 
-$parseURL = parse_url($url);
-$domain = str_replace('www.', '', $parseURL['host']);
-// -___________________________
+$log = new Logger();
+$log->debug = true;
+$log->verbose = true;
+$trans = new RefWebTransformer($log);
+$trans->skipUnauthorised = false;
+$trans->verbose = true;
+$result = $trans->process($url);
 
+echo $result."\n";
 
-// check Domain validated
-if (!isset($config[$domain])) {
-    dump("DOMAIN $domain PAS AUTORISE DANS LA CONFIG");
-    sleep(3);
-}
-
-$pref = $config[$domain] ?? [];
-$pref = is_array($pref) ? $pref : [];
-
-if ($pref === 'desactived' || isset($pref['desactived'])) {
-    dump('DESACTIVED');
-    die;
-}
-
-
-$publish = new PublisherAction($url);
-try {
-    $html = $publish->getHTMLSource();
-    $data = $publish->extractWebData($html);
-} catch (\Throwable $e) {
-    // TODO : reprendre ArticleFromUrl:65
-    throw $e;
-}
-
-dump($data);
-
-$genericMapper = new WebMapper();
-$res = $genericMapper->process($data);
-dump($res);
-
-// Logique : choix template
-$pref['template'] = $pref['template'] ?? [];
-$res['DATA-ARTICLE'] = $res['DATA-ARTICLE'] ?? false;
-if ($pref['template'] === 'article'
-    || ($pref['template'] === 'auto' && $res['DATA-ARTICLE'])
-) {
-    $templateName = 'article';
-}
-if (!isset($templateName) || $pref['template'] === 'lien web') {
-    $templateName = 'lien web';
-}
-$template = WikiTemplateFactory::create($templateName);
-$template->userSeparator = " |";
-
-
-// Logique : remplacement titre périodique ou nom du site
-
-if (!empty($pref['site']) && $template instanceof LienWebTemplate) {
-    $res['site'] = $pref['site'];
-}
-if (!empty($pref['périodique']) && (!empty($res['périodique']) || $template instanceof OuvrageTemplate)) {
-    $res['périodique'] = $pref['périodique'];
-}
-//if (!empty($pref['éditeur']) ) {
-//    // Persée
-//    $res['éditeur'] = $pref['éditeur'];
-//}
-
-dump('config', $pref);
-
-$template->hydrate($res, true);
-echo $template->serialize(true)."\n";
 
 
 

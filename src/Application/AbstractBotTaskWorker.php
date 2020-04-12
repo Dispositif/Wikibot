@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Application;
 
+use App\Infrastructure\Logger;
 use App\Infrastructure\PageListInterface;
 use Mediawiki\Api\MediawikiFactory;
 use Mediawiki\Api\UsageException;
@@ -40,6 +41,10 @@ abstract class AbstractBotTaskWorker
     protected $botFlag = false;
     protected $modeAuto = false;
     protected $maxLag = 5;
+    /**
+     * @var Logger
+     */
+    protected $log;
 
     /**
      * Goo2ouvrageWorker constructor.
@@ -50,11 +55,13 @@ abstract class AbstractBotTaskWorker
      */
     public function __construct(WikiBotConfig $bot, MediawikiFactory $wiki, ?PageListInterface $pagesGen = null)
     {
+        $this->log = $bot->log;
         $this->wiki = $wiki;
         $this->bot = $bot;
         if ($pagesGen) {
             $this->pageListGenerator = $pagesGen;
         }
+        $this->setUpInConstructor();
 
         $this->run();
     }
@@ -62,6 +69,8 @@ abstract class AbstractBotTaskWorker
     public function run()
     {
         $titles = $this->getTitles();
+
+        echo date('d-m-Y H:i')."\n";
 
         foreach ($titles as $title) {
             $this->titleProcess($title);
@@ -85,8 +94,8 @@ abstract class AbstractBotTaskWorker
      */
     protected function titleProcess(string $title): void
     {
-        echo "$title \n";
-        sleep(2);
+        echo "---------------------\n".Color::BG_CYAN."  $title ".Color::NORMAL."\n";
+        sleep(1);
 
         $this->taskName = static::TASK_NAME;
 
@@ -104,7 +113,7 @@ abstract class AbstractBotTaskWorker
         }
 
         if (!$this->modeAuto) {
-            $ask = readline("*** ÉDITION ? [y/n/auto]");
+            $ask = readline(Color::LIGHT_MAGENTA."*** ÉDITION ? [y/n/auto]".Color::NORMAL);
             if ('auto' === $ask) {
                 $this->modeAuto = true;
             } elseif ('y' !== $ask) {
@@ -176,5 +185,9 @@ abstract class AbstractBotTaskWorker
         dump($result);
         echo "Sleep ".(string)static::SLEEP_AFTER_EDITION."\n";
         sleep(static::SLEEP_AFTER_EDITION);
+    }
+
+    protected function setUpInConstructor(): void
+    {
     }
 }
