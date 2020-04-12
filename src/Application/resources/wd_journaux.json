@@ -1,0 +1,7427 @@
+[
+  {
+    "fr": "Le Canard enchaîné",
+    "domain": "lecanardenchaine.fr",
+    "frwiki": "Le_Canard_encha%C3%AEn%C3%A9"
+  },
+  {
+    "fr": "The Guardian",
+    "domain": "theguardian.com",
+    "frwiki": "The_Guardian"
+  },
+  {
+    "fr": "Şalom",
+    "domain": "salom.com.tr",
+    "frwiki": "%C5%9Ealom"
+  },
+  {
+    "fr": "Libération",
+    "domain": "liberation.fr",
+    "frwiki": "Lib%C3%A9ration_(journal)"
+  },
+  {
+    "fr": "Bangkok Post",
+    "domain": "bangkokpost.com",
+    "frwiki": "Bangkok_Post"
+  },
+  {
+    "fr": "Beeld",
+    "domain": "beeld.co.za",
+    "frwiki": "Beeld"
+  },
+  {
+    "fr": "L'Équipe",
+    "domain": "lequipe.fr",
+    "frwiki": "L%27%C3%89quipe"
+  },
+  {
+    "fr": "Jyllands-Posten",
+    "domain": "jyllands-posten.dk",
+    "frwiki": "Jyllands-Posten"
+  },
+  {
+    "fr": "Zëri i Popullit",
+    "domain": "zeri-popullit.com",
+    "frwiki": "Z%C3%ABri_i_Popullit"
+  },
+  {
+    "fr": "Anchorage Daily News",
+    "domain": "adn.com",
+    "frwiki": "Anchorage_Daily_News"
+  },
+  {
+    "fr": "The Washington Times",
+    "domain": "washingtontimes.com",
+    "frwiki": "The_Washington_Times"
+  },
+  {
+    "fr": "Hangyore Sinmun",
+    "domain": "hani.co.kr",
+    "frwiki": "Hankyoreh"
+  },
+  {
+    "fr": "Glas Koncila",
+    "domain": "glas-koncila.hr",
+    "frwiki": "Glas_Koncila"
+  },
+  {
+    "fr": "The Namibian",
+    "domain": "namibian.com.na",
+    "frwiki": "The_Namibian"
+  },
+  {
+    "fr": "Super Express",
+    "domain": "se.pl/se_dzis",
+    "frwiki": "Super_Express"
+  },
+  {
+    "fr": "Hankook Ilbo",
+    "domain": "hankookilbo.com",
+    "frwiki": "Hankook_Ilbo"
+  },
+  {
+    "fr": "Berria",
+    "domain": "berria.eus",
+    "frwiki": "Berria"
+  },
+  {
+    "fr": "Freie Arbeiter Stimme",
+    "domain": "iisg.nl/archives/en/files/f/10748879.php",
+    "frwiki": "Freie_Arbeiter_Stimme"
+  },
+  {
+    "fr": "Biel/Bienne (journal)",
+    "domain": "bielbienne.com",
+    "frwiki": "Biel_Bienne_(journal)"
+  },
+  {
+    "fr": "Al-Watan",
+    "domain": "alwatan.com.sa",
+    "frwiki": "Al_Watan"
+  },
+  {
+    "fr": "Rimjin-gang",
+    "domain": "asiapress.org/rimjin-gang",
+    "frwiki": "Rimjin-gang"
+  },
+  {
+    "fr": "The Boston Globe",
+    "domain": "bostonglobe.com",
+    "frwiki": "The_Boston_Globe"
+  },
+  {
+    "fr": "The Daily",
+    "domain": "thedaily.com",
+    "frwiki": "The_Daily"
+  },
+  {
+    "fr": "El Periódico de Catalunya",
+    "domain": "elperiodico.com",
+    "frwiki": "El_Peri%C3%B3dico_de_Catalunya"
+  },
+  {
+    "fr": "New York Press",
+    "domain": "nypress.com",
+    "frwiki": "New_York_Press"
+  },
+  {
+    "fr": "Hindustan Times",
+    "domain": "hindustantimes.com",
+    "frwiki": "Hindustan_Times"
+  },
+  {
+    "fr": "Die Welt",
+    "domain": "welt.de",
+    "frwiki": "Die_Welt"
+  },
+  {
+    "fr": "L'Indépendant du Pas-de-Calais",
+    "domain": "lindependant.net",
+    "frwiki": "L%27Ind%C3%A9pendant_du_Pas-de-Calais"
+  },
+  {
+    "fr": "Die Weltwoche",
+    "domain": "weltwoche.ch/die-weltwoche",
+    "frwiki": "Die_Weltwoche"
+  },
+  {
+    "fr": "Le Monde diplomatique",
+    "domain": "mondediplo.com",
+    "frwiki": "Le_Monde_diplomatique"
+  },
+  {
+    "fr": "Le Monde diplomatique",
+    "domain": "monde-diplomatique.fr",
+    "frwiki": "Le_Monde_diplomatique"
+  },
+  {
+    "fr": "Star Tribune",
+    "domain": "startribune.com",
+    "frwiki": "Star_Tribune"
+  },
+  {
+    "fr": "Ouest-France",
+    "domain": "ouest-france.fr",
+    "frwiki": "Ouest-France"
+  },
+  {
+    "fr": "The Northern Echo",
+    "domain": "thenorthernecho.co.uk",
+    "frwiki": "The_Northern_Echo"
+  },
+  {
+    "fr": "International New York Times",
+    "domain": "international.nytimes.com",
+    "frwiki": "International_New_York_Times"
+  },
+  {
+    "fr": "Pobjeda",
+    "domain": "pobjeda.co.me",
+    "frwiki": "Pobjeda"
+  },
+  {
+    "fr": "Danas",
+    "domain": "danas.rs",
+    "frwiki": "Danas"
+  },
+  {
+    "fr": "La Dépêche de Kabylie",
+    "domain": "depechedekabylie.com",
+    "frwiki": "La_D%C3%A9p%C3%AAche_de_Kabylie"
+  },
+  {
+    "fr": "La Opinión",
+    "domain": "laopinion.com",
+    "frwiki": "La_Opini%C3%B3n_(%C3%89tats-Unis)"
+  },
+  {
+    "fr": "Ta Kung Pao",
+    "domain": "takungpao.com",
+    "frwiki": "Ta_Kung_Pao"
+  },
+  {
+    "fr": "Neue Zürcher Zeitung",
+    "domain": "nzz.ch",
+    "frwiki": "Neue_Z%C3%BCrcher_Zeitung"
+  },
+  {
+    "fr": "Time",
+    "domain": "time.com",
+    "frwiki": "Time_(magazine)"
+  },
+  {
+    "fr": "Pékin information",
+    "domain": "bjinformation.com",
+    "frwiki": "Beijing_Review"
+  },
+  {
+    "fr": "Télé poche",
+    "domain": "telepoche.fr",
+    "frwiki": "T%C3%A9l%C3%A9_Poche"
+  },
+  {
+    "fr": "Kyunghyang Shinmun",
+    "domain": "khan.co.kr",
+    "frwiki": "Kyunghyang_Shinmun"
+  },
+  {
+    "fr": "Heti Válasz",
+    "domain": "valasz.hu",
+    "frwiki": "Heti_V%C3%A1lasz"
+  },
+  {
+    "fr": "Picture Post",
+    "domain": "gettyimages.com/EditorialImages/Archival/Hulton",
+    "frwiki": "Picture_Post"
+  },
+  {
+    "fr": "La Vanguardia",
+    "domain": "lavanguardia.com",
+    "frwiki": "La_Vanguardia"
+  },
+  {
+    "fr": "New Vision",
+    "domain": "newvision.co.ug",
+    "frwiki": "New_Vision"
+  },
+  {
+    "fr": "Politis",
+    "domain": "politis.fr",
+    "frwiki": "Politis"
+  },
+  {
+    "fr": "This Day",
+    "domain": "THISDAYLIVE.com",
+    "frwiki": "This_Day_(Nigeria)"
+  },
+  {
+    "fr": "Le Journal du dimanche",
+    "domain": "lejdd.fr",
+    "frwiki": "Le_Journal_du_dimanche"
+  },
+  {
+    "fr": "The Canberra Times",
+    "domain": "canberratimes.com.au",
+    "frwiki": "The_Canberra_Times"
+  },
+  {
+    "fr": "El Siglo de Torreón",
+    "domain": "elsiglodetorreon.com.mx",
+    "frwiki": "El_Siglo_de_Torre%C3%B3n"
+  },
+  {
+    "fr": "El Siglo de Torreón",
+    "domain": "elsiglodetorreon.com.mx",
+    "frwiki": "El_Siglo_de_Torre%C3%B3n"
+  },
+  {
+    "fr": "The Dallas Morning News",
+    "domain": "dallasnews.com",
+    "frwiki": "The_Dallas_Morning_News"
+  },
+  {
+    "fr": "The Jewish Chronicle",
+    "domain": "thejc.com",
+    "frwiki": "The_Jewish_Chronicle"
+  },
+  {
+    "fr": "Blic (quotidien)",
+    "domain": "blic.rs",
+    "frwiki": "Blic_(quotidien)"
+  },
+  {
+    "fr": "Sme",
+    "domain": "sme.sk",
+    "frwiki": "Sme_(quotidien)"
+  },
+  {
+    "fr": "Borba (journal)",
+    "domain": "borba.rs",
+    "frwiki": "Borba_(journal)"
+  },
+  {
+    "fr": "The Village Voice",
+    "domain": "villagevoice.com",
+    "frwiki": "The_Village_Voice"
+  },
+  {
+    "fr": "Paris Match",
+    "domain": "parismatch.com",
+    "frwiki": "Paris_Match"
+  },
+  {
+    "fr": "Al-Ittihad",
+    "domain": "alittihad.ae",
+    "frwiki": "Al-Ittihad"
+  },
+  {
+    "fr": "Het Financieele Dagblad",
+    "domain": "fd.nl",
+    "frwiki": "Het_Financieele_Dagblad"
+  },
+  {
+    "fr": "La Conscience",
+    "domain": "laconscience.com",
+    "frwiki": "La_Conscience"
+  },
+  {
+    "fr": "Kleine Zeitung",
+    "domain": "kleinezeitung.at",
+    "frwiki": "Kleine_Zeitung"
+  },
+  {
+    "fr": "Le Soir",
+    "domain": "lesoir.be",
+    "frwiki": "Le_Soir"
+  },
+  {
+    "fr": "Nederlands Dagblad",
+    "domain": "nd.nl",
+    "frwiki": "Nederlands_Dagblad"
+  },
+  {
+    "fr": "Chicago Tribune",
+    "domain": "chicagotribune.com",
+    "frwiki": "Chicago_Tribune"
+  },
+  {
+    "fr": "The Times of India",
+    "domain": "timesofindia.indiatimes.com",
+    "frwiki": "The_Times_of_India"
+  },
+  {
+    "fr": "Expansión",
+    "domain": "expansion.com",
+    "frwiki": "Expansi%C3%B3n"
+  },
+  {
+    "fr": "Hiwwe wie Driwwe",
+    "domain": "hiwwe-wie-driwwe.de",
+    "frwiki": "Hiwwe_wie_Driwwe"
+  },
+  {
+    "fr": "Heti Világgazdaság",
+    "domain": "hvg.hu",
+    "frwiki": "Heti_Vil%C3%A1ggazdas%C3%A1g"
+  },
+  {
+    "fr": "Le Peuple",
+    "domain": "lepeuple.be",
+    "frwiki": "Le_Peuple_(journal_belge)"
+  },
+  {
+    "fr": "Milliyet",
+    "domain": "milliyet.com.tr",
+    "frwiki": "Milliyet"
+  },
+  {
+    "fr": "The Korea Herald",
+    "domain": "koreaherald.com",
+    "frwiki": "The_Korea_Herald"
+  },
+  {
+    "fr": "Eléftheros Týpos",
+    "domain": "e-typos.com",
+    "frwiki": "El%C3%A9ftheros_T%C3%BDpos"
+  },
+  {
+    "fr": "Eléftheros Týpos",
+    "domain": "eleftherostypos.gr",
+    "frwiki": "El%C3%A9ftheros_T%C3%BDpos"
+  },
+  {
+    "fr": "Wirtschaftswoche",
+    "domain": "wiwo.de",
+    "frwiki": "Wirtschaftswoche"
+  },
+  {
+    "fr": "Der Freitag",
+    "domain": "freitag.de",
+    "frwiki": "Der_Freitag_(journal)"
+  },
+  {
+    "fr": "Al-Hayat",
+    "domain": "alhayat.com",
+    "frwiki": "Al-Hayat"
+  },
+  {
+    "fr": "Spiegel Online",
+    "domain": "spiegel.de",
+    "frwiki": "Spiegel_Online"
+  },
+  {
+    "fr": "The Plain Dealer",
+    "domain": "cleveland.com",
+    "frwiki": "The_Plain_Dealer_(journal)"
+  },
+  {
+    "fr": "Seattle Post-Intelligencer",
+    "domain": "seattlepi.com",
+    "frwiki": "Seattle_Post-Intelligencer"
+  },
+  {
+    "fr": "Élet és Irodalom",
+    "domain": "es.hu",
+    "frwiki": "%C3%89let_%C3%A9s_Irodalom"
+  },
+  {
+    "fr": "The Christian Science Monitor",
+    "domain": "csmonitor.com",
+    "frwiki": "The_Christian_Science_Monitor"
+  },
+  {
+    "fr": "The Times",
+    "domain": "thetimes.co.uk",
+    "frwiki": "The_Times"
+  },
+  {
+    "fr": "Diario Frontera",
+    "domain": "diariofrontera.com",
+    "frwiki": "Diario_Frontera"
+  },
+  {
+    "fr": "Taipei Times",
+    "domain": "taipeitimes.com",
+    "frwiki": "Taipei_Times"
+  },
+  {
+    "fr": "Dnevnik",
+    "domain": "dnevnik.bg",
+    "frwiki": "Dnevnik_(Bulgarie)"
+  },
+  {
+    "fr": "Spits (Pays-Bas)",
+    "domain": "spitsnieuws.nl",
+    "frwiki": "Spits"
+  },
+  {
+    "fr": "Arrêt sur images",
+    "domain": "arretsurimages.net",
+    "frwiki": "Arr%C3%AAt_sur_images"
+  },
+  {
+    "fr": "As (journal)",
+    "domain": "as.com",
+    "frwiki": "As_(journal)"
+  },
+  {
+    "fr": "Le Quotidien du Peuple",
+    "domain": "en.people.cn",
+    "frwiki": "Le_Quotidien_du_Peuple"
+  },
+  {
+    "fr": "Le Quotidien du Peuple",
+    "domain": "spanish.people.com.cn",
+    "frwiki": "Le_Quotidien_du_Peuple"
+  },
+  {
+    "fr": "Le Quotidien du Peuple",
+    "domain": "people.com.cn",
+    "frwiki": "Le_Quotidien_du_Peuple"
+  },
+  {
+    "fr": "The Ecologist",
+    "domain": "theecologist.org",
+    "frwiki": "The_Ecologist"
+  },
+  {
+    "fr": "Houston Chronicle",
+    "domain": "chron.com",
+    "frwiki": "Houston_Chronicle"
+  },
+  {
+    "fr": "Gazzetta del Sud",
+    "domain": "gazzettadelsud.it",
+    "frwiki": "Gazzetta_del_Sud"
+  },
+  {
+    "fr": "Le Moniteur des travaux publics et du bâtiment",
+    "domain": "lemoniteur.fr",
+    "frwiki": "Le_Moniteur"
+  },
+  {
+    "fr": "Detroit Free Press",
+    "domain": "freep.com",
+    "frwiki": "Detroit_Free_Press"
+  },
+  {
+    "fr": "The Mercury News",
+    "domain": "mercurynews.com",
+    "frwiki": "San_Jose_Mercury_News"
+  },
+  {
+    "fr": "La Prospérité",
+    "domain": "laprosperiteonline.net",
+    "frwiki": "La_Prosp%C3%A9rit%C3%A9"
+  },
+  {
+    "fr": "Chicago Sun-Times",
+    "domain": "suntimes.com",
+    "frwiki": "Chicago_Sun-Times"
+  },
+  {
+    "fr": "Sabah",
+    "domain": "sabah.com.tr",
+    "frwiki": "Sabah_(journal)"
+  },
+  {
+    "fr": "Aamulehti",
+    "domain": "aamulehti.fi",
+    "frwiki": "Aamulehti"
+  },
+  {
+    "fr": "Corriere della Sera",
+    "domain": "corriere.it",
+    "frwiki": "Corriere_della_Sera"
+  },
+  {
+    "fr": "Al-Quds al-Arabi",
+    "domain": "alquds.co.uk",
+    "frwiki": "Al-Quds_al-Arabi"
+  },
+  {
+    "fr": "Özgür Gündem",
+    "domain": "ozgur-gundem.com",
+    "frwiki": "%C3%96zg%C3%BCr_G%C3%BCndem"
+  },
+  {
+    "fr": "168 Óra",
+    "domain": "168ora.hu",
+    "frwiki": "168_%C3%93ra"
+  },
+  {
+    "fr": "Õhtuleht",
+    "domain": "ohtuleht.ee",
+    "frwiki": "%C3%95htuleht"
+  },
+  {
+    "fr": "La República",
+    "domain": "larepublica.co",
+    "frwiki": "La_Rep%C3%BAblica_(Colombie)"
+  },
+  {
+    "fr": "Le Courrier picard",
+    "domain": "courrier-picard.fr",
+    "frwiki": "Le_Courrier_picard"
+  },
+  {
+    "fr": "La Dépêche du Midi",
+    "domain": "ladepeche.fr",
+    "frwiki": "La_D%C3%A9p%C3%AAche_du_Midi"
+  },
+  {
+    "fr": "Dagens Industri",
+    "domain": "di.se",
+    "frwiki": "Dagens_Industri"
+  },
+  {
+    "fr": "Gazeta Wyborcza",
+    "domain": "wyborcza.pl",
+    "frwiki": "Gazeta_Wyborcza"
+  },
+  {
+    "fr": "L'Osservatore Romano",
+    "domain": "osservatoreromano.va",
+    "frwiki": "L%27Osservatore_Romano"
+  },
+  {
+    "fr": "Quotidien de la jeunesse de Chine",
+    "domain": "cyol.net",
+    "frwiki": "Quotidien_de_la_jeunesse_de_Chine"
+  },
+  {
+    "fr": "Washington Blade",
+    "domain": "washingtonblade.com",
+    "frwiki": "Washington_Blade"
+  },
+  {
+    "fr": "Berlingske",
+    "domain": "berlingske.dk",
+    "frwiki": "Berlingske"
+  },
+  {
+    "fr": "La Repubblica",
+    "domain": "repubblica.it",
+    "frwiki": "La_Repubblica"
+  },
+  {
+    "fr": "Vetchernï Bichkek",
+    "domain": "vb.org",
+    "frwiki": "Vetchern%C3%AF_Bichkek"
+  },
+  {
+    "fr": "Scotland on Sunday",
+    "domain": "scotlandonsunday.scotsman.com",
+    "frwiki": "Scotland_on_Sunday"
+  },
+  {
+    "fr": "The Hollywood Reporter",
+    "domain": "hollywoodreporter.com/hr/index.jsp",
+    "frwiki": "The_Hollywood_Reporter"
+  },
+  {
+    "fr": "San Francisco Chronicle",
+    "domain": "sfgate.com",
+    "frwiki": "San_Francisco_Chronicle"
+  },
+  {
+    "fr": "San Francisco Chronicle",
+    "domain": "sfchronicle.com",
+    "frwiki": "San_Francisco_Chronicle"
+  },
+  {
+    "fr": "Zaman (journal)",
+    "domain": "zaman.com.tr",
+    "frwiki": "Zaman_(journal)"
+  },
+  {
+    "fr": "Izvestia",
+    "domain": "izvestia.ru",
+    "frwiki": "Izvestia"
+  },
+  {
+    "fr": "Dagbladet Information",
+    "domain": "information.dk",
+    "frwiki": "Dagbladet_Information"
+  },
+  {
+    "fr": "Le Nouvelliste",
+    "domain": "lenouvelliste.com",
+    "frwiki": "Le_Nouvelliste_(Ha%C3%AFti)"
+  },
+  {
+    "fr": "Új Szó",
+    "domain": "ujszo.com",
+    "frwiki": "%C3%9Aj_Sz%C3%B3"
+  },
+  {
+    "fr": "Orlando Sentinel",
+    "domain": "orlandosentinel.com",
+    "frwiki": "Orlando_Sentinel"
+  },
+  {
+    "fr": "Tokyo Shinbun",
+    "domain": "tokyo-np.co.jp",
+    "frwiki": "Tokyo_Shinbun"
+  },
+  {
+    "fr": "Hospodářské noviny",
+    "domain": "hn.ihned.cz",
+    "frwiki": "Hospod%C3%A1%C5%99sk%C3%A9_noviny"
+  },
+  {
+    "fr": "Hufvudstadsbladet",
+    "domain": "hbl.fi",
+    "frwiki": "Hufvudstadsbladet"
+  },
+  {
+    "fr": "The Catholic Herald",
+    "domain": "catholicherald.co.uk",
+    "frwiki": "The_Catholic_Herald"
+  },
+  {
+    "fr": "NewsDay (Zimbabwe)",
+    "domain": "newsday.co.zw",
+    "frwiki": "NewsDay_(Zimbabwe)"
+  },
+  {
+    "fr": "GlobalPost",
+    "domain": "globalpost.com",
+    "frwiki": "GlobalPost"
+  },
+  {
+    "fr": "New York Daily News",
+    "domain": "nydailynews.com",
+    "frwiki": "New_York_Daily_News"
+  },
+  {
+    "fr": "Arab News",
+    "domain": "arabnews.com",
+    "frwiki": "Arab_News"
+  },
+  {
+    "fr": "Echourouk Al Yaoumi",
+    "domain": "echoroukonline.com/ara/english/index.1.html",
+    "frwiki": "Echorouk_El_Yawmi"
+  },
+  {
+    "fr": "National-Zeitung",
+    "domain": "national-zeitung.de",
+    "frwiki": "National-Zeitung"
+  },
+  {
+    "fr": "The Observer",
+    "domain": "observer.theguardian.com",
+    "frwiki": "The_Observer"
+  },
+  {
+    "fr": "Hürriyet",
+    "domain": "hurriyet.com.tr",
+    "frwiki": "H%C3%BCrriyet"
+  },
+  {
+    "fr": "Neues Deutschland",
+    "domain": "neues-deutschland.de",
+    "frwiki": "Neues_Deutschland"
+  },
+  {
+    "fr": "The Forward",
+    "domain": "forward.com",
+    "frwiki": "The_Forward"
+  },
+  {
+    "fr": "The Forward",
+    "domain": "yiddish.forward.com",
+    "frwiki": "The_Forward"
+  },
+  {
+    "fr": "Krytyka Polityczna",
+    "domain": "krytykapolityczna.pl",
+    "frwiki": "Krytyka_Polityczna"
+  },
+  {
+    "fr": "La Gazzetta dello Sport",
+    "domain": "gazzetta.it",
+    "frwiki": "La_Gazzetta_dello_Sport"
+  },
+  {
+    "fr": "Record",
+    "domain": "record.pt",
+    "frwiki": "Record_(journal)"
+  },
+  {
+    "fr": "Critica Sociale",
+    "domain": "criticasociale.net",
+    "frwiki": "Critica_Sociale"
+  },
+  {
+    "fr": "Magyar Narancs",
+    "domain": "mancs.hu",
+    "frwiki": "Magyar_Narancs"
+  },
+  {
+    "fr": "Haarlems Dagblad",
+    "domain": "haarlemsdagblad.nl",
+    "frwiki": "Haarlems_Dagblad"
+  },
+  {
+    "fr": "La Nuova Sardegna",
+    "domain": "lanuovasardegna.it",
+    "frwiki": "La_Nuova_Sardegna"
+  },
+  {
+    "fr": "Los Angeles Free Press",
+    "domain": "losangelesfreepress.com",
+    "frwiki": "Los_Angeles_Free_Press"
+  },
+  {
+    "fr": "Szabadság",
+    "domain": "szabadsag.ro",
+    "frwiki": "Szabads%C3%A1g"
+  },
+  {
+    "fr": "The Sunday Times",
+    "domain": "sundaytimes.co.za",
+    "frwiki": "The_Sunday_Times_(Afrique_du_Sud)"
+  },
+  {
+    "fr": "Avanti! (journal)",
+    "domain": "avantionline.it",
+    "frwiki": "Avanti!_(journal)"
+  },
+  {
+    "fr": "Glas javnosti",
+    "domain": "glas-javnosti.rs",
+    "frwiki": "Glas_javnosti"
+  },
+  {
+    "fr": "L'Express",
+    "domain": "lexpress.fr",
+    "frwiki": "L%27Express"
+  },
+  {
+    "fr": "Autosport",
+    "domain": "autosport.com",
+    "frwiki": "Autosport"
+  },
+  {
+    "fr": "Boston Herald",
+    "domain": "bostonherald.com",
+    "frwiki": "Boston_Herald"
+  },
+  {
+    "fr": "El Punt Avui",
+    "domain": "elpuntavui.cat",
+    "frwiki": "El_Punt_Avui"
+  },
+  {
+    "fr": "The Sacramento Bee",
+    "domain": "sacbee.com",
+    "frwiki": "The_Sacramento_Bee"
+  },
+  {
+    "fr": "The Jakarta Globe",
+    "domain": "jakartaglobe.id",
+    "frwiki": "The_Jakarta_Globe"
+  },
+  {
+    "fr": "Daily Monitor",
+    "domain": "monitor.co.ug",
+    "frwiki": "Daily_Monitor"
+  },
+  {
+    "fr": "La Presse de Tunisie",
+    "domain": "lapresse.tn",
+    "frwiki": "La_Presse_de_Tunisie"
+  },
+  {
+    "fr": "Politiken",
+    "domain": "politiken.dk",
+    "frwiki": "Politiken"
+  },
+  {
+    "fr": "The Statesman",
+    "domain": "thestatesman.com",
+    "frwiki": "The_Statesman"
+  },
+  {
+    "fr": "Helsingin Sanomat",
+    "domain": "hs.fi",
+    "frwiki": "Helsingin_Sanomat"
+  },
+  {
+    "fr": "Télérama",
+    "domain": "telerama.fr",
+    "frwiki": "T%C3%A9l%C3%A9rama"
+  },
+  {
+    "fr": "Adresseavisen",
+    "domain": "adressa.no",
+    "frwiki": "Adresseavisen"
+  },
+  {
+    "fr": "The Wall Street Journal",
+    "domain": "wsj.com",
+    "frwiki": "The_Wall_Street_Journal"
+  },
+  {
+    "fr": "The Washington Post",
+    "domain": "washingtonpost.com",
+    "frwiki": "The_Washington_Post"
+  },
+  {
+    "fr": "Gazette van Detroit",
+    "domain": "gazettevandetroit.com",
+    "frwiki": "Gazette_van_Detroit"
+  },
+  {
+    "fr": "Financial Times",
+    "domain": "ft.com",
+    "frwiki": "Financial_Times"
+  },
+  {
+    "fr": "Rodong Sinmun",
+    "domain": "rodong.rep.kp",
+    "frwiki": "Rodong_Sinmun"
+  },
+  {
+    "fr": "The Sydney Morning Herald",
+    "domain": "smh.com.au",
+    "frwiki": "The_Sydney_Morning_Herald"
+  },
+  {
+    "fr": "Akher Saâ",
+    "domain": "akhersaa-dz.com",
+    "frwiki": "Akher_Sa%C3%A2"
+  },
+  {
+    "fr": "Nanfang Ribao",
+    "domain": "nfdaily.cn",
+    "frwiki": "Nanfang_Ribao"
+  },
+  {
+    "fr": "The Daily Sport",
+    "domain": "dailysport.co.uk",
+    "frwiki": "The_Daily_Sport"
+  },
+  {
+    "fr": "El País",
+    "domain": "elpais.com.co",
+    "frwiki": "El_Pa%C3%ADs_(Colombie)"
+  },
+  {
+    "fr": "Akşam",
+    "domain": "aksam.com.tr",
+    "frwiki": "Ak%C5%9Fam"
+  },
+  {
+    "fr": "Pravda",
+    "domain": "gazeta-pravda.ru",
+    "frwiki": "Pravda"
+  },
+  {
+    "fr": "Zeitung vum Lëtzebuerger Vollek",
+    "domain": "zlv.lu",
+    "frwiki": "Zeitung_vum_L%C3%ABtzebuerger_Vollek"
+  },
+  {
+    "fr": "Los Angeles Times",
+    "domain": "latimes.com",
+    "frwiki": "Los_Angeles_Times"
+  },
+  {
+    "fr": "News of the World",
+    "domain": "newsoftheworld.co.uk",
+    "frwiki": "News_of_the_World_(journal)"
+  },
+  {
+    "fr": "Welt am Sonntag",
+    "domain": "welt.de",
+    "frwiki": "Welt_am_Sonntag"
+  },
+  {
+    "fr": "An Nasr",
+    "domain": "annasronline.com",
+    "frwiki": "An_Nasr"
+  },
+  {
+    "fr": "Chosun Ilbo",
+    "domain": "chosun.com",
+    "frwiki": "Chosun_Ilbo"
+  },
+  {
+    "fr": "Tageblatt",
+    "domain": "tageblatt.lu",
+    "frwiki": "Tageblatt"
+  },
+  {
+    "fr": "The Blade",
+    "domain": "toledoblade.com",
+    "frwiki": "The_Blade_(journal)"
+  },
+  {
+    "fr": "Adevărul",
+    "domain": "adevarul.ro",
+    "frwiki": "Adev%C4%83rul"
+  },
+  {
+    "fr": "Alto Adige",
+    "domain": "altoadige.it",
+    "frwiki": "Alto_Adige"
+  },
+  {
+    "fr": "Portland Tribune",
+    "domain": "portlandtribune.com",
+    "frwiki": "Portland_Tribune"
+  },
+  {
+    "fr": "Joong-ang Ilbo",
+    "domain": "joins.com",
+    "frwiki": "Joong-ang_Ilbo"
+  },
+  {
+    "fr": "Daily Mail",
+    "domain": "dailymail.co.uk",
+    "frwiki": "Daily_Mail"
+  },
+  {
+    "fr": "The Sun",
+    "domain": "thesun.co.uk",
+    "frwiki": "The_Sun"
+  },
+  {
+    "fr": "Le Figaro",
+    "domain": "lefigaro.fr",
+    "frwiki": "Le_Figaro"
+  },
+  {
+    "fr": "New York Post",
+    "domain": "nypost.com",
+    "frwiki": "New_York_Post"
+  },
+  {
+    "fr": "The Daily Mirror",
+    "domain": "mirror.co.uk",
+    "frwiki": "The_Daily_Mirror"
+  },
+  {
+    "fr": "Haaretz",
+    "domain": "haaretz.co.il",
+    "frwiki": "Haaretz"
+  },
+  {
+    "fr": "Haaretz",
+    "domain": "haaretz.com",
+    "frwiki": "Haaretz"
+  },
+  {
+    "fr": "Cahiers Octave Mirbeau",
+    "domain": "mirbeau.asso.fr",
+    "frwiki": "Cahiers_Octave_Mirbeau"
+  },
+  {
+    "fr": "Chicago Reader",
+    "domain": "chicagoreader.com",
+    "frwiki": "Chicago_Reader"
+  },
+  {
+    "fr": "Questions internationales",
+    "domain": "ladocumentationfrancaise.fr/revues-collections/questions-internationales/index.shtml",
+    "frwiki": "Questions_internationales"
+  },
+  {
+    "fr": "The Courier-Mail",
+    "domain": "couriermail.com.au",
+    "frwiki": "The_Courier-Mail"
+  },
+  {
+    "fr": "Perfil",
+    "domain": "perfil.com",
+    "frwiki": "Perfil"
+  },
+  {
+    "fr": "Chastny Korrespondent",
+    "domain": "chaskor.ru",
+    "frwiki": "Tchastny_Korrespondent"
+  },
+  {
+    "fr": "Chastny Korrespondent",
+    "domain": "chaskor.ru",
+    "frwiki": "Tchastny_Korrespondent"
+  },
+  {
+    "fr": "The Seattle Times",
+    "domain": "seattletimes.com",
+    "frwiki": "The_Seattle_Times"
+  },
+  {
+    "fr": "The Sunday Times",
+    "domain": "thesundaytimes.co.uk",
+    "frwiki": "The_Sunday_Times_(Royaume-Uni)"
+  },
+  {
+    "fr": "Ávvir",
+    "domain": "avvir.no",
+    "frwiki": "%C3%81vvir"
+  },
+  {
+    "fr": "Večernji list",
+    "domain": "vecernji.hr",
+    "frwiki": "Ve%C4%8Dernji_list"
+  },
+  {
+    "fr": "Brabants Dagblad",
+    "domain": "brabantsdagblad.nl",
+    "frwiki": "Brabants_Dagblad"
+  },
+  {
+    "fr": "Washington Examiner",
+    "domain": "washingtonexaminer.com",
+    "frwiki": "Washington_Examiner"
+  },
+  {
+    "fr": "Rapport (Afrique du Sud)",
+    "domain": "rapport.co.za",
+    "frwiki": "Rapport_(Afrique_du_Sud)"
+  },
+  {
+    "fr": "Rzeczpospolita",
+    "domain": "rp.pl",
+    "frwiki": "Rzeczpospolita_(journal)"
+  },
+  {
+    "fr": "The San Francisco Examiner",
+    "domain": "sfexaminer.com",
+    "frwiki": "The_San_Francisco_Examiner"
+  },
+  {
+    "fr": "Prothom Alo",
+    "domain": "en.prothomalo.com",
+    "frwiki": "Prothom_Alo"
+  },
+  {
+    "fr": "Prothom Alo",
+    "domain": "eprothomalo.com",
+    "frwiki": "Prothom_Alo"
+  },
+  {
+    "fr": "Prothom Alo",
+    "domain": "prothomalo.com",
+    "frwiki": "Prothom_Alo"
+  },
+  {
+    "fr": "Technikart",
+    "domain": "technikart.com",
+    "frwiki": "Technikart"
+  },
+  {
+    "fr": "The Hill Times",
+    "domain": "hilltimes.com",
+    "frwiki": "The_Hill_Times"
+  },
+  {
+    "fr": "The Myanmar Times",
+    "domain": "mmtimes.com",
+    "frwiki": "The_Myanmar_Times"
+  },
+  {
+    "fr": "The Myanmar Times",
+    "domain": "myanmar.mmtimes.com",
+    "frwiki": "The_Myanmar_Times"
+  },
+  {
+    "fr": "The Shetland Times",
+    "domain": "shetlandtimes.co.uk",
+    "frwiki": "The_Shetland_Times"
+  },
+  {
+    "fr": "Télé 7 jours",
+    "domain": "tele7.fr",
+    "frwiki": "T%C3%A9l%C3%A9_7_jours"
+  },
+  {
+    "fr": "Télécâble Sat Hebdo",
+    "domain": "telecablesat.fr",
+    "frwiki": "T%C3%A9l%C3%A9c%C3%A2ble_Sat_Hebdo"
+  },
+  {
+    "fr": "Témoignage chrétien",
+    "domain": "temoignagechretien.fr",
+    "frwiki": "T%C3%A9moignage_chr%C3%A9tien"
+  },
+  {
+    "fr": "Tribune de Lyon",
+    "domain": "tribunedelyon.fr",
+    "frwiki": "Tribune_de_Lyon"
+  },
+  {
+    "fr": "The Burlington Free Press",
+    "domain": "burlingtonfreepress.com",
+    "frwiki": "The_Burlington_Free_Press"
+  },
+  {
+    "fr": "Télé Magazine",
+    "domain": "telemagazine.fr",
+    "frwiki": "T%C3%A9l%C3%A9_Magazine"
+  },
+  {
+    "fr": "The Palm Beach Post",
+    "domain": "palmbeachpost.com",
+    "frwiki": "The_Palm_Beach_Post"
+  },
+  {
+    "fr": "The Providence Journal",
+    "domain": "providencejournal.com",
+    "frwiki": "The_Providence_Journal"
+  },
+  {
+    "fr": "The Tablet",
+    "domain": "thetablet.co.uk",
+    "frwiki": "The_Tablet"
+  },
+  {
+    "fr": "Territorial Enterprise",
+    "domain": "territorial-enterprise.com",
+    "frwiki": "Territorial_Enterprise"
+  },
+  {
+    "fr": "The Capital",
+    "domain": "capitalgazette.com",
+    "frwiki": "The_Capital"
+  },
+  {
+    "fr": "The Columbian",
+    "domain": "columbian.com",
+    "frwiki": "The_Columbian"
+  },
+  {
+    "fr": "The Quebec Chronicle-Telegraph",
+    "domain": "qctonline.com",
+    "frwiki": "The_Quebec_Chronicle-Telegraph"
+  },
+  {
+    "fr": "The Saugus Advertiser",
+    "domain": "saugusadvertiser.com",
+    "frwiki": "The_Saugus_Advertiser"
+  },
+  {
+    "fr": "TalCual",
+    "domain": "talcualdigital.com",
+    "frwiki": "TalCual"
+  },
+  {
+    "fr": "The Florida Times-Union",
+    "domain": "jacksonville.com",
+    "frwiki": "The_Florida_Times-Union"
+  },
+  {
+    "fr": "The Kansas City Star",
+    "domain": "kansascity.com",
+    "frwiki": "The_Kansas_City_Star"
+  },
+  {
+    "fr": "Télé Z",
+    "domain": "telez.fr",
+    "frwiki": "T%C3%A9l%C3%A9_Z"
+  },
+  {
+    "fr": "The Advocate",
+    "domain": "stamfordadvocate.com",
+    "frwiki": "The_Advocate_(Stamford)"
+  },
+  {
+    "fr": "The Austin Chronicle",
+    "domain": "austinchronicle.com",
+    "frwiki": "The_Austin_Chronicle"
+  },
+  {
+    "fr": "The Jewish Press",
+    "domain": "jewishpress.com",
+    "frwiki": "The_Jewish_Press"
+  },
+  {
+    "fr": "The Suburban",
+    "domain": "thesuburban.com",
+    "frwiki": "The_Suburban"
+  },
+  {
+    "fr": "Milenio",
+    "domain": "milenio.com",
+    "frwiki": "Milenio"
+  },
+  {
+    "fr": "Vedomosti",
+    "domain": "vedomosti.ru",
+    "frwiki": "Vedomosti"
+  },
+  {
+    "fr": "Mint",
+    "domain": "livemint.com",
+    "frwiki": "Mint_(journal)"
+  },
+  {
+    "fr": "Le Quotidien",
+    "domain": "lequotidien.lu",
+    "frwiki": "Le_Quotidien_(Luxembourg)"
+  },
+  {
+    "fr": "The Indianapolis Star",
+    "domain": "indystar.com",
+    "frwiki": "The_Indianapolis_Star"
+  },
+  {
+    "fr": "La Jornada",
+    "domain": "jornada.com.mx",
+    "frwiki": "La_Jornada"
+  },
+  {
+    "fr": "Limonka",
+    "domain": "limonka.nbp-info.com",
+    "frwiki": "Limonka"
+  },
+  {
+    "fr": "L'Avenir",
+    "domain": "lavenir.net",
+    "frwiki": "L%27Avenir_(Belgique)"
+  },
+  {
+    "fr": "Turun Sanomat",
+    "domain": "ts.fi",
+    "frwiki": "Turun_Sanomat"
+  },
+  {
+    "fr": "The National",
+    "domain": "thenational.ae",
+    "frwiki": "The_National_(Abou_Dabi)"
+  },
+  {
+    "fr": "Suomenmaa",
+    "domain": "suomenmaa.fi",
+    "frwiki": "Suomenmaa"
+  },
+  {
+    "fr": "Guangming Daily",
+    "domain": "gmw.cn",
+    "frwiki": "Guangming_Daily"
+  },
+  {
+    "fr": "Haïti Progrès",
+    "domain": "haitiprogres.com",
+    "frwiki": "Ha%C3%AFti_Progr%C3%A8s"
+  },
+  {
+    "fr": "Freiburger Nachrichten",
+    "domain": "freiburger-nachrichten.ch",
+    "frwiki": "Freiburger_Nachrichten"
+  },
+  {
+    "fr": "The Atlanta Journal-Constitution",
+    "domain": "ajc.com",
+    "frwiki": "The_Atlanta_Journal-Constitution"
+  },
+  {
+    "fr": "Golos Armenii",
+    "domain": "golosarmenii.am",
+    "frwiki": "Golos_Armenii"
+  },
+  {
+    "fr": "Hallandsposten",
+    "domain": "hallandsposten.se",
+    "frwiki": "Hallandsposten"
+  },
+  {
+    "fr": "French News",
+    "domain": "french-news.com",
+    "frwiki": "French_News"
+  },
+  {
+    "fr": "Génération Séries",
+    "domain": "generations-series.com",
+    "frwiki": "G%C3%A9n%C3%A9ration_S%C3%A9ries"
+  },
+  {
+    "fr": "Genève Home Informations",
+    "domain": "ghi.ch",
+    "frwiki": "Gen%C3%A8ve_Home_Informations"
+  },
+  {
+    "fr": "Green Bay Press-Gazette",
+    "domain": "greenbaypressgazette.com",
+    "frwiki": "Green_Bay_Press-Gazette"
+  },
+  {
+    "fr": "Liberty",
+    "domain": "catalog.hathitrust.org/Record/008001672",
+    "frwiki": "Liberty_(1881-1908)"
+  },
+  {
+    "fr": "Uusi Suomi",
+    "domain": "uusisuomi.fi",
+    "frwiki": "Uusi_Suomi"
+  },
+  {
+    "fr": "France catholique",
+    "domain": "france-catholique.fr",
+    "frwiki": "France_catholique"
+  },
+  {
+    "fr": "Keskipohjanmaa",
+    "domain": "keskipohjanmaa.net",
+    "frwiki": "Keskipohjanmaa"
+  },
+  {
+    "fr": "Haute-Provence info",
+    "domain": "hauteprovenceinfo.com",
+    "frwiki": "Haute-Provence_info"
+  },
+  {
+    "fr": "Gauchebdo",
+    "domain": "gauchebdo.ch",
+    "frwiki": "Gauchebdo"
+  },
+  {
+    "fr": "Politico",
+    "domain": "politico.com",
+    "frwiki": "Politico"
+  },
+  {
+    "fr": "Green Left Weekly",
+    "domain": "greenleft.org.au",
+    "frwiki": "Green_Left_Weekly"
+  },
+  {
+    "fr": "Hebdo Le Comtadin",
+    "domain": "lecomtadin.com",
+    "frwiki": "Hebdo_Le_Comtadin"
+  },
+  {
+    "fr": "The Times-Picayune",
+    "domain": "nola.com",
+    "frwiki": "The_Times-Picayune"
+  },
+  {
+    "fr": "Thai Post",
+    "domain": "thaipost.net",
+    "frwiki": "Thai_Post"
+  },
+  {
+    "fr": "Valeurs actuelles",
+    "domain": "valeursactuelles.com",
+    "frwiki": "Valeurs_actuelles"
+  },
+  {
+    "fr": "Voir",
+    "domain": "voir.ca",
+    "frwiki": "Voir_(journal)"
+  },
+  {
+    "fr": "Women's Wear Daily",
+    "domain": "wwd.com",
+    "frwiki": "Women%27s_Wear_Daily"
+  },
+  {
+    "fr": "Yeniçağ",
+    "domain": "yenicaggazetesi.com.tr",
+    "frwiki": "Yeni%C3%A7a%C4%9F"
+  },
+  {
+    "fr": "Heraldo de Aragón",
+    "domain": "heraldo.es",
+    "frwiki": "Heraldo_de_Arag%C3%B3n"
+  },
+  {
+    "fr": "XXI",
+    "domain": "revue21.fr",
+    "frwiki": "XXI"
+  },
+  {
+    "fr": "Austin American-Statesman",
+    "domain": "statesman.com",
+    "frwiki": "Austin_American-Statesman"
+  },
+  {
+    "fr": "Voix du Jura",
+    "domain": "voixdujura.fr",
+    "frwiki": "Voix_du_Jura"
+  },
+  {
+    "fr": "WorldNetDaily",
+    "domain": "wnd.com",
+    "frwiki": "WorldNetDaily"
+  },
+  {
+    "fr": "Var-Matin",
+    "domain": "varmatin.com",
+    "frwiki": "Var-Matin"
+  },
+  {
+    "fr": "Voix de la Haute-Marne",
+    "domain": "voixdelahautemarne.fr",
+    "frwiki": "Voix_de_la_Haute-Marne"
+  },
+  {
+    "fr": "San Diego Union-Tribune",
+    "domain": "sandiegouniontribune.com",
+    "frwiki": "The_San_Diego_Union-Tribune"
+  },
+  {
+    "fr": "Version Femina",
+    "domain": "femina.fr",
+    "frwiki": "Version_Femina"
+  },
+  {
+    "fr": "VSD",
+    "domain": "vsd.fr",
+    "frwiki": "VSD_(magazine)"
+  },
+  {
+    "fr": "Évangile et Liberté",
+    "domain": "evangile-et-liberte.net",
+    "frwiki": "%C3%89vangile_et_Libert%C3%A9"
+  },
+  {
+    "fr": "Vosges Matin",
+    "domain": "vosgesmatin.fr",
+    "frwiki": "Vosges_Matin"
+  },
+  {
+    "fr": "Wal Fadjri",
+    "domain": "walf-groupe.com",
+    "frwiki": "Wal_Fadjri"
+  },
+  {
+    "fr": "Washington Square News",
+    "domain": "nyunews.com",
+    "frwiki": "Washington_Square_News"
+  },
+  {
+    "fr": "Windy City Times",
+    "domain": "wctimes.com",
+    "frwiki": "Windy_City_Times"
+  },
+  {
+    "fr": "Zaman France",
+    "domain": "zamanfrance.fr",
+    "frwiki": "Zaman_France"
+  },
+  {
+    "fr": "The Red Bulletin",
+    "domain": "redbulletin.com",
+    "frwiki": "The_Red_Bulletin"
+  },
+  {
+    "fr": "Drôme Hebdo",
+    "domain": "drome-hebdo.fr",
+    "frwiki": "Dr%C3%B4me_Hebdo"
+  },
+  {
+    "fr": "Le Rénovateur",
+    "domain": "lerenovateur.org.la",
+    "frwiki": "Le_R%C3%A9novateur"
+  },
+  {
+    "fr": "Le Vif/L'Express",
+    "domain": "levif.be/actualite",
+    "frwiki": "Le_Vif/L%27Express"
+  },
+  {
+    "fr": "Edmonton Journal",
+    "domain": "edmontonjournal.com",
+    "frwiki": "Edmonton_Journal"
+  },
+  {
+    "fr": "La Terre",
+    "domain": "laterre.fr",
+    "frwiki": "La_Terre_(journal)"
+  },
+  {
+    "fr": "Fort Worth Star-Telegram",
+    "domain": "star-telegram.com",
+    "frwiki": "Fort_Worth_Star-Telegram"
+  },
+  {
+    "fr": "Orange County Register",
+    "domain": "ocregister.com",
+    "frwiki": "Orange_County_Register"
+  },
+  {
+    "fr": "The Mail on Sunday",
+    "domain": "mailonsunday.co.uk",
+    "frwiki": "The_Mail_on_Sunday"
+  },
+  {
+    "fr": "Iltalehti",
+    "domain": "iltalehti.fi",
+    "frwiki": "Iltalehti"
+  },
+  {
+    "fr": "Alwihda",
+    "domain": "alwihdainfo.com",
+    "frwiki": "Alwihda"
+  },
+  {
+    "fr": "The Press",
+    "domain": "press.co.nz",
+    "frwiki": "The_Press"
+  },
+  {
+    "fr": "The Press",
+    "domain": "stuff.co.nz/the-press",
+    "frwiki": "The_Press"
+  },
+  {
+    "fr": "Femina",
+    "domain": "femina.ch",
+    "frwiki": "Femina_(magazine_suisse)"
+  },
+  {
+    "fr": "Le Journal des enfants",
+    "domain": "jde.fr",
+    "frwiki": "Le_Journal_des_enfants_(France)"
+  },
+  {
+    "fr": "Focus Vif",
+    "domain": "focusvif.be",
+    "frwiki": "Focus_Vif"
+  },
+  {
+    "fr": "Pittsburgh Post-Gazette",
+    "domain": "post-gazette.com",
+    "frwiki": "Pittsburgh_Post-Gazette"
+  },
+  {
+    "fr": "The Cambodia Daily",
+    "domain": "cambodiadaily.com",
+    "frwiki": "The_Cambodia_Daily"
+  },
+  {
+    "fr": "Femme Actuelle",
+    "domain": "femmeactuelle.fr",
+    "frwiki": "Femme_actuelle"
+  },
+  {
+    "fr": "Estado de Minas",
+    "domain": "em.com.br",
+    "frwiki": "Estado_de_Minas"
+  },
+  {
+    "fr": "Fakir",
+    "domain": "fakirpresse.info",
+    "frwiki": "Fakir_(journal)"
+  },
+  {
+    "fr": "Večer",
+    "domain": "vecer.mk",
+    "frwiki": "Ve%C4%8Der"
+  },
+  {
+    "fr": "El Nuevo Día",
+    "domain": "elnuevodia.com",
+    "frwiki": "El_Nuevo_D%C3%ADa"
+  },
+  {
+    "fr": "Elle décoration",
+    "domain": "elle.fr/Deco",
+    "frwiki": "Elle_d%C3%A9coration"
+  },
+  {
+    "fr": "Fiji Times",
+    "domain": "fijitimes.com",
+    "frwiki": "Fiji_Times"
+  },
+  {
+    "fr": "Florida Keys Keynoter",
+    "domain": "flkeysnews.com",
+    "frwiki": "Florida_Keys_Keynoter"
+  },
+  {
+    "fr": "Defense News",
+    "domain": "defensenews.com",
+    "frwiki": "Defense_News"
+  },
+  {
+    "fr": "Diari de Girona",
+    "domain": "diaridegirona.cat",
+    "frwiki": "Diari_de_Girona"
+  },
+  {
+    "fr": "Pittsburgh Tribune-Review",
+    "domain": "triblive.com",
+    "frwiki": "Pittsburgh_Tribune-Review"
+  },
+  {
+    "fr": "New Times",
+    "domain": "newtimes.co.rw",
+    "frwiki": "The_New_Times_(Rwanda)"
+  },
+  {
+    "fr": "The Citizen",
+    "domain": "thecitizen.co.za",
+    "frwiki": "The_Citizen_(Afrique_du_Sud)"
+  },
+  {
+    "fr": "Actualité juive",
+    "domain": "actuj.com",
+    "frwiki": "Actualit%C3%A9_juive"
+  },
+  {
+    "fr": "Addis Fortune",
+    "domain": "addisfortune.com",
+    "frwiki": "Addis_Fortune"
+  },
+  {
+    "fr": "Actuel (magazine marocain)",
+    "domain": "actuel.ma",
+    "frwiki": "Actuel_(magazine_marocain)"
+  },
+  {
+    "fr": "Africa Mining Intelligence",
+    "domain": "africaintelligence.fr/AMF/default.asp",
+    "frwiki": "Africa_Mining_Intelligence"
+  },
+  {
+    "fr": "Les Inrockuptibles",
+    "domain": "lesinrocks.com",
+    "frwiki": "Les_Inrockuptibles"
+  },
+  {
+    "fr": "The Phoenix",
+    "domain": "thephoenix.com",
+    "frwiki": "The_Phoenix_(journal)"
+  },
+  {
+    "fr": "AM New York",
+    "domain": "amny.com",
+    "frwiki": "AM_New_York"
+  },
+  {
+    "fr": "The Denver Post",
+    "domain": "denverpost.com",
+    "frwiki": "The_Denver_Post"
+  },
+  {
+    "fr": "National Catholic Register",
+    "domain": "ncregister.com",
+    "frwiki": "National_Catholic_Register"
+  },
+  {
+    "fr": "Sportske novosti",
+    "domain": "sportske.jutarnji.hr",
+    "frwiki": "Sportske_novosti"
+  },
+  {
+    "fr": "Aamuposti",
+    "domain": "aamuposti.fi",
+    "frwiki": "Aamuposti"
+  },
+  {
+    "fr": "Nya Åland",
+    "domain": "nyan.ax",
+    "frwiki": "Nya_%C3%85land"
+  },
+  {
+    "fr": "Eenadu",
+    "domain": "eenadu.net",
+    "frwiki": "Eenadu"
+  },
+  {
+    "fr": "Las Vegas Review-Journal",
+    "domain": "reviewjournal.com",
+    "frwiki": "Las_Vegas_Review-Journal"
+  },
+  {
+    "fr": "L'Eco di Bergamo",
+    "domain": "ecodibergamo.it",
+    "frwiki": "L%27Eco_di_Bergamo"
+  },
+  {
+    "fr": "La Vallée",
+    "domain": "lavallee.netweek.it",
+    "frwiki": "La_Vall%C3%A9e_(journal)"
+  },
+  {
+    "fr": "Hour",
+    "domain": "hour.ca",
+    "frwiki": "Hour"
+  },
+  {
+    "fr": "Houston Press",
+    "domain": "houstonpress.com",
+    "frwiki": "Houston_Press"
+  },
+  {
+    "fr": "Investir",
+    "domain": "investir.fr",
+    "frwiki": "Investir"
+  },
+  {
+    "fr": "Jersey Evening Post",
+    "domain": "jerseyeveningpost.com",
+    "frwiki": "Jersey_Evening_Post"
+  },
+  {
+    "fr": "Kansan Uutiset",
+    "domain": "kansanuutiset.fi",
+    "frwiki": "Kansan_Uutiset"
+  },
+  {
+    "fr": "L'Écho du Berry",
+    "domain": "echoduberry.fr",
+    "frwiki": "L%27%C3%89cho_du_Berry"
+  },
+  {
+    "fr": "L'Express",
+    "domain": "lexpress.to",
+    "frwiki": "L%27Express_(Canada)"
+  },
+  {
+    "fr": "L'Officiel des spectacles",
+    "domain": "offi.fr",
+    "frwiki": "L%27Officiel_des_spectacles"
+  },
+  {
+    "fr": "L'Union",
+    "domain": "union.sonapresse.com",
+    "frwiki": "L%27Union_(journal_gabonais)"
+  },
+  {
+    "fr": "Åbo Underrättelser",
+    "domain": "abounderrattelser.fi",
+    "frwiki": "%C3%85bo_Underr%C3%A4ttelser"
+  },
+  {
+    "fr": "Intelligence Online",
+    "domain": "intelligenceonline.fr",
+    "frwiki": "Intelligence_Online"
+  },
+  {
+    "fr": "Journal officiel de la République algérienne démocratique et populaire",
+    "domain": "joradp.dz/HFR/Index.htm",
+    "frwiki": "Journal_officiel_de_la_R%C3%A9publique_alg%C3%A9rienne_d%C3%A9mocratique_et_populaire"
+  },
+  {
+    "fr": "L'Action française hebdo",
+    "domain": "actionfrancaise.net/accueil.htm",
+    "frwiki": "L%27Action_fran%C3%A7aise_Hebdo"
+  },
+  {
+    "fr": "L'Indicateur des Flandres",
+    "domain": "lindicateurdesflandres.fr",
+    "frwiki": "L%27Indicateur_des_Flandres"
+  },
+  {
+    "fr": "La France agricole",
+    "domain": "lafranceagricole.fr",
+    "frwiki": "La_France_agricole"
+  },
+  {
+    "fr": "La Lettre de l'économie sociale",
+    "domain": "economiesociale.com",
+    "frwiki": "La_Lettre_de_l%27%C3%A9conomie_sociale"
+  },
+  {
+    "fr": "L'Étoile du Lac",
+    "domain": "letoiledulac.com",
+    "frwiki": "L%27%C3%89toile_du_Lac"
+  },
+  {
+    "fr": "L'Argus",
+    "domain": "largus.fr",
+    "frwiki": "L%27Argus"
+  },
+  {
+    "fr": "L'Essor savoyard",
+    "domain": "lessorsavoyard.fr",
+    "frwiki": "L%27Essor_savoyard"
+  },
+  {
+    "fr": "L'Opinion",
+    "domain": "lopinion.ma",
+    "frwiki": "L%27Opinion_(Maroc)"
+  },
+  {
+    "fr": "La Décroissance",
+    "domain": "ladecroissance.net",
+    "frwiki": "La_D%C3%A9croissance"
+  },
+  {
+    "fr": "La Gazette des communes",
+    "domain": "lagazettedescommunes.com",
+    "frwiki": "La_Gazette_des_communes"
+  },
+  {
+    "fr": "Hämeen Sanomat",
+    "domain": "hameensanomat.fi",
+    "frwiki": "H%C3%A4meen_Sanomat"
+  },
+  {
+    "fr": "Knoxville News Sentinel",
+    "domain": "knoxnews.com",
+    "frwiki": "Knoxville_News_Sentinel"
+  },
+  {
+    "fr": "L'Écho de la Lys",
+    "domain": "lechodelalys.fr",
+    "frwiki": "L%27%C3%89cho_de_la_Lys"
+  },
+  {
+    "fr": "L'Impartial de la Drôme",
+    "domain": "limpartial.fr",
+    "frwiki": "L%27Impartial_de_la_Dr%C3%B4me"
+  },
+  {
+    "fr": "La Dépêche",
+    "domain": "depeche-dz.com",
+    "frwiki": "La_D%C3%A9p%C3%AAche_(Alg%C3%A9rie)"
+  },
+  {
+    "fr": "Informations ouvrières",
+    "domain": "infos-ouvrieres.fr",
+    "frwiki": "Informations_ouvri%C3%A8res"
+  },
+  {
+    "fr": "Jours de Chasse",
+    "domain": "joursdechasse.com",
+    "frwiki": "Jours_de_Chasse"
+  },
+  {
+    "fr": "L'Éveil normand",
+    "domain": "publihebdos.com/archives/347",
+    "frwiki": "L%27%C3%89veil_normand"
+  },
+  {
+    "fr": "L'Hebdo de l'Ardèche",
+    "domain": "hebdo-ardeche.fr",
+    "frwiki": "L%27Hebdo_de_l%27Ard%C3%A8che"
+  },
+  {
+    "fr": "L'Orne Hebdo",
+    "domain": "orne-hebdo.fr",
+    "frwiki": "L%27Orne_Hebdo"
+  },
+  {
+    "fr": "La Crosse Tribune",
+    "domain": "lacrossetribune.com",
+    "frwiki": "La_Crosse_Tribune"
+  },
+  {
+    "fr": "La Lettre A",
+    "domain": "lalettrea.fr",
+    "frwiki": "La_Lettre_A"
+  },
+  {
+    "fr": "La Lettre de l'Expansion",
+    "domain": "lalettredelexpansion.com",
+    "frwiki": "La_Lettre_de_l%27Expansion"
+  },
+  {
+    "fr": "Journal officiel Associations",
+    "domain": "journal-officiel.gouv.fr/associations",
+    "frwiki": "Journal_officiel_Associations"
+  },
+  {
+    "fr": "Kaleva",
+    "domain": "kaleva.fi",
+    "frwiki": "Kaleva"
+  },
+  {
+    "fr": "L'Orne combattante",
+    "domain": "lornecombattante.fr",
+    "frwiki": "L%27Orne_combattante"
+  },
+  {
+    "fr": "L'Unité",
+    "domain": "62.210.214.184/unite/u-unite.php",
+    "frwiki": "L%27Unit%C3%A9"
+  },
+  {
+    "fr": "L'Action Républicaine",
+    "domain": "lactionrepublicaine.fr",
+    "frwiki": "L%27Action_r%C3%A9publicaine_(Nogent-le-Rotrou)"
+  },
+  {
+    "fr": "L'Agefi",
+    "domain": "agefi.fr",
+    "frwiki": "L%27Agefi_(France)"
+  },
+  {
+    "fr": "La Cuarta",
+    "domain": "lacuarta.cl",
+    "frwiki": "La_Cuarta"
+  },
+  {
+    "fr": "Herria",
+    "domain": "herria.eus",
+    "frwiki": "Herria"
+  },
+  {
+    "fr": "Ilkka",
+    "domain": "ilkka.fi",
+    "frwiki": "Ilkka"
+  },
+  {
+    "fr": "L'Écho de l'Armor et de l'Argoat",
+    "domain": "lechodelargoat.fr",
+    "frwiki": "L%27%C3%89cho_de_l%27Armor_et_de_l%27Argoat"
+  },
+  {
+    "fr": "L'Observateur du Maroc",
+    "domain": "lobservateurdumaroc.info",
+    "frwiki": "L%27Observateur_du_Maroc"
+  },
+  {
+    "fr": "La Dépêche du Bassin",
+    "domain": "ladepechedubassin.fr",
+    "frwiki": "La_D%C3%A9p%C3%AAche_du_Bassin"
+  },
+  {
+    "fr": "La Distinction",
+    "domain": "distinction.ch",
+    "frwiki": "La_Distinction_(revue)"
+  },
+  {
+    "fr": "La Gazette du Maroc",
+    "domain": "lagazettedumaroc.com",
+    "frwiki": "La_Gazette_du_Maroc"
+  },
+  {
+    "fr": "La Lettre du Continent",
+    "domain": "africaintelligence.fr/LC-/default.asp",
+    "frwiki": "La_Lettre_du_Continent"
+  },
+  {
+    "fr": "Al Fagr",
+    "domain": "elfagr.com",
+    "frwiki": "Al_Fagr"
+  },
+  {
+    "fr": "Al-Ahram Hebdo",
+    "domain": "hebdo.ahram.org.eg",
+    "frwiki": "Al-Ahram_Hebdo"
+  },
+  {
+    "fr": "Art Press",
+    "domain": "artpress.com",
+    "frwiki": "Art_Press"
+  },
+  {
+    "fr": "Aujourd'hui le Maroc",
+    "domain": "aujourdhui.ma",
+    "frwiki": "Aujourd%27hui_le_Maroc"
+  },
+  {
+    "fr": "Aujourd'hui le Maroc",
+    "domain": "aujourdhui.ma",
+    "frwiki": "Aujourd%27hui_le_Maroc"
+  },
+  {
+    "fr": "Bath Chronicle",
+    "domain": "bathchronicle.co.uk",
+    "frwiki": "Bath_Chronicle"
+  },
+  {
+    "fr": "Afro-American (journal)",
+    "domain": "afro.com",
+    "frwiki": "Afro-American"
+  },
+  {
+    "fr": "Bakchich (site internet)",
+    "domain": "bakchich.info",
+    "frwiki": "Bakchich_(site_web)"
+  },
+  {
+    "fr": "American Free Press",
+    "domain": "americanfreepress.net",
+    "frwiki": "American_Free_Press"
+  },
+  {
+    "fr": "Be magazine",
+    "domain": "be.com",
+    "frwiki": "Be_Magazine"
+  },
+  {
+    "fr": "Bismarck Tribune",
+    "domain": "bismarcktribune.com",
+    "frwiki": "Bismarck_Tribune"
+  },
+  {
+    "fr": "Afrique magazine",
+    "domain": "afriquemagazine.com",
+    "frwiki": "Afrique_magazine"
+  },
+  {
+    "fr": "Attariq Al Jadid",
+    "domain": "attariq.org",
+    "frwiki": "Attariq_Al_Jadid"
+  },
+  {
+    "fr": "Davar",
+    "domain": "davar1.co.il",
+    "frwiki": "Davar"
+  },
+  {
+    "fr": "Alik",
+    "domain": "alikonline.ir",
+    "frwiki": "Alik"
+  },
+  {
+    "fr": "Alvorada (Lourinhã)",
+    "domain": "alvorada.pt",
+    "frwiki": "Alvorada_(Lourinh%C3%A3)"
+  },
+  {
+    "fr": "Sarasota Herald-Tribune",
+    "domain": "heraldtribune.com",
+    "frwiki": "Sarasota_Herald-Tribune"
+  },
+  {
+    "fr": "Auto Hebdo (France)",
+    "domain": "autohebdo.fr",
+    "frwiki": "Auto_Hebdo_(France)"
+  },
+  {
+    "fr": "Batailles aériennes (revue)",
+    "domain": "avions-bateaux.com/fr/catalogue-batailles-aeriennes-catalogue_1_2_1_0.html",
+    "frwiki": "Batailles_a%C3%A9riennes"
+  },
+  {
+    "fr": "Air et Cosmos",
+    "domain": "air-cosmos.com",
+    "frwiki": "Air_et_Cosmos"
+  },
+  {
+    "fr": "Alithia",
+    "domain": "alithia.com.cy",
+    "frwiki": "Al%C3%ADthia"
+  },
+  {
+    "fr": "Cape Argus",
+    "domain": "capeargus.co.za",
+    "frwiki": "Cape_Argus"
+  },
+  {
+    "fr": "Connaissance de l'Eure",
+    "domain": "societe-libre-eure.org/index.php/connaissance-de-l-eure",
+    "frwiki": "Connaissance_de_l%27Eure"
+  },
+  {
+    "fr": "Contacto",
+    "domain": "contacto.lu",
+    "frwiki": "Contacto"
+  },
+  {
+    "fr": "Canadian Jewish News",
+    "domain": "cjnews.com",
+    "frwiki": "Canadian_Jewish_News"
+  },
+  {
+    "fr": "Commentaire",
+    "domain": "commentaire.fr",
+    "frwiki": "Commentaire_(revue)"
+  },
+  {
+    "fr": "Cork Independent",
+    "domain": "corkindependent.com",
+    "frwiki": "Cork_Independent"
+  },
+  {
+    "fr": "Rizospastis",
+    "domain": "rizospastis.gr",
+    "frwiki": "Rizospastis"
+  },
+  {
+    "fr": "Côté Rouen",
+    "domain": "normandie-actu.fr",
+    "frwiki": "C%C3%B4t%C3%A9_Rouen"
+  },
+  {
+    "fr": "CQFD",
+    "domain": "cqfd-journal.org",
+    "frwiki": "CQFD_(journal)"
+  },
+  {
+    "fr": "De l'air",
+    "domain": "delair.fr",
+    "frwiki": "De_l%27air"
+  },
+  {
+    "fr": "Capital Ethiopia",
+    "domain": "capitalethiopia.com",
+    "frwiki": "Capital_Ethiopia"
+  },
+  {
+    "fr": "Challenges",
+    "domain": "challenges.fr",
+    "frwiki": "Challenges"
+  },
+  {
+    "fr": "Côté Caen",
+    "domain": "cotecaen.fr",
+    "frwiki": "C%C3%B4t%C3%A9_Caen"
+  },
+  {
+    "fr": "Dallas Voice",
+    "domain": "dallasvoice.com",
+    "frwiki": "Dallas_Voice"
+  },
+  {
+    "fr": "Cape Times",
+    "domain": "saarf.co.za",
+    "frwiki": "Cape_Times"
+  },
+  {
+    "fr": "Controverses",
+    "domain": "controverses.fr",
+    "frwiki": "Controverses_(revue)"
+  },
+  {
+    "fr": "Daily News",
+    "domain": "dailynews.co.th",
+    "frwiki": "Daily_News_(Tha%C3%AFlande)"
+  },
+  {
+    "fr": "Challenge Hebdo",
+    "domain": "challenge.ma",
+    "frwiki": "Challenge_(magazine_marocain)"
+  },
+  {
+    "fr": "El Diario Vasco",
+    "domain": "diariovasco.com",
+    "frwiki": "El_Diario_Vasco"
+  },
+  {
+    "fr": "Marca",
+    "domain": "marca.com",
+    "frwiki": "Marca_(journal)"
+  },
+  {
+    "fr": "The Dominion Post",
+    "domain": "stuff.co.nz/dominionpost",
+    "frwiki": "The_Dominion_Post"
+  },
+  {
+    "fr": "La Stampa",
+    "domain": "lastampa.it",
+    "frwiki": "La_Stampa"
+  },
+  {
+    "fr": "Pester Lloyd",
+    "domain": "pesterlloyd.net",
+    "frwiki": "Pester_Lloyd"
+  },
+  {
+    "fr": "Les Échos",
+    "domain": "lesechos.fr",
+    "frwiki": "Les_%C3%89chos"
+  },
+  {
+    "fr": "Xtra!",
+    "domain": "dailyxtra.com",
+    "frwiki": "Xtra!"
+  },
+  {
+    "fr": "San Antonio Express-News",
+    "domain": "expressnews.com",
+    "frwiki": "San_Antonio_Express-News"
+  },
+  {
+    "fr": "Indigo Publications",
+    "domain": "indigo-net.com",
+    "frwiki": "Indigo_Publications"
+  },
+  {
+    "fr": "Glas Srpske",
+    "domain": "glassrpske.com",
+    "frwiki": "Glas_Srpske"
+  },
+  {
+    "fr": "Le Bulletin de l'opinion publique russe",
+    "domain": "levada.ru",
+    "frwiki": "Le_Bulletin_de_l%27opinion_publique_russe"
+  },
+  {
+    "fr": "The Hindu",
+    "domain": "thehindu.com",
+    "frwiki": "The_Hindu"
+  },
+  {
+    "fr": "Diena",
+    "domain": "diena.lv",
+    "frwiki": "Diena_(journal)"
+  },
+  {
+    "fr": "Firat news agency",
+    "domain": "en.firatajans.com",
+    "frwiki": "Firat_news_agency"
+  },
+  {
+    "fr": "El País",
+    "domain": "elpais.com.uy",
+    "frwiki": "El_Pa%C3%ADs_(Uruguay)"
+  },
+  {
+    "fr": "Le Journal de l'Automobile",
+    "domain": "journalauto.com",
+    "frwiki": "Le_Journal_de_l%27automobile"
+  },
+  {
+    "fr": "Le Journal du Médoc",
+    "domain": "lejournaldumedoc.fr",
+    "frwiki": "Le_Journal_du_M%C3%A9doc"
+  },
+  {
+    "fr": "Le Lac-St-Jean",
+    "domain": "lelacsaintjean.com",
+    "frwiki": "Le_Lac-St-Jean"
+  },
+  {
+    "fr": "Le Monde de l'art",
+    "domain": "lemondedelart.fr",
+    "frwiki": "Le_Monde_de_l%27art"
+  },
+  {
+    "fr": "Le Monde informatique",
+    "domain": "lemondeinformatique.fr",
+    "frwiki": "Le_Monde_informatique"
+  },
+  {
+    "fr": "Le Courrier de l'Eure",
+    "domain": "lecourrierdeleure.fr",
+    "frwiki": "Le_Courrier_de_l%27Eure"
+  },
+  {
+    "fr": "Le Courrier du Pays de Retz",
+    "domain": "lecourrierdupaysderetz.fr",
+    "frwiki": "Le_Courrier_du_pays_de_Retz"
+  },
+  {
+    "fr": "Le Délit français",
+    "domain": "delitfrancais.com",
+    "frwiki": "Le_D%C3%A9lit_fran%C3%A7ais"
+  },
+  {
+    "fr": "Le Figaro Magazine",
+    "domain": "lefigaro.fr/lefigaromagazine",
+    "frwiki": "Le_Figaro_Magazine"
+  },
+  {
+    "fr": "Le Journal des Finances",
+    "domain": "jdf.com",
+    "frwiki": "Le_Journal_des_finances"
+  },
+  {
+    "fr": "Le Marin",
+    "domain": "lemarin.fr",
+    "frwiki": "Le_Marin_(journal)"
+  },
+  {
+    "fr": "Le Saint-Affricain",
+    "domain": "lesaintaffricain.fr",
+    "frwiki": "Le_Saint-Affricain"
+  },
+  {
+    "fr": "Les Cahiers de l'Orient",
+    "domain": "cahiersdelorient.wordpress.com",
+    "frwiki": "Les_Cahiers_de_l%27Orient"
+  },
+  {
+    "fr": "Le Soir Magazine",
+    "domain": "lesoir.be/102446/soirmag",
+    "frwiki": "Soir_Mag"
+  },
+  {
+    "fr": "Le Figaro littéraire",
+    "domain": "lefigaro.fr/livres",
+    "frwiki": "Le_Figaro_litt%C3%A9raire"
+  },
+  {
+    "fr": "Le Figaroscope",
+    "domain": "figaroscope.fr",
+    "frwiki": "Le_Figaroscope"
+  },
+  {
+    "fr": "Le Messager",
+    "domain": "lemessager.fr",
+    "frwiki": "Le_Messager_(France)"
+  },
+  {
+    "fr": "Le Pays gessien",
+    "domain": "lepaysgessien.fr",
+    "frwiki": "Le_Pays_gessien"
+  },
+  {
+    "fr": "Le Plateau",
+    "domain": "leplateau.com",
+    "frwiki": "Le_Plateau_(journal)"
+  },
+  {
+    "fr": "Le Poher",
+    "domain": "poher-hebdo.fr",
+    "frwiki": "Le_Poher"
+  },
+  {
+    "fr": "Le Publicateur libre",
+    "domain": "lepublicateurlibre.fr",
+    "frwiki": "Le_Publicateur_libre"
+  },
+  {
+    "fr": "Le Tarn Libre",
+    "domain": "letarnlibre.com",
+    "frwiki": "Le_Tarn_libre"
+  },
+  {
+    "fr": "Les 4 Vérités Hebdo",
+    "domain": "les4verites.com",
+    "frwiki": "Les_4_V%C3%A9rit%C3%A9s_Hebdo"
+  },
+  {
+    "fr": "Les Afriques",
+    "domain": "lesafriques.com",
+    "frwiki": "Les_Afriques"
+  },
+  {
+    "fr": "Le Journal de Saint-Barth",
+    "domain": "journaldesaintbarth.com",
+    "frwiki": "Le_Journal_de_Saint-Barth"
+  },
+  {
+    "fr": "Le Perche",
+    "domain": "le-perche.fr",
+    "frwiki": "Le_Perche_(hebdomadaire)"
+  },
+  {
+    "fr": "Le Polyscope",
+    "domain": "polyscope.qc.ca",
+    "frwiki": "Le_Polyscope"
+  },
+  {
+    "fr": "Le Républicain",
+    "domain": "le-republicain.fr",
+    "frwiki": "Le_R%C3%A9publicain_(Essonne)"
+  },
+  {
+    "fr": "Le Républicain",
+    "domain": "lerepublicain-mali.com",
+    "frwiki": "Le_R%C3%A9publicain_(Mali)"
+  },
+  {
+    "fr": "Le Ravi",
+    "domain": "leravi.org",
+    "frwiki": "Le_Ravi_(journal)"
+  },
+  {
+    "fr": "Le Temps d'Algérie",
+    "domain": "letempsdz.com",
+    "frwiki": "Le_Temps_d%27Alg%C3%A9rie"
+  },
+  {
+    "fr": "The A.V. Club",
+    "domain": "avclub.com",
+    "frwiki": "The_A.V._Club"
+  },
+  {
+    "fr": "Le Crestois",
+    "domain": "le-crestois.fr",
+    "frwiki": "Le_Crestois"
+  },
+  {
+    "fr": "Le Gaboteur",
+    "domain": "gaboteur.ca",
+    "frwiki": "Le_Gaboteur"
+  },
+  {
+    "fr": "Le Journal de Mickey",
+    "domain": "journaldemickey.com",
+    "frwiki": "Le_Journal_de_Mickey"
+  },
+  {
+    "fr": "Le Journal des enfants",
+    "domain": "lavenir.net/extra/JDE/qsn/accueil.html",
+    "frwiki": "Le_Journal_des_enfants_(Belgique)"
+  },
+  {
+    "fr": "Le Journal des Flandres",
+    "domain": "lejournaldesflandres.fr",
+    "frwiki": "Le_Journal_des_Flandres"
+  },
+  {
+    "fr": "Le Québécois",
+    "domain": "lequebecois.org",
+    "frwiki": "Le_Qu%C3%A9b%C3%A9cois"
+  },
+  {
+    "fr": "Le Quotidien des Jeunes",
+    "domain": "lequotidiendesjeunes.re",
+    "frwiki": "Le_Quotidien_des_Jeunes"
+  },
+  {
+    "fr": "Le Temps",
+    "domain": "letemps.ma",
+    "frwiki": "Le_Temps_(magazine_marocain)"
+  },
+  {
+    "fr": "Le Voile d'Isis",
+    "domain": "iapsop.com/archive/materials/voile_d_isis",
+    "frwiki": "Le_Voile_d%27Isis"
+  },
+  {
+    "fr": "Le Voyageur",
+    "domain": "levoyageur.ca",
+    "frwiki": "Le_Voyageur_(journal)"
+  },
+  {
+    "fr": "Les Cahiers bleus",
+    "domain": "les-cahiers-bleus.com",
+    "frwiki": "Les_Cahiers_bleus_(revue)"
+  },
+  {
+    "fr": "Le Figaro Réussir",
+    "domain": "lefigaro.fr/emploi",
+    "frwiki": "Le_Figaro_r%C3%A9ussir"
+  },
+  {
+    "fr": "Le Nouvel Économiste",
+    "domain": "lenouveleconomiste.fr",
+    "frwiki": "Le_Nouvel_%C3%89conomiste"
+  },
+  {
+    "fr": "Le Progrès saint-affricain",
+    "domain": "imprimerieprogres.com",
+    "frwiki": "Le_Progr%C3%A8s_saint-affricain"
+  },
+  {
+    "fr": "Le Réveil du Vivarais",
+    "domain": "reveil-vivarais.fr",
+    "frwiki": "Le_R%C3%A9veil_du_Vivarais"
+  },
+  {
+    "fr": "Le Réveil normand",
+    "domain": "lereveilnormand.fr",
+    "frwiki": "Le_R%C3%A9veil_normand"
+  },
+  {
+    "fr": "Le Journal de l'Orne",
+    "domain": "lejournaldelorne.fr",
+    "frwiki": "Le_Journal_de_l%27Orne"
+  },
+  {
+    "fr": "Le Monde de l'éducation",
+    "domain": "lemonde.fr/education",
+    "frwiki": "Le_Monde_de_l%27%C3%A9ducation"
+  },
+  {
+    "fr": "Le Vélocipède illustré",
+    "domain": "antediluvian.fr",
+    "frwiki": "Le_V%C3%A9locip%C3%A8de_illustr%C3%A9"
+  },
+  {
+    "fr": "Le Huffington Post",
+    "domain": "huffingtonpost.fr",
+    "frwiki": "Le_HuffPost"
+  },
+  {
+    "fr": "Le Rouge et le Blanc",
+    "domain": "lerougeetleblanc.com",
+    "frwiki": "Le_Rouge_et_le_Blanc"
+  },
+  {
+    "fr": "Pèlerin",
+    "domain": "pelerin.com",
+    "frwiki": "Le_P%C3%A8lerin_(magazine)"
+  },
+  {
+    "fr": "Nezavissimaïa Gazeta",
+    "domain": "ng.ru",
+    "frwiki": "Nezavissima%C3%AFa_Gazeta"
+  },
+  {
+    "fr": "Le Monde libertaire",
+    "domain": "monde-libertaire.fr",
+    "frwiki": "Le_Monde_libertaire"
+  },
+  {
+    "fr": "Rue89",
+    "domain": "rue89.com",
+    "frwiki": "Rue89"
+  },
+  {
+    "fr": "Winston-Salem Journal",
+    "domain": "journalnow.com",
+    "frwiki": "Winston-Salem_Journal"
+  },
+  {
+    "fr": "Valor Econômico",
+    "domain": "valor.com.br",
+    "frwiki": "Valor_Econ%C3%B4mico"
+  },
+  {
+    "fr": "Chicago Defender",
+    "domain": "chicagodefender.com",
+    "frwiki": "Chicago_Defender"
+  },
+  {
+    "fr": "Politico Europe",
+    "domain": "politico.eu",
+    "frwiki": "Politico_Europe"
+  },
+  {
+    "fr": "LA Weekly",
+    "domain": "laweekly.com",
+    "frwiki": "LA_Weekly"
+  },
+  {
+    "fr": "O Globo",
+    "domain": "oglobo.com.br",
+    "frwiki": "O_Globo"
+  },
+  {
+    "fr": "Journal and Courier",
+    "domain": "jconline.com",
+    "frwiki": "Journal_and_Courier"
+  },
+  {
+    "fr": "Zavtra (journal)",
+    "domain": "zavtra.ru",
+    "frwiki": "Zavtra"
+  },
+  {
+    "fr": "Helsinki Times",
+    "domain": "helsinkitimes.fi",
+    "frwiki": "Helsinki_Times"
+  },
+  {
+    "fr": "Digital Times",
+    "domain": "digitaltimes.lv",
+    "frwiki": "Digital_Times"
+  },
+  {
+    "fr": "Russia Beyond the Headlines",
+    "domain": "rbth.com",
+    "frwiki": "Russia_Beyond"
+  },
+  {
+    "fr": "The Star-Ledger",
+    "domain": "nj.com",
+    "frwiki": "The_Star-Ledger"
+  },
+  {
+    "fr": "Charlie Hebdo",
+    "domain": "charliehebdo.fr",
+    "frwiki": "Charlie_Hebdo"
+  },
+  {
+    "fr": "Concord Monitor",
+    "domain": "concordmonitor.com",
+    "frwiki": "Concord_Monitor"
+  },
+  {
+    "fr": "Columbia Daily Tribune",
+    "domain": "columbiatribune.com",
+    "frwiki": "Columbia_Daily_Tribune"
+  },
+  {
+    "fr": "Il Gazzettino",
+    "domain": "gazzettino.it",
+    "frwiki": "Il_Gazzettino"
+  },
+  {
+    "fr": "La Mèche",
+    "domain": "lameche.org",
+    "frwiki": "La_M%C3%A8che"
+  },
+  {
+    "fr": "La Semaine du Roussillon",
+    "domain": "lasemaineduroussillon.com",
+    "frwiki": "La_Semaine_du_Roussillon"
+  },
+  {
+    "fr": "La République de Seine-et-Marne",
+    "domain": "larepublique77.fr",
+    "frwiki": "La_R%C3%A9publique_de_Seine-et-Marne"
+  },
+  {
+    "fr": "La Semaine des Ardennes",
+    "domain": "lasemainedesardennes.fr",
+    "frwiki": "La_Semaine_des_Ardennes"
+  },
+  {
+    "fr": "Le Bleu",
+    "domain": "professionpolitique.info",
+    "frwiki": "Le_Bleu"
+  },
+  {
+    "fr": "Dong-a Ilbo",
+    "domain": "dongailbo.co.kr",
+    "frwiki": "Dong-a_Ilbo"
+  },
+  {
+    "fr": "La Nouvelle Tribune",
+    "domain": "lanouvelletribune.com",
+    "frwiki": "La_Nouvelle_Tribune_(Maroc)"
+  },
+  {
+    "fr": "La Nouvelle Vie ouvrière",
+    "domain": "nvo.fr",
+    "frwiki": "La_Nouvelle_Vie_ouvri%C3%A8re"
+  },
+  {
+    "fr": "La Semaine africaine",
+    "domain": "lasemaineafricaine.net",
+    "frwiki": "La_Semaine_africaine"
+  },
+  {
+    "fr": "La Tribune républicaine de Bellegarde",
+    "domain": "latribunerepublicaine.fr",
+    "frwiki": "La_Tribune_r%C3%A9publicaine_de_Bellegarde"
+  },
+  {
+    "fr": "La Vie éco",
+    "domain": "lavieeco.com",
+    "frwiki": "La_Vie_%C3%A9co"
+  },
+  {
+    "fr": "La Vie nouvelle",
+    "domain": "la-vie-nouvelle.fr",
+    "frwiki": "La_Vie_nouvelle_(journal)"
+  },
+  {
+    "fr": "Shizuoka Shimbun",
+    "domain": "at-s.com",
+    "frwiki": "Shizuoka_Shimbun"
+  },
+  {
+    "fr": "Evenimentul Zilei",
+    "domain": "evz.ro",
+    "frwiki": "Evenimentul_Zilei"
+  },
+  {
+    "fr": "La Terrasse",
+    "domain": "journal-laterrasse.fr",
+    "frwiki": "La_Terrasse_(journal)"
+  },
+  {
+    "fr": "La Vie au soleil",
+    "domain": "lavieausoleil.fr",
+    "frwiki": "La_Vie_au_soleil"
+  },
+  {
+    "fr": "La Vie de l'auto",
+    "domain": "lva.fr",
+    "frwiki": "La_Vie_de_l%27auto"
+  },
+  {
+    "fr": "La Vie du Rail magazine",
+    "domain": "laviedurail.com",
+    "frwiki": "La_Vie_du_rail_magazine"
+  },
+  {
+    "fr": "Le Courrier Indépendant",
+    "domain": "lecourrierindependant.fr",
+    "frwiki": "Le_Courrier_ind%C3%A9pendant"
+  },
+  {
+    "fr": "Magyar Hírlap",
+    "domain": "magyarhirlap.hu",
+    "frwiki": "Magyar_H%C3%ADrlap"
+  },
+  {
+    "fr": "La Lettre à Lulu",
+    "domain": "lalettrealulu.com",
+    "frwiki": "La_Lettre_%C3%A0_Lulu"
+  },
+  {
+    "fr": "La Nouvelle République du Centre-Ouest",
+    "domain": "lanouvellerepublique.fr",
+    "frwiki": "La_Nouvelle_R%C3%A9publique_du_Centre-Ouest"
+  },
+  {
+    "fr": "La Vie",
+    "domain": "lavie.fr",
+    "frwiki": "La_Vie"
+  },
+  {
+    "fr": "La Voix des Sports",
+    "domain": "lavoixdessports.com",
+    "frwiki": "La_Voix_des_sports"
+  },
+  {
+    "fr": "MONU",
+    "domain": "monu-magazine.com",
+    "frwiki": "MONU"
+  },
+  {
+    "fr": "La Semaine dans le Boulonnais",
+    "domain": "lasemainedansleboulonnais.fr",
+    "frwiki": "La_Semaine_dans_le_Boulonnais"
+  },
+  {
+    "fr": "La Thiérache",
+    "domain": "la-thierache.fr",
+    "frwiki": "La_Thi%C3%A9rache"
+  },
+  {
+    "fr": "Népszabadság",
+    "domain": "nol.hu",
+    "frwiki": "N%C3%A9pszabads%C3%A1g"
+  },
+  {
+    "fr": "La Nouvelle Gazette",
+    "domain": "lanouvellegazette.be",
+    "frwiki": "La_Nouvelle_Gazette"
+  },
+  {
+    "fr": "La Savoie",
+    "domain": "lasavoie.fr",
+    "frwiki": "La_Savoie_(hebdomadaire)"
+  },
+  {
+    "fr": "La Voix - Le Bocage",
+    "domain": "lavoixlebocage.fr",
+    "frwiki": "La_Voix_-_Le_Bocage"
+  },
+  {
+    "fr": "Le Courrier de Russie",
+    "domain": "lecourrierderussie.com",
+    "frwiki": "Le_Courrier_de_Russie"
+  },
+  {
+    "fr": "Länsi-Uusimaa",
+    "domain": "lansi-uusimaa.fi",
+    "frwiki": "L%C3%A4nsi-Uusimaa_(journal)"
+  },
+  {
+    "fr": "Minute",
+    "domain": "minute-hebdo.fr",
+    "frwiki": "Minute_(hebdomadaire)"
+  },
+  {
+    "fr": "Moustique",
+    "domain": "moustique.be",
+    "frwiki": "Moustique_(magazine)"
+  },
+  {
+    "fr": "Les génies de la science",
+    "domain": "lesgeniesdelascience.fr",
+    "frwiki": "Les_G%C3%A9nies_de_la_science"
+  },
+  {
+    "fr": "Maghreb Confidentiel",
+    "domain": "africaintelligence.fr/MC-/default.asp",
+    "frwiki": "Maghreb_Confidentiel"
+  },
+  {
+    "fr": "maison de la Madone",
+    "domain": "madonnahouse.org/restoration",
+    "frwiki": "Maison_de_la_Madone"
+  },
+  {
+    "fr": "Montreal Mirror",
+    "domain": "montrealmirror.com",
+    "frwiki": "Montreal_Mirror"
+  },
+  {
+    "fr": "Lunatique",
+    "domain": "eons.fr",
+    "frwiki": "Lunatique_(revue)"
+  },
+  {
+    "fr": "Galicia Hoxe",
+    "domain": "galiciahoxe.com",
+    "frwiki": "Galicia_Hoxe"
+  },
+  {
+    "fr": "Marianne",
+    "domain": "marianne.net",
+    "frwiki": "Marianne_(magazine)"
+  },
+  {
+    "fr": "Maxi",
+    "domain": "maxi-mag.fr/",
+    "frwiki": "Maxi_(magazine)"
+  },
+  {
+    "fr": "Liberté - Le Bonhomme libre",
+    "domain": "libertebonhomme.fr",
+    "frwiki": "Libert%C3%A9_-_Le_Bonhomme_libre"
+  },
+  {
+    "fr": "Missoula Independent",
+    "domain": "missoulanews.bigskypress.com",
+    "frwiki": "Missoula_Independent"
+  },
+  {
+    "fr": "Libre Service Actualités",
+    "domain": "lsa-conso.fr",
+    "frwiki": "Libre_Service_Actualit%C3%A9s"
+  },
+  {
+    "fr": "El Correo Gallego",
+    "domain": "elcorreogallego.es",
+    "frwiki": "El_Correo_Gallego"
+  },
+  {
+    "fr": "Midi olympique",
+    "domain": "midi-olympique.fr",
+    "frwiki": "Midi_olympique"
+  },
+  {
+    "fr": "Lettre d'Amazonie",
+    "domain": "lettre-amazonie.org",
+    "frwiki": "Lettre_d%27Amazonie"
+  },
+  {
+    "fr": "Maroc Hebdo International",
+    "domain": "maroc-hebdo.press.ma",
+    "frwiki": "Maroc_Hebdo_International"
+  },
+  {
+    "fr": "Deseret News",
+    "domain": "deseretnews.com",
+    "frwiki": "Deseret_News"
+  },
+  {
+    "fr": "Moskovskij Komsomolets",
+    "domain": "mk.ru",
+    "frwiki": "Moskovski_Komsomolets"
+  },
+  {
+    "fr": "L'Obs",
+    "domain": "tempsreel.nouvelobs.com",
+    "frwiki": "L%27Obs"
+  },
+  {
+    "fr": "City Press",
+    "domain": "city-press.news24.com",
+    "frwiki": "City_Press"
+  },
+  {
+    "fr": "Nawa-i-Waqt",
+    "domain": "nawaiwaqt.com.pk",
+    "frwiki": "Nawa-i-Waqt"
+  },
+  {
+    "fr": "Nor Haratch",
+    "domain": "norharatch.com",
+    "frwiki": "Nor_Haratch"
+  },
+  {
+    "fr": "O Dia",
+    "domain": "odia.ig.com.br",
+    "frwiki": "O_Dia"
+  },
+  {
+    "fr": "Ålandstidningen",
+    "domain": "alandstidningen.ax",
+    "frwiki": "%C3%85landstidningen"
+  },
+  {
+    "fr": "Néos Kósmos",
+    "domain": "neoskosmos.com.au",
+    "frwiki": "N%C3%A9os_K%C3%B3smos_(journal)"
+  },
+  {
+    "fr": "Néos Kósmos",
+    "domain": "neoskosmos.com",
+    "frwiki": "N%C3%A9os_K%C3%B3smos_(journal)"
+  },
+  {
+    "fr": "Noticias",
+    "domain": "noticias.uol.com.ar",
+    "frwiki": "Noticias"
+  },
+  {
+    "fr": "Nous Deux",
+    "domain": "nousdeux.fr",
+    "frwiki": "Nous_deux_(magazine)"
+  },
+  {
+    "fr": "Nationen",
+    "domain": "nationen.no",
+    "frwiki": "Nationen"
+  },
+  {
+    "fr": "Oise Hebdo",
+    "domain": "oisehebdo.com",
+    "frwiki": "Oise_Hebdo"
+  },
+  {
+    "fr": "Excélsior",
+    "domain": "excelsior.com.mx",
+    "frwiki": "Exc%C3%A9lsior"
+  },
+  {
+    "fr": "L'Humanité",
+    "domain": "humanite.fr",
+    "frwiki": "L%27Humanit%C3%A9"
+  },
+  {
+    "fr": "Telquel",
+    "domain": "telquel.ma",
+    "frwiki": "Telquel"
+  },
+  {
+    "fr": "Dagblaðið Vísir",
+    "domain": "dv.is",
+    "frwiki": "Dagbla%C3%B0i%C3%B0_V%C3%ADsir"
+  },
+  {
+    "fr": "Granma",
+    "domain": "granma.cu",
+    "frwiki": "Granma_(journal)"
+  },
+  {
+    "fr": "Courrier international",
+    "domain": "courrierinternational.com",
+    "frwiki": "Courrier_international"
+  },
+  {
+    "fr": "New York Amsterdam News",
+    "domain": "amsterdamnews.com",
+    "frwiki": "New_York_Amsterdam_News"
+  },
+  {
+    "fr": "Troud",
+    "domain": "trud.ru",
+    "frwiki": "Troud"
+  },
+  {
+    "fr": "The New Zealand Herald",
+    "domain": "nzherald.co.nz",
+    "frwiki": "The_New_Zealand_Herald"
+  },
+  {
+    "fr": "Dawn",
+    "domain": "dawn.com",
+    "frwiki": "Dawn_(journal)"
+  },
+  {
+    "fr": "De Standaard",
+    "domain": "standaard.be",
+    "frwiki": "De_Standaard"
+  },
+  {
+    "fr": "De Standaard",
+    "domain": "standaard.be",
+    "frwiki": "De_Standaard"
+  },
+  {
+    "fr": "Die Burger",
+    "domain": "dieburger.com",
+    "frwiki": "Die_Burger"
+  },
+  {
+    "fr": "Die Son",
+    "domain": "dieson.com",
+    "frwiki": "Die_Son"
+  },
+  {
+    "fr": "The Moscow Times",
+    "domain": "themoscowtimes.com",
+    "frwiki": "The_Moscow_Times"
+  },
+  {
+    "fr": "Ekstra Bladet",
+    "domain": "ekstrabladet.dk",
+    "frwiki": "Ekstra_Bladet"
+  },
+  {
+    "fr": "Sözcü",
+    "domain": "sozcu.com.tr",
+    "frwiki": "S%C3%B6zc%C3%BC"
+  },
+  {
+    "fr": "Goudok",
+    "domain": "gudok.ru",
+    "frwiki": "Goudok"
+  },
+  {
+    "fr": "Press",
+    "domain": "pressonline.rs",
+    "frwiki": "Press_(journal)"
+  },
+  {
+    "fr": "Prostitution et Société",
+    "domain": "prostitutionetsociete.fr",
+    "frwiki": "Prostitution_et_Soci%C3%A9t%C3%A9"
+  },
+  {
+    "fr": "Revue 303",
+    "domain": "revue303.com",
+    "frwiki": "Revue_303"
+  },
+  {
+    "fr": "Oui magazine",
+    "domain": "ouimagazine.net",
+    "frwiki": "Oui_magazine"
+  },
+  {
+    "fr": "Point de vue",
+    "domain": "pointdevue.fr",
+    "frwiki": "Point_de_vue_(magazine)"
+  },
+  {
+    "fr": "Points de vente",
+    "domain": "pointsdevente.fr",
+    "frwiki": "Points_de_vente"
+  },
+  {
+    "fr": "Polka Magazine",
+    "domain": "polkamagazine.com",
+    "frwiki": "Polka_Magazine"
+  },
+  {
+    "fr": "Pittsburgh Business Times",
+    "domain": "pittsburgh.bizjournals.com",
+    "frwiki": "Pittsburgh_Business_Times"
+  },
+  {
+    "fr": "Revue pyrénéenne",
+    "domain": "revue-pyreneenne.com",
+    "frwiki": "Revue_pyr%C3%A9n%C3%A9enne"
+  },
+  {
+    "fr": "Rivarol",
+    "domain": "rivarol.com",
+    "frwiki": "Rivarol_(hebdomadaire)"
+  },
+  {
+    "fr": "Philadelphia Daily News",
+    "domain": "philly.com/mld/dailynews",
+    "frwiki": "Philadelphia_Daily_News"
+  },
+  {
+    "fr": "Pretoria News",
+    "domain": "pretorianews.co.za",
+    "frwiki": "Pretoria_News"
+  },
+  {
+    "fr": "Progrès de Cornouaille",
+    "domain": "lecourrier-leprogres.fr",
+    "frwiki": "Progr%C3%A8s_de_Cornouaille"
+  },
+  {
+    "fr": "Roadbook Media",
+    "domain": "roadbook.travel",
+    "frwiki": "Roadbook_Media"
+  },
+  {
+    "fr": "Pontivy Journal",
+    "domain": "pontivyjournal.fr",
+    "frwiki": "Pontivy_Journal"
+  },
+  {
+    "fr": "The Villager",
+    "domain": "thevillager.com",
+    "frwiki": "The_Villager"
+  },
+  {
+    "fr": "Père Ubu",
+    "domain": "ubupan.be",
+    "frwiki": "Ubu-Pan"
+  },
+  {
+    "fr": "Outre-Terre",
+    "domain": "diploweb.com/outreterre.htm",
+    "frwiki": "Outre-Terre"
+  },
+  {
+    "fr": "Pariscope",
+    "domain": "pariscope.fr",
+    "frwiki": "Pariscope"
+  },
+  {
+    "fr": "Pour lire pas lu",
+    "domain": "homme-moderne.org/plpl",
+    "frwiki": "Pour_lire_pas_lu"
+  },
+  {
+    "fr": "Västra Nyland",
+    "domain": "vastranyland.fi",
+    "frwiki": "V%C3%A4stra_Nyland"
+  },
+  {
+    "fr": "Press-Republican",
+    "domain": "pressrepublican.com",
+    "frwiki": "Press-Republican"
+  },
+  {
+    "fr": "Phileleftheros",
+    "domain": "phileleftherosgroup.com",
+    "frwiki": "O_Philel%C3%A9ftheros"
+  },
+  {
+    "fr": "Politis",
+    "domain": "politis.com.cy",
+    "frwiki": "Pol%C3%ADtis_(Chypre)"
+  },
+  {
+    "fr": "Rouge",
+    "domain": "orta.dynalias.org/archivesrouge/rouge",
+    "frwiki": "Rouge_(journal)"
+  },
+  {
+    "fr": "The Guardian Weekly",
+    "domain": "theguardian.com/weekly",
+    "frwiki": "The_Guardian_Weekly"
+  },
+  {
+    "fr": "Shihane",
+    "domain": "shihannews.net",
+    "frwiki": "Shihane"
+  },
+  {
+    "fr": "Sorbonne(s) Nouvelles",
+    "domain": "sorbonnes.ifrance.com/sorbonnes",
+    "frwiki": "Sorbonne(s)_Nouvelles"
+  },
+  {
+    "fr": "Sportski žurnal",
+    "domain": "zurnal.rs",
+    "frwiki": "Sportski_%C5%BEurnal"
+  },
+  {
+    "fr": "St. Louis Post-Dispatch",
+    "domain": "stltoday.com",
+    "frwiki": "St._Louis_Post-Dispatch"
+  },
+  {
+    "fr": "St. Martin's Week",
+    "domain": "stmartinweek.com",
+    "frwiki": "St._Martin%27s_Week"
+  },
+  {
+    "fr": "Diario de Pernambuco",
+    "domain": "diariodepernambuco.com.br",
+    "frwiki": "Diario_de_Pernambuco"
+  },
+  {
+    "fr": "Slobodna Bosna",
+    "domain": "slobodna-bosna.ba",
+    "frwiki": "Slobodna_Bosna"
+  },
+  {
+    "fr": "Stratégies",
+    "domain": "strategies.fr",
+    "frwiki": "Strat%C3%A9gies"
+  },
+  {
+    "fr": "Sociétal",
+    "domain": "societal.fr",
+    "frwiki": "Soci%C3%A9tal_(revue)"
+  },
+  {
+    "fr": "TV Magazine",
+    "domain": "tvmag.com",
+    "frwiki": "TV_Magazine"
+  },
+  {
+    "fr": "Rutland Herald",
+    "domain": "rutlandherald.com",
+    "frwiki": "Rutland_Herald"
+  },
+  {
+    "fr": "Ski Rando magazine",
+    "domain": "skirandomag.com",
+    "frwiki": "Ski_Rando_magazine"
+  },
+  {
+    "fr": "Réforme",
+    "domain": "reforme.net",
+    "frwiki": "R%C3%A9forme_(hebdomadaire)"
+  },
+  {
+    "fr": "Rustica",
+    "domain": "rustica.fr",
+    "frwiki": "Rustica"
+  },
+  {
+    "fr": "Delo",
+    "domain": "delo.si",
+    "frwiki": "Delo"
+  },
+  {
+    "fr": "Tiedonantaja",
+    "domain": "tiedonantaja.fi",
+    "frwiki": "Tiedonantaja"
+  },
+  {
+    "fr": "Dayton Daily News",
+    "domain": "daytondailynews.com",
+    "frwiki": "Dayton_Daily_News"
+  },
+  {
+    "fr": "Emerging Infectious Diseases",
+    "domain": "cdc.gov/ncidod/eid/index.htm",
+    "frwiki": "Emerging_Infectious_Diseases"
+  },
+  {
+    "fr": "The Cincinnati Enquirer",
+    "domain": "cincinnati.com",
+    "frwiki": "The_Cincinnati_Enquirer"
+  },
+  {
+    "fr": "Trud",
+    "domain": "trud.bg",
+    "frwiki": "Trud"
+  },
+  {
+    "fr": "Oslobođenje",
+    "domain": "oslobodjenje.ba",
+    "frwiki": "Oslobo%C4%91enje"
+  },
+  {
+    "fr": "Dnevnik (Macédoine)",
+    "domain": "dnevnik.com.mk",
+    "frwiki": "Dnevnik_(Mac%C3%A9doine_du_Nord)"
+  },
+  {
+    "fr": "National Catholic Reporter",
+    "domain": "NCRonline.org",
+    "frwiki": "National_Catholic_Reporter"
+  },
+  {
+    "fr": "Jeune Afrique",
+    "domain": "jeuneafrique.com",
+    "frwiki": "Jeune_Afrique"
+  },
+  {
+    "fr": "Nacha Niva",
+    "domain": "nn.by",
+    "frwiki": "Nacha_Niva"
+  },
+  {
+    "fr": "The People",
+    "domain": "people.co.uk",
+    "frwiki": "The_Sunday_People"
+  },
+  {
+    "fr": "Kompas",
+    "domain": "print.kompas.com",
+    "frwiki": "Kompas"
+  },
+  {
+    "fr": "El Diario de Nuevo Laredo",
+    "domain": "diario.net",
+    "frwiki": "El_Diario_de_Nuevo_Laredo"
+  },
+  {
+    "fr": "El Informador",
+    "domain": "informador.mx",
+    "frwiki": "El_Informador"
+  },
+  {
+    "fr": "El Informador",
+    "domain": "informador.com.mx",
+    "frwiki": "El_Informador"
+  },
+  {
+    "fr": "Kurir",
+    "domain": "kurir-info.rs",
+    "frwiki": "Kurir"
+  },
+  {
+    "fr": "Dainik Jagran",
+    "domain": "jagran.com",
+    "frwiki": "Dainik_Jagran"
+  },
+  {
+    "fr": "Thai Rath",
+    "domain": "thairath.co.th",
+    "frwiki": "Thai_Rath"
+  },
+  {
+    "fr": "The Pioneer",
+    "domain": "dailypioneer.com",
+    "frwiki": "The_Pioneer"
+  },
+  {
+    "fr": "El Espectador",
+    "domain": "elespectador.com",
+    "frwiki": "El_Espectador"
+  },
+  {
+    "fr": "Billboard Brasil",
+    "domain": "billboard.com.br",
+    "frwiki": "Billboard_Brasil"
+  },
+  {
+    "fr": "El Nacional",
+    "domain": "el-nacional.com",
+    "frwiki": "El_Nacional_(Venezuela)"
+  },
+  {
+    "fr": "Saudi Gazette",
+    "domain": "saudigazette.com.sa",
+    "frwiki": "Saudi_Gazette"
+  },
+  {
+    "fr": "El Universal",
+    "domain": "eluniversal.com",
+    "frwiki": "El_Universal_(Venezuela)"
+  },
+  {
+    "fr": "El Universal",
+    "domain": "eluniversal.com.mx",
+    "frwiki": "El_Universal_(Mexique)"
+  },
+  {
+    "fr": "El Universal",
+    "domain": "eluniversal.com.mx",
+    "frwiki": "El_Universal_(Mexique)"
+  },
+  {
+    "fr": "The St. Petersburg Times",
+    "domain": "sptimes.ru",
+    "frwiki": "The_St._Petersburg_Times"
+  },
+  {
+    "fr": "The Financial Express",
+    "domain": "financialexpress.com",
+    "frwiki": "The_Financial_Express_(Inde)"
+  },
+  {
+    "fr": "Elaph",
+    "domain": "elaph.com",
+    "frwiki": "Elaph"
+  },
+  {
+    "fr": "Elaph",
+    "domain": "elaphmorocco.com",
+    "frwiki": "Elaph"
+  },
+  {
+    "fr": "Morgenbladet",
+    "domain": "morgenbladet.no",
+    "frwiki": "Morgenbladet"
+  },
+  {
+    "fr": "Tygodnik Powszechny",
+    "domain": "tygodnikpowszechny.pl",
+    "frwiki": "Tygodnik_Powszechny"
+  },
+  {
+    "fr": "Estía",
+    "domain": "estianews.gr",
+    "frwiki": "Est%C3%ADa"
+  },
+  {
+    "fr": "Freedom",
+    "domain": "freedomnews.org.uk",
+    "frwiki": "Freedom_(journal)"
+  },
+  {
+    "fr": "The Buffalo News",
+    "domain": "buffalonews.com",
+    "frwiki": "The_Buffalo_News"
+  },
+  {
+    "fr": "Expresso",
+    "domain": "expresso.pt",
+    "frwiki": "Expresso_(hebdomadaire)"
+  },
+  {
+    "fr": "Koultoura",
+    "domain": "portal-kultura.ru",
+    "frwiki": "Koultoura"
+  },
+  {
+    "fr": "Amader Shomoy",
+    "domain": "dainikamadershomoy.com",
+    "frwiki": "Amader_Shomoy"
+  },
+  {
+    "fr": "Portland Press Herald",
+    "domain": "pressherald.com",
+    "frwiki": "Portland_Press_Herald"
+  },
+  {
+    "fr": "Iris Oifigiúil",
+    "domain": "irisoifigiuil.ie",
+    "frwiki": "Iris_Oifigi%C3%BAil"
+  },
+  {
+    "fr": "Investor's Business Daily",
+    "domain": "investors.com",
+    "frwiki": "Investor%27s_Business_Daily"
+  },
+  {
+    "fr": "Yeni Akit",
+    "domain": "yeniakit.com.tr",
+    "frwiki": "Yeni_Akit"
+  },
+  {
+    "fr": "Jaijaidin",
+    "domain": "jjdin.com",
+    "frwiki": "Jaijaidin"
+  },
+  {
+    "fr": "Svenska Dagbladet",
+    "domain": "svd.se",
+    "frwiki": "Svenska_Dagbladet"
+  },
+  {
+    "fr": "The Arizona Republic",
+    "domain": "azcentral.com/arizonarepublic",
+    "frwiki": "The_Arizona_Republic"
+  },
+  {
+    "fr": "Volksblad",
+    "domain": "volksblad.com",
+    "frwiki": "Volksblad"
+  },
+  {
+    "fr": "Sirp",
+    "domain": "sirp.ee",
+    "frwiki": "Sirp"
+  },
+  {
+    "fr": "Hallands Nyheter",
+    "domain": "hn.se",
+    "frwiki": "Hallands_Nyheter"
+  },
+  {
+    "fr": "Fædrelandsvennen",
+    "domain": "fvn.no",
+    "frwiki": "F%C3%A6drelandsvennen"
+  },
+  {
+    "fr": "Mail & Guardian",
+    "domain": "mg.co.za",
+    "frwiki": "Mail_%26_Guardian"
+  },
+  {
+    "fr": "Göteborgs-Posten",
+    "domain": "gp.se",
+    "frwiki": "G%C3%B6teborgs-Posten"
+  },
+  {
+    "fr": "The Oregonian",
+    "domain": "oregonlive.com",
+    "frwiki": "The_Oregonian"
+  },
+  {
+    "fr": "The Salt Lake Tribune",
+    "domain": "sltrib.com",
+    "frwiki": "The_Salt_Lake_Tribune"
+  },
+  {
+    "fr": "Khaleej Times",
+    "domain": "khaleejtimes.com",
+    "frwiki": "Khaleej_Times"
+  },
+  {
+    "fr": "Hamshahri",
+    "domain": "hamshahrionline.ir",
+    "frwiki": "Hamshahri"
+  },
+  {
+    "fr": "Green Anarchy",
+    "domain": "greenanarchy.anarchyplanet.org",
+    "frwiki": "Green_Anarchy"
+  },
+  {
+    "fr": "The Courier-Journal",
+    "domain": "courier-journal.com",
+    "frwiki": "The_Courier-Journal"
+  },
+  {
+    "fr": "Yorkshire Post",
+    "domain": "yorkshirepost.co.uk",
+    "frwiki": "The_Yorkshire_Post"
+  },
+  {
+    "fr": "Kauppalehti",
+    "domain": "kauppalehti.fi",
+    "frwiki": "Kauppalehti"
+  },
+  {
+    "fr": "Jugantor",
+    "domain": "jugantor.com",
+    "frwiki": "Jugantor"
+  },
+  {
+    "fr": "Kaler Kantho",
+    "domain": "kalerkantho.com",
+    "frwiki": "Kaler_Kantho"
+  },
+  {
+    "fr": "Reference News",
+    "domain": "cankaoxiaoxi.com",
+    "frwiki": "Reference_News"
+  },
+  {
+    "fr": "Richmond Times-Dispatch",
+    "domain": "richmond.com",
+    "frwiki": "Richmond_Times-Dispatch"
+  },
+  {
+    "fr": "Daily Inqilab",
+    "domain": "dailyinqilab.com",
+    "frwiki": "Daily_Inqilab"
+  },
+  {
+    "fr": "Daily Naya Diganta",
+    "domain": "dailynayadiganta.com",
+    "frwiki": "Daily_Naya_Diganta"
+  },
+  {
+    "fr": "Academia Cațavencu",
+    "domain": "academiacatavencu.info",
+    "frwiki": "Academia_Ca%C8%9Bavencu"
+  },
+  {
+    "fr": "Al Alam",
+    "domain": "alalam.ma",
+    "frwiki": "Al_Alam"
+  },
+  {
+    "fr": "Alamogordo Daily News",
+    "domain": "alamogordonews.com",
+    "frwiki": "Alamogordo_Daily_News"
+  },
+  {
+    "fr": "Al Ittihad Al Ichtiraki",
+    "domain": "alittihad.press.ma",
+    "frwiki": "Al_Ittihad_al_ichtiraki"
+  },
+  {
+    "fr": "Azadliq",
+    "domain": "azadliq.info",
+    "frwiki": "Azadliq"
+  },
+  {
+    "fr": "La Voix du Luxembourg",
+    "domain": "voix.lu",
+    "frwiki": "La_Voix_du_Luxembourg"
+  },
+  {
+    "fr": "Télé Star",
+    "domain": "telestar.fr",
+    "frwiki": "T%C3%A9l%C3%A9_Star"
+  },
+  {
+    "fr": "The Miami Herald",
+    "domain": "miamiherald.com",
+    "frwiki": "The_Miami_Herald"
+  },
+  {
+    "fr": "Makedonía",
+    "domain": "makthes.gr",
+    "frwiki": "Makedon%C3%ADa"
+  },
+  {
+    "fr": "Times of Malta",
+    "domain": "timesofmalta.com",
+    "frwiki": "Times_of_Malta"
+  },
+  {
+    "fr": "Leidsch Dagblad",
+    "domain": "leidschdagblad.nl",
+    "frwiki": "Leidsch_Dagblad"
+  },
+  {
+    "fr": "Le Buteur",
+    "domain": "lebuteur.com",
+    "frwiki": "Le_Buteur"
+  },
+  {
+    "fr": "Tampa Bay Times",
+    "domain": "tampabay.com",
+    "frwiki": "Tampa_Bay_Times"
+  },
+  {
+    "fr": "Free Malaysia Today",
+    "domain": "freemalaysiatoday.com",
+    "frwiki": "Free_Malaysia_Today"
+  },
+  {
+    "fr": "Finnmarksposten",
+    "domain": "finnmarksposten.no",
+    "frwiki": "Finnmarksposten"
+  },
+  {
+    "fr": "FrontPage Africa",
+    "domain": "frontpageafricaonline.com",
+    "frwiki": "FrontPage_Africa"
+  },
+  {
+    "fr": "The Charlotte Observer",
+    "domain": "charlotte.com",
+    "frwiki": "The_Charlotte_Observer"
+  },
+  {
+    "fr": "Post- och Inrikes Tidningar",
+    "domain": "poit.org",
+    "frwiki": "Post-_och_Inrikes_Tidningar"
+  },
+  {
+    "fr": "Roll Call",
+    "domain": "rollcall.com",
+    "frwiki": "Roll_Call"
+  },
+  {
+    "fr": "Sahara Reporters",
+    "domain": "saharareporters.com",
+    "frwiki": "Sahara_Reporters"
+  },
+  {
+    "fr": "Samakal",
+    "domain": "samakal.com",
+    "frwiki": "Samakal"
+  },
+  {
+    "fr": "Eidsvoll Ullensaker Blad",
+    "domain": "eub.no",
+    "frwiki": "Eidsvoll_Ullensaker_Blad"
+  },
+  {
+    "fr": "Milwaukee Journal Sentinel",
+    "domain": "jsonline.com",
+    "frwiki": "Milwaukee_Journal_Sentinel"
+  },
+  {
+    "fr": "Daily Nation",
+    "domain": "nation.co.ke",
+    "frwiki": "Daily_Nation"
+  },
+  {
+    "fr": "Latvijas Vēstnesis",
+    "domain": "lv.lv",
+    "frwiki": "Latvijas_V%C4%93stnesis"
+  },
+  {
+    "fr": "Le Jeudi",
+    "domain": "lejeudi.lu",
+    "frwiki": "Le_Jeudi_(hebdomadaire)"
+  },
+  {
+    "fr": "The Philippine Star",
+    "domain": "philstar.com",
+    "frwiki": "The_Philippine_Star"
+  },
+  {
+    "fr": "The Economic Times",
+    "domain": "economictimes.indiatimes.com",
+    "frwiki": "The_Economic_Times"
+  },
+  {
+    "fr": "Dzerkalo Tyzhnia",
+    "domain": "dt.ua",
+    "frwiki": "Dzerkalo_Tyzhnia"
+  },
+  {
+    "fr": "Nova Makedonija",
+    "domain": "novamakedonija.com.mk",
+    "frwiki": "Nova_Makedonija"
+  },
+  {
+    "fr": "Arizona Daily Star",
+    "domain": "azstarnet.com",
+    "frwiki": "The_Arizona_Daily_Star"
+  },
+  {
+    "fr": "The Nation (Pakistan)",
+    "domain": "nation.com.pk",
+    "frwiki": "The_Nation_(Pakistan)"
+  },
+  {
+    "fr": "The New York Observer",
+    "domain": "observer.com",
+    "frwiki": "The_New_York_Observer"
+  },
+  {
+    "fr": "Shanghai Daily",
+    "domain": "shanghaidaily.com",
+    "frwiki": "Shanghai_Daily"
+  },
+  {
+    "fr": "Novy Vzgliad",
+    "domain": "newlookmedia.ru",
+    "frwiki": "Novy_Vzgliad"
+  },
+  {
+    "fr": "Utrinski Vesnik",
+    "domain": "utrinski.com.mk",
+    "frwiki": "Utrinski_Vesnik"
+  },
+  {
+    "fr": "The Baltic Times",
+    "domain": "baltictimes.com",
+    "frwiki": "The_Baltic_Times"
+  },
+  {
+    "fr": "The West Australian",
+    "domain": "thewest.com.au",
+    "frwiki": "The_West_Australian"
+  },
+  {
+    "fr": "La Tribune",
+    "domain": "latribune.fr",
+    "frwiki": "La_Tribune_(France,_1985)"
+  },
+  {
+    "fr": "Savon Sanomat",
+    "domain": "savonsanomat.fi",
+    "frwiki": "Savon_Sanomat"
+  },
+  {
+    "fr": "Wen Hui Bao",
+    "domain": "whb.cn",
+    "frwiki": "Wen_Hui_Bao"
+  },
+  {
+    "fr": "Mandarin Daily News",
+    "domain": "mdnkids.com",
+    "frwiki": "Mandarin_Daily_News"
+  },
+  {
+    "fr": "Público",
+    "domain": "publico.es",
+    "frwiki": "P%C3%BAblico_(Espagne)"
+  },
+  {
+    "fr": "Literatournaïa gazeta",
+    "domain": "lgz.ru",
+    "frwiki": "Literatourna%C3%AFa_gazeta"
+  },
+  {
+    "fr": "The Tribune",
+    "domain": "tribuneindia.com",
+    "frwiki": "The_Tribune"
+  },
+  {
+    "fr": "Arab Times",
+    "domain": "arabtimes.com",
+    "frwiki": "Arab_Times"
+  },
+  {
+    "fr": "Malay Mail",
+    "domain": "mmail.com.my",
+    "frwiki": "Malay_Mail"
+  },
+  {
+    "fr": "The Tennessean",
+    "domain": "tennessean.com",
+    "frwiki": "The_Tennessean"
+  },
+  {
+    "fr": "Asbury Park Press",
+    "domain": "app.com",
+    "frwiki": "Asbury_Park_Press"
+  },
+  {
+    "fr": "Assabah (Maroc)",
+    "domain": "assabah.press.ma",
+    "frwiki": "Assabah_(Maroc)"
+  },
+  {
+    "fr": "The Aspen Times",
+    "domain": "aspentimes.com",
+    "frwiki": "The_Aspen_Times"
+  },
+  {
+    "fr": "Statesman Journal",
+    "domain": "statesmanjournal.com",
+    "frwiki": "Statesman_Journal"
+  },
+  {
+    "fr": "Statesman Journal",
+    "domain": "statesmanjournal.com",
+    "frwiki": "Statesman_Journal"
+  },
+  {
+    "fr": "Malaya",
+    "domain": "malaya.com.ph",
+    "frwiki": "Malaya_(journal)"
+  },
+  {
+    "fr": "Lexington Herald-Leader",
+    "domain": "kentucky.com",
+    "frwiki": "Lexington_Herald-Leader"
+  },
+  {
+    "fr": "Libertatea",
+    "domain": "libertatea.ro",
+    "frwiki": "Libertatea"
+  },
+  {
+    "fr": "Manab Zamin",
+    "domain": "mzamin.com",
+    "frwiki": "Manab_Zamin"
+  },
+  {
+    "fr": "Baltimore Jewish Times",
+    "domain": "jewishtimes.com",
+    "frwiki": "Baltimore_Jewish_Times"
+  },
+  {
+    "fr": "Azərbaycan (journal)",
+    "domain": "azerbaijan-news.az",
+    "frwiki": "Az%C9%99rbaycan_(journal)"
+  },
+  {
+    "fr": "Barron's",
+    "domain": "barrons.com",
+    "frwiki": "Barron%27s"
+  },
+  {
+    "fr": "Miami New Times",
+    "domain": "miaminewtimes.com",
+    "frwiki": "Miami_New_Times"
+  },
+  {
+    "fr": "The Oklahoman",
+    "domain": "oklahoman.com",
+    "frwiki": "The_Oklahoman"
+  },
+  {
+    "fr": "The Press and Journal",
+    "domain": "pressandjournal.co.uk",
+    "frwiki": "The_Press_and_Journal"
+  },
+  {
+    "fr": "The Post and Courier",
+    "domain": "postandcourier.com",
+    "frwiki": "The_Post_and_Courier"
+  },
+  {
+    "fr": "The Register-Guard",
+    "domain": "registerguard.com",
+    "frwiki": "The_Register-Guard"
+  },
+  {
+    "fr": "Brasil em Folhas",
+    "domain": "brasilemfolhas.com.br",
+    "frwiki": "Brasil_em_Folhas"
+  },
+  {
+    "fr": "Blackpool Gazette",
+    "domain": "blackpoolgazette.co.uk",
+    "frwiki": "Blackpool_Gazette"
+  },
+  {
+    "fr": "Blog del narco",
+    "domain": "blogdelnarco.com",
+    "frwiki": "Blog_del_narco"
+  },
+  {
+    "fr": "Berkeley Barb",
+    "domain": "berkeleybarb.net",
+    "frwiki": "Berkeley_Barb"
+  },
+  {
+    "fr": "Bhorer Kagoj",
+    "domain": "bhorerkagoj.net",
+    "frwiki": "Bhorer_Kagoj"
+  },
+  {
+    "fr": "Hindustan Dainik",
+    "domain": "epaper.livehindustan.com",
+    "frwiki": "Hindustan_Dainik"
+  },
+  {
+    "fr": "The Brooklyn Daily Eagle",
+    "domain": "brooklyneagle.com",
+    "frwiki": "The_Brooklyn_Daily_Eagle"
+  },
+  {
+    "fr": "Búsqueda",
+    "domain": "busqueda.com.uy",
+    "frwiki": "B%C3%BAsqueda"
+  },
+  {
+    "fr": "Gold Coast Bulletin",
+    "domain": "goldcoastbulletin.com.au",
+    "frwiki": "Gold_Coast_Bulletin"
+  },
+  {
+    "fr": "Sunday Mirror",
+    "domain": "mirror.co.uk",
+    "frwiki": "Sunday_Mirror"
+  },
+  {
+    "fr": "O Estado de São Paulo",
+    "domain": "estadao.com.br",
+    "frwiki": "O_Estado_de_S._Paulo"
+  },
+  {
+    "fr": "Sun-Sentinel",
+    "domain": "sun-sentinel.com",
+    "frwiki": "Sun-Sentinel"
+  },
+  {
+    "fr": "Rand Daily Mail",
+    "domain": "businesslive.co.za/rdm",
+    "frwiki": "Rand_Daily_Mail"
+  },
+  {
+    "fr": "Bdnews24.com",
+    "domain": "bdnews24.com",
+    "frwiki": "Bdnews24.com"
+  },
+  {
+    "fr": "The Michigan Daily",
+    "domain": "michigandaily.com",
+    "frwiki": "The_Michigan_Daily"
+  },
+  {
+    "fr": "The Bangladesh Today",
+    "domain": "thebangladeshtoday.com",
+    "frwiki": "The_Bangladesh_Today"
+  },
+  {
+    "fr": "Week-end de débauche",
+    "domain": "thestagsurrey.co.uk",
+    "frwiki": "Week-end_de_d%C3%A9bauche"
+  },
+  {
+    "fr": "Casper Star-Tribune",
+    "domain": "trib.com",
+    "frwiki": "Casper_Star-Tribune"
+  },
+  {
+    "fr": "El Diario del Fin del Mundo",
+    "domain": "eldiariodelfindelmundo.com",
+    "frwiki": "El_Diario_del_Fin_del_Mundo"
+  },
+  {
+    "fr": "The Times of Northwest Indiana",
+    "domain": "nwitimes.com",
+    "frwiki": "The_Times_of_Northwest_Indiana"
+  },
+  {
+    "fr": "La Provincia",
+    "domain": "laprovincia.es",
+    "frwiki": "La_Provincia"
+  },
+  {
+    "fr": "Montgomery Advertiser",
+    "domain": "montgomeryadvertiser.com",
+    "frwiki": "Montgomery_Advertiser"
+  },
+  {
+    "fr": "The Coast",
+    "domain": "thecoast.ca",
+    "frwiki": "The_Coast_(journal)"
+  },
+  {
+    "fr": "The Daily Californian",
+    "domain": "dailycal.org",
+    "frwiki": "The_Daily_Californian"
+  },
+  {
+    "fr": "The Common Review",
+    "domain": "thecommonreview.org",
+    "frwiki": "The_Common_Review"
+  },
+  {
+    "fr": "The Daily Caller",
+    "domain": "dailycaller.com",
+    "frwiki": "The_Daily_Caller"
+  },
+  {
+    "fr": "Times Union",
+    "domain": "timesunion.com",
+    "frwiki": "Times_Union"
+  },
+  {
+    "fr": "The Daily Tribune",
+    "domain": "tribune.net.ph",
+    "frwiki": "The_Daily_Tribune"
+  },
+  {
+    "fr": "The Emory Wheel",
+    "domain": "emorywheel.com",
+    "frwiki": "The_Emory_Wheel"
+  },
+  {
+    "fr": "The Daily Sangram",
+    "domain": "dailysangram.com",
+    "frwiki": "The_Daily_Sangram"
+  },
+  {
+    "fr": "News & Review",
+    "domain": "newsreview.com",
+    "frwiki": "News_%26_Review"
+  },
+  {
+    "fr": "New Directions for Women",
+    "domain": "voices.revealdigital.com/cgi-bin/independentvoices?a=cl&cl=CL1&sp=DGBHBCA&ai=1&e=-------en-20--1--txt-txIN---------------1",
+    "frwiki": "New_Directions_for_Women"
+  },
+  {
+    "fr": "The Birmingham News",
+    "domain": "al.com/birmingham",
+    "frwiki": "The_Birmingham_News"
+  },
+  {
+    "fr": "The Daily Ittefaq",
+    "domain": "clickittefaq.com",
+    "frwiki": "The_Daily_Ittefaq"
+  },
+  {
+    "fr": "The Daily Ittefaq",
+    "domain": "ittefaq.com.bd",
+    "frwiki": "The_Daily_Ittefaq"
+  },
+  {
+    "fr": "Philadelphia Tribune",
+    "domain": "phillytrib.com",
+    "frwiki": "Philadelphia_Tribune"
+  },
+  {
+    "fr": "Västerbottens Folkblad",
+    "domain": "folkbladet.nu",
+    "frwiki": "V%C3%A4sterbottens_Folkblad"
+  },
+  {
+    "fr": "Journal Officiel",
+    "domain": "virallinenlehti.fi",
+    "frwiki": "Journal_officiel_(Finlande)"
+  },
+  {
+    "fr": "Herald Mail",
+    "domain": "herald-mail.com",
+    "frwiki": "Herald_Mail"
+  },
+  {
+    "fr": "Weekly Blitz",
+    "domain": "weeklyblitz.net",
+    "frwiki": "Weekly_Blitz"
+  },
+  {
+    "fr": "Tokyo Sports",
+    "domain": "tokyo-sports.co.jp",
+    "frwiki": "Tokyo_Sports"
+  },
+  {
+    "fr": "Wisconsin State Journal",
+    "domain": "host.madison.com/wsj",
+    "frwiki": "Wisconsin_State_Journal"
+  },
+  {
+    "fr": "Gazeta do Povo",
+    "domain": "gazetadopovo.com.br",
+    "frwiki": "Gazeta_do_Povo"
+  },
+  {
+    "fr": "New Europe",
+    "domain": "neurope.eu",
+    "frwiki": "New_Europe"
+  },
+  {
+    "fr": "Manila Standard",
+    "domain": "thestandard.com.ph",
+    "frwiki": "Manila_Standard"
+  },
+  {
+    "fr": "Daily Sun (Bangladesh)",
+    "domain": "bangla.daily-sun.com",
+    "frwiki": "Daily_Sun_(Bangladesh)"
+  },
+  {
+    "fr": "Daily Sun (Bangladesh)",
+    "domain": "daily-sun.com",
+    "frwiki": "Daily_Sun_(Bangladesh)"
+  },
+  {
+    "fr": "The Journal News",
+    "domain": "lohud.com",
+    "frwiki": "The_Journal_News"
+  },
+  {
+    "fr": "Hawaii Tribune-Herald",
+    "domain": "hawaiitribune-herald.com",
+    "frwiki": "Hawaii_Tribune-Herald"
+  },
+  {
+    "fr": "A Tarde",
+    "domain": "atarde.com.br",
+    "frwiki": "A_Tarde"
+  },
+  {
+    "fr": "Vesti (Ukraine)",
+    "domain": "vesti-ukr.com",
+    "frwiki": "Vesti_(Ukraine)"
+  },
+  {
+    "fr": "Siné Mensuel",
+    "domain": "sinemensuel.com",
+    "frwiki": "Sin%C3%A9_Mensuel"
+  },
+  {
+    "fr": "Passasson",
+    "domain": "pasaxon.org.la",
+    "frwiki": "Passasson"
+  },
+  {
+    "fr": "L'Observateur du Douaisis",
+    "domain": "lobservateurdudouaisis.fr",
+    "frwiki": "L%27Observateur_du_Douaisis"
+  },
+  {
+    "fr": "Le Midi libre",
+    "domain": "lemidi-dz.com",
+    "frwiki": "Le_Midi_libre"
+  },
+  {
+    "fr": "Le Châtillonnais et l’Auxois",
+    "domain": "lechatillonnaisetlauxois.fr",
+    "frwiki": "Le_Ch%C3%A2tillonnais_et_l%E2%80%99Auxois"
+  },
+  {
+    "fr": "L'Éléphant",
+    "domain": "lelephant-larevue.fr",
+    "frwiki": "L%27%C3%89l%C3%A9phant_(revue)"
+  },
+  {
+    "fr": "Usbek & Rica",
+    "domain": "usbeketrica.com",
+    "frwiki": "Usbek_%26_Rica_(magazine)"
+  },
+  {
+    "fr": "Alokito Bangladesh",
+    "domain": "alokitobangladesh.com",
+    "frwiki": "Alokito_Bangladesh"
+  },
+  {
+    "fr": "New Age (Bangladesh)",
+    "domain": "newagebd.net",
+    "frwiki": "New_Age_(Bangladesh)"
+  },
+  {
+    "fr": "Our Neighborhood Times",
+    "domain": "ontnews.com",
+    "frwiki": "Our_Neighborhood_Times"
+  },
+  {
+    "fr": "Essarih",
+    "domain": "assarih.com",
+    "frwiki": "Essarih"
+  },
+  {
+    "fr": "The Guardian",
+    "domain": "guardian.ng",
+    "frwiki": "The_Guardian_(Nigeria)"
+  },
+  {
+    "fr": "The Financial Express (Bangladesh)",
+    "domain": "thefinancialexpress-bd.com",
+    "frwiki": "The_Financial_Express_(Bangladesh)"
+  },
+  {
+    "fr": "Le 1",
+    "domain": "le1hebdo.fr",
+    "frwiki": "Le_1"
+  },
+  {
+    "fr": "14ymedio",
+    "domain": "14ymedio.com",
+    "frwiki": "14ymedio"
+  },
+  {
+    "fr": "Pavlovo-Posadskiye izvestiya",
+    "domain": "ia42.mosoblonline.ru",
+    "frwiki": "Pavlovo-Posadskiye_izvestiya"
+  },
+  {
+    "fr": "Bangladesh Pratidin",
+    "domain": "bd-pratidin.com/index.php",
+    "frwiki": "Bangladesh_Pratidin"
+  },
+  {
+    "fr": "New Pittsburgh Courier",
+    "domain": "newpittsburghcourieronline.com",
+    "frwiki": "New_Pittsburgh_Courier"
+  },
+  {
+    "fr": "Le Républicain",
+    "domain": "lerepublicain.com",
+    "frwiki": "Le_R%C3%A9publicain_(Aquitaine)"
+  },
+  {
+    "fr": "Suprobhat Bangladesh",
+    "domain": "suprobhat.com",
+    "frwiki": "Suprobhat_Bangladesh"
+  },
+  {
+    "fr": "Smena (journal)",
+    "domain": "smena.ru",
+    "frwiki": "Smena_(journal)"
+  },
+  {
+    "fr": "The Irish Field",
+    "domain": "theirishfield.ie/",
+    "frwiki": "The_Irish_Field"
+  },
+  {
+    "fr": "The Sangbad",
+    "domain": "sangbad.com.bd",
+    "frwiki": "The_Sangbad"
+  },
+  {
+    "fr": "Les Jours",
+    "domain": "lesjours.fr",
+    "frwiki": "Les_Jours"
+  },
+  {
+    "fr": "Journal de Morges",
+    "domain": "journaldemorges.ch",
+    "frwiki": "Journal_de_Morges"
+  },
+  {
+    "fr": "Az Buki",
+    "domain": "azbuki.bg",
+    "frwiki": "Az_Buki"
+  },
+  {
+    "fr": "Paysan Breton",
+    "domain": "paysan-breton.fr",
+    "frwiki": "Paysan_breton_(journal)"
+  },
+  {
+    "fr": "Horoya",
+    "domain": "journalhoroya.info",
+    "frwiki": "Horoya"
+  },
+  {
+    "fr": "El Moudjahid",
+    "domain": "elmoudjahid.com",
+    "frwiki": "El_Moudjahid_(quotidien)"
+  },
+  {
+    "fr": "Morocco World News",
+    "domain": "moroccoworldnews.com",
+    "frwiki": "Morocco_World_News"
+  },
+  {
+    "fr": "The Azadi",
+    "domain": "dainikazadi.net",
+    "frwiki": "The_Azadi"
+  },
+  {
+    "fr": "Banglanews24.com",
+    "domain": "banglanews24.com",
+    "frwiki": "Banglanews24.com"
+  },
+  {
+    "fr": "Bangla Tribune",
+    "domain": "banglatribune.com",
+    "frwiki": "Bangla_Tribune"
+  },
+  {
+    "fr": "Hexagones",
+    "domain": "hexagones.fr",
+    "frwiki": "Hexagones"
+  },
+  {
+    "fr": "Journal de la Corse",
+    "domain": "jdcorse.fr",
+    "frwiki": "Journal_de_la_Corse"
+  },
+  {
+    "fr": "Journal de la Corse",
+    "domain": "journaldelacorse.net",
+    "frwiki": "Journal_de_la_Corse"
+  },
+  {
+    "fr": "Metronews",
+    "domain": "metronews.fr",
+    "frwiki": "Metronews"
+  },
+  {
+    "fr": "Vaucluse Matin",
+    "domain": "ledauphine.com/vaucluse",
+    "frwiki": "Vaucluse_Matin"
+  },
+  {
+    "fr": "Le Défi Plus",
+    "domain": "defimedia.info",
+    "frwiki": "Le_D%C3%A9fi_Plus"
+  },
+  {
+    "fr": "Haïastan",
+    "domain": "haiastan.fr",
+    "frwiki": "Ha%C3%AFastan_(journal)"
+  },
+  {
+    "fr": "El Universo",
+    "domain": "eluniverso.com",
+    "frwiki": "El_Universo"
+  },
+  {
+    "fr": "El Siglo de Durango",
+    "domain": "elsiglodedurango.com.mx",
+    "frwiki": "El_Siglo_de_Durango"
+  },
+  {
+    "fr": "El Siglo de Durango",
+    "domain": "elsiglodedurango.com.mx",
+    "frwiki": "El_Siglo_de_Durango"
+  },
+  {
+    "fr": "Saphirnews",
+    "domain": "saphirnews.com",
+    "frwiki": "Saphirnews"
+  },
+  {
+    "fr": "Daily Bonik Barta",
+    "domain": "bonikbarta.net",
+    "frwiki": "Daily_Bonik_Barta"
+  },
+  {
+    "fr": "The New York Times",
+    "domain": "nytimes.com",
+    "frwiki": "The_New_York_Times"
+  },
+  {
+    "fr": "Frankfurter Allgemeine Zeitung",
+    "domain": "faz.net",
+    "frwiki": "Frankfurter_Allgemeine_Zeitung"
+  },
+  {
+    "fr": "Berliner Zeitung",
+    "domain": "berliner-zeitung.de",
+    "frwiki": "Berliner_Zeitung"
+  },
+  {
+    "fr": "Der Tagesspiegel",
+    "domain": "tagesspiegel.de",
+    "frwiki": "Der_Tagesspiegel"
+  },
+  {
+    "fr": "B.Z.",
+    "domain": "bz-berlin.de",
+    "frwiki": "B.Z."
+  },
+  {
+    "fr": "Le Progrès",
+    "domain": "leprogres.fr",
+    "frwiki": "Le_Progr%C3%A8s"
+  },
+  {
+    "fr": "The Guardian",
+    "domain": "theguardian.com",
+    "frwiki": "The_Guardian"
+  },
+  {
+    "fr": "The Miami Herald",
+    "domain": "miamiherald.com",
+    "frwiki": "The_Miami_Herald"
+  },
+  {
+    "fr": "Luxemburger Wort",
+    "domain": "wort.lu/de",
+    "frwiki": "Luxemburger_Wort"
+  },
+  {
+    "fr": "Luxemburger Wort",
+    "domain": "wort.lu/fr",
+    "frwiki": "Luxemburger_Wort"
+  },
+  {
+    "fr": "Il Sole 24 Ore",
+    "domain": "ilsole24ore.com",
+    "frwiki": "Il_Sole_24_Ore"
+  },
+  {
+    "fr": "Ming Pao",
+    "domain": "news.mingpao.com",
+    "frwiki": "Ming_Pao"
+  },
+  {
+    "fr": "Tampa Bay Times",
+    "domain": "tampabay.com",
+    "frwiki": "Tampa_Bay_Times"
+  },
+  {
+    "fr": "Página/12",
+    "domain": "pagina12.com.ar",
+    "frwiki": "P%C3%A1gina/12"
+  },
+  {
+    "fr": "Il Piccolo",
+    "domain": "ilpiccolo.it",
+    "frwiki": "Il_Piccolo"
+  },
+  {
+    "fr": "Dolomiten",
+    "domain": "dolomiten.it",
+    "frwiki": "Dolomiten"
+  },
+  {
+    "fr": "Eesti Päevaleht",
+    "domain": "epl.delfi.ee",
+    "frwiki": "Eesti_P%C3%A4evaleht"
+  },
+  {
+    "fr": "Neue Osnabrücker Zeitung",
+    "domain": "noz.de",
+    "frwiki": "Neue_Osnabr%C3%BCcker_Zeitung"
+  },
+  {
+    "fr": "The Cincinnati Enquirer",
+    "domain": "cincinnati.com",
+    "frwiki": "The_Cincinnati_Enquirer"
+  },
+  {
+    "fr": "La Croix",
+    "domain": "la-croix.com",
+    "frwiki": "La_Croix"
+  },
+  {
+    "fr": "Politika",
+    "domain": "politika.rs",
+    "frwiki": "Politika"
+  },
+  {
+    "fr": "Présent",
+    "domain": "present.fr",
+    "frwiki": "Pr%C3%A9sent_(quotidien)"
+  },
+  {
+    "fr": "La Liberté",
+    "domain": "laliberte.ch",
+    "frwiki": "La_Libert%C3%A9"
+  },
+  {
+    "fr": "The New Paper",
+    "domain": "tnp.sg",
+    "frwiki": "The_New_Paper"
+  },
+  {
+    "fr": "Saarbrücker Zeitung",
+    "domain": "saarbruecker-zeitung.de",
+    "frwiki": "Saarbr%C3%BCcker_Zeitung"
+  },
+  {
+    "fr": "Le Monde",
+    "domain": "lemonde.fr",
+    "frwiki": "Le_Monde"
+  },
+  {
+    "fr": "The Independent",
+    "domain": "independent.co.uk",
+    "frwiki": "The_Independent"
+  },
+  {
+    "fr": "The Dallas Morning News",
+    "domain": "dallasnews.com",
+    "frwiki": "The_Dallas_Morning_News"
+  },
+  {
+    "fr": "The Phnom Penh Post",
+    "domain": "phnompenhpost.com",
+    "frwiki": "Phnom_Penh_Post"
+  },
+  {
+    "fr": "Hokkaido Shinbun",
+    "domain": "hokkaido-np.co.jp",
+    "frwiki": "Hokkaid%C5%8D_Shinbun"
+  },
+  {
+    "fr": "Chunichi Shinbun",
+    "domain": "chunichi.co.jp",
+    "frwiki": "Chunichi_Shinbun"
+  },
+  {
+    "fr": "Magyar Hírlap",
+    "domain": "magyarhirlap.hu",
+    "frwiki": "Magyar_H%C3%ADrlap"
+  },
+  {
+    "fr": "Point 24",
+    "domain": "point24.lu",
+    "frwiki": "Point_24"
+  },
+  {
+    "fr": "Népszava",
+    "domain": "nepszava.hu",
+    "frwiki": "N%C3%A9pszava"
+  },
+  {
+    "fr": "Sme",
+    "domain": "sme.sk",
+    "frwiki": "Sme_(quotidien)"
+  },
+  {
+    "fr": "Népszabadság",
+    "domain": "nol.hu",
+    "frwiki": "N%C3%A9pszabads%C3%A1g"
+  },
+  {
+    "fr": "Chūgoku Shimbun",
+    "domain": "chugoku-np.co.jp/index_e.html",
+    "frwiki": "Ch%C5%ABgoku_Shimbun"
+  },
+  {
+    "fr": "El Observador",
+    "domain": "elobservador.com.uy",
+    "frwiki": "El_Observador_(Uruguay)"
+  },
+  {
+    "fr": "Aftonbladet",
+    "domain": "aftonbladet.se",
+    "frwiki": "Aftonbladet"
+  },
+  {
+    "fr": "Anchorage Daily News",
+    "domain": "adn.com",
+    "frwiki": "Anchorage_Daily_News"
+  },
+  {
+    "fr": "Kyunghyang Shinmun",
+    "domain": "khan.co.kr",
+    "frwiki": "Kyunghyang_Shinmun"
+  },
+  {
+    "fr": "The Straits Times",
+    "domain": "straitstimes.com",
+    "frwiki": "The_Straits_Times"
+  },
+  {
+    "fr": "Kölner Stadt-Anzeiger",
+    "domain": "ksta.de",
+    "frwiki": "K%C3%B6lner_Stadt-Anzeiger"
+  },
+  {
+    "fr": "El Colombiano",
+    "domain": "elcolombiano.com",
+    "frwiki": "El_Colombiano"
+  },
+  {
+    "fr": "Libération",
+    "domain": "liberation.fr",
+    "frwiki": "Lib%C3%A9ration_(journal)"
+  },
+  {
+    "fr": "Het Nieuwsblad",
+    "domain": "nieuwsblad.be",
+    "frwiki": "Het_Nieuwsblad"
+  },
+  {
+    "fr": "Die Welt",
+    "domain": "welt.de",
+    "frwiki": "Die_Welt"
+  },
+  {
+    "fr": "Avui",
+    "domain": "elpuntavui.cat",
+    "frwiki": "Avui"
+  },
+  {
+    "fr": "L'Orient-Le Jour",
+    "domain": "lorientlejour.com/index.php",
+    "frwiki": "L%27Orient-Le_Jour"
+  },
+  {
+    "fr": "Kommersant",
+    "domain": "kommersant.ru",
+    "frwiki": "Kommersant"
+  },
+  {
+    "fr": "Milwaukee Journal Sentinel",
+    "domain": "jsonline.com",
+    "frwiki": "Milwaukee_Journal_Sentinel"
+  },
+  {
+    "fr": "Público",
+    "domain": "publico.pt",
+    "frwiki": "P%C3%BAblico_(Portugal)"
+  },
+  {
+    "fr": "Dagsavisen",
+    "domain": "dagsavisen.no",
+    "frwiki": "Dagsavisen"
+  },
+  {
+    "fr": "Daily News",
+    "domain": "dailynews.co.tz",
+    "frwiki": "Daily_News_(Tanzanie)"
+  },
+  {
+    "fr": "The Jerusalem Post",
+    "domain": "jpost.com",
+    "frwiki": "The_Jerusalem_Post"
+  },
+  {
+    "fr": "USA Today",
+    "domain": "usatoday.com",
+    "frwiki": "USA_Today"
+  },
+  {
+    "fr": "El Mundo",
+    "domain": "elmundo.es",
+    "frwiki": "El_Mundo_(Espagne)"
+  },
+  {
+    "fr": "Ta Néa",
+    "domain": "tanea.gr",
+    "frwiki": "Ta_N%C3%A9a"
+  },
+  {
+    "fr": "La Stampa",
+    "domain": "lastampa.it",
+    "frwiki": "La_Stampa"
+  },
+  {
+    "fr": "Právo",
+    "domain": "pravo.novinky.cz",
+    "frwiki": "Pr%C3%A1vo"
+  },
+  {
+    "fr": "Kingston Whig-Standard",
+    "domain": "thewhig.com",
+    "frwiki": "Kingston_Whig-Standard"
+  },
+  {
+    "fr": "Honolulu Star-Advertiser",
+    "domain": "staradvertiser.com",
+    "frwiki": "Honolulu_Star-Advertiser"
+  },
+  {
+    "fr": "El Khabar (Algérie)",
+    "domain": "elkhabar.com",
+    "frwiki": "El_Khabar"
+  },
+  {
+    "fr": "El Nacional",
+    "domain": "el-nacional.com",
+    "frwiki": "El_Nacional_(Venezuela)"
+  },
+  {
+    "fr": "El Comercio",
+    "domain": "elcomercio.pe",
+    "frwiki": "El_Comercio_(P%C3%A9rou)"
+  },
+  {
+    "fr": "El Punt",
+    "domain": "elpunt.cat",
+    "frwiki": "El_Punt"
+  },
+  {
+    "fr": "El Universal",
+    "domain": "eluniversal.com.mx",
+    "frwiki": "El_Universal_(Mexique)"
+  },
+  {
+    "fr": "El Universal",
+    "domain": "eluniversal.com.mx",
+    "frwiki": "El_Universal_(Mexique)"
+  },
+  {
+    "fr": "Daily Star",
+    "domain": "dailystar.co.uk",
+    "frwiki": "Daily_Star_(Angleterre)"
+  },
+  {
+    "fr": "El Mercurio",
+    "domain": "emol.com",
+    "frwiki": "El_Mercurio"
+  },
+  {
+    "fr": "El Moudjahid",
+    "domain": "elmoudjahid.com",
+    "frwiki": "El_Moudjahid_(1956-1962)"
+  },
+  {
+    "fr": "El Correo",
+    "domain": "elcorreo.com",
+    "frwiki": "El_Correo"
+  },
+  {
+    "fr": "El Nuevo Herald",
+    "domain": "elNuevoHerald.com",
+    "frwiki": "El_Nuevo_Herald"
+  },
+  {
+    "fr": "Westdeutsche Allgemeine Zeitung",
+    "domain": "waz.de",
+    "frwiki": "Westdeutsche_Allgemeine_Zeitung"
+  },
+  {
+    "fr": "Winnipeg Sun",
+    "domain": "winnipegsun.com",
+    "frwiki": "Winnipeg_Sun"
+  },
+  {
+    "fr": "Ara",
+    "domain": "ara.cat",
+    "frwiki": "Ara_(journal)"
+  },
+  {
+    "fr": "The Mercury News",
+    "domain": "mercurynews.com",
+    "frwiki": "San_Jose_Mercury_News"
+  },
+  {
+    "fr": "Libero",
+    "domain": "liberoquotidiano.it",
+    "frwiki": "Libero_(journal)"
+  },
+  {
+    "fr": "Chicago Sun-Times",
+    "domain": "suntimes.com",
+    "frwiki": "Chicago_Sun-Times"
+  },
+  {
+    "fr": "Diário de Notícias",
+    "domain": "dn.pt",
+    "frwiki": "Di%C3%A1rio_de_Not%C3%ADcias"
+  },
+  {
+    "fr": "La Provence",
+    "domain": "laprovence.com",
+    "frwiki": "La_Provence"
+  },
+  {
+    "fr": "The Australian Financial Review",
+    "domain": "afr.com",
+    "frwiki": "The_Australian_Financial_Review"
+  },
+  {
+    "fr": "National Post",
+    "domain": "canada.com/nationalpost/index.html",
+    "frwiki": "National_Post"
+  },
+  {
+    "fr": "Philippine Daily Inquirer",
+    "domain": "inquirer.com.ph",
+    "frwiki": "Philippine_Daily_Inquirer"
+  },
+  {
+    "fr": "Stars and Stripes",
+    "domain": "stripes.com",
+    "frwiki": "Stars_and_Stripes_(journal)"
+  },
+  {
+    "fr": "La Libre Belgique",
+    "domain": "lalibre.be",
+    "frwiki": "La_Libre_Belgique"
+  },
+  {
+    "fr": "The Daily Telegraph",
+    "domain": "dailytelegraph.news.com.au",
+    "frwiki": "The_Daily_Telegraph_(Australie)"
+  },
+  {
+    "fr": "Trouw",
+    "domain": "trouw.nl",
+    "frwiki": "Trouw"
+  },
+  {
+    "fr": "Nerikes Allehanda",
+    "domain": "na.se",
+    "frwiki": "Nerikes_Allehanda"
+  },
+  {
+    "fr": "Chicago Tribune",
+    "domain": "chicagotribune.com",
+    "frwiki": "Chicago_Tribune"
+  },
+  {
+    "fr": "The Baltimore Sun",
+    "domain": "baltimoresun.com",
+    "frwiki": "The_Baltimore_Sun"
+  },
+  {
+    "fr": "The Times",
+    "domain": "thetimes.co.uk",
+    "frwiki": "The_Times"
+  },
+  {
+    "fr": "Houston Chronicle",
+    "domain": "chron.com",
+    "frwiki": "Houston_Chronicle"
+  },
+  {
+    "fr": "The Globe and Mail",
+    "domain": "theglobeandmail.com",
+    "frwiki": "The_Globe_and_Mail"
+  },
+  {
+    "fr": "La Côte",
+    "domain": "lacote.ch",
+    "frwiki": "La_C%C3%B4te_(quotidien)"
+  },
+  {
+    "fr": "Epoch Times",
+    "domain": "epochtimes.com",
+    "frwiki": "Epoch_Times"
+  },
+  {
+    "fr": "Epoch Times",
+    "domain": "theepochtimes.com",
+    "frwiki": "Epoch_Times"
+  },
+  {
+    "fr": "Epoch Times",
+    "domain": "fr.theepochtimes.com",
+    "frwiki": "Epoch_Times"
+  },
+  {
+    "fr": "The Philadelphia Inquirer",
+    "domain": "inquirer.com",
+    "frwiki": "The_Philadelphia_Inquirer"
+  },
+  {
+    "fr": "NRC Handelsblad",
+    "domain": "nrc.nl",
+    "frwiki": "NRC_Handelsblad"
+  },
+  {
+    "fr": "Ettela'at",
+    "domain": "ettelaat.com",
+    "frwiki": "Ettela%27at"
+  },
+  {
+    "fr": "Vásárhelyi Hírlap",
+    "domain": "vasarhelyihirlap.ro",
+    "frwiki": "V%C3%A1s%C3%A1rhelyi_H%C3%ADrlap"
+  },
+  {
+    "fr": "Postimees",
+    "domain": "postimees.ee",
+    "frwiki": "Postimees"
+  },
+  {
+    "fr": "El Tiempo",
+    "domain": "eltiempo.com",
+    "frwiki": "El_Tiempo_(Colombie)"
+  },
+  {
+    "fr": "Sydsvenskan",
+    "domain": "sydsvenskan.se",
+    "frwiki": "Sydsvenskan"
+  },
+  {
+    "fr": "The Buffalo News",
+    "domain": "buffalonews.com",
+    "frwiki": "The_Buffalo_News"
+  },
+  {
+    "fr": "Folha de S. Paulo",
+    "domain": "folha.com.br",
+    "frwiki": "Folha_de_S._Paulo"
+  },
+  {
+    "fr": "Global Times",
+    "domain": "globaltimes.cn",
+    "frwiki": "Global_Times"
+  },
+  {
+    "fr": "Sport-Express",
+    "domain": "sport-express.ru",
+    "frwiki": "Sport-Express"
+  },
+  {
+    "fr": "Winston-Salem Journal",
+    "domain": "journalnow.com",
+    "frwiki": "Winston-Salem_Journal"
+  },
+  {
+    "fr": "Il Resto del Carlino",
+    "domain": "ilrestodelcarlino.it",
+    "frwiki": "Il_Resto_del_Carlino"
+  },
+  {
+    "fr": "The Scotsman",
+    "domain": "scotsman.com",
+    "frwiki": "The_Scotsman"
+  },
+  {
+    "fr": "Il Fatto Quotidiano",
+    "domain": "ilfattoquotidiano.it",
+    "frwiki": "Il_Fatto_Quotidiano"
+  },
+  {
+    "fr": "The Calgary Herald",
+    "domain": "calgaryherald.com",
+    "frwiki": "The_Calgary_Herald"
+  },
+  {
+    "fr": "The Star-Ledger",
+    "domain": "nj.com",
+    "frwiki": "The_Star-Ledger"
+  },
+  {
+    "fr": "Buenos Aires Herald",
+    "domain": "buenosairesherald.com",
+    "frwiki": "Buenos_Aires_Herald"
+  },
+  {
+    "fr": "Il Giornale",
+    "domain": "ilgiornale.it",
+    "frwiki": "Il_Giornale"
+  },
+  {
+    "fr": "Whitehorse Star",
+    "domain": "whitehorsestar.com",
+    "frwiki": "Whitehorse_Star"
+  },
+  {
+    "fr": "El País",
+    "domain": "elpais.com",
+    "frwiki": "El_Pa%C3%ADs"
+  },
+  {
+    "fr": "i",
+    "domain": "inews.co.uk",
+    "frwiki": "I_(journal)"
+  },
+  {
+    "fr": "Leicester Mercury",
+    "domain": "leicestermercury.co.uk",
+    "frwiki": "Leicester_Mercury"
+  },
+  {
+    "fr": "New Straits Times",
+    "domain": "nst.com.my",
+    "frwiki": "New_Straits_Times"
+  },
+  {
+    "fr": "Seikyo Shinbun",
+    "domain": "seikyonet.jp/sg/sp/index.html/Seikyo",
+    "frwiki": "Seikyo_Shinbun"
+  },
+  {
+    "fr": "Pravda",
+    "domain": "pravda.sk",
+    "frwiki": "Pravda_(Slovaquie)"
+  },
+  {
+    "fr": "The Morning Star",
+    "domain": "morningstaronline.co.uk",
+    "frwiki": "The_Morning_Star"
+  },
+  {
+    "fr": "Daily News and Analysis",
+    "domain": "dnaindia.com",
+    "frwiki": "Daily_News_and_Analysis"
+  },
+  {
+    "fr": "L'Observateur paalga",
+    "domain": "lobservateur.bf",
+    "frwiki": "L%27Observateur_paalga"
+  },
+  {
+    "fr": "The Indian Express",
+    "domain": "indianexpress.com",
+    "frwiki": "The_Indian_Express"
+  },
+  {
+    "fr": "Hufvudstadsbladet",
+    "domain": "hbl.fi",
+    "frwiki": "Hufvudstadsbladet"
+  },
+  {
+    "fr": "Daily Express",
+    "domain": "express.co.uk",
+    "frwiki": "Daily_Express"
+  },
+  {
+    "fr": "Sport",
+    "domain": "sport.es/es",
+    "frwiki": "Sport_(journal)"
+  },
+  {
+    "fr": "Sport",
+    "domain": "sport.es/en",
+    "frwiki": "Sport_(journal)"
+  },
+  {
+    "fr": "Il Mattino",
+    "domain": "ilmattino.it",
+    "frwiki": "Il_Mattino"
+  },
+  {
+    "fr": "Berlingske",
+    "domain": "berlingske.dk",
+    "frwiki": "Berlingske"
+  },
+  {
+    "fr": "La Repubblica",
+    "domain": "repubblica.it",
+    "frwiki": "La_Repubblica"
+  },
+  {
+    "fr": "Gibraltar Chronicle",
+    "domain": "chronicle.gi",
+    "frwiki": "Gibraltar_Chronicle"
+  },
+  {
+    "fr": "Der Standard",
+    "domain": "derstandard.at",
+    "frwiki": "Der_Standard"
+  },
+  {
+    "fr": "Il Secolo XIX",
+    "domain": "ilsecoloxix.it",
+    "frwiki": "Il_Secolo_XIX"
+  },
+  {
+    "fr": "France-Soir",
+    "domain": "francesoir.fr",
+    "frwiki": "France-Soir"
+  },
+  {
+    "fr": "Het Laatste Nieuws",
+    "domain": "hln.be",
+    "frwiki": "Het_Laatste_Nieuws"
+  },
+  {
+    "fr": "The Australian",
+    "domain": "theaustralian.com.au",
+    "frwiki": "The_Australian"
+  },
+  {
+    "fr": "El Mundo Deportivo",
+    "domain": "mundodeportivo.com",
+    "frwiki": "Mundo_Deportivo"
+  },
+  {
+    "fr": "La Tribune",
+    "domain": "lapresse.ca/la-tribune",
+    "frwiki": "La_Tribune_(Sherbrooke)"
+  },
+  {
+    "fr": "Midi libre",
+    "domain": "midilibre.fr",
+    "frwiki": "Midi_libre"
+  },
+  {
+    "fr": "Fréttablaðið",
+    "domain": "visir.is",
+    "frwiki": "Fr%C3%A9ttabla%C3%B0i%C3%B0"
+  },
+  {
+    "fr": "Kayhan",
+    "domain": "kayhan.ir",
+    "frwiki": "Kayhan_(quotidien)"
+  },
+  {
+    "fr": "Deseret News",
+    "domain": "deseretnews.com",
+    "frwiki": "Deseret_News"
+  },
+  {
+    "fr": "Il Centro",
+    "domain": "ilcentro.gelocal.it",
+    "frwiki": "Il_Centro"
+  },
+  {
+    "fr": "Nihon Keizai Shinbun",
+    "domain": "nikkei.com",
+    "frwiki": "Nihon_Keizai_Shinbun"
+  },
+  {
+    "fr": "La Nuova Ferrara",
+    "domain": "lanuovaferrara.gelocal.it",
+    "frwiki": "La_Nuova_Ferrara"
+  },
+  {
+    "fr": "Il Tempo",
+    "domain": "iltempo.it",
+    "frwiki": "Il_Tempo"
+  },
+  {
+    "fr": "Toronto Star",
+    "domain": "thestar.com",
+    "frwiki": "Toronto_Star"
+  },
+  {
+    "fr": "L'Unità",
+    "domain": "unita.it",
+    "frwiki": "L%27Unit%C3%A0"
+  },
+  {
+    "fr": "Liberazione",
+    "domain": "liberazione.it",
+    "frwiki": "Liberazione"
+  },
+  {
+    "fr": "New York Daily News",
+    "domain": "nydailynews.com",
+    "frwiki": "New_York_Daily_News"
+  },
+  {
+    "fr": "Il Roma",
+    "domain": "ilroma.net",
+    "frwiki": "Il_Roma"
+  },
+  {
+    "fr": "Kronen Zeitung",
+    "domain": "krone.at",
+    "frwiki": "Kronen_Zeitung"
+  },
+  {
+    "fr": "The Age",
+    "domain": "theage.com.au",
+    "frwiki": "The_Age"
+  },
+  {
+    "fr": "Il Manifesto",
+    "domain": "ilmanifesto.it",
+    "frwiki": "Il_Manifesto"
+  },
+  {
+    "fr": "Vancouver Sun",
+    "domain": "vancouversun.com",
+    "frwiki": "The_Vancouver_Sun"
+  },
+  {
+    "fr": "The Telegraph",
+    "domain": "telegraphindia.com",
+    "frwiki": "The_Telegraph_(Calcutta)"
+  },
+  {
+    "fr": "Metro International",
+    "domain": "metro.lu",
+    "frwiki": "Metro_(journal_international)"
+  },
+  {
+    "fr": "Levante-EMV",
+    "domain": "levante-emv.com",
+    "frwiki": "Levante-EMV"
+  },
+  {
+    "fr": "Arizona Daily Star",
+    "domain": "azstarnet.com",
+    "frwiki": "The_Arizona_Daily_Star"
+  },
+  {
+    "fr": "Radikal",
+    "domain": "radikal.com.tr",
+    "frwiki": "Radikal_(journal_turc)"
+  },
+  {
+    "fr": "The Jakarta Post",
+    "domain": "thejakartapost.com",
+    "frwiki": "The_Jakarta_Post"
+  },
+  {
+    "fr": "Le Parisien",
+    "domain": "leparisien.fr",
+    "frwiki": "Le_Parisien"
+  },
+  {
+    "fr": "San Francisco Chronicle",
+    "domain": "sfgate.com",
+    "frwiki": "San_Francisco_Chronicle"
+  },
+  {
+    "fr": "San Francisco Chronicle",
+    "domain": "sfchronicle.com",
+    "frwiki": "San_Francisco_Chronicle"
+  },
+  {
+    "fr": "Zaman (journal)",
+    "domain": "zaman.com.tr",
+    "frwiki": "Zaman_(journal)"
+  },
+  {
+    "fr": "Messaggero Veneto - Giornale del Friuli",
+    "domain": "messaggeroveneto.it",
+    "frwiki": "Messaggero_Veneto_-_Giornale_del_Friuli"
+  },
+  {
+    "fr": "The Irish Times",
+    "domain": "irishtimes.com",
+    "frwiki": "The_Irish_Times"
+  },
+  {
+    "fr": "Granma",
+    "domain": "granma.cu",
+    "frwiki": "Granma_(journal)"
+  },
+  {
+    "fr": "Yediot Aharonot",
+    "domain": "yediot.co.il",
+    "frwiki": "Yediot_Aharonot"
+  },
+  {
+    "fr": "La Gazzetta dello Sport",
+    "domain": "gazzetta.it",
+    "frwiki": "La_Gazzetta_dello_Sport"
+  },
+  {
+    "fr": "Winnipeg Free Press",
+    "domain": "winnipegfreepress.com",
+    "frwiki": "Winnipeg_Free_Press"
+  },
+  {
+    "fr": "L'Express",
+    "domain": "lexpress.ch",
+    "frwiki": "L%27Express_(Neuch%C3%A2tel)"
+  },
+  {
+    "fr": "Neue Zürcher Zeitung",
+    "domain": "nzz.ch",
+    "frwiki": "Neue_Z%C3%BCrcher_Zeitung"
+  },
+  {
+    "fr": "Yomiuri shinbun",
+    "domain": "yomiuri.co.jp",
+    "frwiki": "Yomiuri_shinbun"
+  },
+  {
+    "fr": "Het Parool",
+    "domain": "parool.nl",
+    "frwiki": "Het_Parool"
+  },
+  {
+    "fr": "Le Devoir",
+    "domain": "ledevoir.com",
+    "frwiki": "Le_Devoir"
+  },
+  {
+    "fr": "Primorski Dnevnik",
+    "domain": "primorski.eu",
+    "frwiki": "Primorski_Dnevnik"
+  },
+  {
+    "fr": "The Arizona Republic",
+    "domain": "azcentral.com/arizonarepublic",
+    "frwiki": "The_Arizona_Republic"
+  },
+  {
+    "fr": "The Star",
+    "domain": "iol.co.za/the-star",
+    "frwiki": "The_Star_(Afrique_du_Sud)"
+  },
+  {
+    "fr": "Gara",
+    "domain": "naiz.eus/hemeroteca/gara",
+    "frwiki": "Gara"
+  },
+  {
+    "fr": "La Nación",
+    "domain": "lanacion.com",
+    "frwiki": "La_Naci%C3%B3n_(Argentine)"
+  },
+  {
+    "fr": "Allgemeine Zeitung",
+    "domain": "az.com.na",
+    "frwiki": "Allgemeine_Zeitung_(Namibie)"
+  },
+  {
+    "fr": "Bild",
+    "domain": "bild.de",
+    "frwiki": "Bild"
+  },
+  {
+    "fr": "Neues Deutschland",
+    "domain": "neues-deutschland.de",
+    "frwiki": "Neues_Deutschland"
+  },
+  {
+    "fr": "Morgunblaðið",
+    "domain": "mbl.is/mm/frettir",
+    "frwiki": "Morgunbla%C3%B0i%C3%B0"
+  },
+  {
+    "fr": "Corse-Matin",
+    "domain": "corsematin.com",
+    "frwiki": "Corse-Matin"
+  },
+  {
+    "fr": "Corriere del Ticino",
+    "domain": "cdt.ch",
+    "frwiki": "Corriere_del_Ticino"
+  },
+  {
+    "fr": "L'Humanité",
+    "domain": "humanite.fr",
+    "frwiki": "L%27Humanit%C3%A9"
+  },
+  {
+    "fr": "The London Gazette",
+    "domain": "thegazette.co.uk",
+    "frwiki": "The_London_Gazette"
+  },
+  {
+    "fr": "Correio da Manhã",
+    "domain": "correiomanha.pt",
+    "frwiki": "Correio_da_Manh%C3%A3"
+  },
+  {
+    "fr": "Mainichi Shinbun",
+    "domain": "mainichi.jp",
+    "frwiki": "Mainichi_Shinbun"
+  },
+  {
+    "fr": "Milenio",
+    "domain": "milenio.com",
+    "frwiki": "Milenio"
+  },
+  {
+    "fr": "Toronto Sun",
+    "domain": "torontosun.com",
+    "frwiki": "Toronto_Sun"
+  },
+  {
+    "fr": "Rzeczpospolita",
+    "domain": "rp.pl",
+    "frwiki": "Rzeczpospolita_(journal)"
+  },
+  {
+    "fr": "The San Francisco Examiner",
+    "domain": "sfexaminer.com",
+    "frwiki": "The_San_Francisco_Examiner"
+  },
+  {
+    "fr": "Het Belang van Limburg",
+    "domain": "hbvl.be",
+    "frwiki": "Het_Belang_van_Limburg"
+  },
+  {
+    "fr": "Libertà",
+    "domain": "liberta.it",
+    "frwiki": "Libert%C3%A0"
+  },
+  {
+    "fr": "El Día",
+    "domain": "eldia.es",
+    "frwiki": "El_D%C3%ADa_(Canaries)"
+  },
+  {
+    "fr": "Västerbottens-Kuriren",
+    "domain": "vk.se",
+    "frwiki": "V%C3%A4sterbottens-Kuriren"
+  },
+  {
+    "fr": "Avvenire",
+    "domain": "avvenire.it",
+    "frwiki": "Avvenire"
+  },
+  {
+    "fr": "Der Bund",
+    "domain": "derbund.ch",
+    "frwiki": "Der_Bund"
+  },
+  {
+    "fr": "International New York Times",
+    "domain": "international.nytimes.com",
+    "frwiki": "International_New_York_Times"
+  },
+  {
+    "fr": "Tages-Anzeiger",
+    "domain": "tagesanzeiger.ch",
+    "frwiki": "Tages-Anzeiger"
+  },
+  {
+    "fr": "Danas",
+    "domain": "danas.rs",
+    "frwiki": "Danas"
+  },
+  {
+    "fr": "Le Temps",
+    "domain": "letemps.ch",
+    "frwiki": "Le_Temps_(quotidien_suisse)"
+  },
+  {
+    "fr": "Evening Standard",
+    "domain": "standard.co.uk",
+    "frwiki": "Evening_Standard"
+  },
+  {
+    "fr": "Junge Welt",
+    "domain": "jungewelt.de",
+    "frwiki": "Junge_Welt"
+  },
+  {
+    "fr": "Die Tageszeitung",
+    "domain": "taz.de",
+    "frwiki": "Die_Tageszeitung"
+  },
+  {
+    "fr": "Süddeutsche Zeitung",
+    "domain": "sueddeutsche.de",
+    "frwiki": "S%C3%BCddeutsche_Zeitung"
+  },
+  {
+    "fr": "The Wall Street Journal",
+    "domain": "wsj.com",
+    "frwiki": "The_Wall_Street_Journal"
+  },
+  {
+    "fr": "The Washington Post",
+    "domain": "washingtonpost.com",
+    "frwiki": "The_Washington_Post"
+  },
+  {
+    "fr": "The Advertiser",
+    "domain": "news.com.au/adelaidenow",
+    "frwiki": "The_Advertiser"
+  },
+  {
+    "fr": "The Record",
+    "domain": "sherbrookerecord.com",
+    "frwiki": "The_Record_(Sherbrooke)"
+  },
+  {
+    "fr": "The Oregonian",
+    "domain": "oregonlive.com",
+    "frwiki": "The_Oregonian"
+  },
+  {
+    "fr": "The New York Sun",
+    "domain": "nysun.com",
+    "frwiki": "The_New_York_Sun"
+  },
+  {
+    "fr": "Journal officiel de la République de Turquie",
+    "domain": "resmigazete.gov.tr",
+    "frwiki": "Journal_officiel_de_la_R%C3%A9publique_de_Turquie"
+  },
+  {
+    "fr": "Hannoversche Allgemeine Zeitung",
+    "domain": "haz.de",
+    "frwiki": "Hannoversche_Allgemeine_Zeitung"
+  },
+  {
+    "fr": "Irish Examiner",
+    "domain": "irishexaminer.com",
+    "frwiki": "Irish_Examiner"
+  },
+  {
+    "fr": "Posta",
+    "domain": "posta.com.tr",
+    "frwiki": "Posta_(journal)"
+  },
+  {
+    "fr": "L'Unione Sarda",
+    "domain": "unionesarda.it",
+    "frwiki": "L%27Unione_Sarda"
+  },
+  {
+    "fr": "O Jogo",
+    "domain": "ojogo.pt",
+    "frwiki": "O_Jogo"
+  },
+  {
+    "fr": "Jamanak",
+    "domain": "jamanak.com",
+    "frwiki": "Jamanak"
+  },
+  {
+    "fr": "The Gazette",
+    "domain": "montrealgazette.com",
+    "frwiki": "Montreal_Gazette"
+  },
+  {
+    "fr": "Hamodia",
+    "domain": "hamodia.com",
+    "frwiki": "Hamodia"
+  },
+  {
+    "fr": "Wiener Zeitung",
+    "domain": "wienerzeitung.at",
+    "frwiki": "Wiener_Zeitung"
+  },
+  {
+    "fr": "Eleftherotypía",
+    "domain": "enet.gr",
+    "frwiki": "Eleftherotyp%C3%ADa"
+  },
+  {
+    "fr": "Berliner Morgenpost",
+    "domain": "morgenpost.de",
+    "frwiki": "Berliner_Morgenpost"
+  },
+  {
+    "fr": "Le Matin",
+    "domain": "lematin.ch",
+    "frwiki": "Le_Matin_(Suisse)"
+  },
+  {
+    "fr": "Die Presse",
+    "domain": "diepresse.com",
+    "frwiki": "Die_Presse"
+  },
+  {
+    "fr": "Le Matin Bleu",
+    "domain": "lematin.ch",
+    "frwiki": "Le_Matin_bleu"
+  },
+  {
+    "fr": "Bieler Tagblatt",
+    "domain": "bielertagblatt.ch",
+    "frwiki": "Bieler_Tagblatt"
+  },
+  {
+    "fr": "Cumhuriyet",
+    "domain": "cumhuriyet.com",
+    "frwiki": "Cumhuriyet"
+  },
+  {
+    "fr": "Newsday",
+    "domain": "newsday.com",
+    "frwiki": "Newsday"
+  },
+  {
+    "fr": "VG",
+    "domain": "vg.no",
+    "frwiki": "Verdens_Gang"
+  },
+  {
+    "fr": "Maariv",
+    "domain": "maariv.co.il",
+    "frwiki": "Maariv_(journal)"
+  },
+  {
+    "fr": "Dagbladet",
+    "domain": "dagbladet.no",
+    "frwiki": "Dagbladet"
+  },
+  {
+    "fr": "Financial Times",
+    "domain": "ft.com",
+    "frwiki": "Financial_Times"
+  },
+  {
+    "fr": "Novaïa Gazeta",
+    "domain": "novayagazeta.ru",
+    "frwiki": "Nova%C3%AFa_Gazeta"
+  },
+  {
+    "fr": "Tuttosport",
+    "domain": "tuttosport.com",
+    "frwiki": "Tuttosport"
+  },
+  {
+    "fr": "Kauno diena",
+    "domain": "kaunodiena.lt",
+    "frwiki": "Kauno_diena"
+  },
+  {
+    "fr": "Daily Star",
+    "domain": "thedailystar.net",
+    "frwiki": "The_Daily_Star_(Bangladesh)"
+  },
+  {
+    "fr": "Daily Star",
+    "domain": "thedailystar.net/bangla",
+    "frwiki": "The_Daily_Star_(Bangladesh)"
+  },
+  {
+    "fr": "Irish Independent",
+    "domain": "independent.ie",
+    "frwiki": "Irish_Independent"
+  },
+  {
+    "fr": "O Estado de São Paulo",
+    "domain": "estadao.com.br",
+    "frwiki": "O_Estado_de_S._Paulo"
+  },
+  {
+    "fr": "Hartford Courant",
+    "domain": "courant.com",
+    "frwiki": "Hartford_Courant"
+  },
+  {
+    "fr": "Israel Hayom",
+    "domain": "israelhayom.co.il",
+    "frwiki": "Israel_Hayom"
+  },
+  {
+    "fr": "La Prensa",
+    "domain": "laprensa.com.ar",
+    "frwiki": "La_Prensa_(Buenos_Aires)"
+  },
+  {
+    "fr": "De Tijd",
+    "domain": "tijd.be",
+    "frwiki": "De_Tijd"
+  },
+  {
+    "fr": "The Japan Times",
+    "domain": "club.japantimes.co.jp",
+    "frwiki": "The_Japan_Times"
+  },
+  {
+    "fr": "De Morgen",
+    "domain": "demorgen.be",
+    "frwiki": "De_Morgen"
+  },
+  {
+    "fr": "Shinbun Akahata",
+    "domain": "jcp.or.jp/akahata",
+    "frwiki": "Shinbun_Akahata"
+  },
+  {
+    "fr": "De Telegraaf",
+    "domain": "telegraaf.nl",
+    "frwiki": "De_Telegraaf"
+  },
+  {
+    "fr": "Pravda",
+    "domain": "gazeta-pravda.ru",
+    "frwiki": "Pravda"
+  },
+  {
+    "fr": "South China Morning Post",
+    "domain": "scmp.com",
+    "frwiki": "South_China_Morning_Post"
+  },
+  {
+    "fr": "Die Republikein",
+    "domain": "republikein.com.na",
+    "frwiki": "Die_Republikein"
+  },
+  {
+    "fr": "Lidové noviny",
+    "domain": "lidovky.cz",
+    "frwiki": "Lidov%C3%A9_noviny"
+  },
+  {
+    "fr": "Mladá fronta DNES",
+    "domain": "mfdnes.cz",
+    "frwiki": "Mlad%C3%A1_Fronta_Dnes"
+  },
+  {
+    "fr": "Sankei Shinbun",
+    "domain": "sankei.jp",
+    "frwiki": "Sankei_shinbun"
+  },
+  {
+    "fr": "La República",
+    "domain": "larepublica.co",
+    "frwiki": "La_Rep%C3%BAblica_(Colombie)"
+  },
+  {
+    "fr": "Apple Daily",
+    "domain": "hk.appledaily.com",
+    "frwiki": "Apple_Daily"
+  },
+  {
+    "fr": "Asahi Shinbun",
+    "domain": "asahi.com",
+    "frwiki": "Asahi_Shinbun"
+  },
+  {
+    "fr": "Asharq al-Awsat",
+    "domain": "aawsat.com",
+    "frwiki": "Asharq_al-Awsat"
+  },
+  {
+    "fr": "Attounissia",
+    "domain": "attounissia.com.tn",
+    "frwiki": "Attounissia"
+  },
+  {
+    "fr": "Dagbladet Information",
+    "domain": "information.dk",
+    "frwiki": "Dagbladet_Information"
+  },
+  {
+    "fr": "Új Szó",
+    "domain": "ujszo.com",
+    "frwiki": "%C3%9Aj_Sz%C3%B3"
+  },
+  {
+    "fr": "Financial Times Deutschland",
+    "domain": "ftd.de",
+    "frwiki": "Financial_Times_Deutschland"
+  },
+  {
+    "fr": "Al-Ittihad",
+    "domain": "alittihad44.com",
+    "frwiki": "Al-Ittihad_(journal_isra%C3%A9lien)"
+  },
+  {
+    "fr": "Los Angeles Times",
+    "domain": "latimes.com",
+    "frwiki": "Los_Angeles_Times"
+  },
+  {
+    "fr": "The Daily Telegraph",
+    "domain": "telegraph.co.uk",
+    "frwiki": "The_Daily_Telegraph"
+  },
+  {
+    "fr": "La Razón",
+    "domain": "larazon.es",
+    "frwiki": "La_Raz%C3%B3n"
+  },
+  {
+    "fr": "Daily Mail",
+    "domain": "dailymail.co.uk",
+    "frwiki": "Daily_Mail"
+  },
+  {
+    "fr": "Nice-Matin",
+    "domain": "nicematin.com",
+    "frwiki": "Nice-Matin"
+  },
+  {
+    "fr": "The Sun",
+    "domain": "thesun.co.uk",
+    "frwiki": "The_Sun"
+  },
+  {
+    "fr": "Avanti! (journal)",
+    "domain": "avantionline.it",
+    "frwiki": "Avanti!_(journal)"
+  },
+  {
+    "fr": "Blikk",
+    "domain": "blikk.hu",
+    "frwiki": "Blikk"
+  },
+  {
+    "fr": "Bergens Tidende",
+    "domain": "bt.no",
+    "frwiki": "Bergens_Tidende"
+  },
+  {
+    "fr": "Handelsblatt",
+    "domain": "handelsblatt.com",
+    "frwiki": "Handelsblatt"
+  },
+  {
+    "fr": "Tokyo Shinbun",
+    "domain": "tokyo-np.co.jp",
+    "frwiki": "Tokyo_Shinbun"
+  },
+  {
+    "fr": "Baslerstab",
+    "domain": "baslerstab.ch",
+    "frwiki": "Baslerstab"
+  },
+  {
+    "fr": "Neue Ruhr Zeitung",
+    "domain": "nrz.de",
+    "frwiki": "Neue_Ruhr_Zeitung"
+  },
+  {
+    "fr": "The Boston Globe",
+    "domain": "bostonglobe.com",
+    "frwiki": "The_Boston_Globe"
+  },
+  {
+    "fr": "Le Figaro",
+    "domain": "lefigaro.fr",
+    "frwiki": "Le_Figaro"
+  },
+  {
+    "fr": "New York Post",
+    "domain": "nypost.com",
+    "frwiki": "New_York_Post"
+  },
+  {
+    "fr": "China Daily",
+    "domain": "chinadaily.com.cn",
+    "frwiki": "China_Daily"
+  },
+  {
+    "fr": "The News International",
+    "domain": "thenews.com.pk",
+    "frwiki": "The_News_International"
+  },
+  {
+    "fr": "Star Tribune",
+    "domain": "startribune.com",
+    "frwiki": "Star_Tribune"
+  },
+  {
+    "fr": "La Tribune de Genève",
+    "domain": "tdg.ch",
+    "frwiki": "Tribune_de_Gen%C3%A8ve"
+  },
+  {
+    "fr": "Komsomolskaïa Pravda",
+    "domain": "kp.ru",
+    "frwiki": "Komsomolska%C3%AFa_Pravda"
+  },
+  {
+    "fr": "24H Montréal",
+    "domain": "24hrs.ca",
+    "frwiki": "24H_Montr%C3%A9al"
+  },
+  {
+    "fr": "Haaretz",
+    "domain": "haaretz.co.il",
+    "frwiki": "Haaretz"
+  },
+  {
+    "fr": "Haaretz",
+    "domain": "haaretz.com",
+    "frwiki": "Haaretz"
+  },
+  {
+    "fr": "24 heures",
+    "domain": "24heures.ch",
+    "frwiki": "24_Heures_(Suisse)"
+  },
+  {
+    "fr": "The Beijing News",
+    "domain": "bjnews.com.cn",
+    "frwiki": "The_Beijing_News"
+  },
+  {
+    "fr": "El Mundo",
+    "domain": "elmundo.com",
+    "frwiki": "El_Mundo_(Colombie)"
+  },
+  {
+    "fr": "Chongnyon Jonwi",
+    "domain": "youth.rep.kp",
+    "frwiki": "Chongnyon_Jonwi"
+  },
+  {
+    "fr": "Kainuun Sanomat",
+    "domain": "kainuunsanomat.fi",
+    "frwiki": "Kainuun_Sanomat"
+  },
+  {
+    "fr": "24 sata",
+    "domain": "24sata.rs",
+    "frwiki": "24_sata"
+  },
+  {
+    "fr": "Abendzeitung",
+    "domain": "abendzeitung.de",
+    "frwiki": "Abendzeitung"
+  },
+  {
+    "fr": "The Seattle Times",
+    "domain": "seattletimes.com",
+    "frwiki": "The_Seattle_Times"
+  },
+  {
+    "fr": "The Daily Mirror",
+    "domain": "mirror.co.uk",
+    "frwiki": "The_Daily_Mirror"
+  },
+  {
+    "fr": "Äripäev",
+    "domain": "ap3.ee",
+    "frwiki": "%C3%84rip%C3%A4ev"
+  },
+  {
+    "fr": "Ámbito Financiero",
+    "domain": "ambito.com",
+    "frwiki": "%C3%81mbito_Financiero"
+  },
+  {
+    "fr": "Washington Examiner",
+    "domain": "washingtonexaminer.com",
+    "frwiki": "Washington_Examiner"
+  },
+  {
+    "fr": "Novye Izvestia",
+    "domain": "newizv.ru",
+    "frwiki": "Novye_Izvestia"
+  },
+  {
+    "fr": "Tiroler Tageszeitung",
+    "domain": "tt.com",
+    "frwiki": "Tiroler_Tageszeitung"
+  },
+  {
+    "fr": "La Jornada",
+    "domain": "jornada.com.mx",
+    "frwiki": "La_Jornada"
+  },
+  {
+    "fr": "Quotidiano di Sicilia",
+    "domain": "qds.it",
+    "frwiki": "Quotidiano_di_Sicilia"
+  },
+  {
+    "fr": "Daily Record",
+    "domain": "dailyrecord.co.uk",
+    "frwiki": "Daily_Record"
+  },
+  {
+    "fr": "Gazet van Antwerpen",
+    "domain": "gva.be",
+    "frwiki": "Gazet_van_Antwerpen"
+  },
+  {
+    "fr": "Edmonton Journal",
+    "domain": "edmontonjournal.com",
+    "frwiki": "Edmonton_Journal"
+  },
+  {
+    "fr": "Orange County Register",
+    "domain": "ocregister.com",
+    "frwiki": "Orange_County_Register"
+  },
+  {
+    "fr": "El Watan",
+    "domain": "elwatan.com",
+    "frwiki": "El_Watan"
+  },
+  {
+    "fr": "New Media",
+    "domain": "newmedia-dz.com",
+    "frwiki": "New_Media"
+  },
+  {
+    "fr": "Mutations",
+    "domain": "mutations-online.info",
+    "frwiki": "Mutations_(Cameroun)"
+  },
+  {
+    "fr": "La Voz de Asturias",
+    "domain": "lavozdeasturias.es",
+    "frwiki": "La_Voz_de_Asturias"
+  },
+  {
+    "fr": "Jornal do Brasil",
+    "domain": "jb.com.br",
+    "frwiki": "Jornal_do_Brasil"
+  },
+  {
+    "fr": "Nord Éclair",
+    "domain": "nordeclair.fr",
+    "frwiki": "Nord_%C3%89clair"
+  },
+  {
+    "fr": "Gulf News",
+    "domain": "gulfnews.com",
+    "frwiki": "Gulf_News"
+  },
+  {
+    "fr": "Leipziger Volkszeitung",
+    "domain": "lvz.de",
+    "frwiki": "Leipziger_Volkszeitung"
+  },
+  {
+    "fr": "An Nahar",
+    "domain": "annaharonline.com",
+    "frwiki": "An_Nahar"
+  },
+  {
+    "fr": "De Volkskrant",
+    "domain": "volkskrant.nl",
+    "frwiki": "De_Volkskrant"
+  },
+  {
+    "fr": "Hamburger Abendblatt",
+    "domain": "abendblatt.de",
+    "frwiki": "Hamburger_Abendblatt"
+  },
+  {
+    "fr": "Blick",
+    "domain": "blick.ch",
+    "frwiki": "Blick"
+  },
+  {
+    "fr": "Corriere della Sera",
+    "domain": "corriere.it",
+    "frwiki": "Corriere_della_Sera"
+  },
+  {
+    "fr": "Al-Ahram",
+    "domain": "ahram.org.eg",
+    "frwiki": "Al-Ahram"
+  },
+  {
+    "fr": "Algemeen Dagblad",
+    "domain": "ad.nl",
+    "frwiki": "Algemeen_Dagblad"
+  },
+  {
+    "fr": "Seattle Post-Intelligencer",
+    "domain": "seattlepi.com",
+    "frwiki": "Seattle_Post-Intelligencer"
+  },
+  {
+    "fr": "ABC",
+    "domain": "abc.es",
+    "frwiki": "ABC_(journal)"
+  },
+  {
+    "fr": "Österreich (quotidien)",
+    "domain": "oe24.at",
+    "frwiki": "%C3%96sterreich_(journal)"
+  },
+  {
+    "fr": "La Voix du Nord",
+    "domain": "lavoixdunord.fr",
+    "frwiki": "La_Voix_du_Nord"
+  },
+  {
+    "fr": "Malayala Manorama",
+    "domain": "manoramaonline.com",
+    "frwiki": "Malayala_Manorama"
+  },
+  {
+    "fr": "Tehran Times",
+    "domain": "tehrantimes.com",
+    "frwiki": "Tehran_Times"
+  },
+  {
+    "fr": "Al Massae",
+    "domain": "almassae.press.ma",
+    "frwiki": "Al_Massae"
+  },
+  {
+    "fr": "The Bhutan Times",
+    "domain": "bhutantimes.org",
+    "frwiki": "The_Bhutan_Times"
+  },
+  {
+    "fr": "Western Mail",
+    "domain": "walesonline.co.uk",
+    "frwiki": "Western_Mail_(pays_de_Galles)"
+  },
+  {
+    "fr": "The Denver Post",
+    "domain": "denverpost.com",
+    "frwiki": "The_Denver_Post"
+  },
+  {
+    "fr": "La Tercera",
+    "domain": "latercera.com",
+    "frwiki": "La_Tercera"
+  },
+  {
+    "fr": "Le Dauphiné libéré",
+    "domain": "ledauphine.com",
+    "frwiki": "Le_Dauphin%C3%A9_lib%C3%A9r%C3%A9"
+  },
+  {
+    "fr": "Respublika",
+    "domain": "respublika.lt",
+    "frwiki": "Respublika"
+  },
+  {
+    "fr": "Otago Daily Times",
+    "domain": "odt.co.nz",
+    "frwiki": "Otago_Daily_Times"
+  },
+  {
+    "fr": "Stuttgarter Zeitung",
+    "domain": "stuttgarter-zeitung.de",
+    "frwiki": "Stuttgarter_Zeitung"
+  },
+  {
+    "fr": "Frankfurter Rundschau",
+    "domain": "fr.de",
+    "frwiki": "Frankfurter_Rundschau"
+  },
+  {
+    "fr": "Hürriyet",
+    "domain": "hurriyet.com.tr",
+    "frwiki": "H%C3%BCrriyet"
+  },
+  {
+    "fr": "El Norte de Castilla",
+    "domain": "elnortedecastilla.es",
+    "frwiki": "El_Norte_de_Castilla"
+  },
+  {
+    "fr": "Dernières Nouvelles d'Alsace",
+    "domain": "dna.fr",
+    "frwiki": "Derni%C3%A8res_Nouvelles_d%27Alsace"
+  },
+  {
+    "fr": "The Herald Sun",
+    "domain": "heraldsun.com.au",
+    "frwiki": "Herald_Sun"
+  },
+  {
+    "fr": "Kuensel",
+    "domain": "kuenselonline.com",
+    "frwiki": "Kuensel"
+  },
+  {
+    "fr": "Post-Courier",
+    "domain": "postcourier.com.pg",
+    "frwiki": "Post-Courier"
+  },
+  {
+    "fr": "Aftenposten",
+    "domain": "aftenposten.no",
+    "frwiki": "Aftenposten"
+  },
+  {
+    "fr": "Il Messaggero",
+    "domain": "ilmessaggero.it",
+    "frwiki": "Il_Messaggero"
+  },
+  {
+    "fr": "Le Nouvelliste",
+    "domain": "lenouvelliste.ca",
+    "frwiki": "Le_Nouvelliste_(Trois-Rivi%C3%A8res)"
+  },
+  {
+    "fr": "Clarín",
+    "domain": "clarin.com",
+    "frwiki": "Clar%C3%ADn"
+  },
+  {
+    "fr": "The Nation",
+    "domain": "nationmultimedia.com",
+    "frwiki": "The_Nation_(Tha%C3%AFlande)"
+  },
+  {
+    "fr": "Globes",
+    "domain": "globes.co.il/serveen",
+    "frwiki": "Globes"
+  },
+  {
+    "fr": "Le Phare",
+    "domain": "lephareonline.net",
+    "frwiki": "Le_Phare_(RDC)"
+  },
+  {
+    "fr": "Magyar Nemzet",
+    "domain": "mno.hu",
+    "frwiki": "Magyar_Nemzet"
+  },
+  {
+    "fr": "South Wales Argus",
+    "domain": "southwalesargus.co.uk",
+    "frwiki": "South_Wales_Argus"
+  },
+  {
+    "fr": "Basler Zeitung",
+    "domain": "baz.ch",
+    "frwiki": "Basler_Zeitung"
+  },
+  {
+    "fr": "Kurier",
+    "domain": "kurier.at",
+    "frwiki": "Kurier"
+  },
+  {
+    "fr": "Politiken",
+    "domain": "politiken.dk",
+    "frwiki": "Politiken"
+  },
+  {
+    "fr": "Berner Zeitung",
+    "domain": "bernerzeitung.ch",
+    "frwiki": "Berner_Zeitung"
+  },
+  {
+    "fr": "BT",
+    "domain": "bt.dk",
+    "frwiki": "B.T."
+  },
+  {
+    "fr": "Helsingin Sanomat",
+    "domain": "hs.fi",
+    "frwiki": "Helsingin_Sanomat"
+  },
+  {
+    "fr": "Le Courrier",
+    "domain": "lecourrier.ch",
+    "frwiki": "Le_Courrier"
+  },
+  {
+    "fr": "Aujourd'hui le Maroc",
+    "domain": "aujourdhui.ma",
+    "frwiki": "Aujourd%27hui_le_Maroc"
+  },
+  {
+    "fr": "Aujourd'hui le Maroc",
+    "domain": "aujourdhui.ma",
+    "frwiki": "Aujourd%27hui_le_Maroc"
+  },
+  {
+    "fr": "Aujourd'hui Sport",
+    "domain": "asport.fr",
+    "frwiki": "Aujourd%27hui_Sport"
+  },
+  {
+    "fr": "Calgary Sun",
+    "domain": "calgarysun.com",
+    "frwiki": "Calgary_Sun"
+  },
+  {
+    "fr": "centre Presse (Aveyron)",
+    "domain": "centrepresseaveyron.fr",
+    "frwiki": "Centre_Presse_(Aveyron)"
+  },
+  {
+    "fr": "Charente libre",
+    "domain": "charentelibre.com",
+    "frwiki": "Charente_libre"
+  },
+  {
+    "fr": "Assabah",
+    "domain": "assabah.com.tn",
+    "frwiki": "Assabah_(Tunisie)"
+  },
+  {
+    "fr": "Olé",
+    "domain": "ole.com.ar",
+    "frwiki": "Ol%C3%A9_(quotidien_argentin)"
+  },
+  {
+    "fr": "Attajdid",
+    "domain": "attajdid.ma",
+    "frwiki": "Attajdid"
+  },
+  {
+    "fr": "Ad-Diyar",
+    "domain": "addiyar.com/",
+    "frwiki": "Ad-Diyar"
+  },
+  {
+    "fr": "Al-Quds (journal)",
+    "domain": "alquds.com",
+    "frwiki": "Al-Quds_(journal)"
+  },
+  {
+    "fr": "AM New York",
+    "domain": "amny.com",
+    "frwiki": "AM_New_York"
+  },
+  {
+    "fr": "Cameroon Tribune",
+    "domain": "cameroon-tribune.cm",
+    "frwiki": "Cameroon_Tribune"
+  },
+  {
+    "fr": "Cape Breton Post",
+    "domain": "capebretonpost.com",
+    "frwiki": "Cape_Breton_Post"
+  },
+  {
+    "fr": "La Nación",
+    "domain": "lanacion.cl",
+    "frwiki": "La_Naci%C3%B3n_(Chili)"
+  },
+  {
+    "fr": "Al Fadjr",
+    "domain": "al-fadjr.com",
+    "frwiki": "Al_Fadjr"
+  },
+  {
+    "fr": "Alger républicain",
+    "domain": "alger-republicain.com",
+    "frwiki": "Alger_r%C3%A9publicain"
+  },
+  {
+    "fr": "America Oggi (quotidien)",
+    "domain": "americaoggi.us",
+    "frwiki": "America_Oggi_(quotidien)"
+  },
+  {
+    "fr": "Sarasota Herald-Tribune",
+    "domain": "heraldtribune.com",
+    "frwiki": "Sarasota_Herald-Tribune"
+  },
+  {
+    "fr": "Rocky Mountain News",
+    "domain": "rockymountainnews.com",
+    "frwiki": "Rocky_Mountain_News"
+  },
+  {
+    "fr": "Lance!",
+    "domain": "lancenet.com.br",
+    "frwiki": "Lance!"
+  },
+  {
+    "fr": "Las Provincias",
+    "domain": "lasprovincias.es",
+    "frwiki": "Las_Provincias"
+  },
+  {
+    "fr": "Al Bayane",
+    "domain": "albayane.press.ma",
+    "frwiki": "Al_Bayane"
+  },
+  {
+    "fr": "As-Safir",
+    "domain": "assafir.com",
+    "frwiki": "As-Safir"
+  },
+  {
+    "fr": "Akhbar El Youm",
+    "domain": "akhbarelyoum-dz.com",
+    "frwiki": "Akhbar_El_Youm"
+  },
+  {
+    "fr": "Al Chourouk",
+    "domain": "alchourouk.com",
+    "frwiki": "Al_Chourouk"
+  },
+  {
+    "fr": "Al-Masri Al-Youm",
+    "domain": "almasryalyoum.com",
+    "frwiki": "Al-Masri_al-youm"
+  },
+  {
+    "fr": "Aufait",
+    "domain": "aufaitmaroc.com",
+    "frwiki": "Aufait"
+  },
+  {
+    "fr": "20 minutes",
+    "domain": "20min.ch",
+    "frwiki": "20_Minutes_(Suisse)"
+  },
+  {
+    "fr": "Corriere del Mezzogiorno",
+    "domain": "corrieredelmezzogiorno.corriere.it",
+    "frwiki": "Corriere_del_Mezzogiorno"
+  },
+  {
+    "fr": "Ech Chaâb",
+    "domain": "ech-chaab.com/ar",
+    "frwiki": "Ech_Cha%C3%A2b"
+  },
+  {
+    "fr": "El Heraldo",
+    "domain": "elheraldo.com.co",
+    "frwiki": "El_Heraldo_(Barranquilla)"
+  },
+  {
+    "fr": "El Universal",
+    "domain": "eluniversal.com.co",
+    "frwiki": "El_Universal_(Colombie)"
+  },
+  {
+    "fr": "Ennahar",
+    "domain": "ennaharonline.com",
+    "frwiki": "Ennahar_El_Djadid"
+  },
+  {
+    "fr": "CNews",
+    "domain": "cnewsmatin.fr",
+    "frwiki": "CNews_(journal)"
+  },
+  {
+    "fr": "Daily Times",
+    "domain": "dailytimes.com.pk",
+    "frwiki": "Daily_Times_(Pakistan)"
+  },
+  {
+    "fr": "Diario de Sevilla",
+    "domain": "diariodesevilla.es",
+    "frwiki": "Diario_de_Sevilla"
+  },
+  {
+    "fr": "El Bilad",
+    "domain": "elbilad.net",
+    "frwiki": "El_Bilad_(journal)"
+  },
+  {
+    "fr": "El Nuevo Siglo",
+    "domain": "elnuevosiglo.com.co",
+    "frwiki": "El_Nuevo_Siglo"
+  },
+  {
+    "fr": "Pittsburgh Post-Gazette",
+    "domain": "post-gazette.com",
+    "frwiki": "Pittsburgh_Post-Gazette"
+  },
+  {
+    "fr": "Direct Bordeaux 7",
+    "domain": "bordeaux7.com",
+    "frwiki": "CNEWS_Bordeaux"
+  },
+  {
+    "fr": "Europe Today",
+    "domain": "europetodayonline.com",
+    "frwiki": "Europe_Today"
+  },
+  {
+    "fr": "Rizospastis",
+    "domain": "rizospastis.gr",
+    "frwiki": "Rizospastis"
+  },
+  {
+    "fr": "Direct Lille Plus",
+    "domain": "directlille.com",
+    "frwiki": "CNews_Lille"
+  },
+  {
+    "fr": "Dagbladet",
+    "domain": "dagbladet.se",
+    "frwiki": "Dagbladet_(Sundsvall)"
+  },
+  {
+    "fr": "Daily News",
+    "domain": "dailynews.co.zw",
+    "frwiki": "Daily_News_(Zimbabwe)"
+  },
+  {
+    "fr": "El Diario de Hoy",
+    "domain": "elsalvador.com",
+    "frwiki": "El_Diario_de_Hoy"
+  },
+  {
+    "fr": "Europolitique",
+    "domain": "europolitique.info",
+    "frwiki": "Europolitique"
+  },
+  {
+    "fr": "Krónika",
+    "domain": "kronika.ro",
+    "frwiki": "Kr%C3%B3nika"
+  },
+  {
+    "fr": "L'Est républicain",
+    "domain": "estrepublicain.fr",
+    "frwiki": "L%27Est_r%C3%A9publicain"
+  },
+  {
+    "fr": "Direct Soir",
+    "domain": "directsoir.net",
+    "frwiki": "Direct_Soir"
+  },
+  {
+    "fr": "Edmonton Sun",
+    "domain": "edmontonsun.com",
+    "frwiki": "Edmonton_Sun"
+  },
+  {
+    "fr": "El Acil",
+    "domain": "elacil.com",
+    "frwiki": "El_Acil"
+  },
+  {
+    "fr": "El Massa",
+    "domain": "el-massa.com",
+    "frwiki": "El_Massa"
+  },
+  {
+    "fr": "Corriere Canadese",
+    "domain": "corriere.com",
+    "frwiki": "Corriere_Canadese"
+  },
+  {
+    "fr": "El Intransigente",
+    "domain": "elintransigente.com",
+    "frwiki": "El_Intransigente"
+  },
+  {
+    "fr": "Pittsburgh Tribune-Review",
+    "domain": "triblive.com",
+    "frwiki": "Pittsburgh_Tribune-Review"
+  },
+  {
+    "fr": "Il Foglio",
+    "domain": "ilfoglio.it",
+    "frwiki": "Il_Foglio"
+  },
+  {
+    "fr": "Il Giorno",
+    "domain": "ilgiorno.it",
+    "frwiki": "Il_Giorno"
+  },
+  {
+    "fr": "Il Quotidiano della Calabria",
+    "domain": "quotidianodelsud.it",
+    "frwiki": "Il_Quotidiano_della_Calabria"
+  },
+  {
+    "fr": "The Atlanta Journal-Constitution",
+    "domain": "ajc.com",
+    "frwiki": "The_Atlanta_Journal-Constitution"
+  },
+  {
+    "fr": "Gazzetta di Mantova",
+    "domain": "gazzettadimantova.it",
+    "frwiki": "Gazzetta_di_Mantova"
+  },
+  {
+    "fr": "Het Volk",
+    "domain": "hetvolk.be",
+    "frwiki": "Het_Volk_(journal)"
+  },
+  {
+    "fr": "Horizons",
+    "domain": "horizons-dz.com",
+    "frwiki": "Horizons_(Alg%C3%A9rie)"
+  },
+  {
+    "fr": "Le Journal de Montréal",
+    "domain": "journaldemontreal.com",
+    "frwiki": "Le_Journal_de_Montr%C3%A9al"
+  },
+  {
+    "fr": "Gazzetta di Reggio",
+    "domain": "gazzettadireggio.gelocal.it",
+    "frwiki": "Gazzetta_di_Reggio"
+  },
+  {
+    "fr": "Gefle Dagblad",
+    "domain": "gd.se",
+    "frwiki": "Gefle_Dagblad"
+  },
+  {
+    "fr": "Green Bay Press-Gazette",
+    "domain": "greenbaypressgazette.com",
+    "frwiki": "Green_Bay_Press-Gazette"
+  },
+  {
+    "fr": "Le Télégramme",
+    "domain": "letelegramme.com",
+    "frwiki": "Le_T%C3%A9l%C3%A9gramme"
+  },
+  {
+    "fr": "Uusi Suomi",
+    "domain": "uusisuomi.fi",
+    "frwiki": "Uusi_Suomi"
+  },
+  {
+    "fr": "Green Bay News-Chronicle",
+    "domain": "greenbaynewschron.com",
+    "frwiki": "Green_Bay_News-Chronicle"
+  },
+  {
+    "fr": "Gulf Daily News",
+    "domain": "gulf-daily-news.com",
+    "frwiki": "Gulf_Daily_News"
+  },
+  {
+    "fr": "The Herald",
+    "domain": "heraldscotland.com",
+    "frwiki": "The_Herald_(Glasgow)"
+  },
+  {
+    "fr": "The Times-Picayune",
+    "domain": "nola.com",
+    "frwiki": "The_Times-Picayune"
+  },
+  {
+    "fr": "Hoy",
+    "domain": "vivelohoy.com",
+    "frwiki": "Hoy_(journal_am%C3%A9ricain)"
+  },
+  {
+    "fr": "Il Tirreno",
+    "domain": "iltirreno.gelocal.it",
+    "frwiki": "Il_Tirreno"
+  },
+  {
+    "fr": "Ilkka",
+    "domain": "ilkka.fi",
+    "frwiki": "Ilkka"
+  },
+  {
+    "fr": "Le Matin",
+    "domain": "lematinhaiti.com",
+    "frwiki": "Le_Matin_(Ha%C3%AFti)"
+  },
+  {
+    "fr": "The New Day",
+    "domain": "thenewday.co.uk",
+    "frwiki": "The_New_Day_(journal)"
+  },
+  {
+    "fr": "The Journal News",
+    "domain": "lohud.com",
+    "frwiki": "The_Journal_News"
+  },
+  {
+    "fr": "Africa Presse",
+    "domain": "africapresse.com",
+    "frwiki": "Africa_Presse"
+  },
+  {
+    "fr": "Le Petit Bleu d'Agen",
+    "domain": "petitbleu.fr",
+    "frwiki": "Le_Petit_Bleu_d%27Agen"
+  },
+  {
+    "fr": "Hawaii Tribune-Herald",
+    "domain": "hawaiitribune-herald.com",
+    "frwiki": "Hawaii_Tribune-Herald"
+  },
+  {
+    "fr": "L'Opinion",
+    "domain": "lopinion.fr",
+    "frwiki": "L%27Opinion_(quotidien_fran%C3%A7ais)"
+  },
+  {
+    "fr": "Dhaka Tribune",
+    "domain": "dhakatribune.com",
+    "frwiki": "Dhaka_Tribune"
+  },
+  {
+    "fr": "The Independent (Bangladesh)",
+    "domain": "theindependentbd.com",
+    "frwiki": "The_Independent_(Bangladesh)"
+  },
+  {
+    "fr": "The News Today (Bangladesh)",
+    "domain": "newstoday.com.bd",
+    "frwiki": "The_News_Today_(Bangladesh)"
+  },
+  {
+    "fr": "L'Observateur",
+    "domain": "lobservateur.cd",
+    "frwiki": "L%27Observateur_(RDC)"
+  },
+  {
+    "fr": "La Discussione",
+    "domain": "ladiscussione.com",
+    "frwiki": "La_Discussione"
+  },
+  {
+    "fr": "La Dernière Heure/Les Sports",
+    "domain": "dhnet.be",
+    "frwiki": "La_Derni%C3%A8re_Heure/Les_Sports"
+  },
+  {
+    "fr": "Kantipur",
+    "domain": "ekantipur.com",
+    "frwiki": "Kantipur_(journal)"
+  },
+  {
+    "fr": "L'Écho d'Oran",
+    "domain": "echo-doran.com",
+    "frwiki": "L%27%C3%89cho_d%27Oran"
+  },
+  {
+    "fr": "L'Actu",
+    "domain": "l-actu.fr",
+    "frwiki": "L%27Actu"
+  },
+  {
+    "fr": "L'Est-Éclair",
+    "domain": "lest-eclair.fr",
+    "frwiki": "L%27Est-%C3%89clair"
+  },
+  {
+    "fr": "Karjalainen",
+    "domain": "karjalainen.fi",
+    "frwiki": "Karjalainen"
+  },
+  {
+    "fr": "Knoxville News Sentinel",
+    "domain": "knoxnews.com",
+    "frwiki": "Knoxville_News_Sentinel"
+  },
+  {
+    "fr": "L'Acadie nouvelle",
+    "domain": "acadienouvelle.com",
+    "frwiki": "L%27Acadie_nouvelle"
+  },
+  {
+    "fr": "L'essentiel",
+    "domain": "lessentiel.lu/de",
+    "frwiki": "L%27essentiel_(journal)"
+  },
+  {
+    "fr": "L'essentiel",
+    "domain": "lessentiel.lu/fr",
+    "frwiki": "L%27essentiel_(journal)"
+  },
+  {
+    "fr": "L'Expression",
+    "domain": "lexpressiondz.com",
+    "frwiki": "L%27Expression_(Alg%C3%A9rie)"
+  },
+  {
+    "fr": "L'Économiste",
+    "domain": "leconomiste.com",
+    "frwiki": "L%27%C3%89conomiste"
+  },
+  {
+    "fr": "L'Yonne républicaine",
+    "domain": "lyonne-republicaine.fr",
+    "frwiki": "L%27Yonne_r%C3%A9publicaine"
+  },
+  {
+    "fr": "La Crosse Tribune",
+    "domain": "lacrossetribune.com",
+    "frwiki": "La_Crosse_Tribune"
+  },
+  {
+    "fr": "Kaleva",
+    "domain": "kaleva.fi",
+    "frwiki": "Kaleva"
+  },
+  {
+    "fr": "L'Avenir",
+    "domain": "groupelavenir.net",
+    "frwiki": "L%27Avenir_(RDC)"
+  },
+  {
+    "fr": "L'Essor",
+    "domain": "essor.ml",
+    "frwiki": "L%27Essor_(Mali)"
+  },
+  {
+    "fr": "L'Observateur",
+    "domain": "lobservateur.sn",
+    "frwiki": "L%27Observateur_(S%C3%A9n%C3%A9gal)"
+  },
+  {
+    "fr": "LaNotizia",
+    "domain": "lanotizia.ch",
+    "frwiki": "LaNotizia"
+  },
+  {
+    "fr": "Journal de l'île de La Réunion",
+    "domain": "clicanoo.re",
+    "frwiki": "Journal_de_l%27%C3%AEle_de_La_R%C3%A9union"
+  },
+  {
+    "fr": "Keskisuomalainen",
+    "domain": "ksml.fi",
+    "frwiki": "Keskisuomalainen"
+  },
+  {
+    "fr": "L'Écho",
+    "domain": "lecho.be",
+    "frwiki": "L%27%C3%89cho"
+  },
+  {
+    "fr": "L'AGEFI",
+    "domain": "agefi.ch",
+    "frwiki": "L%27Agefi_(Suisse)"
+  },
+  {
+    "fr": "L'Éveil de la Haute-Loire",
+    "domain": "leveil.fr",
+    "frwiki": "L%27%C3%89veil_de_la_Haute-Loire"
+  },
+  {
+    "fr": "L'Express",
+    "domain": "lexpress.mu",
+    "frwiki": "L%27Express_(Maurice)"
+  },
+  {
+    "fr": "L'Impartial",
+    "domain": "limpartial.ch",
+    "frwiki": "L%27Impartial_(Suisse)"
+  },
+  {
+    "fr": "La Dépêche de Tahiti",
+    "domain": "ladepeche.pf",
+    "frwiki": "La_D%C3%A9p%C3%AAche_de_Tahiti"
+  },
+  {
+    "fr": "La Gazzetta del Mezzogiorno",
+    "domain": "lagazzettadelmezzogiorno.it",
+    "frwiki": "La_Gazzetta_del_Mezzogiorno"
+  },
+  {
+    "fr": "La Nuova Venezia",
+    "domain": "nuovavenezia.gelocal.it/venezia",
+    "frwiki": "La_Nuova_Venezia"
+  },
+  {
+    "fr": "La Prensa Gráfica",
+    "domain": "laprensagrafica.com",
+    "frwiki": "La_Prensa_Gr%C3%A1fica"
+  },
+  {
+    "fr": "Le Matin",
+    "domain": "lematindz.net",
+    "frwiki": "Le_Matin_(Alg%C3%A9rie)"
+  },
+  {
+    "fr": "Le Petit Quotidien",
+    "domain": "lepetitquotidien.fr",
+    "frwiki": "Le_Petit_Quotidien"
+  },
+  {
+    "fr": "Le Républicain lorrain",
+    "domain": "republicain-lorrain.fr",
+    "frwiki": "Le_R%C3%A9publicain_lorrain"
+  },
+  {
+    "fr": "Le Sauvage",
+    "domain": "lesauvage.org",
+    "frwiki": "Le_Sauvage_(journal)"
+  },
+  {
+    "fr": "La Nouvelle République",
+    "domain": "lnr-dz.com",
+    "frwiki": "La_Nouvelle_R%C3%A9publique_(Alg%C3%A9rie)"
+  },
+  {
+    "fr": "La République du Centre",
+    "domain": "larep.fr",
+    "frwiki": "La_R%C3%A9publique_du_Centre"
+  },
+  {
+    "fr": "La Tempête des tropiques",
+    "domain": "latempete.info",
+    "frwiki": "La_Temp%C3%AAte_des_Tropiques"
+  },
+  {
+    "fr": "Le Financier",
+    "domain": "lefinancier-dz.com",
+    "frwiki": "Le_Financier"
+  },
+  {
+    "fr": "Le Quotidien",
+    "domain": "lequotidien.sn",
+    "frwiki": "Le_Quotidien_(S%C3%A9n%C3%A9gal)"
+  },
+  {
+    "fr": "Le Quotidien d'Oran",
+    "domain": "lequotidien-oran.com",
+    "frwiki": "Le_Quotidien_d%27Oran"
+  },
+  {
+    "fr": "La Prensa",
+    "domain": "laprensa.com.ni",
+    "frwiki": "La_Prensa_(Managua)"
+  },
+  {
+    "fr": "La Référence Plus",
+    "domain": "groupelareference.afrikart.net",
+    "frwiki": "La_R%C3%A9f%C3%A9rence_Plus"
+  },
+  {
+    "fr": "Le 10 Sport",
+    "domain": "le10sport.com",
+    "frwiki": "Le_10_Sport"
+  },
+  {
+    "fr": "Le Journal de Québec",
+    "domain": "journaldequebec.com",
+    "frwiki": "Le_Journal_de_Qu%C3%A9bec"
+  },
+  {
+    "fr": "Le Journal du Pays Basque",
+    "domain": "lejpb.com",
+    "frwiki": "Le_Journal_du_Pays_basque"
+  },
+  {
+    "fr": "La Montagne",
+    "domain": "lamontagne.fr",
+    "frwiki": "La_Montagne_(journal)"
+  },
+  {
+    "fr": "Le Courrier du Vietnam",
+    "domain": "lecourrier.vn",
+    "frwiki": "Le_Courrier_du_Vietnam"
+  },
+  {
+    "fr": "Le Figaro Économie",
+    "domain": "lefigaropatrimoine.fr",
+    "frwiki": "Le_Figaro_%C3%89conomie"
+  },
+  {
+    "fr": "Le Matin",
+    "domain": "lematin.ma",
+    "frwiki": "Le_Matin_(Maroc)"
+  },
+  {
+    "fr": "Le Mauricien",
+    "domain": "lemauricien.com/mauricien",
+    "frwiki": "Le_Mauricien"
+  },
+  {
+    "fr": "Le Renouveau",
+    "domain": "lerenouveau.com.tn",
+    "frwiki": "Le_Renouveau_(journal)"
+  },
+  {
+    "fr": "La Prensa",
+    "domain": "laprensa.hn",
+    "frwiki": "La_Prensa_(San_Pedro_Sula)"
+  },
+  {
+    "fr": "La Tribune",
+    "domain": "latribune-online.com",
+    "frwiki": "La_Tribune_(Alg%C3%A9rie)"
+  },
+  {
+    "fr": "Le Droit",
+    "domain": "ledroit.com",
+    "frwiki": "Le_Droit"
+  },
+  {
+    "fr": "Le Jeune Indépendant",
+    "domain": "jeune-independant.net",
+    "frwiki": "Le_Jeune_Ind%C3%A9pendant"
+  },
+  {
+    "fr": "Le Soir d'Algérie",
+    "domain": "lesoirdalgerie.com",
+    "frwiki": "Le_Soir_d%27Alg%C3%A9rie"
+  },
+  {
+    "fr": "Le Figaro Et Vous",
+    "domain": "lefigaro.fr/culture",
+    "frwiki": "Le_Figaro_et_vous"
+  },
+  {
+    "fr": "Le Potentiel",
+    "domain": "lepotentielonline.com",
+    "frwiki": "Le_Potentiel"
+  },
+  {
+    "fr": "Le Soft international",
+    "domain": "lesoftonline.net",
+    "frwiki": "Le_Soft_international"
+  },
+  {
+    "fr": "La Voix de l'Oranie",
+    "domain": "voix-oranie.com",
+    "frwiki": "La_Voix_de_l%27Oranie"
+  },
+  {
+    "fr": "Le Quotidien de La Réunion",
+    "domain": "lequotidien.re",
+    "frwiki": "Le_Quotidien_de_La_R%C3%A9union"
+  },
+  {
+    "fr": "La Provincia Pavese",
+    "domain": "laprovinciapavese.repubblica.it",
+    "frwiki": "La_Provincia_Pavese"
+  },
+  {
+    "fr": "Le Quotidien jurassien",
+    "domain": "lqj.ch",
+    "frwiki": "Le_Quotidien_jurassien"
+  },
+  {
+    "fr": "Le Soir Échos",
+    "domain": "lse.ma",
+    "frwiki": "Le_Soir_%C3%89chos"
+  },
+  {
+    "fr": "Le Soleil",
+    "domain": "lesoleil.com",
+    "frwiki": "Le_Soleil_(Qu%C3%A9bec)"
+  },
+  {
+    "fr": "Le Havre libre",
+    "domain": "havre-libre.fr",
+    "frwiki": "Havre_libre"
+  },
+  {
+    "fr": "Moskovskaïa Pravda",
+    "domain": "mospravda.ru",
+    "frwiki": "Moskovska%C3%AFa_Pravda"
+  },
+  {
+    "fr": "Notre Voie",
+    "domain": "notrevoie.com",
+    "frwiki": "Notre_Voie"
+  },
+  {
+    "fr": "Paris Turf",
+    "domain": "paris-turf.com",
+    "frwiki": "Paris-Turf"
+  },
+  {
+    "fr": "Sundsvalls Tidning",
+    "domain": "st.nu",
+    "frwiki": "Sundsvalls_Tidning"
+  },
+  {
+    "fr": "Monaco-Matin",
+    "domain": "monacomatin.mc",
+    "frwiki": "Monaco-Matin"
+  },
+  {
+    "fr": "St. Louis Post-Dispatch",
+    "domain": "stltoday.com",
+    "frwiki": "St._Louis_Post-Dispatch"
+  },
+  {
+    "fr": "Ottawa Citizen",
+    "domain": "ottawacitizen.com",
+    "frwiki": "Ottawa_Citizen"
+  },
+  {
+    "fr": "Paris-Normandie",
+    "domain": "paris-normandie.fr",
+    "frwiki": "Paris_Normandie"
+  },
+  {
+    "fr": "Philadelphia Daily News",
+    "domain": "philly.com/mld/dailynews",
+    "frwiki": "Philadelphia_Daily_News"
+  },
+  {
+    "fr": "Metro (Belgique)",
+    "domain": "metrotime.be",
+    "frwiki": "Metro_(journal_belge)"
+  },
+  {
+    "fr": "Média Matin Québec",
+    "domain": "mediamatinquebec.com",
+    "frwiki": "M%C3%A9dia_Matin_Qu%C3%A9bec"
+  },
+  {
+    "fr": "Prensa Libre",
+    "domain": "prensalibre.com",
+    "frwiki": "Prensa_Libre"
+  },
+  {
+    "fr": "Regina Leader-Post",
+    "domain": "leaderpost.com",
+    "frwiki": "Regina_Leader-Post"
+  },
+  {
+    "fr": "Rutland Herald",
+    "domain": "rutlandherald.com",
+    "frwiki": "Rutland_Herald"
+  },
+  {
+    "fr": "Sawt Al Ahrar",
+    "domain": "sawt-alahrar.net",
+    "frwiki": "Sawt_Al_Ahrar"
+  },
+  {
+    "fr": "Secolo d'Italia",
+    "domain": "secoloditalia.it",
+    "frwiki": "Secolo_d%27Italia"
+  },
+  {
+    "fr": "Metro",
+    "domain": "metro.co.uk",
+    "frwiki": "Metro_(Associated_Metro_Limited)"
+  },
+  {
+    "fr": "La Voz de Galicia",
+    "domain": "lavozdegalicia.es",
+    "frwiki": "La_Voz_de_Galicia"
+  },
+  {
+    "fr": "Salongo",
+    "domain": "salongo.best.cd",
+    "frwiki": "Salongo"
+  },
+  {
+    "fr": "Press-Republican",
+    "domain": "pressrepublican.com",
+    "frwiki": "Press-Republican"
+  },
+  {
+    "fr": "Sud Quotidien",
+    "domain": "sudonline.sn",
+    "frwiki": "Sud_Quotidien"
+  },
+  {
+    "fr": "Excélsior",
+    "domain": "excelsior.com.mx",
+    "frwiki": "Exc%C3%A9lsior"
+  },
+  {
+    "fr": "Témoignages",
+    "domain": "temoignages.re",
+    "frwiki": "T%C3%A9moignages"
+  },
+  {
+    "fr": "The Burlington Free Press",
+    "domain": "burlingtonfreepress.com",
+    "frwiki": "The_Burlington_Free_Press"
+  },
+  {
+    "fr": "The Chronicle Herald",
+    "domain": "thechronicleherald.ca",
+    "frwiki": "The_Chronicle_Herald"
+  },
+  {
+    "fr": "The Palm Beach Post",
+    "domain": "palmbeachpost.com",
+    "frwiki": "The_Palm_Beach_Post"
+  },
+  {
+    "fr": "The Kathmandu Post",
+    "domain": "kathmandupost.ekantipur.com",
+    "frwiki": "The_Kathmandu_Post"
+  },
+  {
+    "fr": "The Cairns Post",
+    "domain": "cairns.com.au",
+    "frwiki": "The_Cairns_Post"
+  },
+  {
+    "fr": "Superdeporte",
+    "domain": "superdeporte.es",
+    "frwiki": "Superdeporte"
+  },
+  {
+    "fr": "Las Vegas Review-Journal",
+    "domain": "reviewjournal.com",
+    "frwiki": "Las_Vegas_Review-Journal"
+  },
+  {
+    "fr": "The Daily Gleaner",
+    "domain": "dailygleaner.canadaeast.com",
+    "frwiki": "The_Daily_Gleaner"
+  },
+  {
+    "fr": "The Florida Times-Union",
+    "domain": "jacksonville.com",
+    "frwiki": "The_Florida_Times-Union"
+  },
+  {
+    "fr": "The Grand Rapids Press",
+    "domain": "mlive.com/grpress",
+    "frwiki": "The_Grand_Rapids_Press"
+  },
+  {
+    "fr": "San Diego Union-Tribune",
+    "domain": "sandiegouniontribune.com",
+    "frwiki": "The_San_Diego_Union-Tribune"
+  },
+  {
+    "fr": "Times of Oman",
+    "domain": "timesofoman.com",
+    "frwiki": "Times_of_Oman"
+  },
+  {
+    "fr": "Windsor Star",
+    "domain": "windsorstar.com",
+    "frwiki": "Windsor_Star"
+  },
+  {
+    "fr": "The Kansas City Star",
+    "domain": "kansascity.com",
+    "frwiki": "The_Kansas_City_Star"
+  },
+  {
+    "fr": "The Mercury",
+    "domain": "themercury.com.au",
+    "frwiki": "The_Mercury_(Australie)"
+  },
+  {
+    "fr": "The Reporter",
+    "domain": "fdlreporter.com",
+    "frwiki": "The_Reporter_(Fond_du_Lac)"
+  },
+  {
+    "fr": "Telegraph-Journal",
+    "domain": "telegraphjournal.com",
+    "frwiki": "Telegraph-Journal"
+  },
+  {
+    "fr": "Trentino",
+    "domain": "giornaletrentino.it",
+    "frwiki": "Trentino"
+  },
+  {
+    "fr": "Vanguardia Liberal",
+    "domain": "vanguardia.com",
+    "frwiki": "Vanguardia_(journal_colombien)"
+  },
+  {
+    "fr": "The Des Moines Register",
+    "domain": "desmoinesregister.com",
+    "frwiki": "The_Des_Moines_Register"
+  },
+  {
+    "fr": "L'Arena",
+    "domain": "larena.it",
+    "frwiki": "L%27Arena"
+  },
+  {
+    "fr": "Nishinippon Shinbun",
+    "domain": "nishinippon.co.jp",
+    "frwiki": "Nishinippon_Shinbun"
+  },
+  {
+    "fr": "Diario Co Latino",
+    "domain": "nuevaweb.diariocolatino.com",
+    "frwiki": "Diario_Co_Latino"
+  },
+  {
+    "fr": "The Aspen Times",
+    "domain": "aspentimes.com",
+    "frwiki": "The_Aspen_Times"
+  },
+  {
+    "fr": "Deia",
+    "domain": "deia.com",
+    "frwiki": "Deia_(journal)"
+  },
+  {
+    "fr": "Amar Desh",
+    "domain": "amardesh.website",
+    "frwiki": "Amar_Desh"
+  },
+  {
+    "fr": "Daily News",
+    "domain": "dailynews.lk",
+    "frwiki": "Daily_News_(Sri_Lanka)"
+  },
+  {
+    "fr": "Fiji Sun",
+    "domain": "fijisun.com.fj",
+    "frwiki": "Fiji_Sun"
+  },
+  {
+    "fr": "La Razón",
+    "domain": "larazon.com.ar",
+    "frwiki": "La_Raz%C3%B3n_(Argentine)"
+  },
+  {
+    "fr": "Evening Herald",
+    "domain": "herald.ie",
+    "frwiki": "Evening_Herald"
+  },
+  {
+    "fr": "El Informador",
+    "domain": "informador.mx",
+    "frwiki": "El_Informador"
+  },
+  {
+    "fr": "El Informador",
+    "domain": "informador.com.mx",
+    "frwiki": "El_Informador"
+  },
+  {
+    "fr": "Evening Times",
+    "domain": "eveningtimes.co.uk",
+    "frwiki": "Evening_Times"
+  },
+  {
+    "fr": "Sports Nippon",
+    "domain": "sponichi.co.jp",
+    "frwiki": "Sports_Nippon"
+  },
+  {
+    "fr": "Sports Hōchi",
+    "domain": "hochi.co.jp",
+    "frwiki": "Sports_H%C5%8Dchi"
+  },
+  {
+    "fr": "Montgomery Advertiser",
+    "domain": "montgomeryadvertiser.com",
+    "frwiki": "Montgomery_Advertiser"
+  },
+  {
+    "fr": "20 minutes",
+    "domain": "20minutes.fr",
+    "frwiki": "20_Minutes_(France)"
+  },
+  {
+    "fr": "Liverpool Echo",
+    "domain": "liverpoolecho.co.uk",
+    "frwiki": "Liverpool_Echo"
+  },
+  {
+    "fr": "The Commercial Appeal",
+    "domain": "commercialappeal.com",
+    "frwiki": "The_Commercial_Appeal"
+  },
+  {
+    "fr": "The Birmingham News",
+    "domain": "al.com/birmingham",
+    "frwiki": "The_Birmingham_News"
+  },
+  {
+    "fr": "Wisconsin State Journal",
+    "domain": "host.madison.com/wsj",
+    "frwiki": "Wisconsin_State_Journal"
+  },
+  {
+    "fr": "Manchester Evening News",
+    "domain": "manchestereveningnews.co.uk",
+    "frwiki": "Manchester_Evening_News"
+  },
+  {
+    "fr": "Oshkosh Northwestern",
+    "domain": "thenorthwestern.com",
+    "frwiki": "Oshkosh_Northwestern"
+  },
+  {
+    "fr": "Libération",
+    "domain": "libe.ma",
+    "frwiki": "Lib%C3%A9ration_(journal_marocain)"
+  },
+  {
+    "fr": "Magyar Idők",
+    "domain": "magyarnemzet.hu",
+    "frwiki": "Magyar_Id%C5%91k"
+  },
+  {
+    "fr": "Forum des As",
+    "domain": "forumdesas.cd",
+    "frwiki": "Forum_des_as"
+  },
+  {
+    "fr": "Le Soleil",
+    "domain": "lesoleil.sn",
+    "frwiki": "Le_Soleil_(S%C3%A9n%C3%A9gal)"
+  },
+  {
+    "fr": "Le Temps d'Algérie",
+    "domain": "letempsdz.com",
+    "frwiki": "Le_Temps_d%27Alg%C3%A9rie"
+  },
+  {
+    "fr": "Libération Champagne",
+    "domain": "liberation-champagne.fr",
+    "frwiki": "Lib%C3%A9ration_Champagne"
+  },
+  {
+    "fr": "Éditions Le Nouvelliste",
+    "domain": "lenouvelliste.ch",
+    "frwiki": "Le_Nouvelliste_(Valais)"
+  },
+  {
+    "fr": "Éditions Le Nouvelliste",
+    "domain": "nouvelliste.ch",
+    "frwiki": "Le_Nouvelliste_(Valais)"
+  },
+  {
+    "fr": "France-Guyane",
+    "domain": "franceguyane.fr",
+    "frwiki": "France-Guyane"
+  },
+  {
+    "fr": "ArcInfo",
+    "domain": "arcinfo.ch",
+    "frwiki": "ArcInfo"
+  },
+  {
+    "fr": "Keskipohjanmaa",
+    "domain": "keskipohjanmaa.net",
+    "frwiki": "Keskipohjanmaa"
+  },
+  {
+    "fr": "Kymen Sanomat",
+    "domain": "kymensanomat.fi",
+    "frwiki": "Kymen_Sanomat"
+  },
+  {
+    "fr": "Večer",
+    "domain": "vecer.mk",
+    "frwiki": "Ve%C4%8Der"
+  },
+  {
+    "fr": "Le Temps",
+    "domain": "letemps.com.tn",
+    "frwiki": "Le_Temps_(quotidien_tunisien)"
+  },
+  {
+    "fr": "Les Débats",
+    "domain": "lesdebats.com",
+    "frwiki": "Les_D%C3%A9bats_(Alg%C3%A9rie)"
+  },
+  {
+    "fr": "Les Dépêches de Brazzaville",
+    "domain": "lesdepechesdebrazzaville.fr",
+    "frwiki": "Les_D%C3%A9p%C3%AAches_de_Brazzaville"
+  },
+  {
+    "fr": "Liberté",
+    "domain": "liberte-algerie.com",
+    "frwiki": "Libert%C3%A9_(Alg%C3%A9rie)"
+  },
+  {
+    "fr": "London Free Press",
+    "domain": "lfpress.com",
+    "frwiki": "London_Free_Press"
+  },
+  {
+    "fr": "La Presse",
+    "domain": "lapresse.ca",
+    "frwiki": "La_Presse_(Montr%C3%A9al)"
+  },
+  {
+    "fr": "Les Échos",
+    "domain": "lesechos.ml",
+    "frwiki": "Les_%C3%89chos_(Mali)"
+  },
+  {
+    "fr": "Diario de Cádiz",
+    "domain": "diariodecadiz.com",
+    "frwiki": "Diario_de_C%C3%A1diz"
+  }
+]
