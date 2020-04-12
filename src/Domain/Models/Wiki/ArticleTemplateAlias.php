@@ -40,7 +40,6 @@ interface ArticleTemplateAlias
 
             'lang' => 'langue',
             'language' => 'langue',
-            'author1' => 'auteur1',
             'prénom' => 'prénom1', // fréquent : ajouté sur params normaux
             'first1' => 'prénom1',
             'first2' => 'prénom2',

@@ -45,13 +45,11 @@ class WikiPageContentCommand extends Command
         $name = $io->ask('What is your name?');
         echo "Hello $name !\n";
 
-        die('exit');
-
-        $wiki = ServiceFactory::wikiApi();
-        $page = new WikiPageAction($wiki, $input->getArgument('title'));
-        $text = $page->getText();
-
-        $output->writeln('<info>*** TEXT ***</info>');
-        $output->writeln($text);
+//        $wiki = ServiceFactory::wikiApi();
+//        $page = new WikiPageAction($wiki, $input->getArgument('title'));
+//        $text = $page->getText();
+//
+//        $output->writeln('<info>*** TEXT ***</info>');
+//        $output->writeln($text);
     }
 }

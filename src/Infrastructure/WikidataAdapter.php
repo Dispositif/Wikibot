@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure;
 
+use DomainException;
 use Exception;
 use GuzzleHttp\Client;
 use Normalizer;
@@ -54,7 +55,7 @@ class WikidataAdapter
         // strip ISBN formating
         $isbn = preg_replace('#[^0-9X]#', '', $isbn);
         if (strlen($isbn) !== 13) {
-            throw new \DomainException('ISBN-13 format error');
+            throw new DomainException('ISBN-13 format error');
         }
 
         $sparql = sprintf(

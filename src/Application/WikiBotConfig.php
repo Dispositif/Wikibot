@@ -16,7 +16,9 @@ use App\Infrastructure\SMS;
 use Bluora\LaravelGitInfo\GitInfo;
 use DateInterval;
 use DateTimeImmutable;
+use DomainException;
 use Exception;
+use Mediawiki\Api\UsageException;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
@@ -108,7 +110,7 @@ class WikiBotConfig
      *
      * @param bool|null $botTalk
      *
-     * @throws \Mediawiki\Api\UsageException
+     * @throws UsageException
      */
     public function checkStopOnTalkpage(?bool $botTalk = false): void
     {
@@ -154,7 +156,7 @@ class WikiBotConfig
                 }
             }
 
-            throw new \DomainException('STOP on talk page');
+            throw new DomainException('STOP on talk page');
         }
     }
 
@@ -183,7 +185,7 @@ class WikiBotConfig
                 if (static::EXIT_ON_CHECK_WATCHPAGE) {
                     echo "EXIT_ON_CHECK_WATCHPAGE\n";
 
-                    throw new \DomainException('exit from check watchpages');
+                    throw new DomainException('exit from check watchpages');
                 }
             }
         }
@@ -262,7 +264,7 @@ class WikiBotConfig
      */
     public static function isEditionRestricted(string $text, ?string $botName = null): bool
     {
-        if (preg_match('#\{\{Protection#i', $text) > 0
+        if (preg_match('#{{Protection#i', $text) > 0
             || preg_match('#\{\{3R\}\}#', $text) > 0
             || self::isNoBotTag($text, $botName)
         ) {

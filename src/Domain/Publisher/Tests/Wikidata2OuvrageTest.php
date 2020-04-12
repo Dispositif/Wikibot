@@ -8,6 +8,7 @@ use App\Domain\OuvrageOptimize;
 use App\Domain\Publisher\Wikidata2Ouvrage;
 use App\Domain\WikiTemplateFactory;
 use App\Infrastructure\WikidataAdapter;
+use Exception;
 use GuzzleHttp\Client;
 use PHPUnit\Framework\TestCase;
 
@@ -16,7 +17,7 @@ include __DIR__.'/../../../Application/myBootstrap.php';
 class Wikidata2OuvrageTest extends TestCase
 {
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function testIntegrationComplete()
     {

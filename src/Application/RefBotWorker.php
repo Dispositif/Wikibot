@@ -12,6 +12,7 @@ namespace App\Application;
 
 
 use App\Domain\Utils\WikiTextUtil;
+use Exception;
 
 abstract class RefBotWorker extends AbstractBotTaskWorker
 {
@@ -22,23 +23,21 @@ abstract class RefBotWorker extends AbstractBotTaskWorker
 
     /**
      * @inheritDoc
-     * @throws \Exception
+     * @throws Exception
      */
     protected function processDomain(string $title, ?string $text): ?string
     {
         $this->taskName = static::TASK_NAME;
         $this->botFlagOnPage = static::TASK_BOT_FLAG;
 
-        $finalText = $this->processText($text);
-
-        return $finalText;
+        return $this->processText($text);
     }
 
     /**
      * @param $text
      *
      * @return string|string[]
-     * @throws \Exception
+     * @throws Exception
      */
     public function processText($text)
     {

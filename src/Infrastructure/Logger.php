@@ -64,6 +64,7 @@ class Logger implements LoggerInterface
                         dump($context);
                     }
                 }
+                break;
             case 'debug':
                 if ($this->debug) {
                     echo Color::GRAY."> ";

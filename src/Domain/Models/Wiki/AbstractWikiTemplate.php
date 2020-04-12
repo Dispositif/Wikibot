@@ -101,7 +101,8 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
 
     public function getParamsAndAlias(): array
     {
-        return array_merge($this->parametersByOrder, array_keys($this::PARAM_ALIAS));
+        return array_merge($this->parametersByOrder, array_keys(static::PARAM_ALIAS));
+        // todo : $this::PARAM_ALIAS or static::PARAM_ALIAS (traits?) ?
     }
 
     /**
@@ -358,7 +359,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
             if (!empty(trim($this->getParam($name)))) {
                 return true;
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             unset($e);
         }
 

@@ -11,9 +11,11 @@ namespace App\Application;
 
 use App\Infrastructure\Logger;
 use App\Infrastructure\PageListInterface;
+use Exception;
 use Mediawiki\Api\MediawikiFactory;
 use Mediawiki\Api\UsageException;
 use Mediawiki\DataModel\EditInfo;
+use Throwable;
 
 abstract class AbstractBotTaskWorker
 {
@@ -131,7 +133,7 @@ abstract class AbstractBotTaskWorker
      *
      * @return string|null
      * @throws Exception
-     * @throws \Exception
+     * @throws Exception
      */
     protected function getText(string $title): ?string
     {

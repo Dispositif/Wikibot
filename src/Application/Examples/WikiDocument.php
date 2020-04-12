@@ -11,6 +11,7 @@ namespace App\Application\Examples;
 
 use App\Application\WikiPageAction;
 use App\Infrastructure\ServiceFactory;
+use Exception;
 use GuzzleHttp\Client;
 use Mediawiki\DataModel\EditInfo;
 use Throwable;
@@ -38,7 +39,7 @@ $wiki = ServiceFactory::wikiApi();
 
 try {
     $page = new WikiPageAction($wiki, $title);
-} catch (\Exception $e) {
+} catch (Exception $e) {
     echo "Erreur WikiPageAction\n";
     dump($e);
     die;

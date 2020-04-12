@@ -120,7 +120,6 @@ interface OuvrageTemplateAlias
             'trans_chapter' => 'titre chapitre traduit',
             'quote' => 'extrait',
             /* END {{cite book}} to {{ouvrage}} convertion */
-            'publication-place' => 'lieu',
             //  'editor-last', 'editor-first', 'editor2-last', etc
             'publication-date' => 'date',
             'author-link' => 'lien auteur1',

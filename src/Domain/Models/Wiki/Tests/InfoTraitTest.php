@@ -9,17 +9,18 @@ declare(strict_types=1);
 
 namespace App\Domain\Models\Wiki\Tests;
 
-use App\Domain\Models\Wiki\OuvrageTemplate;
+use App\Domain\WikiTemplateFactory;
+use Exception;
 use PHPUnit\Framework\TestCase;
 
 class InfoTraitTest extends TestCase
 {
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function testInfoTrait()
     {
-        $ouvrage = \App\Domain\WikiTemplateFactory::create('ouvrage');
+        $ouvrage = WikiTemplateFactory::create('ouvrage');
         $ouvrage->hydrate(
             [
                 'auteur' => 'Michou',

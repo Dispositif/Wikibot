@@ -19,15 +19,6 @@ namespace App\Application;
 class DataAnalysis
 {
     /**
-     * @var string|null
-     */
-    private $title;
-    /**
-     * @var string|null
-     */
-    private $text;
-
-    /**
      * @param string|null $text
      * @param string|null $title
      */

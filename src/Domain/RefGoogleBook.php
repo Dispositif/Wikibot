@@ -15,6 +15,9 @@ use App\Domain\Publisher\GoogleBookMapper;
 use App\Domain\Utils\NumberUtil;
 use App\Domain\Utils\WikiTextUtil;
 use App\Infrastructure\GoogleBooksAdapter;
+use DomainException;
+use Exception;
+use Throwable;
 
 /**
  * Transform <ref>https://books.google...</ref> to <ref>{{Ouvrage|...}}.</ref>
@@ -44,7 +47,7 @@ class RefGoogleBook
      * @param string $text Page wikitext
      *
      * @return string New wikitext
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function process(string $text): string
     {
@@ -58,7 +61,7 @@ class RefGoogleBook
         foreach ($refsData as $ref) {
             try {
                 $citation = $this->convertGBurl2OuvrageCitation(WikiTextUtil::stripFinalPoint($ref[1]));
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 echo "Exception ".$e->getMessage();
                 continue;
             }
@@ -85,23 +88,23 @@ class RefGoogleBook
      * @param string $url GoogleBooks URL
      *
      * @return string {{ouvrage}}
-     * @throws \Exception
-     * @throws \Throwable
+     * @throws Exception
+     * @throws Throwable
      */
     public function convertGBurl2OuvrageCitation(string $url): string
     {
         if (!GoogleLivresTemplate::isGoogleBookURL($url)) {
-            throw new \DomainException('Pas de URL Google Books');
+            throw new DomainException('Pas de URL Google Books');
         }
 
         $gooDat = GoogleLivresTemplate::parseGoogleBookQuery($url);
         if (empty($gooDat['id'])) {
-            throw new \DomainException('Pas de ID Google Books');
+            throw new DomainException('Pas de ID Google Books');
         }
 
         try {
             $ouvrage = $this->generateOuvrageFromGoogleData($gooDat['id']);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             // ID n'existe pas sur Google Books
             if (strpos($e->getMessage(), '404 Not Found')
                 && strpos($e->getMessage(), '"message": "The volume ID could n')
@@ -124,7 +127,7 @@ class RefGoogleBook
 
         // Si titre absent
         if (!$ouvrage->hasParamValue('titre')) {
-            throw new \DomainException("Ouvrage sans titre (data Google?)");
+            throw new DomainException("Ouvrage sans titre (data Google?)");
         }
 
         // Google page => 'passage'
@@ -163,7 +166,7 @@ class RefGoogleBook
      * @param string $id GoogleBooks ID
      *
      * @return OuvrageTemplate
-     * @throws \Exception
+     * @throws Exception
      */
     private function generateOuvrageFromGoogleData(string $id): OuvrageTemplate
     {
@@ -181,7 +184,7 @@ class RefGoogleBook
         $data = $mapper->process($volume);
 
         // Generate wiki-template {ouvrage}
-        $ouvrage = \App\Domain\WikiTemplateFactory::create('ouvrage');
+        $ouvrage = WikiTemplateFactory::create('ouvrage');
         $ouvrage->hydrate($data);
 
         // cache

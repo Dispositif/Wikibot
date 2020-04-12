@@ -75,16 +75,6 @@ class OpenLibraryMapper extends AbstractBookMapper implements MapperInterface
         return null;
     }
 
-    // Emprunt en ligne Internet Archive
-    private function previewOnline($data): ?string
-    {
-        if (!empty($data['preview_url']) && isset($data['preview']) && 'borrow' === $data['preview']) {
-            return $data['preview_url'];
-        }
-
-        return null;
-    }
-
     private function convertDate2Year($details)
     {
         if (!isset($details['publish_date'])) {

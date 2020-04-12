@@ -26,6 +26,7 @@ if (200 !== $response->getStatusCode()) {
     die('not 200 response');
 }
 try {
+    /** @noinspection PhpUnusedLocalVariableInspection */
     $newText = $response->getBody()->getContents();
 } catch (Throwable $e) {
     dump($e);
@@ -50,9 +51,10 @@ $newText = <<<EOF
 {{Requête en cours}} : [[Utilisateur:ZiziBot/features|Améliorations bibliographiques sur citations {ouvrage} (ISBN, 
 1 an)]]
  {{progression|##PAGEEDITED##|174569}}
-<div align="center"><small>{{formatnum:##PAGEEDITED##}} articles WP traités sur {{formatnum:182348}} contenant un ISBN
+<div style="text-align: center"><small>{{formatnum:##PAGEEDITED##}} articles WP traités sur {{formatnum:182348}} contenant un 
+ISBN
 </small></div>
-<div align="center"><small>{{formatnum:##NUMBER##}} citations analysées sur {{formatnum:978085}}
+<div style="text-align: center"><small>{{formatnum:##NUMBER##}} citations analysées sur {{formatnum:978085}}
 </small></div>
 {{Requête en cours}} : Complétion de références transformée en {ouvrage}, {article} ou {lien web} [https://fr.wikipedia.org/w/index.php?title=Lynchage&diff=prev&oldid=169428793].
 </div>

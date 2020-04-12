@@ -10,7 +10,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Models\Wiki;
 
+use App\Domain\WikiTemplateFactory;
 use Exception;
+use Throwable;
 
 /**
  * Convert wiki-template in another wiki-template.
@@ -38,7 +40,7 @@ class TemplateConverter
      */
     public static function ArticleFromOuvrage(OuvrageTemplate $ouvrage): ?ArticleTemplate
     {
-        $article = \App\Domain\WikiTemplateFactory::create('article');
+        $article = WikiTemplateFactory::create('article');
         try {
             $data = self::convertDataOuvrage2Article($ouvrage->toArray());
 
@@ -46,7 +48,7 @@ class TemplateConverter
 
             $articleInfos = array_merge(['ConvertFromOuvrage' => 1], $ouvrage->getInfos());
             $article->setInfos($articleInfos);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return null;
         }
 

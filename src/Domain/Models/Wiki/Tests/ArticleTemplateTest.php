@@ -10,8 +10,8 @@ declare(strict_types=1);
 namespace App\Domain\Models\Wiki\Tests;
 
 use App\Domain\Models\Wiki\ArticleTemplate;
-use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\Models\Wiki\TemplateConverter;
+use App\Domain\WikiTemplateFactory;
 use PHPUnit\Framework\TestCase;
 
 class ArticleTemplateTest extends TestCase
@@ -60,7 +60,7 @@ class ArticleTemplateTest extends TestCase
      */
     public function testConvertFromOuvrage(string $ouvrageSerial, string $articleSerial)
     {
-        $ouvrage = \App\Domain\WikiTemplateFactory::create('ouvrage');
+        $ouvrage = WikiTemplateFactory::create('ouvrage');
         $ouvrage->hydrateFromText($ouvrageSerial);
 
         $article = TemplateConverter::ArticleFromOuvrage($ouvrage);

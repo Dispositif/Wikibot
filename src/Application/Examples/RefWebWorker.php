@@ -10,13 +10,12 @@ declare(strict_types=1);
 namespace App\Application\Examples;
 
 use App\Application\Color;
-use App\Application\Ref2ArticleProcess;
 use App\Application\RefBotWorker;
 use App\Application\RefWebTransformer;
 use App\Application\WikiBotConfig;
-use App\Domain\Publisher\ArticleFromURL;
 use App\Infrastructure\CirrusSearch;
 use App\Infrastructure\ServiceFactory;
+use Throwable;
 
 include __DIR__.'/../ZiziBot_Bootstrap.php';
 // VOIR EN BAS
@@ -44,7 +43,7 @@ class RefWebWorker extends RefBotWorker
     {
         try {
             $result = $this->transformer->process($refContent);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             echo "** Problème détecté\n";
 
             // TODO : parse $e->message pour traitement, taskName, botflag...

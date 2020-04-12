@@ -16,6 +16,7 @@ use App\Domain\OuvrageOptimize;
 use App\Domain\Publisher\Wikidata2Ouvrage;
 use App\Domain\Utils\TemplateParser;
 use App\Infrastructure\WikidataAdapter;
+use Exception;
 use GuzzleHttp\Client;
 use Normalizer;
 use Throwable;
@@ -136,14 +137,14 @@ class CompleteProcess
      * Get array (title+raw strings) to complete from AMQP queue, SQL Select or file reading.
      *
      * @return string|null
-     * @throws \Exception
+     * @throws Exception
      */
     private function getNewRow2Complete(): ?array
     {
         $row = $this->queueAdapter->getNewRaw();
         if (empty($row) || empty($row['raw'])) {
             echo "STOP: no more queue to process \n";
-            throw new \Exception('no more queue to process');
+            throw new Exception('no more queue to process');
         }
 
         return $row;
@@ -187,6 +188,7 @@ class CompleteProcess
                 dump('BIBLIO NAT FRANCE...');
             }
             // BnF sait pas trouver un vieux livre (10) d'après ISBN-13... FACEPALM !
+            $bnfOuvrage = null;
             if ($isbn10) {
                 $bnfOuvrage = OuvrageFactory::BnfFromIsbn($isbn10);
                 sleep(2);

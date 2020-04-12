@@ -13,6 +13,7 @@ use App\Domain\Models\Wiki\AbstractWikiTemplate;
 use App\Domain\WikiTemplateFactory;
 use Exception;
 use LogicException;
+use Throwable;
 
 /**
  * todo legacy.
@@ -54,7 +55,7 @@ abstract class TemplateParser extends WikiTextUtil
              */
             try{
                 $tplObject = WikiTemplateFactory::create($tplName);
-            }catch (\Throwable $e){
+            }catch (Throwable $e){
                 unset($e);
                 continue;
             }

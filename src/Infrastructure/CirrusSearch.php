@@ -63,6 +63,7 @@ class CirrusSearch implements PageListInterface
             return [];
         }
 
+        $titles = [];
         foreach ($result as $res) {
             $titles[] = trim($res['title']);
         }

@@ -10,8 +10,8 @@ declare(strict_types=1);
 namespace App\Domain\Tests;
 
 use App\Domain\Models\Wiki\OuvrageClean;
-use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\OuvrageComplete;
+use App\Domain\WikiTemplateFactory;
 use Exception;
 use PHPUnit\Framework\TestCase;
 
@@ -19,12 +19,12 @@ class OuvrageCompleteTest extends TestCase
 {
     public function testGetResult()
     {
-        $origin = \App\Domain\WikiTemplateFactory::create('ouvrage');
+        $origin = WikiTemplateFactory::create('ouvrage');
         $origin->hydrateFromText(
             '{{Ouvrage |id =Bonneton|nom1=Collectif | titre = Loiret : un département à l\'élégance naturelle | éditeur = Christine Bonneton | lieu = Paris | année = 2 septembre 1998 | isbn = 978-2-86253-234-9| pages totales = 319 }}'
         );
 
-        $google = \App\Domain\WikiTemplateFactory::create('ouvrage');
+        $google = WikiTemplateFactory::create('ouvrage');
         $google->hydrateFromText(
             '{{ouvrage|langue=fr|auteur1=Clément Borgal|titre=Loiret|année=1998|pages totales=319|isbn=9782862532349}}'
         );
@@ -47,10 +47,10 @@ class OuvrageCompleteTest extends TestCase
      */
     public function testComplete(string $originStr, string $onlineStr, string $expected)
     {
-        $origin = \App\Domain\WikiTemplateFactory::create('ouvrage');
+        $origin = WikiTemplateFactory::create('ouvrage');
         $origin->hydrateFromText($originStr);
 
-        $online = \App\Domain\WikiTemplateFactory::create('ouvrage');
+        $online = WikiTemplateFactory::create('ouvrage');
         $online->hydrateFromText($onlineStr);
 
         $comp = new OuvrageComplete($origin, $online);
@@ -163,7 +163,7 @@ class OuvrageCompleteTest extends TestCase
      */
     public function testSameAuthors($originStr, $onlineStr, bool $same)
     {
-        $origin = \App\Domain\WikiTemplateFactory::create('ouvrage');
+        $origin = WikiTemplateFactory::create('ouvrage');
         $origin->hydrateFromText($originStr);
 
         $online = new OuvrageClean();

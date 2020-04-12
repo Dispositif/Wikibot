@@ -173,7 +173,7 @@ class WikiPageAction
     public function createPage(string $text, ?EditInfo $editInfo = null): bool
     {
         if (!empty($this->page->getRevisions()->getLatest())) {
-            throw new \Exception('That page already exists');
+            throw new Exception('That page already exists');
         }
 
         $newContent = new Content($text);

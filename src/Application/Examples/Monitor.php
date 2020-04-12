@@ -14,6 +14,7 @@ use App\Application\WikiPageAction;
 use App\Domain\Utils\WikiTextUtil;
 use App\Infrastructure\DbAdapter;
 use App\Infrastructure\ServiceFactory;
+use Mediawiki\Api\MediawikiFactory;
 use Normalizer;
 
 
@@ -35,7 +36,7 @@ class Monitor
     private $db;
     private $lastTitle = '';
     /**
-     * @var \Mediawiki\Api\MediawikiFactory
+     * @var MediawikiFactory
      */
     private $wiki;
 
@@ -47,7 +48,6 @@ class Monitor
 
     public function run()
     {
-        $memory = new Memory();
         while (true) {
             echo "\n-----MONITOR------------------------\n\n";
             //$memory->echoMemory(true);

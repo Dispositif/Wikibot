@@ -13,6 +13,7 @@ use App\Domain\Enums\Language;
 use App\Domain\Utils\ArrayProcessTrait;
 use App\Infrastructure\Logger;
 use DateTime;
+use Exception;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -265,7 +266,7 @@ class WebMapper implements MapperInterface
 
         try {
             $date = new DateTime($str);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             dump('EXCEPTION DATE');
 
             return $str;

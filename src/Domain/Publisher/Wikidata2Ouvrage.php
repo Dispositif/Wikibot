@@ -14,7 +14,6 @@ use App\Domain\Utils\TextUtil;
 use App\Domain\Utils\WikiTextUtil;
 use App\Infrastructure\WikidataAdapter;
 use Exception;
-use GuzzleHttp\Client;
 
 /**
  * Complete un OuvrageTemplate à partir des données Infos[] en faisant

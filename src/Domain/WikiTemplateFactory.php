@@ -16,6 +16,7 @@ use App\Domain\Models\Wiki\LienBriseTemplate;
 use App\Domain\Models\Wiki\LienWebTemplate;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use Exception;
+use LogicException;
 
 /**
  * Class WikiTemplateFactory.
@@ -44,7 +45,7 @@ abstract class WikiTemplateFactory
             case 'google books':
                 return new GoogleLivresTemplate();
             default:
-                throw new \LogicException('template "'.$templateName.'" unknown');
+                throw new LogicException('template "'.$templateName.'" unknown');
         }
     }
 }

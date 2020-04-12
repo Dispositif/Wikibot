@@ -14,13 +14,27 @@ use PHPUnit\Framework\TestCase;
 
 class BotTest extends TestCase
 {
-    public function testIsEditionRestricted()
+    /**
+     * @dataProvider provideEditionRestricted
+     *
+     * @param      $bool
+     * @param      $text
+     * @param null $botName
+     */
+    public function testIsEditionRestricted($bool, $text, $botName = null)
     {
-        $this::assertFalse(WikiBotConfig::isEditionRestricted('bla bla'));
-        $this::assertTrue(WikiBotConfig::isEditionRestricted('{{Protection|blabla}} bla'));
-        $this::assertTrue(WikiBotConfig::isEditionRestricted('{{3R}} bla'));
-        $this::assertTrue(WikiBotConfig::isEditionRestricted('{{nobots}} bla'));
-        $this::assertTrue(WikiBotConfig::isEditionRestricted('{{bots|deny=Bob,FuBot}} bla', 'FuBot'));
-        $this::assertFalse(WikiBotConfig::isEditionRestricted('{{bots|deny=Bob,FuBot}} bla'));
+        $this::assertSame($bool, WikiBotConfig::isEditionRestricted($text, $botName));
+    }
+
+    public function provideEditionRestricted()
+    {
+        return [
+            [false, 'bla bla'],
+            [true, '{{Protection|blabla}} bla'],
+            [true, '{{3R}} bla'],
+            [true, '{{nobots}} bla'],
+            [true, '{{bots|deny=Bob,FuBot}} bla', 'FuBot'],
+            [false, '{{bots|deny=Bob,FuBot}} bla'],
+        ];
     }
 }

@@ -12,6 +12,7 @@ namespace App\Application\Examples;
 use App\Application\CompleteProcess;
 use App\Infrastructure\DbAdapter;
 use App\Infrastructure\GoogleApiQuota;
+use Throwable;
 
 include __DIR__.'/../myBootstrap.php';
 
@@ -24,7 +25,7 @@ while (true) {
         $process = new CompleteProcess(new DbAdapter(), true);
         $process->run();
         $count = 0; // reinitialise boucle erreur
-    } catch (\Throwable $e) {
+    } catch (Throwable $e) {
         $count++;
         echo $e->getMessage();
         if (preg_match('#no more queue to process#', $e->getMessage())) {

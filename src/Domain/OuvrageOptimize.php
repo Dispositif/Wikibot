@@ -15,6 +15,7 @@ use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\Utils\TextUtil;
 use App\Domain\Utils\WikiTextUtil;
 use App\Infrastructure\FileManager;
+use DomainException;
 use Exception;
 use Throwable;
 
@@ -263,7 +264,7 @@ class OuvrageOptimize
                     $this->log('ISBN10');
                     //                    $this->notCosmetic = true;
                 }
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 // ISBN not validated
                 $this->setParam(
                     'isbn invalide',
@@ -310,10 +311,7 @@ class OuvrageOptimize
 
             try {
                 $isbn10pretty = $isbnMachine->format('ISBN-10');
-                if ($isbn10pretty !== $isbn) {
-                    // $this->notCosmetic = true;
-                }
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 unset($e);
             }
 
@@ -453,7 +451,7 @@ class OuvrageOptimize
 
         try {
             $goo = GoogleLivresTemplate::simplifyGoogleUrl($url);
-        } catch (\DomainException $e) {
+        } catch (DomainException $e) {
             // ID manquant ou malformé
             $errorValue = sprintf(
                 '%s <!-- ERREUR %s -->',

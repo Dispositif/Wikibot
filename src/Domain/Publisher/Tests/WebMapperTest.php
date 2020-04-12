@@ -7,6 +7,7 @@ namespace App\Domain\Publisher\Tests;
 use App\Application\PublisherAction;
 use App\Domain\Publisher\WebMapper;
 use App\Infrastructure\Logger;
+use Exception;
 use PHPUnit\Framework\TestCase;
 
 class WebMapperTest extends TestCase
@@ -19,7 +20,7 @@ class WebMapperTest extends TestCase
      * @param array $expected
      *
      * @return void
-     * @throws \Exception
+     * @throws Exception
      */
     public function testMappingProcess($filename, array $expected): void
     {

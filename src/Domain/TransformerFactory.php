@@ -22,6 +22,8 @@ class TransformerFactory
         if (preg_match('#^https?://[^ ]+$#i', $string)) {
             return new RefWebTransformer(new Logger());
         }
+
+        return null;
     }
 
 }

@@ -7,6 +7,7 @@ namespace App\Application\Examples;
 use App\Application\WikiBotConfig;
 use App\Application\WikiPageAction;
 use App\Infrastructure\ServiceFactory;
+use Exception;
 use Mediawiki\DataModel\EditInfo;
 
 include __DIR__.'/../ZiziBot_Bootstrap.php'; // myBootstrap.php';
@@ -25,7 +26,7 @@ $filename = __DIR__.'/../resources/plume.txt';
 $titles = file($filename);
 $auto = false;
 
-$valid = [];
+
 foreach ($titles as $title) {
     sleep(2);
 
@@ -36,7 +37,7 @@ foreach ($titles as $title) {
 
     $pageAction = new WikiPageAction($wiki, $title);
     if ($pageAction->getNs() !== 0) {
-        throw new \Exception("La page n'est pas dans Main (ns!==0)");
+        throw new Exception("La page n'est pas dans Main (ns!==0)");
     }
     $text = $pageAction->getText();
 

@@ -9,9 +9,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Tests;
 
-use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\OuvrageOptimize;
 use App\Domain\Utils\TemplateParser;
+use App\Domain\WikiTemplateFactory;
 use Exception;
 use PHPUnit\Framework\TestCase;
 
@@ -27,7 +27,7 @@ class OuvrageOptimizeTest extends TestCase
      */
     public function testSomeParam($data, $expected)
     {
-        $ouvrage = \App\Domain\WikiTemplateFactory::create('ouvrage');
+        $ouvrage = WikiTemplateFactory::create('ouvrage');
         $ouvrage->hydrate($data);
 
         $optimized = (new OuvrageOptimize($ouvrage))->doTasks()->getOuvrage();
@@ -178,7 +178,7 @@ class OuvrageOptimizeTest extends TestCase
      */
     public function testProcessTitle($data, $expected)
     {
-        $ouvrage = \App\Domain\WikiTemplateFactory::create('ouvrage');
+        $ouvrage = WikiTemplateFactory::create('ouvrage');
         $ouvrage->hydrate($data);
 
         $optimized = (new OuvrageOptimize($ouvrage))->doTasks()->getOuvrage();
@@ -279,7 +279,7 @@ class OuvrageOptimizeTest extends TestCase
      */
     public function testIsbn(array $data, $expected)
     {
-        $origin = \App\Domain\WikiTemplateFactory::create('ouvrage');
+        $origin = WikiTemplateFactory::create('ouvrage');
         $origin->hydrate($data);
 
         $optimized = (new OuvrageOptimize($origin))->doTasks()->getOuvrage();
@@ -352,7 +352,7 @@ class OuvrageOptimizeTest extends TestCase
 
     public function testDistinguishAuthors()
     {
-        $ouvrage = \App\Domain\WikiTemplateFactory::create('ouvrage');
+        $ouvrage = WikiTemplateFactory::create('ouvrage');
         $ouvrage->hydrateFromText('{{ouvrage|auteur=Marie Durand, Pierre Berger, Francois Morgand|titre=Bla}}');
 
         $optimizer = (new OuvrageOptimize($ouvrage))->doTasks();

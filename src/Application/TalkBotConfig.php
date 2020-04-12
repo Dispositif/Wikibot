@@ -107,7 +107,7 @@ class TalkBotConfig extends WikiBotConfig
                 }
                 // search author signature link to check that he wrote on the page bottom
                 if (preg_match(
-                    '#\[\[(?:User|Utilisateur|Utilisatrice)\:'.preg_quote($author).'[|\]]#i',
+                    '#\[\[(?:User|Utilisateur|Utilisatrice):'.preg_quote($author).'[|\]]#i',
                     $matches[0]
                 )
                 ) {

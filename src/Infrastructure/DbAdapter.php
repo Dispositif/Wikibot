@@ -70,6 +70,7 @@ class DbAdapter implements QueueInterface
     public function getNewRaw(): ?array
     {
         $raw = null;
+        $row = null;
 
         try {
             $row = $this->db->fetchRow(
@@ -122,6 +123,7 @@ class DbAdapter implements QueueInterface
      * @param int|null $limit
      *
      * @return string|null
+     * @throws Exception
      */
     public function getAllRowsToEdit(?int $limit = 100): ?string
     {
