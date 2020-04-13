@@ -26,16 +26,19 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
 
     const MODEL_NAME = '';
 
-    // commented to allow inherit from Interface in OuvrageTemplate
-    //const PARAM_ALIAS = [];
-
     /**
-     * todo : modify to [a,b,c] ?
+     * Error in wiki parsing without those required params.
      */
-    // todo: rename REQUIRED_PARAMETERS to DEFAULT_PARAMETERS
-    const REQUIRED_PARAMETERS  = [];
-    const COMMENT_STRIPPED             = '<!-- Paramètre obligatoire -->';
-    const REQUIRED_FOR_EDIT_PARAMETERS = [];
+    const EDIT_REQUIRED_PARAMETERS = [];
+    /**
+     * The minimum parameters for pretty wiki-template.
+     */
+    const MINIMUM_PARAMETERS = [];
+
+    /* commented to allow inherit from Interface in OuvrageTemplate
+       const PARAM_ALIAS = []; */
+
+    const COMMENT_STRIPPED = '<!-- Paramètre obligatoire -->';
 
     public $log = [];
 
@@ -67,25 +70,26 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
      */
     public function __construct()
     {
-        if (empty(static::REQUIRED_PARAMETERS)) {
-            throw new Exception(sprintf('REQUIRED_PARAMETERS not configured in "%s"', get_called_class()));
+        if (empty(static::MINIMUM_PARAMETERS)) {
+            throw new Exception(sprintf('DEFAULT_PARAMETERS not configured in "%s"', get_called_class()));
         }
-        $this->parametersValues = static::REQUIRED_PARAMETERS;
+        $this->parametersValues = static::MINIMUM_PARAMETERS;
 
         if (empty($this->parametersByOrder)) {
-            $this->parametersByOrder = static::REQUIRED_PARAMETERS;
+            $this->parametersByOrder = static::MINIMUM_PARAMETERS;
         }
     }
 
     /**
      * Verify the required template parameters for an edit by the bot.
+     *
      * @return bool
      */
     public function isValidForEdit(): bool
     {
-        $validParams = array_keys(static::REQUIRED_PARAMETERS);
-        if (!empty(static::REQUIRED_FOR_EDIT_PARAMETERS)) {
-            $validParams = static::REQUIRED_FOR_EDIT_PARAMETERS;
+        $validParams = array_keys(static::MINIMUM_PARAMETERS);
+        if (!empty(static::EDIT_REQUIRED_PARAMETERS)) {
+            $validParams = static::EDIT_REQUIRED_PARAMETERS;
         }
 
         foreach ($validParams as $param) {
@@ -308,7 +312,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
 
         if (empty($value)) {
             // optional parameter
-            if (!isset(static::REQUIRED_PARAMETERS[$name])) {
+            if (!isset(static::MINIMUM_PARAMETERS[$name])) {
                 unset($this->parametersValues[$name]);
 
                 return;
@@ -495,7 +499,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     {
         $render = [];
         foreach ($params as $name => $value) {
-            if (empty($value) && !isset(static::REQUIRED_PARAMETERS[$name])) {
+            if (empty($value) && !isset(static::MINIMUM_PARAMETERS[$name])) {
                 continue;
             }
             $render[$name] = $params[$name];

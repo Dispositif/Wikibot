@@ -22,9 +22,9 @@ class ArticleTemplate extends AbstractWikiTemplate implements ArticleTemplateAli
 
     const MODEL_NAME = 'Article';
 
-    const REQUIRED_FOR_EDIT_PARAMETERS = ['titre', 'périodique', 'date'];
+    const EDIT_REQUIRED_PARAMETERS = ['titre', 'périodique', 'date'];
 
-    const REQUIRED_PARAMETERS
+    const MINIMUM_PARAMETERS
         = [
             //            'langue' => '',
             'auteur1' => '',

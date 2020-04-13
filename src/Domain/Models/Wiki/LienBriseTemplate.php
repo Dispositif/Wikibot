@@ -21,7 +21,7 @@ class LienBriseTemplate extends AbstractWikiTemplate implements ArticleOrLienBri
 {
     const MODEL_NAME = 'lien brisé';
 
-    const REQUIRED_PARAMETERS
+    const MINIMUM_PARAMETERS
         = [
             'url' => '',
             'titre' => '',

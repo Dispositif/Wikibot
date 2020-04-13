@@ -27,9 +27,9 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
 
     const MODEL_NAME = 'Google Livres';
 
-    const REQUIRED_FOR_EDIT_PARAMETERS = ['id'];
+    const EDIT_REQUIRED_PARAMETERS = ['id'];
 
-    const REQUIRED_PARAMETERS = ['id' => ''];
+    const MINIMUM_PARAMETERS = ['id' => ''];
 
     const PARAM_ALIAS
         = [
