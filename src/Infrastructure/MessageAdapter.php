@@ -13,6 +13,12 @@ use App\Domain\MessageInterface;
 use Exception;
 use PhpAmqpLib\Message\AMQPMessage;
 
+/**
+ * @unused
+ * Class MessageAdapter
+ *
+ * @package App\Infrastructure
+ */
 class MessageAdapter implements MessageInterface
 {
     private $tempStorage = [];

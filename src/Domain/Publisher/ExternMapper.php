@@ -18,6 +18,9 @@ use Psr\Log\LoggerInterface;
 /**
  * Generic mapper for press/revue article on web.
  * Using JSON-LD and meta tags to obtain {article} data.
+ * Generic mapper for web pages URL to wiki-template references.
+ * Converting to {article}, {lien web} or {lien brisé}
+ * Using JSON-LD, Open Graph and Dublin Core meta extracted from HTML.
  * Class ExternMapper
  *
  * @package App\Domain\Publisher
@@ -185,12 +188,13 @@ class ExternMapper implements MapperInterface
     }
 
     // TODO encodage + normalizer
-    protected function clean(?string $str = null): ?string
+    public function clean(?string $str = null): ?string
     {
         if ($str === null) {
             return null;
         }
-        $str = str_replace(['&#39;', '&apos;', "\n", "&#10;", "|", "&eacute;"], ["'", "'", '', ' ', '/', "é"], $str);
+        $str = str_replace(['&#39;','&#039;', '&apos;', "\n", "&#10;", "|", "&eacute;"], ["'","'", "'", '', ' ', '/',
+                                                                                          "é"], $str);
 
         return html_entity_decode($str);
     }

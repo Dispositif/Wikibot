@@ -454,6 +454,8 @@ class EditProcess
         // add "/!\" when errorWarning
         $prefix .= (!empty($this->errorWarning)) ? ' ⚠️' : '';
 
+        // Covid :)
+        $prefix .= (date('H:i') === '20:00') ? '🦠' : ''; // 🏥
 
         // basic modifs
         $citeSummary = implode(' ', $this->citationSummary);

@@ -148,6 +148,7 @@ class ExternRefTransformer implements TransformerInterface
         $template = $this->chooseTemplateByData($mapData);
 
         $mapData = $this->replaceSitenameByConfig($mapData, $template);
+        $mapData = $this->replaceURLbyOriginal($mapData);
 
         $template->hydrate($mapData, true);
 
@@ -300,6 +301,12 @@ class ExternRefTransformer implements TransformerInterface
             $mapData['site'] = $this->externalPage->getPrettyDomainName();
         }
 
+        return $mapData;
+    }
+
+    private function replaceURLbyOriginal(array $mapData):array
+    {
+        $mapData['url'] = $this->url;
         return $mapData;
     }
 

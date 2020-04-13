@@ -15,6 +15,12 @@ use App\Infrastructure\BnfAdapter;
 use App\Infrastructure\GoogleBooksAdapter;
 use App\Infrastructure\OpenLibraryAdapter;
 
+/**
+ * todo rename OuvrageImport/Gateway ?
+ * Class OuvrageFactory
+ *
+ * @package App\Domain
+ */
 class OuvrageFactory
 {
     private function __construct()

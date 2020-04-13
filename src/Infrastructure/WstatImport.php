@@ -13,6 +13,7 @@ use Exception;
 use GuzzleHttp\Client;
 
 /**
+ * @unused
  * Data import from https://wstat.fr (frwiki daily dump parsing).
  * https://wstat.fr/template/index.php?title=Ouvrage&query=inclusions&param=isbn&start=50000&limit=50&format=json
  * Class WstatImport.

@@ -12,7 +12,7 @@
 //use SplObserver;
 //
 ///**
-// * TODO: not used
+///* @unused
 // * Observer pattern. For class which implements SplSubject.
 // * Trait SubjectTrait.
 // */

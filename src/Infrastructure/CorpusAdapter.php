@@ -14,6 +14,7 @@ use DomainException;
 use Exception;
 
 /**
+ * @unused
  * Dirty todo refac with FileManager and league/flysystem
  * todo : deleteElementFromCorpus, setCorpusFromFilename ???
  * Class CorpusAdapter.

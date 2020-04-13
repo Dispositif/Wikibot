@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace App\Infrastructure;
 
 use App\Application\QueueInterface;
-use App\Infrastructure\entities\DbEditedPage;
+use App\Infrastructure\unused\DbEditedPage;
 use DateInterval;
 use DateTime;
 use Exception;

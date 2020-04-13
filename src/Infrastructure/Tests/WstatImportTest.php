@@ -15,6 +15,12 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @unused
+ * Class WstatImportTest
+ *
+ * @package App\Infrastructure
+ */
 class WstatImportTest extends TestCase
 {
     public function testGetData()
