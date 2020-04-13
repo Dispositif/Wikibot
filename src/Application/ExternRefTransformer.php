@@ -9,29 +9,31 @@ declare(strict_types=1);
 
 namespace App\Application;
 
+use App\Domain\ExternDomains;
+use App\Domain\ExternPageFactory;
 use App\Domain\Models\Wiki\AbstractWikiTemplate;
 use App\Domain\Models\Wiki\ArticleTemplate;
 use App\Domain\Models\Wiki\LienWebTemplate;
 use App\Domain\Models\Wiki\OuvrageTemplate;
-use App\Domain\Publisher\WebMapper;
+use App\Domain\Publisher\ExternMapper;
 use App\Domain\Utils\WikiTextUtil;
 use App\Domain\WikiTemplateFactory;
 use App\Infrastructure\Logger;
 use Normalizer;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Yaml\Yaml;
-use Throwable;
 
 /**
- * Class RefWebTransformer
+ * todo move Domain
+ * Class ExternRefTransformer
  *
  * @package App\Application
  */
-class RefWebTransformer implements TransformerInterface
+class ExternRefTransformer implements TransformerInterface
 {
 
-    const SKIPPED_FILE_LOG  = __DIR__.'/resources/web_skipped.log';
-    const LOG_REQUEST_ERROR = __DIR__.'/resources/web_request_error.log';
+    const SKIPPED_FILE_LOG  = __DIR__.'/resources/external_skipped.log';
+    const LOG_REQUEST_ERROR = __DIR__.'/resources/external_request_error.log';
     public $skipUnauthorised = true;
     /**
      * @var array
@@ -51,7 +53,7 @@ class RefWebTransformer implements TransformerInterface
      */
     private $url;
     /**
-     * @var WebMapper
+     * @var ExternMapper
      */
     private $mapper;
     /**
@@ -62,9 +64,13 @@ class RefWebTransformer implements TransformerInterface
      * @var array
      */
     private $skip_domain = [];
+    /**
+     * @var \App\Domain\ExternPage
+     */
+    private $externalPage;
 
     /**
-     * RefWebTransformer constructor.
+     * ExternalRefTransformer constructor.
      *
      * @param LoggerInterface $log
      */
@@ -72,6 +78,7 @@ class RefWebTransformer implements TransformerInterface
     {
         $this->log = $log;
 
+        // todo REFAC DataObject[]
         $this->config = Yaml::parseFile(__DIR__.'/resources/config_presse.yaml');
         $skipFromFile = file(__DIR__.'/resources/config_skip_domain.txt');
         $this->skip_domain = ($skipFromFile) ? $skipFromFile : [];
@@ -86,30 +93,45 @@ class RefWebTransformer implements TransformerInterface
             true
         );
 
-        $this->mapper = new WebMapper(new Logger());
+        $this->mapper = new ExternMapper(new Logger());
     }
 
-    public function process(string $string)
+    /**
+     * @param string $string
+     *
+     * @return string
+     * @throws \Exception
+     */
+    public function process(string $string): string
     {
-        if (!$this->isTransformAutorized($string)) {
+        if (!$this->isURLAutorized($string)) {
             return $string;
         }
-
-        $publish = new PublisherAction($this->url);
         try {
             sleep(5);
-            $html = $publish->getHTMLSource();
-            $htmlData = $publish->extractWebData($html);
-            $this->log->debug('htmlData', $htmlData);
-        } catch (Throwable $e) {
-            // ne pas générer de lien brisé !!
+            $this->externalPage = ExternPageFactory::fromURL($string, $this->log);
+            $pageData = $this->externalPage->getData();
+            $this->log->debug('metaData', $this->externalPage->getData());
+        } catch (\Exception $e) {
+            // ne pas générer de {lien brisé}, car peut-être 404 temporaire
+            $this->log->notice('erreur sur extractWebData '.$e->getMessage());
             file_put_contents(self::LOG_REQUEST_ERROR, $this->domain);
-            $this->log->notice('erreur sur extractWebData');
+        }
+
+        if (empty($pageData)
+            || (empty($pageData['JSON-LD']) && empty($pageData['meta']))
+        ) {
+            // site avec HTML pourri
+            return $string;
+        }
+
+        if (isset($pageData['robots']) && strpos($pageData['robots'], 'noindex') !== false) {
+            $this->log->notice('SKIP robots: noindex');
 
             return $string;
         }
 
-        $mapData = $this->mapper->process($htmlData);
+        $mapData = $this->mapper->process($pageData);
 
         // check dataValide
         if (empty($mapData) || empty($mapData['url']) || empty($mapData['titre'])) {
@@ -135,14 +157,20 @@ class RefWebTransformer implements TransformerInterface
         return Normalizer::normalize($serialized);
     }
 
-    protected function isTransformAutorized(string $string): bool
+    /**
+     * @param string $string
+     *
+     * @return bool
+     * @throws \Exception
+     */
+    protected function isURLAutorized(string $string): bool
     {
         if (!preg_match('#^http?s://[^ ]+$#i', $string)) {
             return false;
         }
 
         $this->url = $string;
-        $this->domain = $this->extractSubDomain($this->url);
+        $this->domain = ExternDomains::extractSubDomain($this->url);
 
         if (in_array($this->domain, $this->skip_domain)) {
             return false;
@@ -153,7 +181,7 @@ class RefWebTransformer implements TransformerInterface
             if ($this->skipUnauthorised) {
                 return false;
             }
-        }else{
+        } else {
             echo "> Domaine ".Color::LIGHT_GREEN.$this->domain.Color::NORMAL." configuré\n";
         }
 
@@ -167,13 +195,6 @@ class RefWebTransformer implements TransformerInterface
         }
 
         return true;
-    }
-
-    protected function extractSubDomain(string $url): string
-    {
-        $parseURL = parse_url($url);
-
-        return str_replace('www.', '', $parseURL['host']);
     }
 
     private function tagAndLog(array $mapData)
@@ -276,24 +297,10 @@ class RefWebTransformer implements TransformerInterface
 
         // from logic
         if (empty($mapData['site']) && $template instanceof LienWebTemplate) {
-            $mapData['site'] = $this->prettyDomainName($this->domain);
+            $mapData['site'] = $this->externalPage->getPrettyDomainName();
         }
 
         return $mapData;
-    }
-
-    private function prettyDomainName(string $subDomain): string
-    {
-        if (!strpos($subDomain, '.co.uk') && !strpos($subDomain, '.co.ma')
-            && !strpos($subDomain, 'site.google.')
-        ) {
-            // bla.test.com => Test.com
-            if (preg_match('#\w+\.\w+$#', $subDomain, $matches)) {
-                return ucfirst($matches[0]);
-            }
-        }
-
-        return $subDomain;
     }
 
 }

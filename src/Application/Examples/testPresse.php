@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace App\Application\Examples;
 
 use App\Application\Color;
-use App\Application\RefWebTransformer;
+use App\Application\ExternRefTransformer;
 use App\Infrastructure\Logger;
 
 require_once __DIR__.'/../myBootstrap.php';
@@ -37,7 +37,7 @@ echo Color::BG_LIGHT_RED.$url.Color::NORMAL."\n";
 $log = new Logger();
 $log->debug = true;
 $log->verbose = true;
-$trans = new RefWebTransformer($log);
+$trans = new ExternRefTransformer($log);
 $trans->skipUnauthorised = false;
 $result = $trans->process($url);
 

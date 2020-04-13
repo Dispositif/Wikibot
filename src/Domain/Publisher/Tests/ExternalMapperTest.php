@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Domain\Publisher\Tests;
 
-use App\Application\PublisherAction;
-use App\Domain\Publisher\WebMapper;
+use App\Domain\ExternPage;
+use App\Domain\Publisher\ExternMapper;
 use App\Infrastructure\Logger;
 use Exception;
 use PHPUnit\Framework\TestCase;
 
-class WebMapperTest extends TestCase
+class ExternalMapperTest extends TestCase
 {
 
     /**
@@ -26,10 +26,10 @@ class WebMapperTest extends TestCase
     {
         $html = file_get_contents($filename);
 
-        $publiAction = new PublisherAction('bla');
-        $htmlData = $publiAction->extractWebData($html);
-        $mapper = new WebMapper(new Logger());
-        $data = $mapper->process($htmlData);
+        $page = new ExternPage('http://www.test.com', $html);
+        $mapper = new ExternMapper(new Logger());
+        $data = $mapper->process($page->getData());
+
         if (isset($data['consulté le'])) {
             $data['consulté le'] = '11-04-2020';// unit testing date...
         }
@@ -42,7 +42,7 @@ class WebMapperTest extends TestCase
             [
                 __DIR__.'/fixture_lemonde.html',
                 [
-                    'DATA-TYPE' => 'JSON-LD',
+                    'DATA-TYPE' => 'JSON-LD+META',
                     'DATA-ARTICLE' => true,
                     'périodique' => 'Le Monde',
                     'titre' => 'Coronavirus : la Californie placée à son tour en confinement',
@@ -94,7 +94,7 @@ class WebMapperTest extends TestCase
             [
                 __DIR__.'/fixture_figaro.html',
                 [
-                    'DATA-TYPE' => 'JSON-LD',
+                    'DATA-TYPE' => 'JSON-LD+META',
                     'DATA-ARTICLE' => true,
                     'périodique' => 'Le Figaro',
                     'titre' => 'Face au Covid-19, les cliniques privées mobilisées… mais en manque de masques',

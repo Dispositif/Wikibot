@@ -11,19 +11,22 @@ namespace App\Application;
 
 use PHPUnit\Framework\TestCase;
 
-class PublisherActionTest extends TestCase
+class ExternActionTest extends TestCase
 {
     public function testGetHTMLSource()
     {
         $this::markTestIncomplete();
     }
 
+    // TODO refac avec public extractDataFromHtml si Client hors constructor
     public function testExtractLdJson()
     {
-        $publisher = new PublisherAction('foo');
+        $this::markTestSkipped('after refactoring');
 
-        $source = file_get_contents(__DIR__.'/exampleWebpage.html');
-        $data = $publisher->extractWebData($source);
+        $publisher = new ExternalAction('foo');
+
+        $source = file_get_contents(__DIR__.'/exampleExternPage.html');
+        $data = $publisher->extractDataFromHTML($source);
         $jsonLd = $data['JSON-LD'];
         $this::assertArrayHasKey('@type', $jsonLd);
         $this::assertArrayHasKey('headline', $jsonLd);
