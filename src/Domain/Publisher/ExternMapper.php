@@ -18,13 +18,13 @@ use Psr\Log\LoggerInterface;
 /**
  * Generic mapper for press/revue article on web.
  * Using JSON-LD and meta tags to obtain {article} data.
- * Class WebMapper
+ * Class ExternMapper
  *
  * @package App\Domain\Publisher
  */
-class WebMapper implements MapperInterface
+class ExternMapper implements MapperInterface
 {
-    use ArrayProcessTrait, WebOGMapperTrait, WebLDMapperTrait;
+    use ArrayProcessTrait, ExternOGMapperTrait, ExternLDMapperTrait;
 
     /**
      * @var LoggerInterface

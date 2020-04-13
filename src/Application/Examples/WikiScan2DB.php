@@ -23,7 +23,7 @@ include __DIR__.'/../myBootstrap.php';
 /**
  * From json list of articles => add to SQL page_ouvrages
  */
-$process = new PageScan();
+$process = new WikiScan2DB();
 
 $articles = file(__DIR__.'/../resources/importISBN_nov.txt');
 
@@ -36,7 +36,7 @@ foreach ($articles as $article) {
     sleep(4);
 }
 
-class PageScan
+class WikiScan2DB
 {
     private $wiki;
     private $db;

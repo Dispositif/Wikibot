@@ -9,7 +9,7 @@
 //
 //namespace App\Domain\Publisher;
 //
-//use App\Application\PublisherAction;
+//use App\Application\WebPublisherAction;
 //use App\Domain\Models\Wiki\ArticleOrLienBriseInterface;
 //use App\Domain\WikiTemplateFactory;
 //use Exception;
@@ -33,7 +33,7 @@
 //     */
 //    private $url;
 //
-//    public function __construct(PublisherAction $publisher)
+//    public function __construct(WebPublisherAction $publisher)
 //    {
 //        $this->publisherAction = $publisher;
 //        $this->url = $publisher->getUrl();

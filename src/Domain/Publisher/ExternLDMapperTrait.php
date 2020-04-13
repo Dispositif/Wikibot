@@ -11,14 +11,15 @@ declare(strict_types=1);
 namespace App\Domain\Publisher;
 
 
-trait WebLDMapperTrait
+trait ExternLDMapperTrait
 {
     protected function mapArticleDataFromJSONLD(array $jsonLD): array
     {
         return [
             'DATA-TYPE' => 'JSON-LD',
             'DATA-ARTICLE' => $jsonLD['@type'] === 'NewsArticle',
-            'périodique' => $jsonLD['publisher']['name'] ?? null,
+
+            'périodique' => $this->clean($jsonLD['publisher']['name'] ?? null),
             'titre' => $this->clean($jsonLD['headline']), // obligatoire
             'url' => $jsonLD['url'] ?? $jsonLD['mainEntityOfPage']['@id'] ?? null,
             'date' => $this->convertDate($jsonLD['datePublished'] ?? $jsonLD['dateCreated'] ?? null), //

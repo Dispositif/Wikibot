@@ -11,7 +11,7 @@ declare(strict_types=1);
 namespace App\Domain;
 
 
-use App\Application\RefWebTransformer;
+use App\Application\ExternRefTransformer;
 use App\Application\TransformerInterface;
 use App\Infrastructure\Logger;
 
@@ -20,7 +20,7 @@ class TransformerFactory
     public static function fromString(string $string): ?TransformerInterface
     {
         if (preg_match('#^https?://[^ ]+$#i', $string)) {
-            return new RefWebTransformer(new Logger());
+            return new ExternRefTransformer(new Logger());
         }
 
         return null;

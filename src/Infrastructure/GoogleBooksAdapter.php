@@ -12,7 +12,7 @@ namespace App\Infrastructure;
 use App\Domain\Publisher\BookApiInterface;
 use App\Domain\Publisher\GoogleBookMapper;
 use DomainException;
-use Scriptotek\GoogleBooks\GoogleBooks;
+use Scriptotek\GoogleBooks\GoogleBooks as GoogleAPI;
 use Scriptotek\GoogleBooks\Volume;
 
 /**
@@ -33,7 +33,7 @@ class GoogleBooksAdapter extends AbstractBookApiAdapter implements BookApiInterf
 
     public function __construct()
     {
-        $api = new GoogleBooks(
+        $api = new GoogleAPI(
             [
                 'key' => getenv('GOOGLE_BOOKS_API_KEY'),
                 'maxResults' => 5,

@@ -12,6 +12,7 @@ namespace App\Application;
 use App\Domain\RefGoogleBook;
 use App\Domain\Utils\WikiTextUtil;
 use App\Infrastructure\DbAdapter;
+use App\Infrastructure\Memory;
 use App\Infrastructure\ServiceFactory;
 use Exception;
 use LogicException;
@@ -55,6 +56,7 @@ class EditProcess
     private $minorFlag = true;
     // WikiBotConfig flag on edit
     private $botFlag = true;
+
     /**
      * @var Memory
      */

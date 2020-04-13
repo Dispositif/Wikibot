@@ -11,7 +11,7 @@ declare(strict_types=1);
 namespace App\Domain\Publisher;
 
 
-trait WebOGMapperTrait
+trait ExternOGMapperTrait
 {
     /**
      * Mapping from Open Graph and Dublin Core meta tags

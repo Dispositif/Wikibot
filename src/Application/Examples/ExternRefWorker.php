@@ -10,8 +10,8 @@ declare(strict_types=1);
 namespace App\Application\Examples;
 
 use App\Application\Color;
+use App\Application\ExternRefTransformer;
 use App\Application\RefBotWorker;
-use App\Application\RefWebTransformer;
 use App\Application\WikiBotConfig;
 use App\Infrastructure\CirrusSearch;
 use App\Infrastructure\ServiceFactory;
@@ -26,7 +26,7 @@ include __DIR__.'/../ZiziBot_Bootstrap.php';
  *
  * @package App\Application\Examples
  */
-class RefWebWorker extends RefBotWorker
+class ExternRefWorker extends RefBotWorker
 {
     const TASK_NAME           = "Amélioration références : URL ⇒ {modèle}"; // 😎
     const TASK_BOT_FLAG       = false;
@@ -35,13 +35,26 @@ class RefWebWorker extends RefBotWorker
     protected $botFlag = false;
     protected $modeAuto = false;
     /**
-     * @var RefWebTransformer
+     * @var ExternRefTransformer
      */
     protected $transformer;
 
+    /**
+     * ExternalRefWorker constructor.
+     */
+    protected function setUpInConstructor(): void
+    {
+        $transformer = new ExternRefTransformer($this->log);
+        $transformer->skipUnauthorised = false;
+
+        $this->transformer = $transformer;
+        //todo? move in __constructor + parent::__constructor()
+    }
+
+    // todo private (refac constructor->run())
     public function processRefContent($refContent): string
     {
-        // todo Temporary Skip URL : move where ?
+        // todo Temporary Skip URL
         if (preg_match('#books\.google#', $refContent)) {
             return $refContent;
         }
@@ -73,16 +86,7 @@ class RefWebWorker extends RefBotWorker
         return $result;
     }
 
-    /**
-     * RefWebWorker constructor.
-     */
-    protected function setUpInConstructor(): void
-    {
-        $transformer = new RefWebTransformer($this->log);
-        $transformer->skipUnauthorised = false;
 
-        $this->transformer = $transformer;
-    }
 
 }
 
@@ -100,4 +104,4 @@ $list = new CirrusSearch(
 
 //$list = new PageList(['Pierre Zind', 'Économie du Soudan du Sud']);
 
-new RefWebWorker($botConfig, $wiki, $list);
+new ExternRefWorker($botConfig, $wiki, $list);

@@ -13,11 +13,11 @@ use App\Application\AbstractBotTaskWorker;
 use App\Domain\RefGoogleBook;
 
 /**
- * Class RefGooWorker
+ * Class GooRefWorker
  *
  * @package App\Application\Examples
  */
-class RefGooWorker extends AbstractBotTaskWorker
+class GooRefWorker extends AbstractBotTaskWorker
 {
     const TASK_NAME           = "Amélioration bibliographique : lien Google Books ⇒ {ouvrage}"; // 😎
     const SLEEP_AFTER_EDITION = 20;

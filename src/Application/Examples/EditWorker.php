@@ -12,9 +12,9 @@ namespace App\Application\Examples;
 use App\Application\WikiBotConfig;
 use App\Application\DataAnalysis;
 use App\Application\EditProcess;
-use App\Application\Memory;
 use App\Domain\RefGoogleBook;
 use App\Infrastructure\DbAdapter;
+use App\Infrastructure\Memory;
 use Throwable;
 
 include __DIR__.'/../myBootstrap.php';

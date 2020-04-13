@@ -15,6 +15,7 @@ use App\Domain\OuvrageFactory;
 use App\Domain\OuvrageOptimize;
 use App\Domain\Publisher\Wikidata2Ouvrage;
 use App\Domain\Utils\TemplateParser;
+use App\Infrastructure\Memory;
 use App\Infrastructure\WikidataAdapter;
 use Exception;
 use GuzzleHttp\Client;
