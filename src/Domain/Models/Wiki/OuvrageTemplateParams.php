@@ -249,6 +249,8 @@ trait OuvrageTemplateParams
             'archivedate',
             'brisé le',
 
-            'note', // pour afficher message bot
+            /* paramètres top-secrets 😁  */
+            'url-access', // enwiki. Bientôt sur frwiki !
+            'note', // pour afficher message bot ?
         ];
 }
