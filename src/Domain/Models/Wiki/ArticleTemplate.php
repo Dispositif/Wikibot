@@ -22,6 +22,8 @@ class ArticleTemplate extends AbstractWikiTemplate implements ArticleTemplateAli
 
     const MODEL_NAME = 'Article';
 
+    const REQUIRED_FOR_EDIT_PARAMETERS = ['titre', 'périodique', 'date'];
+
     const REQUIRED_PARAMETERS
         = [
             //            'langue' => '',

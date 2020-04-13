@@ -9,12 +9,41 @@ declare(strict_types=1);
 
 namespace App\Domain\Models\Wiki\Tests;
 
+use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\WikiTemplateFactory;
 use Exception;
 use PHPUnit\Framework\TestCase;
 
 class AbstractWikiTemplateTest extends TestCase
 {
+    public function testIsValidForEdit(){
+        $article = WikiTemplateFactory::create('article');
+        $article->hydrate(
+            [
+                'auteur' => 'Michou',
+                'titre' => 'Au soleil',
+                'périodique' => 'Paris Match',
+                'année' => '2010', // équivalence 'date'
+            ]
+        );
+        $this::assertTrue($article->isValidForEdit());
+
+
+        $articleInc = WikiTemplateFactory::create('article');
+        $articleInc->hydrate(
+            [
+                'auteur' => 'Michou',
+                'titre' => 'Au soleil',
+                'date' => '2010', // année ???
+            ]
+        );
+        $this::assertFalse($articleInc->isValidForEdit());
+
+
+        $empty = new OuvrageTemplate();
+        $this::assertFalse($empty->isValidForEdit());
+    }
+
     public function testOuvrageSerialize()
     {
         $ouvrage = WikiTemplateFactory::create('ouvrage');

@@ -32,8 +32,10 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     /**
      * todo : modify to [a,b,c] ?
      */
-    const REQUIRED_PARAMETERS = [];
-    const COMMENT_STRIPPED    = '<!-- Paramètre obligatoire -->';
+    // todo: rename REQUIRED_PARAMETERS to DEFAULT_PARAMETERS
+    const REQUIRED_PARAMETERS  = [];
+    const COMMENT_STRIPPED             = '<!-- Paramètre obligatoire -->';
+    const REQUIRED_FOR_EDIT_PARAMETERS = [];
 
     public $log = [];
 
@@ -73,6 +75,32 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
         if (empty($this->parametersByOrder)) {
             $this->parametersByOrder = static::REQUIRED_PARAMETERS;
         }
+    }
+
+    /**
+     * Verify the required template parameters for an edit by the bot.
+     * @return bool
+     */
+    public function isValidForEdit(): bool
+    {
+        $validParams = array_keys(static::REQUIRED_PARAMETERS);
+        if (!empty(static::REQUIRED_FOR_EDIT_PARAMETERS)) {
+            $validParams = static::REQUIRED_FOR_EDIT_PARAMETERS;
+        }
+
+        foreach ($validParams as $param) {
+            if (in_array($param, ['date', 'année'])
+                && ($this->hasParamValue('date') || $this->hasParamValue('année'))
+            ) {
+                // équivalence date-année
+                continue;
+            }
+            if (!$this->hasParamValue($param)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

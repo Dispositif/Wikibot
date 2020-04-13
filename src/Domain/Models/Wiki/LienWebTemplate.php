@@ -18,6 +18,8 @@ class LienWebTemplate extends AbstractWikiTemplate
 {
     const MODEL_NAME = 'lien web';
 
+    const REQUIRED_FOR_EDIT_PARAMETERS = ['titre', 'url'];
+
     const REQUIRED_PARAMETERS
                      = [
 //            'langue' => '', // suggéré
