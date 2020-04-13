@@ -42,7 +42,7 @@ class RefGoogleBook
     public function __construct() { }
 
     /**
-     * Process page wikitext. Return wikitext with the <ref> converted.
+     * process page wikitext. Return wikitext with the <ref> converted.
      *
      * @param string $text Page wikitext
      *

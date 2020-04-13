@@ -65,7 +65,7 @@ abstract class AbstractBotTaskWorker
         }
         $this->setUpInConstructor();
 
-        $this->run();
+        $this->run();//todo delete that and use (Worker)->run($duration) or process management
     }
 
     protected function setUpInConstructor(): void

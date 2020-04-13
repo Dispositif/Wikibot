@@ -21,7 +21,7 @@ class QueueWorker extends AbstractQueueWorker
     const QUEUE_NAME = 'rabbit';
 
     /**
-     * Process with one of the queue message.
+     * process with one of the queue message.
      * Note: Callback needs a public function / see call_user_func().
      *
      * @param AMQPMessage $msg
