@@ -17,6 +17,7 @@ use App\Domain\Publisher\WebMapper;
 use App\Domain\Utils\WikiTextUtil;
 use App\Domain\WikiTemplateFactory;
 use App\Infrastructure\Logger;
+use Normalizer;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Yaml\Yaml;
 use Throwable;
@@ -29,7 +30,13 @@ use Throwable;
 class RefWebTransformer implements TransformerInterface
 {
 
+    const SKIPPED_FILE_LOG  = __DIR__.'/resources/web_skipped.log';
+    const LOG_REQUEST_ERROR = __DIR__.'/resources/web_request_error.log';
     public $skipUnauthorised = true;
+    /**
+     * @var array
+     */
+    public $summaryLog = [];
     /**
      * @var LoggerInterface
      */
@@ -54,7 +61,7 @@ class RefWebTransformer implements TransformerInterface
     /**
      * @var array
      */
-    public $summaryLog = [];
+    private $skip_domain = [];
 
     /**
      * RefWebTransformer constructor.
@@ -66,6 +73,9 @@ class RefWebTransformer implements TransformerInterface
         $this->log = $log;
 
         $this->config = Yaml::parseFile(__DIR__.'/resources/config_presse.yaml');
+        $skipFromFile = file(__DIR__.'/resources/config_skip_domain.txt');
+        $this->skip_domain = ($skipFromFile) ? $skipFromFile : [];
+
         $this->data['newspaper'] = json_decode(file_get_contents(__DIR__.'/resources/data_newspapers.json'), true);
         $this->data['scientific domain'] = json_decode(
             file_get_contents(__DIR__.'/resources/data_scientific_domain.json'),
@@ -87,12 +97,13 @@ class RefWebTransformer implements TransformerInterface
 
         $publish = new PublisherAction($this->url);
         try {
-            sleep(3);
+            sleep(5);
             $html = $publish->getHTMLSource();
             $htmlData = $publish->extractWebData($html);
             $this->log->debug('htmlData', $htmlData);
         } catch (Throwable $e) {
             // ne pas générer de lien brisé !!
+            file_put_contents(self::LOG_REQUEST_ERROR, $this->domain);
             $this->log->notice('erreur sur extractWebData');
 
             return $string;
@@ -102,7 +113,9 @@ class RefWebTransformer implements TransformerInterface
 
         // check dataValide
         if (empty($mapData) || empty($mapData['url']) || empty($mapData['titre'])) {
+            $this->skip_domain[] = $this->domain;
             $this->log->info('Mapping incomplet');
+            @file_put_contents(self::SKIPPED_FILE_LOG, $this->domain.",".$this->url."\n", FILE_APPEND);
 
             return $string;
         }
@@ -119,7 +132,7 @@ class RefWebTransformer implements TransformerInterface
         $serialized = $template->serialize(true);
         $this->log->info($serialized."\n");
 
-        return $serialized;
+        return Normalizer::normalize($serialized);
     }
 
     protected function isTransformAutorized(string $string): bool
@@ -127,16 +140,21 @@ class RefWebTransformer implements TransformerInterface
         if (!preg_match('#^http?s://[^ ]+$#i', $string)) {
             return false;
         }
+
         $this->url = $string;
-        $parseURL = parse_url($this->url);
-        $this->domain = str_replace('www.', '', $parseURL['host']);
+        $this->domain = $this->extractSubDomain($this->url);
+
+        if (in_array($this->domain, $this->skip_domain)) {
+            return false;
+        }
 
         if (!isset($this->config[$this->domain])) {
             $this->log->info("Domain ".$this->domain." non configuré\n");
             if ($this->skipUnauthorised) {
                 return false;
             }
-            echo "> Domaine ".Color::LIGHT_RED.$this->domain.Color::NORMAL." non configuré\n";
+        }else{
+            echo "> Domaine ".Color::LIGHT_GREEN.$this->domain.Color::NORMAL." configuré\n";
         }
 
         $this->config[$this->domain] = $this->config[$this->domain] ?? [];
@@ -149,6 +167,13 @@ class RefWebTransformer implements TransformerInterface
         }
 
         return true;
+    }
+
+    protected function extractSubDomain(string $url): string
+    {
+        $parseURL = parse_url($url);
+
+        return str_replace('www.', '', $parseURL['host']);
     }
 
     private function tagAndLog(array $mapData)
@@ -249,7 +274,26 @@ class RefWebTransformer implements TransformerInterface
             $mapData['périodique'] = $this->config[$this->domain]['périodique'];
         }
 
+        // from logic
+        if (empty($mapData['site']) && $template instanceof LienWebTemplate) {
+            $mapData['site'] = $this->prettyDomainName($this->domain);
+        }
+
         return $mapData;
+    }
+
+    private function prettyDomainName(string $subDomain): string
+    {
+        if (!strpos($subDomain, '.co.uk') && !strpos($subDomain, '.co.ma')
+            && !strpos($subDomain, 'site.google.')
+        ) {
+            // bla.test.com => Test.com
+            if (preg_match('#\w+\.\w+$#', $subDomain, $matches)) {
+                return ucfirst($matches[0]);
+            }
+        }
+
+        return $subDomain;
     }
 
 }

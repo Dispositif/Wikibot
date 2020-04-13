@@ -11,7 +11,6 @@ namespace App\Domain\Publisher;
 
 use App\Domain\Enums\Language;
 use App\Domain\Utils\ArrayProcessTrait;
-use App\Infrastructure\Logger;
 use DateTime;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -41,25 +40,50 @@ class WebMapper implements MapperInterface
     {
         $dat = $this->processMapping($data);
 
-        return $this->postProcess($dat);
+        return (!empty($dat)) ? $this->postProcess($dat) : [];
     }
 
     protected function processMapping($data): array
     {
+        $mapJson = [];
+        $mapMeta = [];
         if (!empty($data['JSON-LD'])) {
-            if ($this->checkJSONLD($data['JSON-LD'])) {
-                return $this->mapArticleDataFromJSONLD($data['JSON-LD']);
-            }
-            // gestion des multiples objets comme Figaro
-            foreach ($data['JSON-LD'] as $dat) {
-                if (is_array($dat) && $this->checkJSONLD($dat)) {
-                    return $this->mapArticleDataFromJSONLD($dat);
-                }
-            }
+            $mapJson = $this->processJsonMapping($data['JSON-LD']);
         }
         if (!empty($data['meta'])) {
-            // Dublin Core mapping included ;-)
-            return $this->mapLienwebFromOpenGraph($data['meta']);
+            $mapMeta = $this->mapLienwebFromMeta($data['meta']);
+        }
+
+        // langue absente JSON-LD mais array_merge risqué (doublon)
+        if (!empty($mapJson)) {
+            if (!isset($mapJson['langue']) && isset($mapMeta['langue'])) {
+                $mapJson['langue'] = $mapMeta['langue'];
+                $mapJson['DATA-TYPE'] = 'JSON-LD+META';
+            }
+
+            return $mapJson;
+        }
+
+        return $mapMeta;
+    }
+
+    /**
+     * todo move to mapper ?
+     *
+     * @param array $LDdata
+     *
+     * @return array
+     */
+    private function processJsonMapping(array $LDdata): array
+    {
+        if ($this->checkJSONLD($LDdata)) {
+            return $this->mapArticleDataFromJSONLD($LDdata);
+        }
+        // gestion des multiples objets comme Figaro
+        foreach ($LDdata as $dat) {
+            if (is_array($dat) && $this->checkJSONLD($dat)) {
+                return $this->mapArticleDataFromJSONLD($dat);
+            }
         }
 
         return [];
@@ -72,6 +96,7 @@ class WebMapper implements MapperInterface
 
     /**
      * todo Refac/move domain special mapping
+     * todo Config parameter for post-process
      *
      * @param array $dat
      *
@@ -84,8 +109,9 @@ class WebMapper implements MapperInterface
             unset($dat['langue']);
         }
 
+        // Ça m'énerve ! Gallica met "vidéo" pour livre numérisé
         if (isset($dat['site']) && $dat['site'] === 'Gallica') {
-            unset($dat['format']); // "vidéo"...
+            unset($dat['format']);
         }
 
         return $dat;
@@ -158,12 +184,13 @@ class WebMapper implements MapperInterface
         return null;
     }
 
+    // TODO encodage + normalizer
     protected function clean(?string $str = null): ?string
     {
         if ($str === null) {
             return null;
         }
-        $str = str_replace(['&apos;', "\n", "&#10;", "|"], ["'", '', ' ', '/'], $str);
+        $str = str_replace(['&#39;', '&apos;', "\n", "&#10;", "|", "&eacute;"], ["'", "'", '', ' ', '/', "é"], $str);
 
         return html_entity_decode($str);
     }

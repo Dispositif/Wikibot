@@ -23,7 +23,7 @@ trait WebOGMapperTrait
      *
      * @return array
      */
-    protected function mapLienwebFromOpenGraph(array $meta): array
+    protected function mapLienwebFromMeta(array $meta): array
     {
         return [
             'DATA-TYPE' => 'Open Graph/Dublin Core',

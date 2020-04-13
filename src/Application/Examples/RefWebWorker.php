@@ -42,14 +42,15 @@ class RefWebWorker extends RefBotWorker
     public function processRefContent($refContent): string
     {
         // todo Temporary Skip URL : move where ?
-        if(preg_match('#books\.google#', $refContent)){
+        if (preg_match('#books\.google#', $refContent)) {
             return $refContent;
         }
 
         try {
             $result = $this->transformer->process($refContent);
         } catch (Throwable $e) {
-            echo "** Problème détecté\n";
+            echo "** Problème détecté 234242\n";
+            $this->log->critical($e->getMessage()." ".$e->getFile().":".$e->getLine());
 
             // TODO : parse $e->message pour traitement, taskName, botflag...
             return $refContent;
