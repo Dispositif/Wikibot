@@ -19,6 +19,7 @@ use Throwable;
  * Count and increment, data saved in json file.
  * Set count to 0 everyday at 00:00 (America/Los_Angeles).
  * No need of SQL/singleton with the single file.
+ * /!\ Will fail with too many concurrent requests.
  * Class GoogleRequestQuota
  *
  * @package App\Infrastructure
@@ -26,9 +27,10 @@ use Throwable;
 class GoogleApiQuota
 {
     /** {"date":"2020-03-23T00:19:56-07:00","count":43}  */
-    const FILENAME        = __DIR__.'/resources/google_quota.json';
+    const JSON_FILENAME   = __DIR__.'/resources/google_quota.json';
     const REBOOT_TIMEZONE = 'America/Los_Angeles';
     const REBOOT_HOUR     = 0;
+    const DAILY_QUOTA     = 1000;
 
     /**
      * @var DateTime
@@ -68,15 +70,15 @@ class GoogleApiQuota
      */
     private function getFileData(): array
     {
-        if (!file_exists(static::FILENAME)) {
+        if (!file_exists(static::JSON_FILENAME)) {
             return ['date' => '2020-01-01T00:00:20-07:00', 'count' => 0];
         }
 
         try {
-            $json = file_get_contents(static::FILENAME);
-            $array = json_decode($json, true);
+            $json = file_get_contents(static::JSON_FILENAME);
+            $array = (array)json_decode($json, true);
         } catch (Throwable $e) {
-            throw new ConfigException('file malformed.');
+            throw new ConfigException('Error on Google Quota file : reading or JSON malformed.');
         }
 
         return $array;
@@ -97,7 +99,7 @@ class GoogleApiQuota
         }
     }
 
-    private function setZero()
+    private function setZero(): void
     {
         $now = new DateTime();
         $now->setTimezone(new DateTimeZone(static::REBOOT_TIMEZONE));
@@ -106,13 +108,20 @@ class GoogleApiQuota
         $this->saveDateInFile();
     }
 
+    /**
+     * @throws ConfigException
+     */
     private function saveDateInFile(): void
     {
         $data = [
+            'type' => 'Google API Quota',
             'date' => $this->lastDate->format('c'),
             'count' => $this->count,
         ];
-        file_put_contents(static::FILENAME, json_encode($data));
+        $result = file_put_contents(static::JSON_FILENAME, json_encode($data));
+        if ($result === false) {
+            throw new ConfigException("Can't write on Google Quota file.");
+        }
     }
 
     /**
@@ -123,6 +132,17 @@ class GoogleApiQuota
         $this->checkNewReboot();
 
         return $this->count;
+    }
+
+    public function isQuotaReached(): bool
+    {
+        $this->checkNewReboot();
+
+        if ($this->count >= static::DAILY_QUOTA) {
+            return true;
+        }
+
+        return false;
     }
 
     /**

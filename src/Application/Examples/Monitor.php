@@ -24,9 +24,7 @@ $process->run();
 
 /**
  * TODO refac
- * Class EditProcess
  *
- * @package App\Application\Examples
  */
 class Monitor
 {

@@ -14,6 +14,7 @@ use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\Publisher\GoogleBookMapper;
 use App\Domain\Utils\NumberUtil;
 use App\Domain\Utils\WikiTextUtil;
+use App\Infrastructure\GoogleApiQuota;
 use App\Infrastructure\GoogleBooksAdapter;
 use DomainException;
 use Exception;
@@ -51,6 +52,11 @@ class RefGoogleBook
      */
     public function process(string $text): string
     {
+        $quota = new GoogleApiQuota();
+        if ($quota->isQuotaReached()) {
+            throw new DomainException('Quota Google atteint');
+        }
+
         $refsData = $this->extractAllGoogleRefs($text);
         if (empty($refsData)) {
             echo "Pas d'URL GB trouvée\n";
@@ -79,6 +85,31 @@ class RefGoogleBook
         }
 
         return $text;
+    }
+
+    /**
+     * Extract all <ref>/{ref} with only GoogleBooks URL.
+     * Todo : supprimer point final URL
+     *
+     * @param string $text Page wikitext
+     *
+     * @return array [0 => ['<ref>http...</ref>', 'http://'], 1 => ...]
+     */
+    private function extractAllGoogleRefs(string $text): array
+    {
+        // <ref>...</ref> or {{ref|...}}
+        // GoogleLivresTemplate::GOOGLEBOOK_URL_PATTERN
+        if (preg_match_all(
+            '#(?:<ref[^>]*>|{{ref\|) ?('.GoogleLivresTemplate::GOOGLEBOOK_URL_PATTERN.'[^>\]} \n]+) ?(?:</ref>|}})#i',
+            $text,
+            $matches,
+            PREG_SET_ORDER
+        )
+        ) {
+            return $matches;
+        }
+
+        return [];
     }
 
     /**
@@ -191,30 +222,5 @@ class RefGoogleBook
         $this->cacheOuvrageTemplate[$id] = clone $ouvrage;
 
         return $ouvrage;
-    }
-
-    /**
-     * Extract all <ref>/{ref} with only GoogleBooks URL.
-     * Todo : supprimer point final URL
-     *
-     * @param string $text Page wikitext
-     *
-     * @return array [0 => ['<ref>http...</ref>', 'http://'], 1 => ...]
-     */
-    private function extractAllGoogleRefs(string $text): array
-    {
-        // <ref>...</ref> or {{ref|...}}
-        // GoogleLivresTemplate::GOOGLEBOOK_URL_PATTERN
-        if (preg_match_all(
-            '#(?:<ref[^>]*>|{{ref\|) ?('.GoogleLivresTemplate::GOOGLEBOOK_URL_PATTERN.'[^>\]} \n]+) ?(?:</ref>|}})#i',
-            $text,
-            $matches,
-            PREG_SET_ORDER
-        )
-        ) {
-            return $matches;
-        }
-
-        return [];
     }
 }

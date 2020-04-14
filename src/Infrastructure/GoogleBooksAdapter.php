@@ -21,6 +21,7 @@ use Scriptotek\GoogleBooks\Volume;
  */
 class GoogleBooksAdapter extends AbstractBookApiAdapter implements BookApiInterface
 {
+    const SCRIPT_GOOGLE_QUOTA = 900;
     protected $api;
 
     protected $mapper;
@@ -54,16 +55,19 @@ class GoogleBooksAdapter extends AbstractBookApiAdapter implements BookApiInterf
     public function getDataByIsbn(string $isbn)
     {
         $this->checkGoogleQuota();
+        $res = $this->api->volumes->byIsbn($isbn);
+        if ($res !== null) {
+            $this->quotaCounter->increment();
+        }
 
-        return $this->api->volumes->byIsbn($isbn);
+        return $res;
     }
 
     private function checkGoogleQuota()
     {
-        if ($this->quotaCounter->getCount() > 1000) {
-            throw new DomainException('Quota Google 1000 dépassé');
+        if ($this->quotaCounter->getCount() > self::SCRIPT_GOOGLE_QUOTA) {
+            throw new DomainException('Quota Google dépassé pour ce script : '.self::SCRIPT_GOOGLE_QUOTA);
         }
-        $this->quotaCounter->increment();
     }
 
     /**
@@ -74,8 +78,12 @@ class GoogleBooksAdapter extends AbstractBookApiAdapter implements BookApiInterf
     public function getDataByGoogleId(string $googleId)
     {
         $this->checkGoogleQuota();
+        $res = $this->api->volumes->get($googleId);
+        if ($res !== null) {
+            $this->quotaCounter->increment();
+        }
 
-        return $this->api->volumes->get($googleId);
+        return $res;
     }
 
     /**

@@ -17,7 +17,28 @@ include __DIR__.'/../myBootstrap.php';
 //include __DIR__.'/../ZiziBot_Bootstrap.php';
 $botName = 'CodexBot';
 
-$taskName = 'bot : suppression de mon signalement (erreurs corrigées)';
+$taskName = 'bot : suppression de mon signalement';
+
+$phrases = [
+    'erreurs corrigées',
+    "L'article « erreurs » n'existe pas sur ce wiki !",
+    "Un Humain, ça peut faire des erreurs",
+    "il existe une méthode bien moins destructrice : recherchez des erreurs",
+    "il arrive à de bons contributeurs de commettre des erreurs occasionnelles",
+    "allégeons la page de discussion de ce projet.",
+    "Si un mot précis doit être utilisé, utilisez-le et faites un lien vers sa définition.",
+    "Ne recopiez pas le contenu d'un autre article dans le vôtre",
+    "Préférez les phrases courtes.",
+    "Prohibez les traductions automatiques.",
+    "Relisez-vous ou faites vous relire.",
+    "Les détails et les anecdotes peuvent troubler le lecteur et sont à éviter.",
+    "Les familiarités avec le lecteur, ou des interpellations, sont à prohiber.",
+    "Un article s'écrit, de préférence, au présent de narration.",
+    "Évitez les listes ; privilégiez les phrases rédigées, organisées en paragraphes",
+    "N'hésitez pas non plus à lire quelques articles parmi les contenus de qualité pour vous inspirer de leur ton !",
+    "chaque information doit être reliée à une source de qualité ([[Wikipédia:QS]])",
+    "n'écrivez pas « Mozart est un génie admirable »",
+];
 
 
 /**
@@ -42,6 +63,7 @@ foreach ($pages as $page) {
 $talkTitles = $res;
 echo count($res)." articles à vérifier\n";
 $report = new ErrorReport();
+$k = 0;
 foreach ($talkTitles as $talkTitle) {
     $talkTitle = str_replace('Talk:', 'Discussion:', $talkTitle);
     sleep(10);
@@ -86,5 +108,6 @@ foreach ($talkTitles as $talkTitle) {
         $result = $talkAction->editPage($newText, new EditInfo($taskName, false, true, 5));
         dump($result);
         sleep(20);
+        $k++;
     }
 }
