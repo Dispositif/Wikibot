@@ -32,7 +32,7 @@ class BnfAdapter extends AbstractBookApiAdapter implements BookApiInterface
     public function __construct()
     {
         $this->mapper = new BnfMapper();
-        $this->client = new Client(['timeout' => 5, 'headers' => ['User-Agent' => getenv('USER_AGENT')]]);
+        $this->client = new Client(['timeout' => 30, 'headers' => ['User-Agent' => getenv('USER_AGENT')]]);
     }
 
     /**

@@ -209,7 +209,7 @@ class OuvrageCompleteWorker
                     }
                     // TODO move to factory
                     $wikidataAdapter = new WikidataAdapter(
-                        new Client(['timeout' => 5, 'headers' => ['User-Agent' => getenv('USER_AGENT')]])
+                        new Client(['timeout' => 30, 'headers' => ['User-Agent' => getenv('USER_AGENT')]])
                     );
                     $wdComplete = new Wikidata2Ouvrage($wikidataAdapter, clone $bnfOuvrage, $this->page);
                     $this->completeOuvrage($wdComplete->getOuvrage());

@@ -35,7 +35,7 @@ class Wikidata2OuvrageTest extends TestCase
         );
 
         $wikidataAdapter = new WikidataAdapter(
-            new Client(['timeout' => 5, 'headers' => ['User-Agent' => getenv('USER_AGENT')]])
+            new Client(['timeout' => 60, 'headers' => ['User-Agent' => getenv('USER_AGENT')]])
         );
         $convert = new Wikidata2Ouvrage($wikidataAdapter, $ouvrage);
         $wdOuvrage = $convert->getOuvrage();
