@@ -25,9 +25,9 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
 
     const DEFAULT_GOOGLEBOOK_URL = 'https://books.google.com/books';
 
-    const MODEL_NAME = 'Google Livres';
+    const WIKITEMPLATE_NAME = 'Google Livres';
 
-    const EDIT_REQUIRED_PARAMETERS = ['id'];
+    const REQUIRED_PARAMETERS = ['id'];
 
     const MINIMUM_PARAMETERS = ['id' => ''];
 

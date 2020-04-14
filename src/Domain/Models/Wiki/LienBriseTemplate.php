@@ -19,7 +19,7 @@ use App\Domain\Utils\TextUtil;
  */
 class LienBriseTemplate extends AbstractWikiTemplate implements ArticleOrLienBriseInterface
 {
-    const MODEL_NAME = 'lien brisé';
+    const WIKITEMPLATE_NAME = 'lien brisé';
 
     const MINIMUM_PARAMETERS
         = [

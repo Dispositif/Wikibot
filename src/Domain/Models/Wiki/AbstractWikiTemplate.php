@@ -17,19 +17,27 @@ use Exception;
 use Throwable;
 
 /**
- * TODO detect userPreferences (inlineStyle, spaceStyle...)
+ * The mother of all the wiki-template classes.
+ * Methods for the wiki-parameters data, hydratation, personnal wiki-style conservation, required params,
+ * handling error/alias of wiki-parameters, complex serialization into wikicode (minimum params), etc.
+ * No abstract method.
+ * Minimum setup for child class : set 'const MODEL_NAME' and it's done !
+ * TODO : Complexity 19 methods.
  * Class AbstractWikiTemplate.
  */
 abstract class AbstractWikiTemplate extends AbstractParametersObject
 {
     use ArrayProcessTrait, InfoTrait;
 
-    const MODEL_NAME = '';
+    /**
+     * Name of the wiki-template
+     */
+    const WIKITEMPLATE_NAME = 'NO NAME';
 
     /**
      * Error in wiki parsing without those required params.
      */
-    const EDIT_REQUIRED_PARAMETERS = [];
+    const REQUIRED_PARAMETERS = [];
     /**
      * The minimum parameters for pretty wiki-template.
      */
@@ -44,7 +52,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
 
     public $parametersErrorFromHydrate;
 
-    public $userSeparator; // todo move to WikiRef
+    public $userSeparator;
     /**
      * @var bool
      */
@@ -88,8 +96,8 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     public function isValidForEdit(): bool
     {
         $validParams = array_keys(static::MINIMUM_PARAMETERS);
-        if (!empty(static::EDIT_REQUIRED_PARAMETERS)) {
-            $validParams = static::EDIT_REQUIRED_PARAMETERS;
+        if (!empty(static::REQUIRED_PARAMETERS)) {
+            $validParams = static::REQUIRED_PARAMETERS;
         }
 
         foreach ($validParams as $param) {
@@ -134,11 +142,10 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     public function getParamsAndAlias(): array
     {
         return array_merge($this->parametersByOrder, array_keys(static::PARAM_ALIAS));
-        // todo : $this::PARAM_ALIAS or static::PARAM_ALIAS (traits?) ?
     }
 
     /**
-     * TODO check if method set{ParamName} exists.
+     * TODO ? check if method set{ParamName} exists ?
      *
      * @param string $name
      * @param string $value
@@ -232,7 +239,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     }
 
     /**
-     * TODO move/refac.
+     * TODO move to TemplateFactory /refac.
      *
      * @param string $tplText
      *
@@ -245,7 +252,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
         if (WikiTextUtil::isCommented($tplText)) {
             throw new DomainException('HTML comment tag detected');
         }
-        $data = TemplateParser::parseDataFromTemplate($this::MODEL_NAME, $tplText);
+        $data = TemplateParser::parseDataFromTemplate($this::WIKITEMPLATE_NAME, $tplText);
         $this->detectUserSeparator($tplText);
         $this->hydrate($data);
     }
@@ -400,7 +407,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
 
     /**
      * TODO : data transfer object (DTO) to mix userErrorParam data ?
-     * TODO : refac $inlineStyle as $userPreferences[] and bool flag on serialize().
+     * TODO : refac $inlineStyle as $userPreferences[].
      *
      * @param bool|null $cleanOrder
      *
@@ -417,11 +424,11 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
             $maxChars = max($maxChars, mb_strlen($paramName));
         }
 
-        // TODO : $option to add or not the wrong parameters ?
+        // TODO : $option 'strict' to keep/delete the wrong parameters ?
         // Using the wrong parameters+value from user input ?
         $paramsByRenderOrder = $this->mergeWrongParametersFromUser($paramsByRenderOrder);
 
-        $string = '{{'.static::MODEL_NAME;
+        $string = '{{'.static::WIKITEMPLATE_NAME;
         foreach ($paramsByRenderOrder as $paramName => $paramValue) {
             $string .= ($this->userSeparator) ?? '|';
 

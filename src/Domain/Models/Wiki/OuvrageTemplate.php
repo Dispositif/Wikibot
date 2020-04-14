@@ -20,9 +20,9 @@ class OuvrageTemplate extends AbstractWikiTemplate implements OuvrageTemplateAli
 {
     use OuvrageTemplateParams;
 
-    const MODEL_NAME = 'Ouvrage'; // todo
+    const WIKITEMPLATE_NAME = 'Ouvrage'; // todo
 
-    const EDIT_REQUIRED_PARAMETERS = ['titre'];
+    const REQUIRED_PARAMETERS = ['titre'];
 
     const MINIMUM_PARAMETERS
         = [
