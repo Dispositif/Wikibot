@@ -89,7 +89,7 @@ class GoogleTransformer
     {
         // match "* https://books.google.fr/..."
         if (preg_match_all(
-            '#^\* *('.GoogleLivresTemplate::GOOGLEBOOK_START_URL_PATTERN.'[^ <{\]}\n\r]+) *$#im',
+            '#^\* *('.GoogleLivresTemplate::GOOGLEBOOKS_START_URL_PATTERN.'[^ <{\]}\n\r]+) *$#im',
             $text,
             $matches,
             PREG_SET_ORDER
@@ -260,7 +260,7 @@ class GoogleTransformer
         // <ref>...</ref> or {{ref|...}}
         // GoogleLivresTemplate::GOOGLEBOOK_URL_PATTERN
         if (preg_match_all(
-            '#(?:<ref[^>]*>|{{ref\|) ?('.GoogleLivresTemplate::GOOGLEBOOK_START_URL_PATTERN
+            '#(?:<ref[^>]*>|{{ref\|) ?('.GoogleLivresTemplate::GOOGLEBOOKS_START_URL_PATTERN
             .'[^>\]} \n]+) ?(?:</ref>|}})#i',
             $text,
             $matches,
