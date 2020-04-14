@@ -9,9 +9,10 @@ declare(strict_types=1);
 
 namespace App\Application\Examples;
 
-use App\Application\CompleteProcess;
+use App\Application\OuvrageCompleteWorker;
 use App\Infrastructure\DbAdapter;
 use App\Infrastructure\GoogleApiQuota;
+use App\Infrastructure\SMS;
 use Throwable;
 
 include __DIR__.'/../myBootstrap.php';
@@ -22,24 +23,31 @@ while (true) {
     try {
         echo "*** NEW COMPLETE PROCESS\n";
         dump('Google quota : ', (new GoogleApiQuota())->getCount());
-        $process = new CompleteProcess(new DbAdapter(), true);
+        $process = new OuvrageCompleteWorker(new DbAdapter(), true);
         $process->run();
         $count = 0; // reinitialise boucle erreur
     } catch (Throwable $e) {
         $count++;
         echo $e->getMessage();
         if (preg_match('#no more queue to process#', $e->getMessage())) {
-            echo "\nExit\n";
+            echo "\nno more queue to process. Sleep 6h avant SMS\n";
+            sleep(60 * 60 * 6);
+            (new SMS())->send('no more queue to process');
             exit;
         }
-        if (strpos($e->getMessage(), 'Daily Limit Exceeded') !== false) {
-            echo "Daily Limit Exceeded : sleep 3h\n";
-            sleep(60 * 60 * 3);
+        if (strpos($e->getMessage(), 'SQLSTATE[HY000] [2002] Connection refused') !== false) {
+            $count = 0;
+            echo "SQL refusé : sleep 12h avant SMS\n";
+            sleep(60 * 60 * 12);
+            (new SMS())->send('SQL refusé');
             echo "Wake up\n";
         }
-        if(strpos($e->getMessage(), 'Quota Google') !== false){
-            echo "Google Quota dépassé : sleep 6h\n";
-            sleep(60 * 60 * 6);
+        if (strpos($e->getMessage(), 'Quota Google') !== false
+            || strpos($e->getMessage(), 'Daily Limit Exceeded') !== false
+        ) {
+            $count = 0;
+            echo "Google Quota dépassé : sleep 12h\n";
+            sleep(60 * 60 * 12);
             echo "Wake up\n";
         }
         if ($count > 2) {
@@ -51,5 +59,5 @@ while (true) {
     }
     unset($process);
     echo "Sleep 10 min\n";
-    sleep(60*10);
+    sleep(60 * 10);
 }

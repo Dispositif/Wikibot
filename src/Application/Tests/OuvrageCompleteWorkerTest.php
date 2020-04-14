@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace App\Application\Tests;
 
-use App\Application\CompleteProcess;
+use App\Application\OuvrageCompleteWorker;
 use App\Infrastructure\DbAdapter;
 use PHPUnit\Framework\TestCase;
 
@@ -20,7 +20,7 @@ require_once __DIR__.'/../myBootstrap.php';
  *
  * @group application
  */
-class CompleteProcessTest extends TestCase
+class OuvrageCompleteWorkerTest extends TestCase
 {
     protected function setUp(): void
     {
@@ -36,7 +36,7 @@ class CompleteProcessTest extends TestCase
         );
         $DbAdapterMock->method('sendCompletedData')->willReturn(true);
 
-        $complete = new CompleteProcess($DbAdapterMock, false);
+        $complete = new OuvrageCompleteWorker($DbAdapterMock, false);
 
         $this::assertSame(
             true,

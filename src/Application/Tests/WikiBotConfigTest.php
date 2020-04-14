@@ -12,7 +12,7 @@ namespace App\Application\Tests;
 use App\Application\WikiBotConfig;
 use PHPUnit\Framework\TestCase;
 
-class BotTest extends TestCase
+class WikiBotConfigTest extends TestCase
 {
     /**
      * @dataProvider provideEditionRestricted

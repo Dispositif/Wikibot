@@ -23,9 +23,11 @@ use Normalizer;
 use Throwable;
 
 /**
- * Class CompleteProcess
+ * Class OuvrageCompleteWorker
+ *
+ * @package App\Application
  */
-class CompleteProcess
+class OuvrageCompleteWorker
 {
     /**
      * Exclusion requête BnF/Google/etc

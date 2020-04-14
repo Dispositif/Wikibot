@@ -22,11 +22,11 @@ use Normalizer;
 use Throwable;
 
 /**
- * Class EditProcess
+ * Class OuvrageEditWorker
  *
  * @package App\Application\Examples
  */
-class EditProcess
+class OuvrageEditWorker
 {
     const TASK_NAME = 'Amélioration bibliographique';
     /**

@@ -11,7 +11,7 @@ namespace App\Application\Examples;
 
 use App\Application\WikiBotConfig;
 use App\Application\DataAnalysis;
-use App\Application\EditProcess;
+use App\Application\OuvrageEditWorker;
 use App\Domain\RefGoogleBook;
 use App\Infrastructure\DbAdapter;
 use App\Infrastructure\Memory;
@@ -24,7 +24,7 @@ $count = 0; // erreurs successives
 while (true) {
     try {
         echo "*** NEW EDIT PROCESS\n";
-        $process = new EditProcess(new DbAdapter(), new WikiBotConfig(), new Memory(), new RefGoogleBook(), new DataAnalysis());
+        $process = new OuvrageEditWorker(new DbAdapter(), new WikiBotConfig(), new Memory(), new RefGoogleBook(), new DataAnalysis());
         $process->verbose = true;
         $process->run();
         $count = 0;
