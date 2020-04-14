@@ -39,7 +39,8 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
             'BuchID' => 'id',
         ];
 
-    const GOOGLEBOOK_URL_PATTERN = 'https?://(?:books|play)\.google\.[a-z\.]{2,6}/(?:books)?(?:books/[^\?]+\.html)?(?:/reader)?\?(?:[a-zA-Z=&]+&)?id=';
+    // todo URL avec fin
+    const GOOGLEBOOK_START_URL_PATTERN = 'https?://(?:books|play)\.google\.[a-z\.]{2,6}/(?:books)?(?:books/[^\?]+\.html)?(?:/reader)?\?(?:[a-zA-Z=&]+&)?id=';
 
     const TRACKING_PARAMETERS
         = [
@@ -102,7 +103,7 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
      */
     public static function isGoogleBookURL(string $text): bool
     {
-        if (preg_match('#^'.self::GOOGLEBOOK_URL_PATTERN.'[^>\]} \n]+$#i', $text) > 0) {
+        if (preg_match('#^'.self::GOOGLEBOOK_START_URL_PATTERN.'[^>\]} \n]+$#i', $text) > 0) {
             return true;
         }
 

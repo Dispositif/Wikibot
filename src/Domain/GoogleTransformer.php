@@ -1,8 +1,8 @@
 <?php
 /**
- * This file is part of dispositif/wikibot application
- * 2019 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019/2020 © Philippe M. <dispositif@gmail.com>
+ * For the full copyright and MIT license information, please view the license file.
  */
 
 declare(strict_types=1);
@@ -21,26 +21,35 @@ use Exception;
 use Throwable;
 
 /**
+ * TODO REFAC : duplicate, extract methods in trait or in RefBotWorker + ExternBotWorker
+ * --
  * Transform <ref>https://books.google...</ref> to <ref>{{Ouvrage|...}}.</ref>
  * in an article wikitext.
- * Class RefGoogleBook
+ * Class GoogleTransformer
  *
  * @package App\Domain
  */
-class RefGoogleBook
+class GoogleTransformer
 {
-    const SLEEP_GOOGLE_API_INTERVAL = 8;
+    const SLEEP_GOOGLE_API_INTERVAL = 5;
 
     /**
      * @var array OuvrageTemplate[]
      */
     private $cacheOuvrageTemplate = [];
+    /**
+     * @var GoogleApiQuota
+     */
+    private $quota;
 
     /**
-     * RefGoogleBook constructor.
+     * GoogleTransformer constructor.
      * todo dependency injection
      */
-    public function __construct() { }
+    public function __construct()
+    {
+        $this->quota = new GoogleApiQuota();
+    }
 
     /**
      * process page wikitext. Return wikitext with the <ref> converted.
@@ -52,55 +61,35 @@ class RefGoogleBook
      */
     public function process(string $text): string
     {
-        $quota = new GoogleApiQuota();
-        if ($quota->isQuotaReached()) {
+        if ($this->quota->isQuotaReached()) {
             throw new DomainException('Quota Google atteint');
         }
 
         $refsData = $this->extractAllGoogleRefs($text);
-        if (empty($refsData)) {
-            echo "Pas d'URL GB trouvée\n";
-
-            return $text;
+        if (!empty($refsData)) {
+            $text = $this->processRef($text, $refsData);
         }
 
-        foreach ($refsData as $ref) {
-            try {
-                $citation = $this->convertGBurl2OuvrageCitation(WikiTextUtil::stripFinalPoint($ref[1]));
-            } catch (Exception $e) {
-                echo "Exception ".$e->getMessage();
-                continue;
-            }
-
-            // ajout point final pour référence
-            $citation .= '.';
-
-            $newRef = str_replace($ref[1], $citation, $ref[0]);
-            echo $newRef."\n";
-
-            $text = str_replace($ref[0], $newRef, $text);
-
-            echo "sleep ".self::SLEEP_GOOGLE_API_INTERVAL."\n";
-            sleep(self::SLEEP_GOOGLE_API_INTERVAL);
+        $links = $this->extractGoogleExternal($text);
+        if (!empty($links)) {
+            $text = $this->processExternLinks($text, $links);
         }
 
         return $text;
     }
 
     /**
-     * Extract all <ref>/{ref} with only GoogleBooks URL.
-     * Todo : supprimer point final URL
+     * todo move
      *
-     * @param string $text Page wikitext
+     * @param string $text
      *
-     * @return array [0 => ['<ref>http...</ref>', 'http://'], 1 => ...]
+     * @return array
      */
-    private function extractAllGoogleRefs(string $text): array
+    public function extractGoogleExternal(string $text): array
     {
-        // <ref>...</ref> or {{ref|...}}
-        // GoogleLivresTemplate::GOOGLEBOOK_URL_PATTERN
+        // match "* https://books.google.fr/..."
         if (preg_match_all(
-            '#(?:<ref[^>]*>|{{ref\|) ?('.GoogleLivresTemplate::GOOGLEBOOK_URL_PATTERN.'[^>\]} \n]+) ?(?:</ref>|}})#i',
+            '#^\* *('.GoogleLivresTemplate::GOOGLEBOOK_START_URL_PATTERN.'[^ <{\]}\n\r]+) *$#im',
             $text,
             $matches,
             PREG_SET_ORDER
@@ -110,6 +99,43 @@ class RefGoogleBook
         }
 
         return [];
+    }
+
+    /**
+     * TODO Duplication du dessus...
+     *
+     * @param string $text
+     * @param array  $links
+     *
+     * @return string|string[]
+     * @throws Throwable
+     */
+    private function processExternLinks(string $text, array $links)
+    {
+        foreach ($links as $pattern) {
+            if ($this->quota->isQuotaReached()) {
+                throw new DomainException('Quota Google atteint');
+            }
+            try {
+                $citation = $this->convertGBurl2OuvrageCitation(WikiTextUtil::stripFinalPoint($pattern[1]));
+            } catch (Exception $e) {
+                echo "Exception ".$e->getMessage();
+                continue;
+            }
+
+            // todo : ajout point final pour référence ???
+            $citation .= '.';
+
+            $newRef = str_replace($pattern[1], $citation, $pattern[0]);
+            echo $newRef."\n";
+
+            $text = str_replace($pattern[0], $newRef, $text);
+
+            echo "sleep ".self::SLEEP_GOOGLE_API_INTERVAL."\n";
+            sleep(self::SLEEP_GOOGLE_API_INTERVAL);
+        }
+
+        return $text;
     }
 
     /**
@@ -137,9 +163,7 @@ class RefGoogleBook
             $ouvrage = $this->generateOuvrageFromGoogleData($gooDat['id']);
         } catch (Throwable $e) {
             // ID n'existe pas sur Google Books
-            if (strpos($e->getMessage(), '404 Not Found')
-                && strpos($e->getMessage(), '"message": "The volume ID could n')
-            ) {
+            if (strpos($e->getMessage(), '"message": "The volume ID could n')) {
                 return sprintf(
                     '{{lien brisé |url= %s |titre= %s |brisé le=%s}}',
                     $url,
@@ -149,7 +173,6 @@ class RefGoogleBook
             }
             throw $e;
         }
-
 
         $cleanUrl = GoogleLivresTemplate::simplifyGoogleUrl($url);
         $ouvrage->unsetParam('présentation en ligne');
@@ -223,4 +246,60 @@ class RefGoogleBook
 
         return $ouvrage;
     }
+
+    /**
+     * Extract all <ref>/{ref} with only GoogleBooks URL.
+     * Todo : supprimer point final URL
+     *
+     * @param string $text Page wikitext
+     *
+     * @return array [0 => ['<ref>http...</ref>', 'http://'], 1 => ...]
+     */
+    private function extractAllGoogleRefs(string $text): array
+    {
+        // <ref>...</ref> or {{ref|...}}
+        // GoogleLivresTemplate::GOOGLEBOOK_URL_PATTERN
+        if (preg_match_all(
+            '#(?:<ref[^>]*>|{{ref\|) ?('.GoogleLivresTemplate::GOOGLEBOOK_START_URL_PATTERN
+            .'[^>\]} \n]+) ?(?:</ref>|}})#i',
+            $text,
+            $matches,
+            PREG_SET_ORDER
+        )
+        ) {
+            return $matches;
+        }
+
+        return [];
+    }
+
+    private function processRef(string $text, array $refsData): string
+    {
+        foreach ($refsData as $ref) {
+            if ($this->quota->isQuotaReached()) {
+                throw new DomainException('Quota Google atteint');
+            }
+            try {
+                $citation = $this->convertGBurl2OuvrageCitation(WikiTextUtil::stripFinalPoint($ref[1]));
+                sleep(2);
+            } catch (Exception $e) {
+                echo "Exception ".$e->getMessage();
+                continue;
+            }
+
+            // ajout point final pour référence
+            $citation .= '.';
+
+            $newRef = str_replace($ref[1], $citation, $ref[0]);
+            echo $newRef."\n";
+
+            $text = str_replace($ref[0], $newRef, $text);
+
+            echo "sleep ".self::SLEEP_GOOGLE_API_INTERVAL."\n";
+            sleep(self::SLEEP_GOOGLE_API_INTERVAL);
+        }
+
+        return $text;
+    }
+
 }

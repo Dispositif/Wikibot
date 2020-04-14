@@ -1,14 +1,15 @@
 <?php
 /**
- * This file is part of dispositif/wikibot application
- * 2019 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019/2020 © Philippe M. <dispositif@gmail.com>
+ * For the full copyright and MIT license information, please view the license file.
  */
 
 declare(strict_types=1);
 
 namespace App\Application;
 
+use App\Domain\Exceptions\ConfigException;
 use App\Infrastructure\Logger;
 use App\Infrastructure\PageListInterface;
 use Exception;
@@ -19,7 +20,7 @@ use Throwable;
 
 abstract class AbstractBotTaskWorker
 {
-    const TASK_NAME           = "bot : Amélioration bibliographique";
+    const TASK_NAME = "bot : Amélioration bibliographique";
     const SLEEP_AFTER_EDITION = 60;
     /**
      * @var PageListInterface
@@ -83,13 +84,17 @@ abstract class AbstractBotTaskWorker
         }
     }
 
+    /**
+     * @return array
+     * @throws ConfigException
+     */
     protected function getTitles(): array
     {
-        if ($this->pageListGenerator) {
-            return $this->pageListGenerator->getPageTitles();
+        if ($this->pageListGenerator === null) {
+            throw new ConfigException('Empty PageListGenerator');
         }
 
-        return [];
+        return $this->pageListGenerator->getPageTitles();
     }
 
     /**
