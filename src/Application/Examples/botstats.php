@@ -104,7 +104,7 @@ dump($data);
 //* articles en attente édition : #waiting pages#
 
 $wikiText = <<<wiki
-{{Utilisateur:ZiziBot/menu}}
+<noinclude>{{Utilisateur:ZiziBot/menu}}</noinclude>
 Dernières corrections humaines sur citations après passage du bot :
 
 <table style="border:1px solid grey;padding:10px;margin:5px;">

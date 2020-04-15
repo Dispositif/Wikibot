@@ -1,8 +1,8 @@
 <?php
 /**
- * This file is part of dispositif/wikibot application
- * 2019 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019/2020 © Philippe M. <dispositif@gmail.com>
+ * For the full copyright and MIT license information, please view the license file.
  */
 
 declare(strict_types=1);
@@ -150,7 +150,7 @@ class ExternRefTransformer implements TransformerInterface
         $mapData = $this->replaceSitenameByConfig($mapData, $template);
         $mapData = $this->replaceURLbyOriginal($mapData);
 
-        $template->hydrate($mapData, true);
+        $template->hydrate($mapData);
 
         $serialized = $template->serialize(true);
         $this->log->info($serialized."\n");

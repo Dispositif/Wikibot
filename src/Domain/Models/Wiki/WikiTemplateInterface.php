@@ -21,9 +21,9 @@ interface WikiTemplateInterface
 
     public function unsetParam(string $name);
 
-    public function hydrate(array $data, ?bool $noError = false): AbstractWikiTemplate;
+    public function hydrate(array $data): AbstractStrictWikiTemplate;
 
-    public function hydrateFromText(string $tplText): AbstractWikiTemplate;
+    //    public function hydrateFromText(string $tplText): AbstractWikiTemplate;
 
     public function hasParamValue(string $name): bool;
 

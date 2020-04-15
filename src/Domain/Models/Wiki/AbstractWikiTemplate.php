@@ -14,364 +14,37 @@ use App\Domain\Utils\TemplateParser;
 use App\Domain\Utils\WikiTextUtil;
 use DomainException;
 use Exception;
-use Throwable;
 
 /**
+ * todo correct text bellow
  * The mother of all the wiki-template classes.
  * Methods for the wiki-parameters data, hydratation, personnal wiki-style conservation, required params,
  * handling error/alias of wiki-parameters, complex serialization into wikicode (minimum params), etc.
  * No abstract method.
  * Minimum setup for child class : set 'const MODEL_NAME' and it's done !
- * TODO : Complexity 19 methods.
  * Class AbstractWikiTemplate.
  */
-abstract class AbstractWikiTemplate extends AbstractParametersObject implements WikiTemplateInterface
+abstract class AbstractWikiTemplate extends AbstractStrictWikiTemplate implements WikiTemplateInterface
 {
     use ArrayProcessTrait, InfoTrait;
-
-    /**
-     * Name of the wiki-template
-     */
-    const WIKITEMPLATE_NAME = 'NO NAME';
-
-    /**
-     * Error in wiki parsing without those required params.
-     */
-    const REQUIRED_PARAMETERS = [];
-    /**
-     * The minimum parameters for pretty wiki-template.
-     */
-    const MINIMUM_PARAMETERS = [];
-
-    /* commented to allow inherit from Interface in OuvrageTemplate
-       const PARAM_ALIAS = []; */
-
-    const COMMENT_STRIPPED = '<!-- Paramètre obligatoire -->';
-
-    public $log = [];
 
     public $parametersErrorFromHydrate;
 
     public $userSeparator;
-    /**
-     * @var bool
-     */
+
     public $userMultiSpaced = false;
 
     /**
      * optional
      * Not a constant so it can be modified in constructor.
-     * Commented so it can be inherit from trait in OuvrageTemplate
+     * Commented so it can be inherit from trait in OuvrageTemplate (bad design)
      */
     //protected $parametersByOrder = [];
 
     protected $paramOrderByUser = [];
-    /**
-     * @var bool
-     */
-
 
     /**
-     * AbstractWikiTemplate constructor.
-     *
-     * @throws Exception
-     */
-    public function __construct()
-    {
-        if (empty(static::MINIMUM_PARAMETERS)) {
-            throw new Exception(sprintf('DEFAULT_PARAMETERS not configured in "%s"', get_called_class()));
-        }
-        $this->parametersValues = static::MINIMUM_PARAMETERS;
-
-        if (empty($this->parametersByOrder)) {
-            $this->parametersByOrder = static::MINIMUM_PARAMETERS;
-        }
-    }
-
-    /**
-     * Verify the required template parameters for an edit by the bot.
-     *
-     * @return bool
-     */
-    public function isValidForEdit(): bool
-    {
-        $validParams = array_keys(static::MINIMUM_PARAMETERS);
-        if (!empty(static::REQUIRED_PARAMETERS)) {
-            $validParams = static::REQUIRED_PARAMETERS;
-        }
-
-        foreach ($validParams as $param) {
-            if (in_array($param, ['date', 'année'])
-                && ($this->hasParamValue('date') || $this->hasParamValue('année'))
-            ) {
-                // équivalence date-année
-                continue;
-            }
-            if (!$this->hasParamValue($param)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * For a parameter, check is the value exists (not empty).
-     *
-     * @param string $name
-     *
-     * @return bool
-     */
-    public function hasParamValue(string $name): bool
-    {
-        try {
-            if (!empty(trim($this->getParam($name)))) {
-                return true;
-            }
-        } catch (Throwable $e) {
-            unset($e);
-        }
-
-        return false;
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return string|null
-     * @throws Exception
-     */
-    public function getParam(string $name): ?string
-    {
-        try {
-            $this->checkParamName($name);
-        } catch (Exception $e) {
-            return null;
-        }
-        $name = $this->getAliasParam($name);
-
-        return ($this->parametersValues[$name]) ?? null;
-    }
-
-    /**
-     * TODO return bool + log() ?
-     * todo check keyNum <= count($parametersByOrder).
-     *
-     * @param $name string|int
-     *
-     * @throws Exception
-     */
-    protected function checkParamName($name): void
-    {
-        // todo verify/useless ?
-        if (is_int($name)) {
-            $name = (string)$name;
-        }
-
-        // that parameter exists in template ?
-        if (in_array($name, $this->parametersByOrder)
-            || array_key_exists($name, static::PARAM_ALIAS)
-        ) {
-            return;
-        }
-
-        // keyNum parameter ?
-        //        if (!in_array($name, ['1', '2', '3', '4'])) {
-        throw new Exception(sprintf('no parameter "%s" in template "%s"', $name, get_called_class()));
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return string
-     */
-    public function getAliasParam(string $name): string
-    {
-        if (array_key_exists($name, static::PARAM_ALIAS)) {
-            $name = static::PARAM_ALIAS[$name];
-        }
-
-        return $name;
-    }
-
-    /**
-     * TODO ? check if method set{ParamName} exists ?
-     *
-     * @param string $name
-     * @param string $value
-     *
-     * @return AbstractParametersObject
-     * @throws Exception
-     */
-    public function setParam(string $name, string $value): AbstractParametersObject
-    {
-        try {
-            $this->checkParamName($name);
-        } catch (Throwable $e) {
-            $this->log[] = sprintf('no parameter "%s" in AbstractParametersObject "%s"', $name, get_called_class());
-
-            return $this;
-        }
-
-        $name = $this->getAliasParam($name);
-        $value = trim($value);
-        if (!empty($value) || $this->parametersValues[$name]) {
-            $this->parametersValues[$name] = $value;
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return $this
-     * @throws Exception
-     */
-    public function unsetParam(string $name)
-    {
-        $this->checkParamName($name);
-        $name = $this->getAliasParam($name);
-        unset($this->parametersValues[$name]);
-
-        return $this;
-    }
-
-    /**
-     * TODO move to TemplateFactory /refac.
-     *
-     * @param string $tplText
-     *
-     * @return AbstractWikiTemplate
-     * @throws Exception
-     */
-    public function hydrateFromText(string $tplText): AbstractWikiTemplate
-    {
-        $tplText = str_ireplace(static::COMMENT_STRIPPED, '', $tplText);
-
-        if (WikiTextUtil::isCommented($tplText)) {
-            throw new DomainException('HTML comment tag detected');
-        }
-        $data = TemplateParser::parseDataFromTemplate($this::WIKITEMPLATE_NAME, $tplText);
-        $this->detectUserSeparator($tplText);
-        $this->hydrate($data);
-
-        return $this;
-    }
-
-    public function detectUserSeparator($text): void
-    {
-        $this->userSeparator = TemplateParser::findUserStyleSeparator($text);
-        $this->userMultiSpaced = TemplateParser::isMultispacedTemplate($text);
-    }
-
-    /**
-     * @param array     $data
-     * @param bool|null $noError mode strict
-     *
-     * @return AbstractWikiTemplate
-     * @throws Exception
-     */
-    public function hydrate(array $data, ?bool $noError = false): AbstractWikiTemplate
-    {
-        foreach ($data as $name => $value) {
-            if (is_string($value)) {
-                $this->hydrateTemplateParameter($name, $value, $noError);
-            }
-        }
-
-        $this->setParamOrderByUser($data);
-
-        return $this;
-    }
-
-    /**
-     * @param           $name    string|int
-     * @param string    $value
-     * @param bool|null $noError mode strict
-     */
-    protected function hydrateTemplateParameter($name, string $value, ?bool $noError = false): void
-    {
-        // Gestion alias
-        try {
-            $this->checkParamName($name);
-            $name = $this->getAliasParam($name); // main parameter name
-
-            // Gestion des doublons de paramètres
-            if ($this->hasParamValue($name)) {
-                if (!empty($value)) {
-                    $this->log[] = "parameter $name en doublon";
-                    $this->parametersErrorFromHydrate[$name.'-doublon'] = $value;
-                }
-
-                return;
-            }
-        } catch (Throwable $e) {
-            unset($e);
-            // hack : 1 => "ouvrage collectif"
-            $name = (string)$name;
-            $this->log[] = "parameter $name not found";
-            if (!$noError) {
-                $this->parametersErrorFromHydrate[$name] = $value;
-            }
-
-            return;
-        }
-
-
-        if (empty($value)) {
-            // optional parameter
-            if (!isset(static::MINIMUM_PARAMETERS[$name])) {
-                unset($this->parametersValues[$name]);
-
-                return;
-            }
-            // required parameter
-            $this->parametersValues[$name] = '';
-        }
-
-        $method = $this->setterMethodName($name);
-        if (method_exists($this, $method)) {
-            $this->$method($value);
-
-            return;
-        }
-
-        $this->parametersValues[$name] = $value;
-    }
-
-    /**
-     * TODO : private ?
-     * Define the serialize order of parameters (from user initial choice).
-     * default : $params = ['param1'=>'', 'param2' => '', ...]
-     * OK with $params = ['a','b','c'].
-     *
-     * @param array
-     *
-     * @throws Exception
-     */
-    private function setParamOrderByUser(array $params = []): void
-    {
-        $validParams = [];
-        foreach ($params as $key => $value) {
-            $name = (is_int($key)) ? $value : $key;
-
-            try {
-                $this->checkParamName($name);
-                $name = $this->getAliasParam($name);
-                $validParams[] = $name;
-            } catch (Throwable $e) {
-                unset($e);
-                $this->log[] = "Parameter $name do not exists";
-
-                continue;
-            }
-        }
-        $this->paramOrderByUser = $validParams;
-    }
-
-    /**
-     * TODO : data transfer object (DTO) to mix userErrorParam data ?
+     * TODO : DONE
      * TODO : refac $inlineStyle as $userPreferences[].
      *
      * @param bool|null $cleanOrder
@@ -389,7 +62,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject implements 
             $maxChars = max($maxChars, mb_strlen($paramName));
         }
 
-        // TODO : $option 'strict' to keep/delete the wrong parameters ?
+        // TODO old : $option 'strict' to keep/delete the wrong parameters ?
         // Using the wrong parameters+value from user input ?
         $paramsByRenderOrder = $this->mergeWrongParametersFromUser($paramsByRenderOrder);
 
@@ -426,11 +99,13 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject implements 
     }
 
     /**
+     *  TODO DONE
+     *
      * @param bool|null $cleanOrder
      *
      * @return array
      */
-    private function paramsByRenderOrder(?bool $cleanOrder = false): array
+    protected function paramsByRenderOrder(?bool $cleanOrder = false): array
     {
         $renderParams = [];
 
@@ -451,33 +126,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject implements 
         }
 
         // default order
-        foreach ($this->parametersByOrder as $order => $paramName) {
-            if (isset($this->parametersValues[$paramName])) {
-                $renderParams[$paramName] = $this->parametersValues[$paramName];
-            }
-        }
-
-        return $renderParams;
-    }
-
-    /**
-     * Delete key if empty value and the key not required.
-     *
-     * @param array $params
-     *
-     * @return array
-     */
-    private function keepMinimumOrNotEmpty(array $params): array
-    {
-        $render = [];
-        foreach ($params as $name => $value) {
-            if (empty($value) && !isset(static::MINIMUM_PARAMETERS[$name])) {
-                continue;
-            }
-            $render[$name] = $params[$name];
-        }
-
-        return $render;
+        return parent::paramsByRenderOrder();
     }
 
     /**
@@ -521,12 +170,8 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject implements 
         return $paramsByRenderOrder;
     }
 
-    public function getParamsAndAlias(): array
-    {
-        return array_merge($this->parametersByOrder, array_keys(static::PARAM_ALIAS));
-    }
-
     /**
+     * KEEP THERE
      * Get data from wiki-template. Also invalid param/values.
      *
      * @return array
@@ -536,5 +181,135 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject implements 
         $allValue = array_merge($this->parametersValues, $this->parametersErrorFromHydrate ?? []);
 
         return $this->deleteEmptyValueArray($allValue);
+    }
+
+    /**
+     * TODO move ? trait ? to TemplateFactory ? /refac.
+     *
+     * @param string $tplText
+     *
+     * @return AbstractWikiTemplate
+     * @throws Exception
+     */
+    public function hydrateFromText(string $tplText): AbstractWikiTemplate
+    {
+        $tplText = str_ireplace(static::COMMENT_STRIPPED, '', $tplText);
+
+        if (WikiTextUtil::isCommented($tplText)) {
+            throw new DomainException('HTML comment tag detected');
+        }
+        $data = TemplateParser::parseDataFromTemplate($this::WIKITEMPLATE_NAME, $tplText);
+        $this->hydrate($data);
+
+        $this->detectUserSeparator($tplText);
+
+        return $this;
+    }
+
+    /**
+     * keep there
+     *
+     * @param $text
+     */
+    public function detectUserSeparator($text): void
+    {
+        $this->userSeparator = TemplateParser::findUserStyleSeparator($text);
+        $this->userMultiSpaced = TemplateParser::isMultispacedTemplate($text);
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return AbstractStrictWikiTemplate
+     * @throws Exception
+     */
+    public function hydrate(array $data): AbstractStrictWikiTemplate
+    {
+        parent::hydrate($data);
+        $this->setParamOrderByUser($data);
+
+        return $this;
+    }
+
+    /**
+     * TODO : KEEP
+     * Define the serialize order of parameters (from user initial choice).
+     * default : $params = ['param1'=>'', 'param2' => '', ...]
+     * OK with $params = ['a','b','c'].
+     *
+     * @param array
+     *
+     * @throws Exception
+     */
+    private function setParamOrderByUser(array $params = []): void
+    {
+        $validParams = [];
+        foreach ($params as $key => $value) {
+            $name = (is_int($key)) ? $value : $key;
+            if (!$this->isValidParamName($name)) {
+                $this->log[] = "Parameter $name do not exists";
+                continue;
+            }
+            $name = $this->getAliasParam($name);
+            $validParams[] = $name;
+        }
+        $this->paramOrderByUser = $validParams;
+    }
+
+    /**
+     * TODO refac extract
+     * todo : why not using setParam() ?????
+     *
+     * @param           $name    string|int
+     * @param string    $value
+     *
+     * @throws Exception
+     */
+    protected function hydrateTemplateParameter($name, string $value): void
+    {
+        // Gestion alias
+        if (!$this->isValidParamName($name)) {
+            // hack : 1 => "ouvrage collectif"
+            $name = (string)$name;
+            $this->log[] = "parameter $name not found";
+
+            // todo keep there
+            $this->parametersErrorFromHydrate[$name] = $value;
+
+            return;
+        }
+
+        $name = $this->getAliasParam($name); // main parameter name
+
+        // todo keep that
+        // Gestion des doublons de paramètres
+        if ($this->hasParamValue($name)) {
+            if (!empty($value)) {
+                $this->log[] = "parameter $name en doublon";
+                $this->parametersErrorFromHydrate[$name.'-doublon'] = $value;
+            }
+
+            return;
+        }
+
+        if (empty($value)) {
+            // optional parameter
+            if (!isset(static::MINIMUM_PARAMETERS[$name])) {
+                unset($this->parametersValues[$name]);
+
+                return;
+            }
+            // required parameter
+            $this->parametersValues[$name] = '';
+        }
+
+        $method = $this->setterMethodName($name);
+        if (method_exists($this, $method)) {
+            $this->$method($value);
+
+            return;
+        }
+
+        $this->parametersValues[$name] = $value;
     }
 }
