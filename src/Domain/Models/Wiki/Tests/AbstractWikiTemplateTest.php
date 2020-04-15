@@ -154,19 +154,6 @@ class AbstractWikiTemplateTest extends TestCase
         );
     }
 
-    public function testMagicGetter()
-    {
-        $lienWeb = WikiTemplateFactory::create('lien web');
-        $lienWeb->hydrate(
-            [
-                'url' => 'bla',
-            ]
-        );
-        $this::assertSame(
-            'bla',
-            $lienWeb->url
-        );
-    }
 
     public function testEmptyValue()
     {
@@ -194,7 +181,6 @@ class AbstractWikiTemplateTest extends TestCase
 
         $lienWeb = WikiTemplateFactory::create('lien web');
         $lienWeb->hydrate($data);
-        $lienWeb->setParamOrderByUser(['url', 'langue', 'titre']);
 
         $this::assertSame(
             '{{lien web|langue=fr|titre=|url=http://google.com|consulté le=}}',

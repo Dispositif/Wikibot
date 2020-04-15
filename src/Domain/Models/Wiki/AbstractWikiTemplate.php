@@ -25,7 +25,7 @@ use Throwable;
  * TODO : Complexity 19 methods.
  * Class AbstractWikiTemplate.
  */
-abstract class AbstractWikiTemplate extends AbstractParametersObject
+abstract class AbstractWikiTemplate extends AbstractParametersObject implements WikiTemplateInterface
 {
     use ArrayProcessTrait, InfoTrait;
 
@@ -116,60 +116,41 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     }
 
     /**
-     * Get data from wiki-template. Also invalid param/values.
+     * For a parameter, check is the value exists (not empty).
      *
-     * @return array
-     */
-    public function toArray(): array
-    {
-        $allValue = array_merge($this->parametersValues, $this->parametersErrorFromHydrate ?? []);
-
-        return $this->deleteEmptyValueArray($allValue);
-    }
-
-    /**
-     * Is the parameter's name valid ?
-     *
-     * @param string $paramName
+     * @param string $name
      *
      * @return bool
      */
-    public function isParamOrAlias(string $paramName): bool
+    public function hasParamValue(string $name): bool
     {
-        return in_array($paramName, $this->getParamsAndAlias());
-    }
+        try {
+            if (!empty(trim($this->getParam($name)))) {
+                return true;
+            }
+        } catch (Throwable $e) {
+            unset($e);
+        }
 
-    public function getParamsAndAlias(): array
-    {
-        return array_merge($this->parametersByOrder, array_keys(static::PARAM_ALIAS));
+        return false;
     }
 
     /**
-     * TODO ? check if method set{ParamName} exists ?
-     *
      * @param string $name
-     * @param string $value
      *
-     * @return AbstractParametersObject
+     * @return string|null
      * @throws Exception
      */
-    public function setParam(string $name, string $value): AbstractParametersObject
+    public function getParam(string $name): ?string
     {
         try {
             $this->checkParamName($name);
-        } catch (Throwable $e) {
-            $this->log[] = sprintf('no parameter "%s" in AbstractParametersObject "%s"', $name, get_called_class());
-
-            return $this;
+        } catch (Exception $e) {
+            return null;
         }
-
         $name = $this->getAliasParam($name);
-        $value = trim($value);
-        if (!empty($value) || $this->parametersValues[$name]) {
-            $this->parametersValues[$name] = $value;
-        }
 
-        return $this;
+        return ($this->parametersValues[$name]) ?? null;
     }
 
     /**
@@ -214,28 +195,46 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     }
 
     /**
-     * @param $param
+     * TODO ? check if method set{ParamName} exists ?
      *
-     * @return string|null
+     * @param string $name
+     * @param string $value
+     *
+     * @return AbstractParametersObject
      * @throws Exception
      */
-    public function __get($param): ?string
+    public function setParam(string $name, string $value): AbstractParametersObject
     {
-        $this->checkParamName($param);
+        try {
+            $this->checkParamName($name);
+        } catch (Throwable $e) {
+            $this->log[] = sprintf('no parameter "%s" in AbstractParametersObject "%s"', $name, get_called_class());
 
-        if (!empty($this->parametersValues[$param])) {
-            return $this->parametersValues[$param];
+            return $this;
         }
 
-        // todo param_alias ?
-        return null;
+        $name = $this->getAliasParam($name);
+        $value = trim($value);
+        if (!empty($value) || $this->parametersValues[$name]) {
+            $this->parametersValues[$name] = $value;
+        }
+
+        return $this;
     }
 
-    public function unsetParam(string $name): void
+    /**
+     * @param string $name
+     *
+     * @return $this
+     * @throws Exception
+     */
+    public function unsetParam(string $name)
     {
         $this->checkParamName($name);
         $name = $this->getAliasParam($name);
         unset($this->parametersValues[$name]);
+
+        return $this;
     }
 
     /**
@@ -243,9 +242,10 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
      *
      * @param string $tplText
      *
+     * @return AbstractWikiTemplate
      * @throws Exception
      */
-    public function hydrateFromText(string $tplText)
+    public function hydrateFromText(string $tplText): AbstractWikiTemplate
     {
         $tplText = str_ireplace(static::COMMENT_STRIPPED, '', $tplText);
 
@@ -255,6 +255,8 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
         $data = TemplateParser::parseDataFromTemplate($this::WIKITEMPLATE_NAME, $tplText);
         $this->detectUserSeparator($tplText);
         $this->hydrate($data);
+
+        return $this;
     }
 
     public function detectUserSeparator($text): void
@@ -270,7 +272,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
      * @return AbstractWikiTemplate
      * @throws Exception
      */
-    public function hydrate(array $data, ?bool $noError = false): self
+    public function hydrate(array $data, ?bool $noError = false): AbstractWikiTemplate
     {
         foreach ($data as $name => $value) {
             if (is_string($value)) {
@@ -339,44 +341,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     }
 
     /**
-     * For a parameter, check is the value exists (not empty).
-     *
-     * @param string $name
-     *
-     * @return bool
-     */
-    public function hasParamValue(string $name): bool
-    {
-        try {
-            if (!empty(trim($this->getParam($name)))) {
-                return true;
-            }
-        } catch (Throwable $e) {
-            unset($e);
-        }
-
-        return false;
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return string|null
-     * @throws Exception
-     */
-    public function getParam(string $name): ?string
-    {
-        try {
-            $this->checkParamName($name);
-        } catch (Exception $e) {
-            return null;
-        }
-        $name = $this->getAliasParam($name);
-
-        return ($this->parametersValues[$name]) ?? null;
-    }
-
-    /**
+     * TODO : private ?
      * Define the serialize order of parameters (from user initial choice).
      * default : $params = ['param1'=>'', 'param2' => '', ...]
      * OK with $params = ['a','b','c'].
@@ -385,7 +350,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
      *
      * @throws Exception
      */
-    public function setParamOrderByUser(array $params = []): void
+    private function setParamOrderByUser(array $params = []): void
     {
         $validParams = [];
         foreach ($params as $key => $value) {
@@ -416,7 +381,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
     public function serialize(?bool $cleanOrder = false): string
     {
         $paramsByRenderOrder = $this->paramsByRenderOrder($cleanOrder);
-        $paramsByRenderOrder = $this->filterEmptyNotRequired($paramsByRenderOrder);
+        $paramsByRenderOrder = $this->keepMinimumOrNotEmpty($paramsByRenderOrder);
 
         // max caractères des paramètres (valides)
         $maxChars = 0;
@@ -465,7 +430,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
      *
      * @return array
      */
-    protected function paramsByRenderOrder(?bool $cleanOrder = false): array
+    private function paramsByRenderOrder(?bool $cleanOrder = false): array
     {
         $renderParams = [];
 
@@ -502,7 +467,7 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
      *
      * @return array
      */
-    protected function filterEmptyNotRequired(array $params): array
+    private function keepMinimumOrNotEmpty(array $params): array
     {
         $render = [];
         foreach ($params as $name => $value) {
@@ -554,5 +519,22 @@ abstract class AbstractWikiTemplate extends AbstractParametersObject
         }
 
         return $paramsByRenderOrder;
+    }
+
+    public function getParamsAndAlias(): array
+    {
+        return array_merge($this->parametersByOrder, array_keys(static::PARAM_ALIAS));
+    }
+
+    /**
+     * Get data from wiki-template. Also invalid param/values.
+     *
+     * @return array
+     */
+    public function toArray(): array
+    {
+        $allValue = array_merge($this->parametersValues, $this->parametersErrorFromHydrate ?? []);
+
+        return $this->deleteEmptyValueArray($allValue);
     }
 }

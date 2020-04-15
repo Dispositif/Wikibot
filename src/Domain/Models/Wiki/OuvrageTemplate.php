@@ -16,7 +16,7 @@ namespace App\Domain\Models\Wiki;
  * sur {{citationbloc}},{{commentaire biblio}}...
  * Class OuvrageTemplate.
  */
-class OuvrageTemplate extends AbstractWikiTemplate implements OuvrageTemplateAlias
+class OuvrageTemplate extends OuvrageTemplateAlias implements WikiTemplateInterface
 {
     use OuvrageTemplateParams;
 
