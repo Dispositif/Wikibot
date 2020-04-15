@@ -18,7 +18,7 @@ use Exception;
  */
 class ArticleTemplate extends AbstractWikiTemplate implements ArticleTemplateAlias, ArticleOrLienBriseInterface
 {
-    use ArticleTemplateParams;
+    use ArticleTemplateParams, BiblioTemplateTrait;
 
     const WIKITEMPLATE_NAME = 'Article';
 
@@ -33,8 +33,8 @@ class ArticleTemplate extends AbstractWikiTemplate implements ArticleTemplateAli
             //            'volume' => '',
             //            'numéro' => '',
             'date' => '', // <!-- Paramètre obligatoire -->
-//            'pages' => '',
-//            'issn' => '', // Inutile ? https://fr.wikipedia.org/wiki/Discussion_mod%C3%A8le:Article#ISSN
+            //            'pages' => '',
+            //            'issn' => '', // Inutile ? https://fr.wikipedia.org/wiki/Discussion_mod%C3%A8le:Article#ISSN
             //            'e-issn' => '',
             'lire en ligne' => '',
             //            'consulté le' => '', // 16 mars 2020
@@ -49,59 +49,7 @@ class ArticleTemplate extends AbstractWikiTemplate implements ArticleTemplateAli
     public $externalTemplates = [];
 
     /**
-     * @param bool|null $cleanOrder
-     *
-     * @return string
-     */
-    public function serialize(?bool $cleanOrder = false): string
-    {
-        // modifier ici le this->userSeparator
-        //        if('|' === $this->userSeparator) {
-        //            $this->userSeparator = ' |';
-        //        }
-        $serial = parent::serialize($cleanOrder);
-
-        //        $serial = $this->anneeOrDateSerialize($serial);
-
-
-        return $serial.$this->serializeExternalTemplates();
-    }
-
-    /**
-     * todo move to abstract ? + refac
-     * dirty.
-     */
-    public function serializeExternalTemplates(): string
-    {
-        $res = '';
-        if (!empty($this->externalTemplates)) {
-            foreach ($this->externalTemplates as $externalTemplate) {
-                $res .= $externalTemplate->raw;
-            }
-        }
-
-        return $res;
-    }
-
-//    /**
-//     * Pas de serialization année vide si date non vide.
-//     *
-//     * @param string $serial
-//     *
-//     * @return string
-//     */
-//    private function anneeOrDateSerialize(string $serial): string
-//    {
-//        if (preg_match("#\|[\n ]*année=[\n ]*\|#", $serial) > 0
-//            && preg_match("#\|[\n ]*date=#", $serial) > 0
-//        ) {
-//            $serial = preg_replace("#\|[\n ]*année=[\n ]*#", '', $serial);
-//        }
-//
-//        return $serial;
-//    }
-
-    /**
+     * todo move to BiblioTrait + fusion
      * Propose fubar pour un <ref name="fubar"> ou un {{article|'id=fubar'}}.
      *
      * @return string

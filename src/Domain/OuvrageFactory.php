@@ -32,7 +32,7 @@ class OuvrageFactory
         $import = new ImportOuvrageFromApi(new OuvrageClean(), new OpenLibraryAdapter());
         $import->hydrateFromIsbn($isbn);
         $ouvrage = $import->getOuvrage();
-        $ouvrage->setSource('OL');
+        $ouvrage->setDataSource('OL');
 
         return $ouvrage;
     }
@@ -42,7 +42,7 @@ class OuvrageFactory
         $import = new ImportOuvrageFromApi(new OuvrageClean(), new GoogleBooksAdapter());
         $import->hydrateFromIsbn($isbn);
         $ouvrage = $import->getOuvrage();
-        $ouvrage->setSource('GB');
+        $ouvrage->setDataSource('GB');
 
         return $ouvrage;
     }
@@ -52,7 +52,7 @@ class OuvrageFactory
         $import = new ImportOuvrageFromApi(new OuvrageClean(), new BnfAdapter());
         $import->hydrateFromIsbn($isbn);
         $ouvrage = $import->getOuvrage();
-        $ouvrage->setSource('BnF');
+        $ouvrage->setDataSource('BnF');
 
         return $ouvrage;
     }

@@ -9,6 +9,12 @@ declare(strict_types=1);
 
 namespace App\Domain\Models\Wiki;
 
+/**
+ * Heretic abstract ! cause too lazy for DI in Template::constructor
+ * Class OuvrageTemplateAlias
+ *
+ * @package App\Domain\Models\Wiki
+ */
 abstract class OuvrageTemplateAlias extends AbstractWikiTemplate
 {
     /**

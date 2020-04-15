@@ -131,7 +131,7 @@ class OuvrageComplete
         $this->googleBookProcess();
         $this->processSousTitre();
 
-        if ($this->notCosmetic && 'BnF' === $this->book->getSource()) {
+        if ($this->notCosmetic && 'BnF' === $this->book->getDataSource()) {
             $this->log('@BnF');
         }
 
