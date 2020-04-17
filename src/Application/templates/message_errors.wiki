@@ -1,13 +1,14 @@
 == Ouvrage avec erreur de paramètre ==
 
-[[Image:Robot icon.svg|70px|right|alt=tête de robot souriante]][[Catégorie:##CATEGORY##|##ARTICLE##]]
+[[Image:Robot icon.svg|70px|right|alt=tête de robot souriante|link=]][[Catégorie:##CATEGORY##|##ARTICLE##]]
 Bonjour Humains !
 
 En vérifiant les mentions bibliographiques de cet article##DIFF##, j'ai détecté des erreurs de paramètre du
-modèle <nowiki>{{Ouvrage}}</nowiki> ([[Modèle:Ouvrage#Explication des paramètres|documentation]]) que je ne parviens
+modèle
+<nowiki>{{ Ouvrage }}</nowiki> ([[Modèle:Ouvrage#Explication des paramètres|documentation]]) que je ne parviens
 pas à corriger moi-même. J'ai signalé ces erreurs avec des commentaires (invisibles) que je copie ci-dessous :
 
 ##ERROR LIST##
 
-Je supprimerai ce message après les corrections.<br />
+Après correction, vous pouvez supprimer ce message, sinon je le ferai moi-même.<br/>
 Le robot ~~~~
