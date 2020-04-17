@@ -12,6 +12,7 @@ namespace App\Application;
 use App\Domain\Exceptions\ConfigException;
 use App\Infrastructure\Logger;
 use App\Infrastructure\PageListInterface;
+use Codedungeon\PHPCliColors\Color;
 use Exception;
 use Mediawiki\Api\MediawikiFactory;
 use Mediawiki\Api\UsageException;

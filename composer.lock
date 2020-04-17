@@ -1,20 +1,20 @@
 {
-    "_readme": [
-        "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
-        "This file is @generated automatically"
-    ],
-    "content-hash": "48c58df75bc4d26d53b4deea8d6e8e73",
-    "packages": [
-        {
-            "name": "addwiki/mediawiki-api",
-            "version": "0.7.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/addwiki/mediawiki-api.git",
-                "reference": "cd1321526235b0a0507f92259254bd738ffb39d3"
-            },
-            "dist": {
+  "_readme": [
+    "This file locks the dependencies of your project to a known state",
+    "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+    "This file is @generated automatically"
+  ],
+  "content-hash": "aed03aaaa59475bcffd9dd6356ee33e0",
+  "packages": [
+    {
+      "name": "addwiki/mediawiki-api",
+      "version": "0.7.3",
+      "source": {
+        "type": "git",
+        "url": "https://github.com/addwiki/mediawiki-api.git",
+        "reference": "cd1321526235b0a0507f92259254bd738ffb39d3"
+      },
+      "dist": {
                 "type": "zip",
                 "url": "https://api.github.com/repos/addwiki/mediawiki-api/zipball/cd1321526235b0a0507f92259254bd738ffb39d3",
                 "reference": "cd1321526235b0a0507f92259254bd738ffb39d3",
@@ -192,26 +192,70 @@
                     "email": "cb@nokto.net"
                 }
             ],
-            "description": "A PHP library to convert and validate ISBNs & EANs",
-            "homepage": "https://github.com/biblys/isbn",
-            "keywords": [
-                "ISBN",
-                "book",
-                "ean"
-            ],
-            "time": "2020-02-28T00:00:00+00:00"
+          "description": "A PHP library to convert and validate ISBNs & EANs",
+          "homepage": "https://github.com/biblys/isbn",
+          "keywords": [
+            "ISBN",
+            "book",
+            "ean"
+          ],
+          "time": "2020-02-28T00:00:00+00:00"
         },
+    {
+      "name": "codedungeon/php-cli-colors",
+      "version": "1.11.0",
+      "source": {
+        "type": "git",
+        "url": "https://github.com/mikeerickson/php-cli-colors.git",
+        "reference": "9f60ac692cc790755dad47b01c1d607fe5f43b94"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/mikeerickson/php-cli-colors/zipball/9f60ac692cc790755dad47b01c1d607fe5f43b94",
+        "reference": "9f60ac692cc790755dad47b01c1d607fe5f43b94",
+        "shasum": ""
+      },
+      "require-dev": {
+        "phpunit/phpunit": ">=5.2"
+      },
+      "type": "library",
+      "autoload": {
+        "psr-4": {
+          "Codedungeon\\PHPCliColors\\": "src/"
+        }
+      },
+      "notification-url": "https://packagist.org/downloads/",
+      "license": [
+        "MIT"
+      ],
+      "authors": [
         {
-            "name": "dusank/knapsack",
-            "version": "10.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/DusanKasan/Knapsack.git",
-                "reference": "cc29a0bbaadbfcb958b98aa4fd69a4ad7d173bba"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/DusanKasan/Knapsack/zipball/cc29a0bbaadbfcb958b98aa4fd69a4ad7d173bba",
+          "name": "Mike Erickson",
+          "email": "codedungeon@gmail.com"
+        }
+      ],
+      "description": "PHP Package for using color output in CLI commands",
+      "homepage": "https://github.com/mikeerickson/php-cli-colors",
+      "keywords": [
+        "color",
+        "colors",
+        "composer",
+        "package",
+        "php"
+      ],
+      "time": "2019-12-29T22:29:29+00:00"
+    },
+    {
+      "name": "dusank/knapsack",
+      "version": "10.0.0",
+      "source": {
+        "type": "git",
+        "url": "https://github.com/DusanKasan/Knapsack.git",
+        "reference": "cc29a0bbaadbfcb958b98aa4fd69a4ad7d173bba"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/DusanKasan/Knapsack/zipball/cc29a0bbaadbfcb958b98aa4fd69a4ad7d173bba",
                 "reference": "cc29a0bbaadbfcb958b98aa4fd69a4ad7d173bba",
                 "shasum": ""
             },

@@ -1,17 +1,17 @@
 <?php
 /**
- * This file is part of dispositif/wikibot application
- * 2019 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019/2020 © Philippe M. <dispositif@gmail.com>
+ * For the full copyright and MIT license information, please view the license file.
  */
 
 declare(strict_types=1);
 
 namespace App\Application\Examples;
 
-use App\Application\Color;
 use App\Application\ExternRefTransformer;
 use App\Infrastructure\Logger;
+use Codedungeon\PHPCliColors\Color;
 
 require_once __DIR__.'/../myBootstrap.php';
 
