@@ -4,70 +4,76 @@ language: php
 sudo: false
 
 # Start mysql service
-services:
-  - mysql
+#services:
+#    - mysql
 
 # Cache composer packages so "composer install" is faster
 cache:
-  directories:
-    - $HOME/.composer/cache/files
+    directories:
+        - $HOME/.composer/cache/files
 
 # git stuff
 git:
-  submodules: false
+    submodules: false
 
 branches:
-  only:
-    - master
-    - develop
+    only:
+        - master
+        - develop
 
 # Matrix to test in every php version
 matrix:
-  # Fast finish allows to set the build as "finished" even if the "allow_failures" matrix elements are not finished yet.
-  fast_finish: true
-  include:
-    - php: 7.2
-    - php: 7.3
-  allow_failures:
-    - php: 7.4
+    # Fast finish allows to set the build as "finished" even if the "allow_failures" matrix elements are not finished yet.
+    fast_finish: true
+    include:
+        -   php: 7.2
+        -   php: 7.3
+        -   php: 7.4
+    allow_failures:
+        -   php: 7.4
 
 # Define an environment variable
 env:
-  global:
-    - WIKIBOT_VERSION="1" DB=msql
-    - CC_TEST_REPORTER_ID=25d4303381ccd84d954db71d8266c613d4de417dfa543b123e508d0f2bd48d63
-    - GIT_COMMITTED_AT=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then git log -1 --pretty=format:%ct; else git log -1 --skip 1 --pretty=format:%ct; fi)
+    global:
+        - WIKIBOT_VERSION="1" DB=msql
+        - CC_TEST_REPORTER_ID=25d4303381ccd84d954db71d8266c613d4de417dfa543b123e508d0f2bd48d63
+        - GIT_COMMITTED_AT=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then git log -1 --pretty=format:%ct; else git log -1 --skip 1 --pretty=format:%ct; fi)
 
 # Update composer
 before-install:
-  - composer self-update
+    - composer self-update
 
 # Install composer dependencies,
 # Create database, schema and fixtures
 install:
-  - composer install
+    - composer install
 #  - cp app/config/parameters.yml.dist app/config/parameters.yml
 #  - php bin/console doctrine:database:create --env=test
 #  - php bin/console doctrine:schema:create --env=test
 #  - php bin/console doctrine:fixtures:load -n --env=test
 
 before_script:
-  - composer install --dev --quiet --no-interaction
-  - echo 'date.timezone = "Europe/Paris"' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
-  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter  # codeclimate cover
-  - chmod +x ./cc-test-reporter         # codeclimate cover
-  - ./cc-test-reporter before-build     # codeclimate cover
+    - composer install --dev --quiet --no-interaction
+    - echo 'date.timezone = "Europe/Paris"' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+    - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter  # codeclimate cover
+    - chmod +x ./cc-test-reporter         # codeclimate cover
+    - ./cc-test-reporter before-build     # codeclimate cover
 
 script:
-  - vendor/bin/phpunit --coverage-clover=clover.xml
+    - vendor/bin/phpunit --coverage-clover=clover.xml
 
 after_script:
-  - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then ./cc-test-reporter after-build  -t clover --exit-code $TRAVIS_TEST_RESULT; fi
-  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT # codeclimate cover
+    - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then ./cc-test-reporter after-build  -t clover --exit-code $TRAVIS_TEST_RESULT; fi
+    - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT # codeclimate cover
 
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+    - bash <(curl -s https://codecov.io/bash)
 
 # After a build, send email notification with the build results
 notifications:
-  email: false
+    email:
+        on_success: change
+#        recipients:
+#          - xyz@abc.com
+#        on_success: always
+#        on_failure: always
