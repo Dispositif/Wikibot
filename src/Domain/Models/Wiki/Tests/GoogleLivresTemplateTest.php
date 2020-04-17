@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Domain\Models\Wiki\Tests;
 
 use App\Domain\Models\Wiki\GoogleLivresTemplate;
+use App\Domain\Publisher\GoogleBooksUtil;
 use Exception;
 use PHPUnit\Framework\TestCase;
 
@@ -21,7 +22,7 @@ class GoogleLivresTemplateTest extends TestCase
             = 'https://books.google.fr/books?id=pbspjvZst5UC&pg=PA395&lpg=PA395&dq=D%C3%A9cret-Loi+10+septembre+1926&source=bl&ots=kiCzMrHO7b&sig=Jxt2Ybpig7Oo-Mtuzgp_sL5ipQ4&hl=fr&sa=X&ei=6SMLU_zIDarL0AX75YAI&ved=0CFEQ6AEwBA#v=onepage&q=D%C3%A9cret-Loi%2010%20septembre%201926&f=false';
         $this::assertEquals(
             true,
-            GoogleLivresTemplate::isGoogleBookURL($url)
+            GoogleBooksUtil::isGoogleBookURL($url)
         );
         $this::assertEquals(
             true,
@@ -41,7 +42,7 @@ class GoogleLivresTemplateTest extends TestCase
     {
         $this::assertEquals(
             $expected,
-            GoogleLivresTemplate::simplifyGoogleUrl($url)
+            GoogleBooksUtil::simplifyGoogleUrl($url)
         );
     }
 
@@ -52,7 +53,7 @@ class GoogleLivresTemplateTest extends TestCase
                 // OK : dq=full, q=null
                 // https://fr.wikipedia.org/w/index.php?title=Famille_de_Pontev%C3%A8s&diff=prev&oldid=168342034&diffmode=source
                 'https://books.google.fr/books?id=LkQoAAAAYAAJ&pg=PA341&dq=%22La+descendance+des+d\'Agoult+doit+%C3%AAtre+rejet%C3%A9e+comme+insuffisamment+%C3%A9tablie+;+celle+des+anciens+Pontev%C3%A8s+n\'est+que+vraisemblable,+mais+non+prouv%C3%A9e%22&hl=fr&sa=X&ved=0ahUKEwjVxaqCiv7ZAhXIt1kKHb1kD88Q6AEIJzAA#v=onepage&q=%22La%20descendance%20des%20d\'Agoult%20doit%20%C3%AAtre%20rejet%C3%A9e%20comme%20insuffisamment%20%C3%A9tablie%20%3B%20celle%20des%20anciens%20Pontev%C3%A8s%20n\'est%20que%20vraisemblable%2C%20mais%20non%20prouv%C3%A9e%22&f=false',
-                'https://books.google.fr/books?id=LkQoAAAAYAAJ&pg=PA341&dq=%22La+descendance+des+d%27Agoult+doit+%C3%AAtre+rejet%C3%A9e+comme+insuffisamment+%C3%A9tablie+%3B+celle+des+anciens+Pontev%C3%A8s+n%27est+que+vraisemblable%2C+mais+non+prouv%C3%A9e%22'
+                'https://books.google.fr/books?id=LkQoAAAAYAAJ&pg=PA341&dq=%22La+descendance+des+d%27Agoult+doit+%C3%AAtre+rejet%C3%A9e+comme+insuffisamment+%C3%A9tablie+%3B+celle+des+anciens+Pontev%C3%A8s+n%27est+que+vraisemblable%2C+mais+non+prouv%C3%A9e%22',
             ],
             [
                 // q= empty , dq= not empty => delete q and dq
@@ -118,12 +119,12 @@ class GoogleLivresTemplateTest extends TestCase
             = 'https://books.google.com.au/books?id=QHrQoDLNBUIC&pg=PT19&lpg=PT19&dq=Iotape+of+Commagene&source=web&ots=aZ3hKg3uDr&sig=Y_zdZhNP-qNZE6WIDNivPPm-Urg&hl=en&sa=X&oi=book_result&resnum=8&ct=result';
         $this::assertSame(
             true,
-            GoogleLivresTemplate::isTrackingUrl($url)
+            GoogleBooksUtil::isTrackingUrl($url)
         );
         $url = 'https://books.google.com.au/books?id=QHrQoDLNBUIC&pg=PT19';
         $this::assertSame(
             false,
-            GoogleLivresTemplate::isTrackingUrl($url)
+            GoogleBooksUtil::isTrackingUrl($url)
         );
     }
 

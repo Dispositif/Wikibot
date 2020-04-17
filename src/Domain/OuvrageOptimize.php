@@ -12,6 +12,7 @@ namespace App\Domain;
 use App\Domain\Enums\Language;
 use App\Domain\Models\Wiki\GoogleLivresTemplate;
 use App\Domain\Models\Wiki\OuvrageTemplate;
+use App\Domain\Publisher\GoogleBooksUtil;
 use App\Domain\Utils\TextUtil;
 use App\Domain\Utils\WikiTextUtil;
 use App\Infrastructure\FileManager;
@@ -434,7 +435,7 @@ class OuvrageOptimize
     {
         $url = $this->getParam($param);
         if (empty($url)
-            || !GoogleLivresTemplate::isGoogleBookURL($url)
+            || !GoogleBooksUtil::isGoogleBookURL($url)
         ) {
             return;
         }
@@ -451,7 +452,7 @@ class OuvrageOptimize
         }
 
         try {
-            $goo = GoogleLivresTemplate::simplifyGoogleUrl($url);
+            $goo = GoogleBooksUtil::simplifyGoogleUrl($url);
         } catch (DomainException $e) {
             // ID manquant ou malformé
             $errorValue = sprintf(
@@ -468,7 +469,7 @@ class OuvrageOptimize
         if (!empty($goo) && $goo !== $url) {
             $this->setParam($param, $goo);
             // cleaned tracking parameters in Google URL ?
-            if (GoogleLivresTemplate::isTrackingUrl($url)) {
+            if (GoogleBooksUtil::isTrackingUrl($url)) {
                 $this->log('tracking');
                 $this->notCosmetic = true;
             }

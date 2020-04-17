@@ -9,8 +9,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Models\Wiki;
 
-use App\Domain\Publisher\GoogleBooksTrait;
-use App\Domain\Utils\ArrayProcessTrait;
+use App\Domain\Publisher\GoogleBooksUtil;
 use DomainException;
 use Exception;
 
@@ -22,32 +21,6 @@ use Exception;
  */
 class GoogleLivresTemplate extends AbstractWikiTemplate
 {
-    use ArrayProcessTrait, GoogleBooksTrait;
-
-    /**
-     * todo utile ici ?
-     */
-    const DEFAULT_GOOGLEBOOKS_URL = 'https://books.google.com/books';
-
-    /**
-     * todo URL avec fin
-     */
-    const GOOGLEBOOKS_START_URL_PATTERN = 'https?://(?:books|play)\.google\.[a-z\.]{2,6}/(?:books)?(?:books/[^\?]+\.html)?(?:/reader)?\?(?:[a-zA-Z=&]+&)?id=';
-
-    const TRACKING_PARAMETERS
-        = [
-            'xtor',
-            'ved',
-            'ots',
-            'sig',
-            'source',
-            'utm_source',
-            'utm_medium',
-            'utm_campaign',
-            'utm_term',
-            'utm_content',
-        ];
-
     const WIKITEMPLATE_NAME = 'Google Livres';
 
     const REQUIRED_PARAMETERS = ['id'];
@@ -80,10 +53,10 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
      */
     public static function createFromURL(string $url): ?self
     {
-        if (!self::isGoogleBookURL($url)) {
+        if (!GoogleBooksUtil::isGoogleBookURL($url)) {
             throw new DomainException('not a Google Book URL');
         }
-        $gooDat = self::parseGoogleBookQuery($url);
+        $gooDat = GoogleBooksUtil::parseGoogleBookQuery($url);
 
         if (empty($gooDat['id'])) {
             throw new DomainException("no GoogleBook 'id' in URL");
@@ -94,10 +67,10 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
 
         $data = self::mapGooData($gooDat);
 
-        $templ = new self();
-        $templ->hydrate($data);
+        $template = new self();
+        $template->hydrate($data);
 
-        return $templ;
+        return $template;
     }
 
     /**
@@ -137,22 +110,10 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
         // affichage Google : dq ignoré si q existe
         if (!empty($gooData['dq']) || !empty($gooData['q'])) {
             $data['surligne'] = $gooData['q'] ?? $gooData['dq']; // q prévaut
-            $data['surligne'] = self::googleUrlEncode($data['surligne']);
+            $data['surligne'] = GoogleBooksUtil::googleUrlEncode($data['surligne']);
         }
 
         return $data;
-    }
-
-    /**
-     * Instead of url_encode(). No UTF-8 encoding.
-     *
-     * @param string $str
-     *
-     * @return string
-     */
-    public static function googleUrlEncode(string $str): string
-    {
-        return str_replace(' ', '+', trim(urldecode($str)));
     }
 
     /**
@@ -164,7 +125,7 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
      */
     public static function isGoogleBookValue(string $text): bool
     {
-        if (true === self::isGoogleBookURL($text)) {
+        if (true === GoogleBooksUtil::isGoogleBookURL($text)) {
             return true;
         }
         if (preg_match('#^{{[ \n]*Google (Livres|Books)[^}]+}}$#i', $text) > 0) {

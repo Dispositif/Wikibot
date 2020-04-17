@@ -9,16 +9,45 @@ declare(strict_types=1);
 
 namespace App\Domain\Publisher;
 
+use App\Domain\Utils\ArrayProcessTrait;
 use DomainException;
 use Exception;
 
-trait GoogleBooksTrait
+/**
+ * Static methods for Google Books URL parsing.
+ * Class GoogleBooksUtil
+ *
+ * @package App\Domain\Publisher
+ */
+abstract class GoogleBooksUtil
 {
+    use ArrayProcessTrait;
+
+    const DEFAULT_GOOGLEBOOKS_URL = 'https://books.google.com/books';
+    /**
+     * todo refac regex with end of URL
+     */
+    const GOOGLEBOOKS_START_URL_PATTERN = 'https?://(?:books|play)\.google\.[a-z\.]{2,6}/(?:books)?(?:books/[^\?]+\.html)?(?:/reader)?\?(?:[a-zA-Z=&]+&)?id=';
+
+    const TRACKING_PARAMETERS
+        = [
+            'xtor',
+            'ved',
+            'ots',
+            'sig',
+            'source',
+            'utm_source',
+            'utm_medium',
+            'utm_campaign',
+            'utm_term',
+            'utm_content',
+        ];
+
     public static function isTrackingUrl(string $url): bool
     {
-        $data = static::parseGoogleBookQuery($url);
+        $data = self::parseGoogleBookQuery($url);
         foreach ($data as $param => $value) {
-            if (in_array($param, static::TRACKING_PARAMETERS)) {
+            if (in_array($param, self::TRACKING_PARAMETERS)) {
                 return true;
             }
         }
@@ -41,7 +70,7 @@ trait GoogleBooksTrait
         // queryData precedence over fragmentData
         parse_str(implode('&', [$fragmentData, $queryData]), $val);
 
-        return static::arrayKeysToLower($val);
+        return self::arrayKeysToLower($val);
     }
 
     /**
@@ -54,12 +83,12 @@ trait GoogleBooksTrait
      */
     public static function simplifyGoogleUrl(string $url): string
     {
-        if (!static::isGoogleBookURL($url)) {
+        if (!self::isGoogleBookURL($url)) {
             // not DomainException for live testing with OuvrageOptimize
             throw new Exception('not a Google Book URL');
         }
 
-        $gooDat = static::parseGoogleBookQuery($url);
+        $gooDat = self::parseGoogleBookQuery($url);
         if (empty($gooDat['id'])) {
             throw new DomainException("no GoogleBook 'id' in URL");
         }
@@ -109,15 +138,15 @@ trait GoogleBooksTrait
             unset($dat['dq']);
         }
 
-        $googleURL = static::DEFAULT_GOOGLEBOOKS_URL;
+        $googleURL = self::DEFAULT_GOOGLEBOOKS_URL;
 
         // domain .com .fr
-        $gooDomain = static::parseGoogleDomain($url);
+        $gooDomain = self::parseGoogleDomain($url);
         if ($gooDomain) {
             $googleURL = str_replace('.com', $gooDomain, $googleURL);
         }
 
-        // todo http_build_query process an urlencode, but a not encoded q= value ("fu+bar") is beautiful
+        // todo http_build_query() process an urlencode, but a not encoded q= value ("fu+bar") is beautiful
         return $googleURL.'?'.http_build_query($dat);
     }
 
@@ -130,7 +159,7 @@ trait GoogleBooksTrait
      */
     public static function isGoogleBookURL(string $text): bool
     {
-        if (preg_match('#^'.static::GOOGLEBOOKS_START_URL_PATTERN.'[^>\]} \n]+$#i', $text) > 0) {
+        if (preg_match('#^'.self::GOOGLEBOOKS_START_URL_PATTERN.'[^>\]} \n]+$#i', $text) > 0) {
             return true;
         }
 
@@ -153,5 +182,17 @@ trait GoogleBooksTrait
         }
 
         return null;
+    }
+
+    /**
+     * Instead of url_encode(). No UTF-8 encoding.
+     *
+     * @param string $str
+     *
+     * @return string
+     */
+    public static function googleUrlEncode(string $str): string
+    {
+        return str_replace(' ', '+', trim(urldecode($str)));
     }
 }

@@ -9,9 +9,9 @@ declare(strict_types=1);
 
 namespace App\Domain;
 
-use App\Domain\Models\Wiki\GoogleLivresTemplate;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\Publisher\GoogleBookMapper;
+use App\Domain\Publisher\GoogleBooksUtil;
 use App\Domain\Utils\NumberUtil;
 use App\Domain\Utils\WikiTextUtil;
 use App\Infrastructure\GoogleApiQuota;
@@ -89,7 +89,7 @@ class GoogleTransformer
     {
         // match "* https://books.google.fr/..."
         if (preg_match_all(
-            '#^\* *('.GoogleLivresTemplate::GOOGLEBOOKS_START_URL_PATTERN.'[^ <{\]}\n\r]+) *$#im',
+            '#^\* *('.GoogleBooksUtil::GOOGLEBOOKS_START_URL_PATTERN.'[^ <{\]}\n\r]+) *$#im',
             $text,
             $matches,
             PREG_SET_ORDER
@@ -150,11 +150,11 @@ class GoogleTransformer
      */
     public function convertGBurl2OuvrageCitation(string $url): string
     {
-        if (!GoogleLivresTemplate::isGoogleBookURL($url)) {
+        if (!GoogleBooksUtil::isGoogleBookURL($url)) {
             throw new DomainException('Pas de URL Google Books');
         }
 
-        $gooDat = GoogleLivresTemplate::parseGoogleBookQuery($url);
+        $gooDat = GoogleBooksUtil::parseGoogleBookQuery($url);
         if (empty($gooDat['id'])) {
             throw new DomainException('Pas de ID Google Books');
         }
@@ -174,7 +174,7 @@ class GoogleTransformer
             throw $e;
         }
 
-        $cleanUrl = GoogleLivresTemplate::simplifyGoogleUrl($url);
+        $cleanUrl = GoogleBooksUtil::simplifyGoogleUrl($url);
         $ouvrage->unsetParam('présentation en ligne');
         $ouvrage->setParam('lire en ligne', $cleanUrl);
         $ouvrage->userSeparator = ' |';
@@ -260,7 +260,7 @@ class GoogleTransformer
         // <ref>...</ref> or {{ref|...}}
         // GoogleLivresTemplate::GOOGLEBOOK_URL_PATTERN
         if (preg_match_all(
-            '#(?:<ref[^>]*>|{{ref\|) ?('.GoogleLivresTemplate::GOOGLEBOOKS_START_URL_PATTERN
+            '#(?:<ref[^>]*>|{{ref\|) ?('.GoogleBooksUtil::GOOGLEBOOKS_START_URL_PATTERN
             .'[^>\]} \n]+) ?(?:</ref>|}})#i',
             $text,
             $matches,
