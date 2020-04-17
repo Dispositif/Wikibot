@@ -166,12 +166,16 @@ class ExternPage
         return $subDomain;
     }
 
-    public function getSubDomain(): string
+    public function getSubDomain(): ?string
     {
         try {
             return ExternDomains::extractSubDomain($this->url);
         } catch (Exception $e) {
-            echo "erreur QDF";
+            if ($this->log) {
+                $this->log->warning('ExternDomains::extractSubDomain NULL');
+            }
+
+            return null;
         }
     }
 

@@ -122,8 +122,6 @@ const OPTI_VALID_DATE = '2019-11-20 14:00:00';
      */
     public function getAllRowsToEdit(?int $limit = 100): ?string
     {
-        $json = null;
-
         try {
             $pageInfo = $this->pdoConn->query(
                 '

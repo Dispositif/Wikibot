@@ -21,7 +21,7 @@ class ExternHttpClient implements HttpClientInterface
      */
     private $client;
     /**
-     * @var Logger
+     * @var LoggerInterface|null
      */
     private $log;
 
@@ -60,7 +60,7 @@ class ExternHttpClient implements HttpClientInterface
         $response = $this->client->get($url);
 
         if (200 !== $response->getStatusCode()) {
-            $this->log->error('HTTP error '.$response->getStatusCode().' '.$response->getReasonPhrase);
+            $this->log->error('HTTP error '.$response->getStatusCode().' '.$response->getReasonPhrase());
 
             return null;
         }

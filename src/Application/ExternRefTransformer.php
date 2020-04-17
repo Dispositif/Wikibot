@@ -138,7 +138,12 @@ class ExternRefTransformer implements TransformerInterface
         if (empty($mapData) || empty($mapData['url']) || empty($mapData['titre'])) {
             $this->skip_domain[] = $this->domain;
             $this->log->info('Mapping incomplet');
-            @file_put_contents(self::SKIPPED_FILE_LOG, $this->domain.",".$this->url."\n", FILE_APPEND);
+            // Todo : temp data
+            try {
+                file_put_contents(self::SKIPPED_FILE_LOG, $this->domain.",".$this->url."\n", FILE_APPEND);
+            } catch (\Throwable $e) {
+                unset($e);
+            }
 
             return $string;
         }

@@ -40,7 +40,7 @@ class WstatImport implements PageListInterface
             $params = [
                 'title' => 'Ouvrage',
                 'query' => 'inclusions-title',
-//                'param' => 'isbn',
+                //                'param' => 'isbn',
                 'start' => 50000,
                 'limit' => 5000,
             ];
@@ -57,14 +57,12 @@ class WstatImport implements PageListInterface
 
     /**
      * @return array [ ['title' => ..., 'template' => ...] ]
-     *
      * @throws Exception
      */
     public function getData(): array
     {
         $data = [];
-        $flag = true;
-        while ($flag) {
+        while (true) {
             $json = $this->import($this->getUrl());
             $raw = json_decode($json, true);
             if (empty($raw)) {
@@ -73,8 +71,6 @@ class WstatImport implements PageListInterface
             $data = array_merge($data, $this->parsingWstatData($raw));
             echo count($data)." titles\n";
             if ($this->max <= 0) {
-                $flag = false;
-
                 break;
             }
 
@@ -115,21 +111,22 @@ class WstatImport implements PageListInterface
             $data[] = ['title' => $title, 'template' => $template];
         }
 
-        return (array) $data;
+        return (array)$data;
     }
 
     /**
      * @param string $url
      *
      * @return string
-     *
      * @throws Exception
      */
     private function import(string $url)
     {
         $response = $this->client->get($url);
         if (200 !== $response->getStatusCode()) {
-            throw new Exception(sprintf('Error code: %s reason: %s', $response->getStatusCode(), $response->getReasonPhrase()));
+            throw new Exception(
+                sprintf('Error code: %s reason: %s', $response->getStatusCode(), $response->getReasonPhrase())
+            );
         }
 
         return $response->getBody()->getContents();
