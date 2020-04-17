@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace App\Infrastructure;
 
 use App\Application\QueueInterface;
-use App\Infrastructure\unused\DbEditedPage;
 use DateInterval;
 use DateTime;
 use Exception;
@@ -225,58 +224,58 @@ const OPTI_VALID_DATE = '2019-11-20 14:00:00';
 
     //------------------------------------------------------
 
-    /**
-     * Dirty naive ORM.
-     *
-     * @param object $object
-     *
-     * @return array|bool
-     */
-    public function saveEntity(object $object)
-    {
-        if ($object instanceof DbEditedPage) {
-            /*
-             * @var $object DbEditedPage
-             */
-            try {
-                return $this->db->replace('editedpages', $object->getVars());
-            } catch (MysqlException $e) {
-                unset($e);
-            }
-        }
+    //    /**
+    //     * Dirty naive ORM.
+    //     *
+    //     * @param object $object
+    //     *
+    //     * @return array|bool
+    //     */
+    //    public function saveEntity(object $object)
+    //    {
+    //        if ($object instanceof App\Infrastructure\unused\DbEditedPage) {
+    //            /*
+    //             * @var $object DbEditedPage
+    //             */
+    //            try {
+    //                return $this->db->replace('editedpages', $object->getVars());
+    //            } catch (MysqlException $e) {
+    //                unset($e);
+    //            }
+    //        }
+    //
+    //        return false;
+    //    }
 
-        return false;
-    }
-
-    /**
-     * Dirty naive ORM.
-     *
-     * @param $table
-     * @param $primary
-     *
-     * @return object|null
-     */
-    public function findEntity($table, $primary): ?object
-    {
-        if ('editedpages' === $table) {
-            /*
-             * @var $object DbEditedPage
-             */
-            try {
-                $res = $this->db->fetchRow('SELECT * FROM editedpages WHERE title = :title', ['title' => $primary]);
-                $obj = new DbEditedPage($this);
-                $obj->setTitle($primary);
-                $obj->setCompleted($res['completed']);
-                $obj->setEdited($res['edited']);
-
-                return $obj;
-            } catch (MysqlException $e) {
-                unset($e);
-            }
-        }
-
-        return null;
-    }
+    //    /**
+    //     * Dirty naive ORM.
+    //     *
+    //     * @param $table
+    //     * @param $primary
+    //     *
+    //     * @return object|null
+    //     */
+    //    public function findEntity($table, $primary): ?object
+    //    {
+    //        if ('editedpages' === $table) {
+    //            /*
+    //             * @var $object DbEditedPage
+    //             */
+    //            try {
+    //                $res = $this->db->fetchRow('SELECT * FROM editedpages WHERE title = :title', ['title' => $primary]);
+    //                $obj = new DbEditedPage($this);
+    //                $obj->setTitle($primary);
+    //                $obj->setCompleted($res['completed']);
+    //                $obj->setEdited($res['edited']);
+    //
+    //                return $obj;
+    //            } catch (MysqlException $e) {
+    //                unset($e);
+    //            }
+    //        }
+    //
+    //        return null;
+    //    }
 
     /**
      * Get a row to monitor edits.

@@ -29,6 +29,10 @@ abstract class AbstractStrictWikiTemplate extends AbstractParametersObject imple
      * The minimum parameters for pretty wiki-template.
      */
     const MINIMUM_PARAMETERS = [];
+    /*
+     * Alias names of true parameter names
+     */
+    const PARAM_ALIAS = [];
 
     /* commented to allow inherit from Interface in OuvrageTemplate
        const PARAM_ALIAS = []; */
