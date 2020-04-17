@@ -65,25 +65,17 @@ class OuvrageEditWorker
      * @var GoogleTransformer
      */
     private $refGooConverter;
-    /**
-     * @var DataAnalysis|null
-     */
-    private $dataAnalysis;
 
     public function __construct(
         DbAdapter $dbAdapter,
         WikiBotConfig $bot,
         Memory $memory,
-        GoogleTransformer $refGoogleBook,
-        ?DataAnalysis $dataAnalysis = null
+        GoogleTransformer $refGoogleBook
     ) {
         $this->db = $dbAdapter;
         $this->bot = $bot;
         $this->memory = $memory;
         $this->refGooConverter = $refGoogleBook;
-        if ($dataAnalysis) {
-            $this->dataAnalysis = $dataAnalysis;
-        }
 
         $this->wikiLogin(true);
     }
@@ -171,15 +163,6 @@ class OuvrageEditWorker
             $this->db->skipArticle($title);
 
             return false;
-        }
-
-        // EXTERNAL DATA ANALYSIS (pas utile pour ce process)
-        try {
-            if (null !== $this->dataAnalysis) {
-                $this->dataAnalysis->process($this->wikiText, $title);
-            }
-        } catch (Throwable $e) {
-            unset($e);
         }
 
         // GET all article lines from db

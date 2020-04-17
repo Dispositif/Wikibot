@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace App\Application\Examples;
 
-use App\Application\DataAnalysis;
 use App\Application\OuvrageEditWorker;
 use App\Application\WikiBotConfig;
 use App\Domain\GoogleTransformer;
@@ -28,8 +27,7 @@ while (true) {
             new DbAdapter(),
             new WikiBotConfig(),
             new Memory(),
-            new GoogleTransformer(),
-            new DataAnalysis()
+            new GoogleTransformer()
         );
         $process->verbose = true;
         $process->run();
