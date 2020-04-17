@@ -16,7 +16,7 @@ use Exception;
 /**
  * Class ArticleTemplate
  */
-class ArticleTemplate extends AbstractWikiTemplate implements ArticleTemplateAlias, ArticleOrLienBriseInterface
+class ArticleTemplate extends ArticleTemplateAlias implements ArticleOrLienBriseInterface
 {
     use ArticleTemplateParams, BiblioTemplateTrait;
 

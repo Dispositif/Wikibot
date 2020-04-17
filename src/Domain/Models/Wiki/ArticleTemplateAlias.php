@@ -1,17 +1,22 @@
 <?php
 
 /**
- * This file is part of dispositif/wikibot application
- * 2019 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019/2020 © Philippe M. <dispositif@gmail.com>
+ * For the full copyright and MIT license information, please view the license file.
  */
 declare(strict_types=1);
 
 namespace App\Domain\Models\Wiki;
 
-interface ArticleTemplateAlias
+/**
+ * Heretic abstract ! cause too lazy for DI in Template::constructor
+ * Class ArticleTemplateAlias
+ *
+ * @package App\Domain\Models\Wiki
+ */
+abstract class ArticleTemplateAlias extends AbstractWikiTemplate
 {
-
     const PARAM_ALIAS
         = [
             'revue' => 'périodique',
@@ -69,7 +74,7 @@ interface ArticleTemplateAlias
             'origyear' => 'année première édition',
             'publi' => 'réimpression',
 
-            'présentation en ligne'=>'résumé',
+            'présentation en ligne' => 'résumé',
             'url résumé' => 'résumé',
 
             'url' => 'lire en ligne',
