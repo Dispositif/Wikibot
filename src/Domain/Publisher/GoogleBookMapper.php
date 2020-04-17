@@ -1,4 +1,9 @@
-<?php
+<?php /**
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019/2020 © Philippe M. <dispositif@gmail.com>
+ * For the full copyright and MIT license information, please view the license file.
+ */ /** @noinspection PhpUndefinedFieldInspection */
+
 /**
  * This file is part of dispositif/wikibot application
  * 2019 : Philippe M. <dispositif@gmail.com>

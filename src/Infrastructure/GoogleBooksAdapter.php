@@ -11,7 +11,7 @@ namespace App\Infrastructure;
 
 use App\Domain\Publisher\BookApiInterface;
 use App\Domain\Publisher\GoogleBookMapper;
-use DomainException;
+use Exception;
 use Scriptotek\GoogleBooks\GoogleBooks as GoogleAPI;
 use Scriptotek\GoogleBooks\Volume;
 
@@ -66,7 +66,7 @@ class GoogleBooksAdapter extends AbstractBookApiAdapter implements BookApiInterf
     private function checkGoogleQuota()
     {
         if ($this->quotaCounter->getCount() > self::SCRIPT_GOOGLE_QUOTA) {
-            throw new DomainException('Quota Google dépassé pour ce script : '.self::SCRIPT_GOOGLE_QUOTA);
+            throw new Exception('Quota Google dépassé pour ce script : '.self::SCRIPT_GOOGLE_QUOTA);
         }
     }
 
@@ -74,6 +74,7 @@ class GoogleBooksAdapter extends AbstractBookApiAdapter implements BookApiInterf
      * @param string $googleId
      *
      * @return Volume
+     * @throws Exception
      */
     public function getDataByGoogleId(string $googleId)
     {

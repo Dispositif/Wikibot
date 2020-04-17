@@ -1,8 +1,8 @@
 <?php
 /**
- * This file is part of dispositif/wikibot application
- * 2019 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019/2020 © Philippe M. <dispositif@gmail.com>
+ * For the full copyright and MIT license information, please view the license file.
  */
 
 declare(strict_types=1);
@@ -11,8 +11,12 @@ declare(strict_types=1);
 namespace App\Domain\Publisher;
 
 
-trait ExternOGMapperTrait
+use Exception;
+
+class OpenGraphMapper implements MapperInterface
 {
+    use ExternConverterTrait;
+
     /**
      * Mapping from Open Graph and Dublin Core meta tags
      * https://ogp.me/
@@ -22,8 +26,9 @@ trait ExternOGMapperTrait
      * @param array $meta
      *
      * @return array
+     * @throws Exception
      */
-    protected function mapLienwebFromMeta(array $meta): array
+    public function process($meta): array
     {
         return [
             'DATA-TYPE' => 'Open Graph/Dublin Core',
