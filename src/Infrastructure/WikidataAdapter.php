@@ -1,8 +1,8 @@
 <?php
 /**
- * This file is part of dispositif/wikibot application
- * 2019 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019/2020 © Philippe M. <dispositif@gmail.com>
+ * For the full copyright and MIT license information, please view the license file.
  */
 
 declare(strict_types=1);
@@ -44,10 +44,10 @@ class WikidataAdapter
             if(!empty($res)) {
                 sleep(2);
             }
-            $res = array_merge($res, $this->findArticleByISBN13($infos['isbn']));
+            $res = array_merge($res ?? [], $this->findArticleByISBN13($infos['isbn']));
         }
 
-        return $res;
+        return $res ?? [];
     }
 
     public function findArticleByISBN13(string $isbn): ?array

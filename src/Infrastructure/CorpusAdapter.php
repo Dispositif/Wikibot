@@ -30,7 +30,6 @@ class CorpusAdapter extends FileManager implements CorpusInterface
      * @param string $corpusName
      *
      * @return bool
-     *
      * @throws Exception
      */
     public function inCorpus(string $element, string $corpusName): bool
@@ -76,7 +75,6 @@ class CorpusAdapter extends FileManager implements CorpusInterface
      * @param string $element
      *
      * @return bool
-     *
      * @throws Exception
      */
     public function addNewElementToCorpus(string $corpusName, string $element): bool
@@ -107,7 +105,9 @@ class CorpusAdapter extends FileManager implements CorpusInterface
         // hack: create file or not ?
         if (!file_exists($filename)) {
             $newFile = @fopen($filename, 'w');
-            fclose($newFile);
+            if ($newFile !== null) {
+                fclose($newFile);
+            }
             if (!file_exists($filename)) {
                 throw new Exception('corpus filename does not exist'.$filename);
             }

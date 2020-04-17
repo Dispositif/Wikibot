@@ -31,7 +31,7 @@ abstract class RefBotWorker extends AbstractBotTaskWorker
      * @inheritDoc
      * @throws Exception
      */
-    protected function processDomain(string $title, ?string $text): ?string
+    protected function processDomain(string $title, string $text): ?string
     {
         $this->taskName = static::TASK_NAME;
         $this->botFlagOnPage = static::TASK_BOT_FLAG;

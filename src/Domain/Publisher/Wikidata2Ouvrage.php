@@ -95,7 +95,7 @@ class Wikidata2Ouvrage
     {
         // Note : auteur1 non wikifié puisque venant de BnF
         if (!empty($this->data['articleAuthor']) && !empty($this->data['articleAuthor']['value'])
-            && !$this->ouvrage->hasParamValue('lien auteur1')
+            && !empty($this->ouvrage->getParam('lien auteur1'))
         ) {
             // ajout wikilien auteur1
             $lienTitre = $this->wikiURL2title($this->data['articleAuthor']['value']);
@@ -136,7 +136,7 @@ class Wikidata2Ouvrage
     private function completeTitleLink(): void
     {
         if (!empty($this->data['articleBook']) && !empty($this->data['articleBook']['value'])
-            && !$this->ouvrage->hasParamValue('lien titre')
+            && !empty($this->ouvrage->getParam('lien titre'))
             && false === WikiTextUtil::isWikify($this->ouvrage->getParam('titre'))
         ) {
             // ajout wikilien titre

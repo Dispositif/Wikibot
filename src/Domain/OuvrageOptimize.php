@@ -108,8 +108,9 @@ class OuvrageOptimize
         }
 
         // translation : "London"->"Londres" seulement si langue=fr
-        if($this->hasParamValue('langue')
-        && $this->getParam('langue') === self::WIKI_LANGUAGE ) {
+        if ($this->hasParamValue('langue')
+            && $this->getParam('langue') === self::WIKI_LANGUAGE
+        ) {
             $manager = new FileManager();
             $row = $manager->findCSVline(__DIR__.'/resources/traduction_ville.csv', $location);
             if (!empty($row) && !empty($row[1])) {

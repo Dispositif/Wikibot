@@ -34,7 +34,7 @@ class GoogleBooksWorker extends AbstractBotTaskWorker
      * @return string|null
      * @throws Throwable
      */
-    protected function processDomain(string $title, ?string $text): ?string
+    protected function processDomain(string $title, string $text): ?string
     {
         $ref = new GoogleTransformer();
 

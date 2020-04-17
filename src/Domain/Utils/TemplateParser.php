@@ -105,6 +105,7 @@ abstract class TemplateParser extends WikiTextUtil
     }
 
     /**
+     * todo refactor + check if @notused
      * Parsing of any wiki template from text and templateName
      * Using the first {{template}} definition found in text
      * todo legacy.
@@ -116,7 +117,7 @@ abstract class TemplateParser extends WikiTextUtil
      */
     public static function parseDataFromTemplate(string $tplName, string $text): array
     {
-        $text = str_replace("\n", '', $text);
+        $text = str_replace("\n", '', $text); // todo WTF ?
 
         // check {{template}} in text
         $tplFounded = self::findFirstTemplateInText($tplName, $text);

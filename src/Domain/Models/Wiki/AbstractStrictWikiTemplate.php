@@ -228,6 +228,7 @@ abstract class AbstractStrictWikiTemplate extends AbstractParametersObject imple
     }
 
     /**
+     * @deprecated 17-04-2020 : Scrutinizer doesn't identify as same as !empty(getParam())
      * For a parameter, check is the value exists (not empty).
      *
      * @param string $name

@@ -350,7 +350,10 @@ class OuvrageComplete
      */
     private function processSousTitre()
     {
-        if (!$this->book->hasParamValue('sous-titre')) {
+        if (!$this->book->hasParamValue('sous-titre')
+            || !$this->origin->hasParamValue('titre')
+            || !$this->book->hasParamValue('titre')
+        ) {
             return;
         }
 

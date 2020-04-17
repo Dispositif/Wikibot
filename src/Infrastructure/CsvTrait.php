@@ -21,7 +21,6 @@ trait CsvTrait
      * @param int|null $col
      *
      * @return bool
-     *
      * @throws Exception
      */
     public function isStringInCSV(string $filename, string $search, ?int $col = 0): bool
@@ -29,12 +28,21 @@ trait CsvTrait
         return !empty($this->findCSVline($filename, $search, $col));
     }
 
+    /**
+     * @param string $filename
+     *
+     * @return array
+     * @throws Exception
+     */
     public function getCSVfirstLine(string $filename): array
     {
         if (!file_exists($filename)) {
             throw new Exception('no file '.$filename);
         }
         $f = fopen($filename, 'r');
+        if ($f === null) {
+            throw new Exception('can not open '.$filename);
+        }
         $row = fgetcsv($f);
         fclose($f);
 
@@ -47,6 +55,9 @@ trait CsvTrait
             throw new Exception('no file '.$filename);
         }
         $f = fopen($filename, 'r');
+        if ($f === null) {
+            throw new Exception('can not open '.$filename);
+        }
         while ($row = fgetcsv($f)) {
             if (isset($row[$col]) && $row[$col] === $search) {
                 return $row;
@@ -70,6 +81,9 @@ trait CsvTrait
             throw new Exception('no file '.$filename);
         }
         $f = fopen($filename, 'r');
+        if ($f === null) {
+            throw new Exception('can not open '.$filename);
+        }
         while (false !== ($line = fgetcsv($f))) {
             $data[] = $line;
         }
@@ -89,7 +103,9 @@ trait CsvTrait
     {
         // create file if not exists
         $fp = fopen($filename, 'a+');
-
+        if ($fp === null) {
+            throw new Exception('can not open '.$filename);
+        }
         if (is_array($array[0])) {
             foreach ($array as $ar) {
                 fputcsv($fp, $ar);

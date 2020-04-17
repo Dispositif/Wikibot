@@ -118,6 +118,9 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
 
     private function xpath2string(string $path, ?string $glue = ', '): ?string
     {
+        if ($glue === null) {
+            $glue = ', ';
+        }
         $elements = $this->xml->xpath($path);
 
         $res = [];
@@ -265,17 +268,17 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
         return null;
     }
 
-//    private function convertBnfIdent(): ?string
-//    {
-//        // ark:/12148/cb453986124
-//        $raw = $this->xpath2string('//srw:recordIdentifier[1]/text()');
-//
-//        if ($raw && preg_match('#ark:/[0-9]+/cb([0-9]+)#', $raw, $matches) > 0) {
-//            return (string)$matches[1];
-//        }
-//
-//        return null;
-//    }
+    //    private function convertBnfIdent(): ?string
+    //    {
+    //        // ark:/12148/cb453986124
+    //        $raw = $this->xpath2string('//srw:recordIdentifier[1]/text()');
+    //
+    //        if ($raw && preg_match('#ark:/[0-9]+/cb([0-9]+)#', $raw, $matches) > 0) {
+    //            return (string)$matches[1];
+    //        }
+    //
+    //        return null;
+    //    }
 
     private function sourceTag(): ?string
     {
