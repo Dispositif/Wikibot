@@ -304,15 +304,20 @@ class ExternRefTransformer implements TransformerInterface
 
         // from logic
         if (empty($mapData['site']) && $template instanceof LienWebTemplate) {
-            $mapData['site'] = $this->externalPage->getPrettyDomainName();
+            try {
+                $mapData['site'] = $this->externalPage->getPrettyDomainName();
+            } catch (\Throwable $e) {
+                unset($e);
+            }
         }
 
         return $mapData;
     }
 
-    private function replaceURLbyOriginal(array $mapData):array
+    private function replaceURLbyOriginal(array $mapData): array
     {
         $mapData['url'] = $this->url;
+
         return $mapData;
     }
 

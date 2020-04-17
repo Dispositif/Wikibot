@@ -150,10 +150,12 @@ class ExternPage
      * site.google.com => site.google.com ;)
      *
      * @return string
+     * @throws Exception
      */
     public function getPrettyDomainName(): string
     {
         $subDomain = $this->getSubDomain();
+
         if (!strpos($subDomain, '.co.uk') && !strpos($subDomain, '.co.ma')
             && !strpos($subDomain, 'site.google.')
         ) {
@@ -166,17 +168,19 @@ class ExternPage
         return $subDomain;
     }
 
-    public function getSubDomain(): ?string
+    /**
+     * @return string|null
+     * @throws Exception
+     */
+    public function getSubDomain(): string
     {
         try {
             return ExternDomains::extractSubDomain($this->url);
         } catch (Exception $e) {
             if ($this->log) {
-                $this->log->warning('ExternDomains::extractSubDomain NULL');
+                $this->log->warning('ExternDomains::extractSubDomain NULL '.$this->url);
             }
-
-            return null;
+            throw new Exception('ExternDomains::extractSubDomain NULL');
         }
     }
-
 }
