@@ -1,20 +1,20 @@
 {
-  "_readme": [
-    "This file locks the dependencies of your project to a known state",
-    "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
-    "This file is @generated automatically"
-  ],
-  "content-hash": "aed03aaaa59475bcffd9dd6356ee33e0",
-  "packages": [
-    {
-      "name": "addwiki/mediawiki-api",
-      "version": "0.7.3",
-      "source": {
-        "type": "git",
-        "url": "https://github.com/addwiki/mediawiki-api.git",
-        "reference": "cd1321526235b0a0507f92259254bd738ffb39d3"
-      },
-      "dist": {
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "2aea49f3026b01528f7f9de1c0e14d6c",
+    "packages": [
+        {
+            "name": "addwiki/mediawiki-api",
+            "version": "0.7.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/addwiki/mediawiki-api.git",
+                "reference": "cd1321526235b0a0507f92259254bd738ffb39d3"
+            },
+            "dist": {
                 "type": "zip",
                 "url": "https://api.github.com/repos/addwiki/mediawiki-api/zipball/cd1321526235b0a0507f92259254bd738ffb39d3",
                 "reference": "cd1321526235b0a0507f92259254bd738ffb39d3",
@@ -192,70 +192,70 @@
                     "email": "cb@nokto.net"
                 }
             ],
-          "description": "A PHP library to convert and validate ISBNs & EANs",
-          "homepage": "https://github.com/biblys/isbn",
-          "keywords": [
-            "ISBN",
-            "book",
-            "ean"
-          ],
-          "time": "2020-02-28T00:00:00+00:00"
+            "description": "A PHP library to convert and validate ISBNs & EANs",
+            "homepage": "https://github.com/biblys/isbn",
+            "keywords": [
+                "ISBN",
+                "book",
+                "ean"
+            ],
+            "time": "2020-02-28T00:00:00+00:00"
         },
-    {
-      "name": "codedungeon/php-cli-colors",
-      "version": "1.11.0",
-      "source": {
-        "type": "git",
-        "url": "https://github.com/mikeerickson/php-cli-colors.git",
-        "reference": "9f60ac692cc790755dad47b01c1d607fe5f43b94"
-      },
-      "dist": {
-        "type": "zip",
-        "url": "https://api.github.com/repos/mikeerickson/php-cli-colors/zipball/9f60ac692cc790755dad47b01c1d607fe5f43b94",
-        "reference": "9f60ac692cc790755dad47b01c1d607fe5f43b94",
-        "shasum": ""
-      },
-      "require-dev": {
-        "phpunit/phpunit": ">=5.2"
-      },
-      "type": "library",
-      "autoload": {
-        "psr-4": {
-          "Codedungeon\\PHPCliColors\\": "src/"
-        }
-      },
-      "notification-url": "https://packagist.org/downloads/",
-      "license": [
-        "MIT"
-      ],
-      "authors": [
         {
-          "name": "Mike Erickson",
-          "email": "codedungeon@gmail.com"
-        }
-      ],
-      "description": "PHP Package for using color output in CLI commands",
-      "homepage": "https://github.com/mikeerickson/php-cli-colors",
-      "keywords": [
-        "color",
-        "colors",
-        "composer",
-        "package",
-        "php"
-      ],
-      "time": "2019-12-29T22:29:29+00:00"
-    },
-    {
-      "name": "dusank/knapsack",
-      "version": "10.0.0",
-      "source": {
-        "type": "git",
-        "url": "https://github.com/DusanKasan/Knapsack.git",
-        "reference": "cc29a0bbaadbfcb958b98aa4fd69a4ad7d173bba"
-      },
-      "dist": {
-        "type": "zip",
-        "url": "https://api.github.com/repos/DusanKasan/Knapsack/zipball/cc29a0bbaadbfcb958b98aa4fd69a4ad7d173bba",
+            "name": "codedungeon/php-cli-colors",
+            "version": "1.11.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mikeerickson/php-cli-colors.git",
+                "reference": "9f60ac692cc790755dad47b01c1d607fe5f43b94"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mikeerickson/php-cli-colors/zipball/9f60ac692cc790755dad47b01c1d607fe5f43b94",
+                "reference": "9f60ac692cc790755dad47b01c1d607fe5f43b94",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/phpunit": ">=5.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Codedungeon\\PHPCliColors\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mike Erickson",
+                    "email": "codedungeon@gmail.com"
+                }
+            ],
+            "description": "PHP Package for using color output in CLI commands",
+            "homepage": "https://github.com/mikeerickson/php-cli-colors",
+            "keywords": [
+                "color",
+                "colors",
+                "composer",
+                "package",
+                "php"
+            ],
+            "time": "2019-12-29T22:29:29+00:00"
+        },
+        {
+            "name": "dusank/knapsack",
+            "version": "10.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/DusanKasan/Knapsack.git",
+                "reference": "cc29a0bbaadbfcb958b98aa4fd69a4ad7d173bba"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/DusanKasan/Knapsack/zipball/cc29a0bbaadbfcb958b98aa4fd69a4ad7d173bba",
                 "reference": "cc29a0bbaadbfcb958b98aa4fd69a4ad7d173bba",
                 "shasum": ""
             },
@@ -590,21 +590,21 @@
         },
         {
             "name": "monolog/monolog",
-            "version": "1.25.3",
+            "version": "2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "fa82921994db851a8becaf3787a9e73c5976b6f1"
+                "reference": "c861fcba2ca29404dc9e617eedd9eff4616986b8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/fa82921994db851a8becaf3787a9e73c5976b6f1",
-                "reference": "fa82921994db851a8becaf3787a9e73c5976b6f1",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/c861fcba2ca29404dc9e617eedd9eff4616986b8",
+                "reference": "c861fcba2ca29404dc9e617eedd9eff4616986b8",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.0",
-                "psr/log": "~1.0"
+                "php": "^7.2",
+                "psr/log": "^1.0.1"
             },
             "provide": {
                 "psr/log-implementation": "1.0.0"
@@ -612,33 +612,36 @@
             "require-dev": {
                 "aws/aws-sdk-php": "^2.4.9 || ^3.0",
                 "doctrine/couchdb": "~1.0@dev",
-                "graylog2/gelf-php": "~1.0",
-                "jakub-onderka/php-parallel-lint": "0.9",
+                "elasticsearch/elasticsearch": "^6.0",
+                "graylog2/gelf-php": "^1.4.2",
+                "jakub-onderka/php-parallel-lint": "^0.9",
                 "php-amqplib/php-amqplib": "~2.4",
                 "php-console/php-console": "^3.1.3",
-                "phpunit/phpunit": "~4.5",
-                "phpunit/phpunit-mock-objects": "2.3.0",
+                "phpspec/prophecy": "^1.6.1",
+                "phpunit/phpunit": "^8.3",
+                "predis/predis": "^1.1",
+                "rollbar/rollbar": "^1.3",
                 "ruflin/elastica": ">=0.90 <3.0",
-                "sentry/sentry": "^0.13",
                 "swiftmailer/swiftmailer": "^5.3|^6.0"
             },
             "suggest": {
                 "aws/aws-sdk-php": "Allow sending log messages to AWS services like DynamoDB",
                 "doctrine/couchdb": "Allow sending log messages to a CouchDB server",
+                "elasticsearch/elasticsearch": "Allow sending log messages to an Elasticsearch server via official client",
                 "ext-amqp": "Allow sending log messages to an AMQP server (1.0+ required)",
-                "ext-mongo": "Allow sending log messages to a MongoDB server",
+                "ext-mbstring": "Allow to work properly with unicode symbols",
+                "ext-mongodb": "Allow sending log messages to a MongoDB server (via driver)",
                 "graylog2/gelf-php": "Allow sending log messages to a GrayLog2 server",
-                "mongodb/mongodb": "Allow sending log messages to a MongoDB server via PHP Driver",
+                "mongodb/mongodb": "Allow sending log messages to a MongoDB server (via library)",
                 "php-amqplib/php-amqplib": "Allow sending log messages to an AMQP server using php-amqplib",
                 "php-console/php-console": "Allow sending log messages to Google Chrome",
                 "rollbar/rollbar": "Allow sending log messages to Rollbar",
-                "ruflin/elastica": "Allow sending log messages to an Elastic Search server",
-                "sentry/sentry": "Allow sending log messages to a Sentry server"
+                "ruflin/elastica": "Allow sending log messages to an Elastic Search server"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.0.x-dev"
+                    "dev-master": "2.x-dev"
                 }
             },
             "autoload": {
@@ -664,7 +667,7 @@
                 "logging",
                 "psr-3"
             ],
-            "time": "2019-12-20T14:15:16+00:00"
+            "time": "2019-12-20T14:22:59+00:00"
         },
         {
             "name": "php-amqplib/php-amqplib",
@@ -1069,21 +1072,21 @@
         },
         {
             "name": "rollbar/rollbar",
-            "version": "v1.8.1",
+            "version": "v2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rollbar/rollbar-php.git",
-                "reference": "8a57ad9574d85bd818eaedfc8049fdcb16795f31"
+                "reference": "245670b32d8e6072d6b364eda242f245879cdee9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rollbar/rollbar-php/zipball/8a57ad9574d85bd818eaedfc8049fdcb16795f31",
-                "reference": "8a57ad9574d85bd818eaedfc8049fdcb16795f31",
+                "url": "https://api.github.com/repos/rollbar/rollbar-php/zipball/245670b32d8e6072d6b364eda242f245879cdee9",
+                "reference": "245670b32d8e6072d6b364eda242f245879cdee9",
                 "shasum": ""
             },
             "require": {
                 "ext-curl": "*",
-                "monolog/monolog": "^1",
+                "monolog/monolog": "^1 || ^2",
                 "psr/log": "^1"
             },
             "require-dev": {
@@ -1091,7 +1094,7 @@
                 "mockery/mockery": "0.9.*",
                 "packfire/php5.3-compat": "*",
                 "phpmd/phpmd": "@stable",
-                "phpunit/phpunit": "4.8.*",
+                "phpunit/phpunit": "4.8.* || ^5",
                 "squizlabs/php_codesniffer": "2.*"
             },
             "suggest": {
@@ -1124,7 +1127,7 @@
                 "logging",
                 "monitoring"
             ],
-            "time": "2019-05-06T11:31:11+00:00"
+            "time": "2019-10-02T06:24:31+00:00"
         },
         {
             "name": "scriptotek/google-books",
