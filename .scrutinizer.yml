@@ -9,8 +9,8 @@ build:
             tests:
                 override:
                     - php-scrutinizer-run
-                    -   command: phpcs-run
-                            'use_website_config': true   # <- uses the website config   # <- uses the website config
+        #                    -   command: phpcs-run
+        #                            'use_website_config': true   # <- uses the website config   # <- uses the website config
         tests: true
 #        coverage:
 #            tests:
