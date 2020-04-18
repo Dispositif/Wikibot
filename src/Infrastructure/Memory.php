@@ -24,10 +24,13 @@ class Memory
      * See http://drib.tech/programming/get-real-amount-memory-allocated-php.
      *
      * @param bool|null $real
+     *
+     * @return string
+     * @return string
      */
-    public function echoMemory(?bool $real = null): void
+    public function getMemory(?bool $real = null): string
     {
-        echo sprintf(
+        return sprintf(
             "Memory %s: %s %s \n",
             ($real) ? '(true)' : '',
             $this->memoryUsage(),

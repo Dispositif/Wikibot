@@ -13,6 +13,7 @@ use App\Domain\Models\Wiki\OuvrageClean;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Infrastructure\BnfAdapter;
 use App\Infrastructure\GoogleBooksAdapter;
+use App\Infrastructure\Logger;
 use App\Infrastructure\OpenLibraryAdapter;
 
 /**
@@ -61,7 +62,7 @@ class OuvrageFactory
     {
         $ouvrage = new OuvrageClean();
         $ouvrage->hydrate($data);
-        $proc = new OuvrageOptimize($ouvrage);
+        $proc = new OuvrageOptimize($ouvrage, null, new Logger());
         $proc->doTasks();
 
         return $proc->getOuvrage();

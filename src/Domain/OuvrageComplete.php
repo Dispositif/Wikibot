@@ -15,17 +15,16 @@ use App\Domain\Utils\TextUtil;
 use App\Domain\Utils\WikiTextUtil;
 use Exception;
 use Normalizer;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
- * TODO verbose mode
  * Class OuvrageComplete
  *
  * @package App\Domain
  */
 class OuvrageComplete
 {
-    const ADD_PRESENTATION_EN_LIGNE = true;
-
     const WIKI_LANGUAGE = 'fr';
 
     /**
@@ -39,20 +38,24 @@ class OuvrageComplete
 
     public $notCosmetic = false;
 
-    private $log = [];
-
-    private $sameBook;
+    private $summaryLog = [];
 
     //todo: injection référence base ou mapping ? (Google
-    public function __construct(OuvrageTemplate $origin, OuvrageTemplate $book)
+    /**
+     * @var LoggerInterface|NullLogger
+     */
+    private $log;
+
+    public function __construct(OuvrageTemplate $origin, OuvrageTemplate $book, ?LoggerInterface $log = null)
     {
         $this->origin = clone $origin;
         $this->book = $book;
+        $this->log = $log ?? new NullLogger();
     }
 
-    public function getLog(): array
+    public function getSummaryLog(): array
     {
-        return $this->log;
+        return $this->summaryLog;
     }
 
     /**
@@ -73,9 +76,9 @@ class OuvrageComplete
     private function complete()
     {
         // si livre suspect, on stoppe
-        $this->sameBook = $this->predictSameBook();
-        if (!$this->sameBook) {
-            dump('not same book');
+        $sameBook = $this->predictSameBook();
+        if (!$sameBook) {
+            $this->log->info('not same book');
 
             return false;
         }
@@ -141,7 +144,7 @@ class OuvrageComplete
     private function log(string $string): void
     {
         if (!empty($string)) {
-            $this->log[] = trim($string);
+            $this->summaryLog[] = trim($string);
         }
     }
 
@@ -158,7 +161,7 @@ class OuvrageComplete
             return;
         }
         if ($this->origin->hasParamValue('lien auteur1')) {
-            echo "lien auteur1 existe déjà\n";
+            $this->log->debug("lien auteur1 existe déjà\n");
 
             return;
         }
@@ -168,12 +171,11 @@ class OuvrageComplete
 
         // Check if wikilink in any of the author param
         if (WikiTextUtil::isWikify($originAuteur1)) {
-            echo "lien auteur1 existe déjà\n";
+            $this->log->debug("lien auteur1 existe déjà\n");
 
             return;
         }
 
-        //        dump($originAuteur1,$bookAuteur1, strpos($originAuteur1, $this->book->getParam('nom1')));
         // WP:"Paul Durand" — Bnf "Paul Durand,..."
         if (!empty($bookAuteur1) && !empty($originAuteur1)
             && (mb_strtolower($bookAuteur1) === mb_strtolower($originAuteur1)
@@ -184,7 +186,7 @@ class OuvrageComplete
             $this->notCosmetic = true;
             $this->major = true;
         } else {
-            echo 'DEBUG : auteur1 pas identifié\n';
+            $this->log->debug('auteur1 pas identifié\n');
         }
         // todo: gérer "not same book" avec inversion auteur1/2 avant d'implémenter +lien auteur2
     }

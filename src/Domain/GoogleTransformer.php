@@ -16,6 +16,7 @@ use App\Domain\Utils\NumberUtil;
 use App\Domain\Utils\WikiTextUtil;
 use App\Infrastructure\GoogleApiQuota;
 use App\Infrastructure\GoogleBooksAdapter;
+use App\Infrastructure\Logger;
 use DomainException;
 use Exception;
 use Throwable;
@@ -206,7 +207,7 @@ class GoogleTransformer
             }
         }
 
-        $optimizer = new OuvrageOptimize($ouvrage);
+        $optimizer = new OuvrageOptimize($ouvrage, null, new Logger());
         $optimizer->doTasks();
         $ouvrage2 = $optimizer->getOuvrage();
 
@@ -260,8 +261,7 @@ class GoogleTransformer
         // <ref>...</ref> or {{ref|...}}
         // GoogleLivresTemplate::GOOGLEBOOK_URL_PATTERN
         if (preg_match_all(
-            '#(?:<ref[^>]*>|{{ref\|) ?('.GoogleBooksUtil::GOOGLEBOOKS_START_URL_PATTERN
-            .'[^>\]} \n]+) ?(?:</ref>|}})#i',
+            '#(?:<ref[^>]*>|{{ref\|) ?('.GoogleBooksUtil::GOOGLEBOOKS_START_URL_PATTERN.'[^>\]} \n]+) ?(?:</ref>|}})#i',
             $text,
             $matches,
             PREG_SET_ORDER
@@ -282,7 +282,7 @@ class GoogleTransformer
             try {
                 $citation = $this->convertGBurl2OuvrageCitation(WikiTextUtil::stripFinalPoint($ref[1]));
                 sleep(2);
-            } catch (Exception $e) {
+            } catch (\Throwable $e) {
                 echo "Exception ".$e->getMessage();
                 continue;
             }

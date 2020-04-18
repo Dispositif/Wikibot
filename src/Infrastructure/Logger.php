@@ -11,12 +11,12 @@ declare(strict_types=1);
 namespace App\Infrastructure;
 
 use Codedungeon\PHPCliColors\Color;
+use Psr\Log\AbstractLogger;
 use Psr\Log\LoggerInterface;
-use Psr\Log\LoggerTrait;
 
-class Logger implements LoggerInterface
+class Logger extends AbstractLogger implements LoggerInterface
 {
-    use LoggerTrait;
+    //    use LoggerTrait;
 
     public $verbose = false;
     public $debug = false;
@@ -29,11 +29,12 @@ class Logger implements LoggerInterface
     public function log($level, $message, array $context = [])
     {
         if (is_array($message)) {
-            dump($message);
-            echo "Envoi de array comme $message de log...\n";
+            var_dump($message);
+            echo "Envoi de array comme message de log...\n";
 
             return;
         }
+        $message = trim($message);
         switch ($level) {
             case 'emergency':
             case 'alert':
@@ -59,7 +60,7 @@ class Logger implements LoggerInterface
                 break;
             case 'info':
                 if ($this->verbose || $this->debug) {
-                    echo Color::GRAY."> ";
+                    echo Color::GRAY."> ".$message."\n".Color::NORMAL;
                     if (!empty($context)) {
                         dump($context);
                     }
@@ -67,7 +68,7 @@ class Logger implements LoggerInterface
                 break;
             case 'debug':
                 if ($this->debug) {
-                    echo Color::GRAY."> ";
+                    echo Color::GRAY."> ".$message."\n".Color::NORMAL;
                     if (!empty($context)) {
                         dump($context);
                     }

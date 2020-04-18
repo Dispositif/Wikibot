@@ -12,6 +12,7 @@ namespace App\Application\Examples;
 use App\Application\OuvrageCompleteWorker;
 use App\Infrastructure\DbAdapter;
 use App\Infrastructure\GoogleApiQuota;
+use App\Infrastructure\Logger;
 use App\Infrastructure\SMS;
 use Throwable;
 
@@ -23,7 +24,9 @@ while (true) {
     try {
         echo "*** NEW COMPLETE PROCESS\n";
         dump('Google quota : ', (new GoogleApiQuota())->getCount());
-        $process = new OuvrageCompleteWorker(new DbAdapter(), true);
+        $logger = new Logger();
+        $logger->debug = true;
+        $process = new OuvrageCompleteWorker(new DbAdapter(), $logger);
         $process->run();
         $count = 0; // reinitialise boucle erreur
     } catch (Throwable $e) {

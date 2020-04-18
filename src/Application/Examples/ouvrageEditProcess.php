@@ -13,6 +13,7 @@ use App\Application\OuvrageEditWorker;
 use App\Application\WikiBotConfig;
 use App\Domain\GoogleTransformer;
 use App\Infrastructure\DbAdapter;
+use App\Infrastructure\Logger;
 use App\Infrastructure\Memory;
 use Throwable;
 
@@ -23,13 +24,12 @@ $count = 0; // erreurs successives
 while (true) {
     try {
         echo "*** NEW EDIT PROCESS\n";
+        $logger = new Logger();
+        $logger->verbose = true;
+        $logger->debug = true;
         $process = new OuvrageEditWorker(
-            new DbAdapter(),
-            new WikiBotConfig(),
-            new Memory(),
-            new GoogleTransformer()
+            new DbAdapter(), new WikiBotConfig(), new Memory(), new GoogleTransformer(), $logger
         );
-        $process->verbose = true;
         $process->run();
         $count = 0;
     } catch (Throwable $e) {

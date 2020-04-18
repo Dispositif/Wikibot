@@ -1,8 +1,8 @@
 <?php
 /**
- * This file is part of dispositif/wikibot application
- * 2019 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019/2020 © Philippe M. <dispositif@gmail.com>
+ * For the full copyright and MIT license information, please view the license file.
  */
 
 declare(strict_types=1);
@@ -15,11 +15,14 @@ use App\Domain\OuvrageFactory;
 use App\Domain\OuvrageOptimize;
 use App\Domain\Publisher\Wikidata2Ouvrage;
 use App\Domain\Utils\TemplateParser;
+use App\Infrastructure\Logger;
 use App\Infrastructure\Memory;
 use App\Infrastructure\WikidataAdapter;
 use Exception;
 use GuzzleHttp\Client;
 use Normalizer;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Throwable;
 
 /**
@@ -39,11 +42,6 @@ class OuvrageCompleteWorker
             '9782918758341', // Profils de lignes du réseau ferré français vol.1
         ];
     /**
-     * @var bool
-     */
-    public $verbose = false;
-
-    /**
      * @var QueueInterface
      */
     private $queueAdapter;
@@ -53,18 +51,22 @@ class OuvrageCompleteWorker
     private $raw = '';
     private $page; // article title
 
-    private $log = [];
+    private $summaryLog = [];
     private $notCosmetic = false;
     private $major = false;
     /**
      * @var OuvrageTemplate
      */
     private $ouvrage;
+    /**
+     * @var LoggerInterface|NullLogger
+     */
+    private $log;
 
-    public function __construct(QueueInterface $queueAdapter, ?bool $verbose = false)
+    public function __construct(QueueInterface $queueAdapter, ?LoggerInterface $log = null)
     {
         $this->queueAdapter = $queueAdapter;
-        $this->verbose = (bool)$verbose;
+        $this->log = $log ?? new NullLogger();
     }
 
     public function run(?int $limit = 10000)
@@ -84,12 +86,11 @@ class OuvrageCompleteWorker
                 $this->page,
                 $this->raw
             );
-            if ($this->verbose) {
-                $memory->echoMemory(true);
-            }
+
+            $this->log->info($memory->getMemory(true));
 
             // initialise variables
-            $this->log = [];
+            $this->summaryLog = [];
             $this->ouvrage = null;
             $this->notCosmetic = false;
             $this->major = false;
@@ -109,10 +110,10 @@ class OuvrageCompleteWorker
             }
 
             // Final optimizing (with online predictions)
-            $optimizer = new OuvrageOptimize($origin, $this->page);
+            $optimizer = new OuvrageOptimize($origin, $this->page, new Logger());
             $optimizer->doTasks();
             $this->ouvrage = $optimizer->getOuvrage();
-            $this->log = array_merge($this->log, $optimizer->getLog());
+            $this->summaryLog = array_merge($this->summaryLog, $optimizer->getSummaryLog());
             $this->notCosmetic = ($optimizer->notCosmetic || $this->notCosmetic);
 
             /**
@@ -181,15 +182,11 @@ class OuvrageCompleteWorker
         }
 
         online:
-        if ($this->verbose) {
-            echo "sleep 10...\n";
-        }
+        $this->log->info("sleep 10...\n");
         sleep(10);
 
         try {
-            if ($this->verbose) {
-                dump('BIBLIO NAT FRANCE...');
-            }
+            $this->log->info('BIBLIO NAT FRANCE...');
             // BnF sait pas trouver un vieux livre (10) d'après ISBN-13... FACEPALM !
             $bnfOuvrage = null;
             if ($isbn10) {
@@ -204,9 +201,8 @@ class OuvrageCompleteWorker
 
                 // Wikidata requests from $infos (ISBN/ISNI)
                 if (!empty($bnfOuvrage->getInfos())) {
-                    if ($this->verbose) {
-                        dump('WIKIDATA...');
-                    }
+                    $this->log->info('WIKIDATA...');
+
                     // TODO move to factory
                     $wikidataAdapter = new WikidataAdapter(
                         new Client(['timeout' => 30, 'headers' => ['User-Agent' => getenv('USER_AGENT')]])
@@ -226,14 +222,13 @@ class OuvrageCompleteWorker
 
         if (!isset($bnfOuvrage) || !$this->skipGoogle($bnfOuvrage)) {
             try {
-                if ($this->verbose) {
-                    dump('GOOGLE...');
-                }
+                $this->log->info('GOOGLE...');
+
                 $googleOuvrage = OuvrageFactory::GoogleFromIsbn($isbn);
                 $this->completeOuvrage($googleOuvrage);
             } catch (Throwable $e) {
                 echo "*** ERREUR GOOGLE Isbn Search ***".$e->getMessage()."\n";
-                if( strpos($e->getMessage(), 'Could not resolve host: www.googleapis.com') === false) {
+                if (strpos($e->getMessage(), 'Could not resolve host: www.googleapis.com') === false) {
                     throw $e;
                 }
                 unset($e);
@@ -242,9 +237,7 @@ class OuvrageCompleteWorker
 
         if (!isset($bnfOuvrage) && !isset($googleOuvrage)) {
             try {
-                if ($this->verbose) {
-                    dump('OpenLibrary...');
-                }
+                $this->log->info('OpenLibrary...');
                 $openLibraryOuvrage = OuvrageFactory::OpenLibraryFromIsbn($isbn);
                 if (!empty($openLibraryOuvrage)) {
                     $this->completeOuvrage($openLibraryOuvrage);
@@ -281,27 +274,24 @@ class OuvrageCompleteWorker
 
     private function completeOuvrage(OuvrageTemplate $onlineOuvrage)
     {
-        if ($this->verbose) {
-            dump($onlineOuvrage->serialize(true));
-        }
-        $optimizer = new OuvrageOptimize($onlineOuvrage, $this->page);
+        $this->log->info($onlineOuvrage->serialize(true));
+        $optimizer = new OuvrageOptimize($onlineOuvrage, $this->page, new Logger());
         $onlineOptimized = ($optimizer)->doTasks()->getOuvrage();
 
-        $completer = new OuvrageComplete($this->ouvrage, $onlineOptimized);
+        $completer = new OuvrageComplete($this->ouvrage, $onlineOptimized, new Logger());
         $this->ouvrage = $completer->getResult();
 
         // todo move that optimizing in OuvrageComplete ?
-        $optimizer = new OuvrageOptimize($this->ouvrage, $this->page);
+        $optimizer = new OuvrageOptimize($this->ouvrage, $this->page, new Logger());
         $this->ouvrage = $optimizer->doTasks()->getOuvrage();
 
-        if ($this->verbose) {
-            dump($completer->getLog());
-        }
+        $this->log->info('Summary', $completer->getSummaryLog());
+
         if ($completer->major) {
             $this->major = true;
         }
         $this->notCosmetic = ($completer->notCosmetic || $this->notCosmetic);
-        $this->log = array_merge($this->log, $completer->getLog());
+        $this->summaryLog = array_merge($this->summaryLog, $completer->getSummaryLog());
         unset($optimizer);
         unset($completer);
     }
@@ -315,19 +305,17 @@ class OuvrageCompleteWorker
             'raw' => $this->raw,
             'opti' => $this->serializeFinalOpti(),
             'optidate' => date("Y-m-d H:i:s"),
-            'modifs' => mb_substr(implode(',', $this->log), 0, 250),
+            'modifs' => mb_substr(implode(',', $this->summaryLog), 0, 250),
             'notcosmetic' => ($this->notCosmetic) ? 1 : 0,
             'major' => ($this->major) ? 1 : 0,
             'isbn' => substr($isbn13, 0, 20),
             'version' => WikiBotConfig::getGitVersion() ?? null,
         ];
-        if ($this->verbose) {
-            dump($finalData);
-        }
+        $this->log->info('finalData', $finalData);
         // Json ?
         $result = $this->queueAdapter->sendCompletedData($finalData);
 
-        dump($result); // bool
+        $this->log->notice($result ? 'OK DB' : 'erreur sendCompletedData()');
     }
 
     /**
@@ -349,7 +337,7 @@ class OuvrageCompleteWorker
 
     private function skipGoogle($bnfOuvrage): bool
     {
-        if ($bnfOuvrage instanceOf OuvrageTemplate
+        if ($bnfOuvrage instanceof OuvrageTemplate
             && $bnfOuvrage->hasParamValue('titre')
             && ($this->ouvrage->hasParamValue('lire en ligne')
                 || $this->ouvrage->hasParamValue('présentation en ligne'))

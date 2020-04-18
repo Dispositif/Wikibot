@@ -18,6 +18,8 @@ use App\Domain\Utils\WikiTextUtil;
 use App\Infrastructure\FileManager;
 use DomainException;
 use Exception;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Throwable;
 
 use function mb_strlen;
@@ -39,7 +41,7 @@ class OuvrageOptimize
 
     private $wikiPageTitle;
 
-    private $log = [];
+    private $summaryLog = [];
 
     public $notCosmetic = false;
 
@@ -47,16 +49,24 @@ class OuvrageOptimize
 
     private $ouvrage;
 
-    private $currentTask;
-
     // todo inject TextUtil + ArticleVersion ou WikiRef
-    public function __construct(OuvrageTemplate $ouvrage, $wikiPageTitle = null)
+    /**
+     * @var LoggerInterface|NullLogger
+     */
+    private $log;
+
+    public function __construct(OuvrageTemplate $ouvrage, $wikiPageTitle = null, ?LoggerInterface $log = null)
     {
         $this->original = $ouvrage;
         $this->ouvrage = clone $ouvrage;
         $this->wikiPageTitle = ($wikiPageTitle) ?? null;
+        $this->log = $log ?? new NullLogger();
     }
 
+    /**
+     * @return $this
+     * @throws Exception
+     */
     public function doTasks(): self
     {
         $this->cleanAndPredictErrorParameters();
@@ -370,7 +380,7 @@ class OuvrageOptimize
 
     private function processTitle()
     {
-        $this->currentTask = 'titres';
+        $currentTask = 'titres';
 
         $oldtitre = $this->getParam('titre');
         $this->langInTitle();
@@ -526,7 +536,7 @@ class OuvrageOptimize
         try {
             $this->moveDate2Year();
         } catch (Exception $e) {
-            dump($e);
+            $this->log->warning('Exception '.$e->getMessage());
         }
     }
 
@@ -606,7 +616,7 @@ class OuvrageOptimize
     private function log(string $string): void
     {
         if (!empty($string)) {
-            $this->log[] = trim($string);
+            $this->summaryLog[] = trim($string);
         }
     }
 
@@ -851,9 +861,9 @@ class OuvrageOptimize
     /**
      * @return array
      */
-    public function getLog(): array
+    public function getSummaryLog(): array
     {
-        return $this->log;
+        return $this->summaryLog;
     }
 
     /**

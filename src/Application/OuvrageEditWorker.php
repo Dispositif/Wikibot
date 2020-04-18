@@ -19,6 +19,8 @@ use LogicException;
 use Mediawiki\Api\UsageException;
 use Mediawiki\DataModel\EditInfo;
 use Normalizer;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Throwable;
 
 /**
@@ -39,7 +41,6 @@ class OuvrageEditWorker
     const DELAY_NOBOT_IN_SECONDS = 120;
     const ERROR_MSG_TEMPLATE     = __DIR__.'/templates/message_errors.wiki';
 
-    public $verbose = false;
     private $db;
     private $bot;
     private $wiki;
@@ -65,17 +66,34 @@ class OuvrageEditWorker
      * @var GoogleTransformer
      */
     private $refGooConverter;
+    /**
+     * @var LoggerInterface|NullLogger
+     */
+    private $log;
 
+    /**
+     * OuvrageEditWorker constructor.
+     *
+     * @param DbAdapter            $dbAdapter
+     * @param WikiBotConfig        $bot
+     * @param Memory               $memory
+     * @param GoogleTransformer    $refGoogleBook
+     * @param LoggerInterface|null $log
+     *
+     * @throws UsageException
+     */
     public function __construct(
         DbAdapter $dbAdapter,
         WikiBotConfig $bot,
         Memory $memory,
-        GoogleTransformer $refGoogleBook
+        GoogleTransformer $refGoogleBook,
+        ?LoggerInterface $log = null
     ) {
         $this->db = $dbAdapter;
         $this->bot = $bot;
         $this->memory = $memory;
         $this->refGooConverter = $refGoogleBook;
+        $this->log = $log ?? new NullLogger();
 
         $this->wikiLogin(true);
     }
@@ -90,18 +108,25 @@ class OuvrageEditWorker
         $this->wiki = ServiceFactory::wikiApi($forceLogin);
     }
 
+    /**
+     * @throws Exception
+     */
     public function run(): void
     {
         while (true) {
             echo "\n-------------------------------------\n\n";
             echo date("Y-m-d H:i")."\n";
-            if ($this->verbose) {
-                $this->memory->echoMemory(true);
-            }
+            $this->log->notice($this->memory->getMemory(true));
             $this->pageProcess();
         }
     }
 
+    /**
+     * @return bool
+     * @throws UsageException
+     * @throws Exception
+     * @throws Exception
+     */
     private function pageProcess()
     {
         $this->initialize();
@@ -111,7 +136,7 @@ class OuvrageEditWorker
         $data = json_decode($json, true);
 
         if (empty($data)) {
-            echo "SKIP : no row to process\n";
+            $this->log->alert("SKIP : no row to process\n");
             throw new Exception('no row to process');
         }
 
@@ -120,7 +145,7 @@ class OuvrageEditWorker
             echo "$title \n";
             $page = new WikiPageAction($this->wiki, $title);
         } catch (Exception $e) {
-            echo "*** WikiPageAction error : $title \n";
+            $this->log->warning("*** WikiPageAction error : $title \n");
             sleep(20);
 
             return false;
@@ -128,13 +153,13 @@ class OuvrageEditWorker
 
         // HACK
         if (in_array($page->getLastEditor(), [getenv('BOT_NAME'), getenv('BOT_OWNER')])) {
-            echo "SKIP : édité recemment par bot/dresseur.\n";
+            $this->log->notice("SKIP : édité recemment par bot/dresseur.\n");
             $this->db->skipArticle($title);
 
             return false;
         }
         if ($page->getNs() !== 0) {
-            echo "SKIP : page n'est pas dans Main (ns 0)\n";
+            $this->log->notice("SKIP : page n'est pas dans Main (ns 0)\n");
             $this->db->skipArticle($title);
 
             return false;
@@ -145,35 +170,35 @@ class OuvrageEditWorker
             return false;
         }
         if (WikiBotConfig::isEditionRestricted($this->wikiText)) {
-            echo "SKIP : protection/3R.\n";
+            $this->log->info("SKIP : protection/3R.\n");
             $this->db->skipArticle($title);
 
             return false;
         }
 
         if ($this->bot->minutesSinceLastEdit($title) < 15) {
-            echo "SKIP : édition humaine dans les dernières 15 minutes.\n";
+            $this->log->info("SKIP : édition humaine dans les dernières 15 minutes.\n");
 
             return false;
         }
 
         // Skip AdQ
         if (preg_match('#{{ ?En-tête label#i', $this->wikiText) > 0) {
-            echo "SKIP : AdQ ou BA.\n";
+            $this->log->info("SKIP : AdQ ou BA.\n");
             $this->db->skipArticle($title);
 
             return false;
         }
 
         // GET all article lines from db
-        echo sprintf(">> %s rows to process\n", count($data));
+        $this->log->info(sprintf("%s rows to process\n", count($data)));
 
         // foreach line
         $changed = false;
         foreach ($data as $dat) {
             // hack temporaire pour éviter articles dont CompleteProcess incomplet
             if (empty($dat['opti']) || empty($dat['optidate']) || $dat['optidate'] < DbAdapter::OPTI_VALID_DATE) {
-                echo "SKIP : Complètement incomplet de l'article \n";
+                $this->log->notice("SKIP : Complètement incomplet de l'article");
 
                 return false;
             }
@@ -181,7 +206,7 @@ class OuvrageEditWorker
             $changed = ($success) ? true : $changed;
         }
         if (!$changed) {
-            echo "Rien à changer...\n\n";
+            $this->log->debug("Rien à changer...");
             $this->db->skipArticle($title);
 
             return false;
@@ -192,7 +217,7 @@ class OuvrageEditWorker
         try {
             $this->wikiText = $this->refGooConverter->process($this->wikiText);
         } catch (Throwable $e) {
-            echo $e->getMessage();
+            $this->log->warning('refGooConverter->process exception : '.$e->getMessage());
             unset($e);
         }
 
@@ -202,10 +227,8 @@ class OuvrageEditWorker
         }
 
         $miniSummary = $this->generateSummary();
-        echo $miniSummary."\n\n";
-        if ($this->verbose) {
-            echo "sleep 20...\n";
-        }
+        $this->log->notice($miniSummary);
+        $this->log->info("sleep 30...");
         sleep(30);
 
         pageEdit:
@@ -216,19 +239,17 @@ class OuvrageEditWorker
         } catch (Throwable $e) {
             // Invalid CSRF token.
             if (strpos($e->getMessage(), 'Invalid CSRF token') !== false) {
-                echo "*** Invalid CSRF token \n";
+                $this->log->alert("*** Invalid CSRF token \n");
                 throw new Exception('Invalid CSRF token');
             } else {
-                dump($e); // todo log
-                sleep(60);
+                $this->log->warning('Exception in editPage() '.$e->getMessage());
+                sleep(10);
 
                 return false;
             }
         }
 
-        if ($this->verbose) {
-            echo ($success) ? "Ok\n" : "***** Erreur edit\n";
-        }
+        $this->log->info($success ? "Ok\n" : "***** Erreur edit\n");
 
         if ($success) {
             // updata DB
@@ -241,20 +262,16 @@ class OuvrageEditWorker
                     $this->sendErrorMessage($data);
                 }
             } catch (Throwable $e) {
-                dump($e);
+                $this->log->warning('Exception in editPage() '.$e->getMessage());
                 unset($e);
             }
 
             if (!$this->botFlag) {
-                if ($this->verbose) {
-                    echo "sleep ".self::DELAY_NOBOT_IN_SECONDS."\n";
-                }
+                $this->log->info("sleep ".self::DELAY_NOBOT_IN_SECONDS);
                 sleep(self::DELAY_NOBOT_IN_SECONDS);
             }
             if ($this->botFlag) {
-                if ($this->verbose) {
-                    echo "sleep ".self::DELAY_BOTFLAG_SECONDS."\n";
-                }
+                $this->log->info("sleep ".self::DELAY_BOTFLAG_SECONDS);
                 sleep(self::DELAY_BOTFLAG_SECONDS);
             }
         }
@@ -279,15 +296,24 @@ class OuvrageEditWorker
         $this->bot->checkStopOnTalkpage(true);
     }
 
+    /**
+     * @param array $data
+     *
+     * @return bool
+     * @throws Exception
+     */
     private function dataProcess(array $data): bool
     {
         $origin = $data['raw'];
         $completed = $data['opti'];
 
-        dump($origin, $completed, $data['modifs'], $data['version']);
+        $this->log->debug('origin: '.$origin);
+        $this->log->debug('completed: '.$completed);
+        $this->log->debug('modifs: '.$data['modifs']);
+        $this->log->debug('version: '.$data['version']);
 
         if (WikiTextUtil::isCommented($origin)) {
-            echo "SKIP: template avec commentaire HTML\n";
+            $this->log->notice("SKIP: template avec commentaire HTML.");
             $this->db->skipRow(intval($data['id']));
 
             return false;
@@ -295,7 +321,7 @@ class OuvrageEditWorker
 
         $find = mb_strpos($this->wikiText, $origin);
         if ($find === false) {
-            echo "String non trouvée. \n\n";
+            $this->log->notice("String non trouvée.");
             $this->db->skipRow(intval($data['id']));
 
             return false;
@@ -307,7 +333,7 @@ class OuvrageEditWorker
         $newText = WikiPageAction::replaceTemplateInText($this->wikiText, $origin, $completed);
 
         if (!$newText || $newText === $this->wikiText) {
-            echo "newText error\n";
+            $this->log->warning("newText error");
 
             return false;
         }
@@ -483,7 +509,7 @@ class OuvrageEditWorker
         }
         $mainTitle = $rows[0]['page'];
         if (!$this->botFlag) {
-            echo "** Send Error Message on talk page. Wait 3... \n";
+            $this->log->notice("** Send Error Message on talk page. Wait 3...");
         }
         sleep(3);
 
@@ -524,7 +550,7 @@ class OuvrageEditWorker
 
             return $talkPage->addToBottomOrCreatePage($errorMessage, $editInfo);
         } catch (Throwable $e) {
-            dump($e);
+            $this->log->warning('Exception after addToBottomOrCreatePage() '.$e->getMessage());
 
             return false;
         }
