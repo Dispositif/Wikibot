@@ -15,7 +15,6 @@ use Psr\Log\LoggerInterface;
 
 class ExternHttpClient implements HttpClientInterface
 {
-    private $mapper;
     /**
      * @var Client
      */

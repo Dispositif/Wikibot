@@ -17,7 +17,6 @@ use Throwable;
 
 /**
  * todo legacy.
- *
  * Class TemplateParser.
  */
 abstract class TemplateParser extends WikiTextUtil
@@ -30,7 +29,6 @@ abstract class TemplateParser extends WikiTextUtil
      * @param string $text
      *
      * @return array
-     *
      * @throws Exception
      */
     public static function parseAllTemplateByName(string $tplName, string $text): array
@@ -53,9 +51,9 @@ abstract class TemplateParser extends WikiTextUtil
             /**
              * @var AbstractWikiTemplate
              */
-            try{
+            try {
                 $tplObject = WikiTemplateFactory::create($tplName);
-            }catch (Throwable $e){
+            } catch (Throwable $e) {
                 unset($e);
                 continue;
             }
@@ -71,7 +69,7 @@ abstract class TemplateParser extends WikiTextUtil
             $result[$tplName][$inc] += ['model' => $tplObject];
         }
 
-        return (array) $result;
+        return (array)$result;
     }
 
     /**
@@ -90,8 +88,7 @@ abstract class TemplateParser extends WikiTextUtil
     {
         // TODO check {{fr}}
         $res = preg_match_all(
-            "#{{[ \n]*".preg_quote(trim($templateName), '#')
-            ."[ \t \n\r]*\|[^{}]*(?:{{[^{}]+}}[^{}]*)*}}#i",
+            "#{{[ \n]*".preg_quote(trim($templateName), '#')."[ \t \n\r]*\|[^{}]*(?:{{[^{}]+}}[^{}]*)*}}#i",
             $text,
             $matches
         );
@@ -251,12 +248,12 @@ abstract class TemplateParser extends WikiTextUtil
             }
             // No param name => take $keyNum as param name
             if (false === $pos) {
-                $param = (string) $keyNum;
+                $param = (string)$keyNum;
                 $value = $line;
                 ++$keyNum;
             }
 
-            if (!isset($param) || !isset($value)) {
+            if (empty($param) || !isset($value)) {
                 throw new LogicException('param/value variable not defined');
             }
 
@@ -304,12 +301,13 @@ abstract class TemplateParser extends WikiTextUtil
      *
      * @return bool
      */
-    public static function isMultispacedTemplate(string $tplText):bool
+    public static function isMultispacedTemplate(string $tplText): bool
     {
         // detect 4 spaces chars
         if (preg_match('#{{[^}]+ {4}[^}]+}}#i', $tplText)) {
             return true;
         }
+
         return false;
     }
 }

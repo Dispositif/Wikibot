@@ -40,7 +40,7 @@ trait CsvTrait
             throw new Exception('no file '.$filename);
         }
         $f = fopen($filename, 'r');
-        if ($f === null) {
+        if ($f === false) {
             throw new Exception('can not open '.$filename);
         }
         $row = fgetcsv($f);
@@ -55,7 +55,7 @@ trait CsvTrait
             throw new Exception('no file '.$filename);
         }
         $f = fopen($filename, 'r');
-        if ($f === null) {
+        if ($f === false) {
             throw new Exception('can not open '.$filename);
         }
         while ($row = fgetcsv($f)) {
@@ -81,7 +81,7 @@ trait CsvTrait
             throw new Exception('no file '.$filename);
         }
         $f = fopen($filename, 'r');
-        if ($f === null) {
+        if ($f === false) {
             throw new Exception('can not open '.$filename);
         }
         while (false !== ($line = fgetcsv($f))) {
@@ -103,7 +103,7 @@ trait CsvTrait
     {
         // create file if not exists
         $fp = fopen($filename, 'a+');
-        if ($fp === null) {
+        if ($fp === false) {
             throw new Exception('can not open '.$filename);
         }
         if (is_array($array[0])) {

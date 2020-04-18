@@ -105,7 +105,7 @@ class CorpusAdapter extends FileManager implements CorpusInterface
         // hack: create file or not ?
         if (!file_exists($filename)) {
             $newFile = @fopen($filename, 'w');
-            if ($newFile !== null) {
+            if ($newFile !== false) {
                 fclose($newFile);
             }
             if (!file_exists($filename)) {

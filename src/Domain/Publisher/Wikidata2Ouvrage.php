@@ -103,7 +103,7 @@ class Wikidata2Ouvrage
             // ajout wikilien auteur1
             $lienTitre = $this->wikiURL2title($this->data['articleAuthor']['value']);
 
-            if (TextUtil::mb_ucfirst($lienTitre) === TextUtil::mb_ucfirst($this->title)) {
+            if (empty($lienTitre) || TextUtil::mb_ucfirst($lienTitre) === TextUtil::mb_ucfirst($this->title)) {
                 // skip wikilink if this is the article title
                 return;
             }

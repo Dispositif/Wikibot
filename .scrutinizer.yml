@@ -1,6 +1,9 @@
 build:
     environment:
         php: 7.2.13
+    #    dependencies:
+    #        before:
+    #            - composer require phpunit/phpunit:^7.0 --dev
     nodes:
         analysis:
             project_setup:
@@ -17,9 +20,9 @@ build:
 #                override:
 #                    -   command: ./vendor/bin/phpunit --coverage-clover=clover.xml
 #                        coverage:
-#                            file: tests/clover.xml   # <- Set this to where we find the coverage data.
-#                            #    The path is relative to the current directory.
+#                            file: tests/clover.xml
 #                            format: clover
+
 checks:
     php: true
 before_commands:

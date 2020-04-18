@@ -380,8 +380,6 @@ class OuvrageOptimize
 
     private function processTitle()
     {
-        $currentTask = 'titres';
-
         $oldtitre = $this->getParam('titre');
         $this->langInTitle();
         $this->deWikifyExternalLink('titre');
