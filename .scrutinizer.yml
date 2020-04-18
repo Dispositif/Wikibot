@@ -1,0 +1,50 @@
+build:
+    environment:
+        php: 7.2.13
+    nodes:
+        analysis:
+            project_setup:
+                override:
+                    - 'true'
+            tests:
+                override:
+                    - php-scrutinizer-run
+                    - phpcs-run
+                    -   command: phpcs-run
+                            use_website_config: true   # <- uses the website config
+        tests: true
+#        coverage:
+#            tests:
+#                override:
+#                    -   command: ./vendor/bin/phpunit --coverage-clover=clover.xml
+#                        coverage:
+#                            file: tests/clover.xml   # <- Set this to where we find the coverage data.
+#                            #    The path is relative to the current directory.
+#                            format: clover
+checks:
+    php: true
+before_commands:
+    - 'composer install --dev'
+coding_style:
+    php: {  }
+filter:
+    paths:
+        - src/
+    excluded_paths:
+        - "*/Tests/*"
+        - "*/resources/*""
+    dependency_paths:
+        - vendor/
+tools:
+    external_code_coverage: true # import from Travis CI
+    php_mess_detector: true
+    php_code_sniffer: true
+    sensiolabs_security_checker: true
+    php_code_coverage: true
+    php_pdepend: true
+    php_loc:
+        enabled: true
+        excluded_dirs: [vendor, tests, Tests]
+    php_cpd:
+        enabled: true
+        excluded_dirs: [vendor, tests, Tests]

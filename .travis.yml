@@ -65,7 +65,8 @@ script:
 after_script:
     - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then ./cc-test-reporter after-build  -t clover --exit-code $TRAVIS_TEST_RESULT; fi
     - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT # codeclimate cover
-
+    - wget https://scrutinizer-ci.com/ocular.phar # scrutinizer coverage
+    - php ocular.phar code-coverage:upload --format=php-clover clover.xml # scrutinizer coverage
 after_success:
     - bash <(curl -s https://codecov.io/bash)
 
