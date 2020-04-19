@@ -93,6 +93,9 @@ trait CsvTrait
         }
         array_shift($data);
         $f = fopen($filename, 'w');
+        if ($f === false) {
+            throw new Exception('can not open '.$filename);
+        }
         foreach ($data as $fields) {
             fputcsv($f, $fields);
         }

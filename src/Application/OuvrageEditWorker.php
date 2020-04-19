@@ -234,6 +234,9 @@ class OuvrageEditWorker
         pageEdit:
 
         try {
+            // corona Covid :)
+            $miniSummary .= (date('H:i') === '20:00') ? ' 🏥' : ''; // 🏥🦠
+
             $editInfo = new EditInfo($miniSummary, $this->minorFlag, $this->botFlag, 5);
             $success = $page->editPage(Normalizer::normalize($this->wikiText), $editInfo);
         } catch (Throwable $e) {
@@ -462,9 +465,6 @@ class OuvrageEditWorker
         $prefix = ($this->botFlag) ? 'bot' : '☆'; //🧐 🤖
         // add "/!\" when errorWarning
         $prefix .= (!empty($this->errorWarning)) ? ' ⚠️' : '';
-
-        // Covid :)
-        $prefix .= (date('H:i') === '20:00') ? '🦠' : ''; // 🏥
 
         // basic modifs
         $citeSummary = implode(' ', $this->citationSummary);
