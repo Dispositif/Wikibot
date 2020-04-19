@@ -11,18 +11,12 @@ namespace App\Domain;
 
 use App\Domain\Enums\Language;
 use App\Domain\Models\Wiki\GoogleLivresTemplate;
-use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\Publisher\GoogleBooksUtil;
 use App\Domain\Utils\TextUtil;
 use App\Domain\Utils\WikiTextUtil;
 use App\Infrastructure\FileManager;
 use DomainException;
 use Exception;
-use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
-use Throwable;
-
-use function mb_strlen;
 
 /**
  * Legacy.
@@ -31,37 +25,25 @@ use function mb_strlen;
  * TODO observer/event (log, MajorEdition)
  * Class OuvrageProcess.
  */
-class OuvrageOptimize
+class OuvrageOptimize extends AbstractTemplateOptimizer
 {
+    use OptimizeISBNTrait;
+
     const CONVERT_GOOGLEBOOK_TEMPLATE = false; // change OuvrageOptimizeTest !!
 
     const WIKI_LANGUAGE = 'fr';
 
-    protected $original;
+    protected $originTemplate;
 
-    private $wikiPageTitle;
+    protected $wikiPageTitle;
 
-    private $summaryLog = [];
+    protected $summaryLog = [];
 
     public $notCosmetic = false;
 
     public $major = false;
 
-    private $ouvrage;
-
-    // todo inject TextUtil + ArticleVersion ou WikiRef
-    /**
-     * @var LoggerInterface|NullLogger
-     */
-    private $log;
-
-    public function __construct(OuvrageTemplate $ouvrage, $wikiPageTitle = null, ?LoggerInterface $log = null)
-    {
-        $this->original = $ouvrage;
-        $this->ouvrage = clone $ouvrage;
-        $this->wikiPageTitle = ($wikiPageTitle) ?? null;
-        $this->log = $log ?? new NullLogger();
-    }
+    protected $optiTemplate;
 
     /**
      * @return $this
@@ -100,7 +82,7 @@ class OuvrageOptimize
      *
      * @throws Exception
      */
-    private function processLocation()
+    protected function processLocation()
     {
         $location = $this->getParam('lieu');
         if (empty($location)) {
@@ -113,7 +95,7 @@ class OuvrageOptimize
         $location = TextUtil::mb_ucfirst($location);
         if ($memo !== $location) {
             $this->setParam('lieu', $location);
-            $this->log('±lieu');
+            $this->addSummaryLog('±lieu');
             $this->notCosmetic = true;
         }
 
@@ -125,13 +107,13 @@ class OuvrageOptimize
             $row = $manager->findCSVline(__DIR__.'/resources/traduction_ville.csv', $location);
             if (!empty($row) && !empty($row[1])) {
                 $this->setParam('lieu', $row[1]);
-                $this->log('lieu francisé');
+                $this->addSummaryLog('lieu francisé');
                 $this->notCosmetic = true;
             }
         }
     }
 
-    private function processBnf()
+    protected function processBnf()
     {
         $bnf = $this->getParam('bnf');
         if (!$bnf) {
@@ -144,13 +126,13 @@ class OuvrageOptimize
     /**
      * @throws Exception
      */
-    private function processAuthors()
+    protected function processAuthors()
     {
         $this->distinguishAuthors();
         //$this->fusionFirstNameAndName(); // desactived : no consensus
     }
 
-    private function convertLienAuteurTitre(): void
+    protected function convertLienAuteurTitre(): void
     {
         $auteurParams = ['auteur1', 'auteur2', 'auteur2', 'titre'];
         foreach ($auteurParams as $auteurParam) {
@@ -175,7 +157,7 @@ class OuvrageOptimize
      *
      * @throws Exception
      */
-    private function distinguishAuthors()
+    protected function distinguishAuthors()
     {
         // merge params of author 1
         $auteur1 = $this->getParam('auteur') ?? '';
@@ -215,7 +197,7 @@ class OuvrageOptimize
             for ($i = 0; $i < $count; ++$i) {
                 $this->setParam(sprintf('auteur%s', $i + 1), $res[$i]);
             }
-            $this->log('distinction auteurs');
+            $this->addSummaryLog('distinction auteurs');
             $this->major = true;
             $this->notCosmetic = true;
         }
@@ -228,7 +210,7 @@ class OuvrageOptimize
      *
      * @throws Exception
      */
-    private function processLang(?string $param = 'langue')
+    protected function processLang(?string $param = 'langue')
     {
         $lang = $this->getParam($param) ?? null;
 
@@ -240,118 +222,19 @@ class OuvrageOptimize
                 && (!$this->getParam('langue') || $this->getParam('langue') === $lang2)
             ) {
                 $this->unsetParam('langue originale');
-                $this->log('-langue originale');
+                $this->addSummaryLog('-langue originale');
             }
 
             if ($lang2 && $lang !== $lang2) {
                 $this->setParam($param, $lang2);
                 if (self::WIKI_LANGUAGE !== $lang2) {
-                    $this->log('±'.$param);
+                    $this->addSummaryLog('±'.$param);
                 }
             }
         }
     }
 
-    /**
-     * Validate or correct ISBN.
-     *
-     * @throws Exception
-     */
-    private function processIsbn()
-    {
-        $isbn = $this->getParam('isbn') ?? '';
-        if (empty($isbn)) {
-            return;
-        }
 
-        // ISBN-13 à partir de 2007
-        $year = $this->findBookYear();
-        if ($year !== null && $year < 2007 && 10 === strlen($this->stripIsbn($isbn))) {
-            // juste mise en forme ISBN-10 pour 'isbn'
-            try {
-                $isbnMachine = new IsbnFacade($isbn);
-                $isbnMachine->validate();
-                $isbn10pretty = $isbnMachine->format('ISBN-10');
-                if ($isbn10pretty !== $isbn) {
-                    $this->setParam('isbn', $isbn10pretty);
-                    $this->log('ISBN10');
-                    //                    $this->notCosmetic = true;
-                }
-            } catch (Throwable $e) {
-                // ISBN not validated
-                $this->setParam(
-                    'isbn invalide',
-                    sprintf('%s %s', $isbn, $e->getMessage() ?? '')
-                );
-                $this->log(sprintf('ISBN invalide: %s', $e->getMessage()));
-                $this->notCosmetic = true;
-            }
-
-            return;
-        }
-
-        try {
-            $isbnMachine = new IsbnFacade($isbn);
-            $isbnMachine->validate();
-            $isbn13 = $isbnMachine->format('ISBN-13');
-        } catch (Throwable $e) {
-            // ISBN not validated
-            // TODO : bot ISBN invalide (queue, message PD...)
-            $this->setParam(
-                'isbn invalide',
-                sprintf('%s %s', $isbn, $e->getMessage() ?? '')
-            );
-            $this->log(sprintf('ISBN invalide: %s', $e->getMessage()));
-            $this->notCosmetic = true;
-
-            // TODO log file ISBNinvalide
-            return;
-        }
-
-        // Si $isbn13 et 'isbn2' correspond à ISBN-13 => suppression
-        if (isset($isbn13)
-            && $this->hasParamValue('isbn2')
-            && $this->stripIsbn($this->getParam('isbn2')) === $this->stripIsbn($isbn13)
-        ) {
-            $this->unsetParam('isbn2');
-        }
-
-        // ISBN-10 ?
-        $stripIsbn = $this->stripIsbn($isbn);
-        if (10 === mb_strlen($stripIsbn)) {
-            // ajout des tirets
-            $isbn10pretty = $isbn;
-
-            try {
-                $isbn10pretty = $isbnMachine->format('ISBN-10');
-            } catch (Throwable $e) {
-                unset($e);
-            }
-
-            // archivage ISBN-10 dans 'isbn2'
-            if (!$this->getParam('isbn2')) {
-                $this->setParam('isbn2', $isbn10pretty);
-            }
-            // sinon dans 'isbn3'
-            if ($this->hasParamValue('isbn2')
-                && $this->stripIsbn($this->getParam('isbn2')) !== $stripIsbn
-                && empty($this->getParam('isbn3'))
-            ) {
-                $this->setParam('isbn3', $isbn10pretty);
-            }
-            // delete 'isbn10' (en attendant modification modèle)
-            if ($this->hasParamValue('isbn10') && $this->stripIsbn($this->getParam('isbn10')) === $stripIsbn) {
-                $this->unsetParam('isbn10');
-            }
-        }
-
-        // ISBN correction
-        if ($isbn13 !== $isbn) {
-            $this->setParam('isbn', $isbn13);
-            $this->log('ISBN');
-            //            $this->notCosmetic = true;
-        }
-    }
 
     /**
      * Find year of book publication.
@@ -359,7 +242,7 @@ class OuvrageOptimize
      * @return int|null
      * @throws Exception
      */
-    private function findBookYear(): ?int
+    protected function findBookYear(): ?int
     {
         $annee = $this->getParam('année');
         if (!empty($annee) && is_numeric($annee)) {
@@ -373,12 +256,12 @@ class OuvrageOptimize
         return null;
     }
 
-    private function stripIsbn(string $isbn): string
+    protected function stripIsbn(string $isbn): string
     {
         return trim(preg_replace('#[^0-9Xx]#', '', $isbn));
     }
 
-    private function processTitle()
+    protected function processTitle()
     {
         $oldtitre = $this->getParam('titre');
         $this->langInTitle();
@@ -391,7 +274,7 @@ class OuvrageOptimize
         // 20-11-2019 : Retiré majuscule à sous-titre
 
         if ($this->getParam('titre') !== $oldtitre) {
-            $this->log('±titre');
+            $this->addSummaryLog('±titre');
         }
 
         $this->valideNumeroChapitre();
@@ -399,7 +282,7 @@ class OuvrageOptimize
         $this->upperCaseFirstLetter('titre chapitre');
     }
 
-    private function detectColon($param): bool
+    protected function detectColon($param): bool
     {
         // > 0 don't count a starting colon ":bla"
         if ($this->hasParamValue($param) && mb_strrpos($this->getParam('titre'), ':') > 0) {
@@ -409,7 +292,7 @@ class OuvrageOptimize
         return false;
     }
 
-    private function extractSubTitle(): void
+    protected function extractSubTitle(): void
     {
         // FIXED bug [[fu:bar]]
         if (!$this->getParam('titre') || WikiTextUtil::isWikify($this->getParam('titre'))) {
@@ -428,7 +311,7 @@ class OuvrageOptimize
         if (preg_match('#^(?<titre>[^:]{5,}):(?<st>.{5,40})$#', $this->getParam('titre'), $matches) > 0) {
             $this->setParam('titre', trim($matches['titre']));
             $this->setParam('sous-titre', trim($matches['st']));
-            $this->log('>sous-titre');
+            $this->addSummaryLog('>sous-titre');
         }
     }
 
@@ -440,7 +323,7 @@ class OuvrageOptimize
      *
      * @throws Exception
      */
-    private function googleBookUrl(string $param): void
+    protected function googleBookUrl(string $param): void
     {
         $url = $this->getParam($param);
         if (empty($url)
@@ -453,7 +336,7 @@ class OuvrageOptimize
             $template = GoogleLivresTemplate::createFromURL($url);
             if ($template) {
                 $this->setParam($param, $template->serialize());
-                $this->log('{Google}');
+                $this->addSummaryLog('{Google}');
                 $this->notCosmetic = true;
 
                 return;
@@ -470,7 +353,7 @@ class OuvrageOptimize
                 $e->getMessage()
             );
             $this->setParam($param, $errorValue);
-            $this->log('erreur URL');
+            $this->addSummaryLog('erreur URL');
             $this->notCosmetic = true;
             $this->major = true;
         }
@@ -479,7 +362,7 @@ class OuvrageOptimize
             $this->setParam($param, $goo);
             // cleaned tracking parameters in Google URL ?
             if (GoogleBooksUtil::isTrackingUrl($url)) {
-                $this->log('tracking');
+                $this->addSummaryLog('tracking');
                 $this->notCosmetic = true;
             }
         }
@@ -493,7 +376,7 @@ class OuvrageOptimize
      *
      * @throws Exception
      */
-    private function langInTitle(): void
+    protected function langInTitle(): void
     {
         if (preg_match(
                 '#^{{ ?(?:lang|langue) ?\| ?([a-z-]{2,5}) ?\| ?(?:texte=)?([^{}=]+)(?:\|dir=rtl)?}}$#i',
@@ -509,7 +392,7 @@ class OuvrageOptimize
             // opti : restreindre à ISBN zone 2 fr ?
             if ($lang === $this->getParam('langue')) {
                 $this->setParam('titre', $newtitre);
-                $this->log('°titre');
+                $this->addSummaryLog('°titre');
             }
 
             // desactivé à cause de l'exception décrite ci-dessus
@@ -521,7 +404,7 @@ class OuvrageOptimize
         }
     }
 
-    private function processDates()
+    protected function processDates()
     {
         // dewikification
         $params = ['date', 'année', 'mois', 'jour'];
@@ -539,86 +422,6 @@ class OuvrageOptimize
     }
 
     /**
-     * todo: move to AbstractWikiTemplate ?
-     * Correction des parametres rejetés à l'hydratation données.
-     *
-     * @throws Exception
-     */
-    private function cleanAndPredictErrorParameters()
-    {
-        if (empty($this->ouvrage->parametersErrorFromHydrate)) {
-            return;
-        }
-        $allParamsAndAlias = $this->ouvrage->getParamsAndAlias();
-
-        foreach ($this->ouvrage->parametersErrorFromHydrate as $name => $value) {
-            if (!is_string($name)) {
-                // example : 1 => "ouvrage collectif" from |ouvrage collectif|
-                continue;
-            }
-
-            // delete error parameter if no value
-            if (empty($value)) {
-                unset($this->ouvrage->parametersErrorFromHydrate[$name]);
-
-                continue;
-            }
-
-            $maxDistance = 1;
-            if (mb_strlen($name) >= 4) {
-                $maxDistance = 2;
-            }
-            if (mb_strlen($name) >= 8) {
-                $maxDistance = 3;
-            }
-
-            $predName = TextUtil::predictCorrectParam($name, $allParamsAndAlias, $maxDistance);
-            if ($predName && mb_strlen($name) >= 5) {
-                if (empty($this->getParam($predName))) {
-                    $predName = $this->ouvrage->getAliasParam($predName);
-                    $this->setParam($predName, $value);
-                    $this->log(sprintf('%s⇒%s ?', $name, $predName));
-                    $this->notCosmetic = true;
-                    unset($this->ouvrage->parametersErrorFromHydrate[$name]);
-                }
-            }
-        }
-    }
-
-    /**
-     * TODO : return "" instead of null ?
-     *
-     * @param $name
-     *
-     * @return string|null
-     * @throws Exception
-     */
-    private function getParam(string $name): ?string
-    {
-        return $this->ouvrage->getParam($name);
-    }
-
-    private function hasParamValue(string $name): bool
-    {
-        return $this->ouvrage->hasParamValue($name);
-    }
-
-    private function setParam($name, $value)
-    {
-        // todo : overwrite setParam() ?
-        if (!empty($value) || $this->ouvrage->getParam($name)) {
-            $this->ouvrage->setParam($name, $value);
-        }
-    }
-
-    private function log(string $string): void
-    {
-        if (!empty($string)) {
-            $this->summaryLog[] = trim($string);
-        }
-    }
-
-    /**
      * Bool ?
      * déwikification du titre : consensus Bistro 27 août 2011
      * idem  'titre chapitre'.
@@ -627,28 +430,28 @@ class OuvrageOptimize
      *
      * @throws Exception
      */
-    private function deWikifyExternalLink(string $param): void
+    protected function deWikifyExternalLink(string $param): void
     {
         if (empty($this->getParam($param))) {
             return;
         }
         if (preg_match('#^\[(http[^ \]]+) ([^]]+)]#i', $this->getParam($param), $matches) > 0) {
             $this->setParam($param, str_replace($matches[0], $matches[2], $this->getParam($param)));
-            $this->log('±'.$param);
+            $this->addSummaryLog('±'.$param);
 
             if (in_array($param, ['titre', 'titre chapitre'])) {
                 if (empty($this->getParam('lire en ligne'))) {
                     $this->setParam('lire en ligne', $matches[1]);
-                    $this->log('+lire en ligne');
+                    $this->addSummaryLog('+lire en ligne');
 
                     return;
                 }
-                $this->log('autre lien externe: '.$matches[1]);
+                $this->addSummaryLog('autre lien externe: '.$matches[1]);
             }
         }
     }
 
-    private function upperCaseFirstLetter($param)
+    protected function upperCaseFirstLetter($param)
     {
         if (!$this->hasParamValue($param)) {
             return;
@@ -667,7 +470,7 @@ class OuvrageOptimize
      *
      * @throws Exception
      */
-    private function typoDeuxPoints($param)
+    protected function typoDeuxPoints($param)
     {
         $origin = $this->getParam($param) ?? '';
         if (empty($origin)) {
@@ -698,11 +501,11 @@ class OuvrageOptimize
 
         if ($strTitle !== $origin) {
             $this->setParam($param, $strTitle);
-            $this->log(sprintf(':%s', $param));
+            $this->addSummaryLog(sprintf(':%s', $param));
         }
     }
 
-    private function valideNumeroChapitre()
+    protected function valideNumeroChapitre()
     {
         $value = $this->getParam('numéro chapitre');
         if (empty($value)) {
@@ -717,12 +520,7 @@ class OuvrageOptimize
             $this->unsetParam('numéro chapitre');
             $this->setParam('titre chapitre', $value);
         }
-        $this->log('≠numéro chapitre');
-    }
-
-    private function unsetParam($name)
-    {
-        $this->ouvrage->unsetParam($name);
+        $this->addSummaryLog('≠numéro chapitre');
     }
 
     /**
@@ -741,21 +539,21 @@ class OuvrageOptimize
             // todo bug {{citation bloc}} si "=" ou "|" dans texte de citation
             // Legacy : use {{début citation}} ... {{fin citation}}
             if (preg_match('#[=|]#', $extrait) > 0) {
-                $this->ouvrage->externalTemplates[] = (object)[
+                $this->optiTemplate->externalTemplates[] = (object)[
                     'template' => 'début citation',
                     '1' => '',
                     'raw' => '{{Début citation}}'.$extrait.'{{Fin citation}}',
                 ];
-                $this->log('{Début citation}');
+                $this->addSummaryLog('{Début citation}');
                 $this->notCosmetic = true;
             } else {
                 // StdClass
-                $this->ouvrage->externalTemplates[] = (object)[
+                $this->optiTemplate->externalTemplates[] = (object)[
                     'template' => 'citation bloc',
                     '1' => $extrait,
                     'raw' => '{{Citation bloc|'.$extrait.'}}',
                 ];
-                $this->log('{Citation bloc}');
+                $this->addSummaryLog('{Citation bloc}');
                 $this->notCosmetic = true;
             }
 
@@ -766,13 +564,13 @@ class OuvrageOptimize
         // "commentaire=bla" => {{Commentaire biblio|1=bla}}
         if ($this->hasParamValue('commentaire')) {
             $commentaire = $this->getParam('commentaire');
-            $this->ouvrage->externalTemplates[] = (object)[
+            $this->optiTemplate->externalTemplates[] = (object)[
                 'template' => 'commentaire biblio',
                 '1' => $commentaire,
                 'raw' => '{{Commentaire biblio|'.$commentaire.'}}',
             ];
             $this->unsetParam('commentaire');
-            $this->log('{commentaire}');
+            $this->addSummaryLog('{commentaire}');
             $this->notCosmetic = true;
         }
     }
@@ -786,7 +584,7 @@ class OuvrageOptimize
      *
      * @throws Exception
      */
-    private function moveDate2Year()
+    protected function moveDate2Year()
     {
         $date = $this->getParam('date') ?? false;
         if ($date) {
@@ -798,7 +596,7 @@ class OuvrageOptimize
         }
     }
 
-    private function predictFormatByPattern()
+    protected function predictFormatByPattern()
     {
         if (($value = $this->getParam('format'))) {
             // predict if 'format électronique'
@@ -819,57 +617,11 @@ class OuvrageOptimize
             ) {
                 $this->setParam('format livre', $value);
                 $this->unsetParam('format');
-                $this->log('format:livre?');
+                $this->addSummaryLog('format:livre?');
                 $this->notCosmetic = true;
             }
             // Certainement 'format électronique'...
         }
-    }
-
-    /**
-     * @return bool
-     * @throws Exception
-     */
-    public function checkMajorEdit(): bool
-    {
-        // Correction paramètre
-        if ($this->ouvrage->parametersErrorFromHydrate !== $this->original->parametersErrorFromHydrate) {
-            return true;
-        }
-        // Complétion langue ?
-        if ($this->hasParamValue('langue') && !$this->original->hasParamValue('langue')
-            && self::WIKI_LANGUAGE !== $this->getParam('langue')
-        ) {
-            return true;
-        }
-        // TODO replace conditions ci-dessous par event flagMajor()
-        // Retire le param/value 'langue' (pas major si conversion nom langue)
-        $datOuvrage = $this->ouvrage->toArray();
-        $datOriginal = $this->original->toArray();
-        unset($datOriginal['langue'], $datOuvrage['langue']);
-
-        // Modification données
-        if ($datOriginal !== $datOuvrage) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * @return array
-     */
-    public function getSummaryLog(): array
-    {
-        return $this->summaryLog;
-    }
-
-    /**
-     * @return OuvrageTemplate
-     */
-    public function getOuvrage(): OuvrageTemplate
-    {
-        return $this->ouvrage;
     }
 
     /**
@@ -879,7 +631,7 @@ class OuvrageOptimize
      *
      * @throws Exception
      */
-    private function processEditeur()
+    protected function processEditeur()
     {
         $editeur = $this->getParam('éditeur');
         if (empty($editeur)) {
@@ -926,7 +678,7 @@ class OuvrageOptimize
 
         if ($newEditeur !== $editeur) {
             $this->setParam('éditeur', $newEditeur);
-            $this->log('±éditeur');
+            $this->addSummaryLog('±éditeur');
             $this->notCosmetic = true;
         }
     }

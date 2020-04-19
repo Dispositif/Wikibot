@@ -11,24 +11,25 @@ namespace App\Domain\Models\Wiki;
 
 use App\Domain\Utils\ArrayProcessTrait;
 
+/**
+ * @notused todo inutile ?
+ * Class AbstractParametersObject
+ */
 abstract class AbstractParametersObject
 {
     use ArrayProcessTrait;
 
     protected $parametersValues;
 
-    /**
-     * todo extract.
-     */
-    public function generateSetterMethodList()
-    {
-        $list = '';
-        foreach ($this->parametersByOrder as $name) {
-            $method = $this->setterMethodName($name);
-            $list .= 'private function '.$method."() { }\n";
-        }
-        echo "<pre>$list</pre>";
-    }
+    //    public function generateSetterMethodList()
+    //    {
+    //        $list = '';
+    //        foreach ($this->parametersByOrder as $name) {
+    //            $method = $this->setterMethodName($name);
+    //            $list .= 'private function '.$method."() { }\n";
+    //        }
+    //        echo "<pre>$list</pre>";
+    //    }
 
     /**
      * Magic param setter.
@@ -51,7 +52,6 @@ abstract class AbstractParametersObject
      */
     public function toArray(): array
     {
-        // todo ADD ERROR VALUE
         return $this->deleteEmptyValueArray($this->parametersValues);
     }
 

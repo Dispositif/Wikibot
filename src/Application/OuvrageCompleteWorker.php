@@ -112,7 +112,7 @@ class OuvrageCompleteWorker
             // Final optimizing (with online predictions)
             $optimizer = new OuvrageOptimize($origin, $this->page, new Logger());
             $optimizer->doTasks();
-            $this->ouvrage = $optimizer->getOuvrage();
+            $this->ouvrage = $optimizer->getOptiTemplate();
             $this->summaryLog = array_merge($this->summaryLog, $optimizer->getSummaryLog());
             $this->notCosmetic = ($optimizer->notCosmetic || $this->notCosmetic);
 
@@ -276,14 +276,14 @@ class OuvrageCompleteWorker
     {
         $this->log->info($onlineOuvrage->serialize(true));
         $optimizer = new OuvrageOptimize($onlineOuvrage, $this->page, new Logger());
-        $onlineOptimized = ($optimizer)->doTasks()->getOuvrage();
+        $onlineOptimized = ($optimizer)->doTasks()->getOptiTemplate();
 
         $completer = new OuvrageComplete($this->ouvrage, $onlineOptimized, new Logger());
         $this->ouvrage = $completer->getResult();
 
         // todo move that optimizing in OuvrageComplete ?
         $optimizer = new OuvrageOptimize($this->ouvrage, $this->page, new Logger());
-        $this->ouvrage = $optimizer->doTasks()->getOuvrage();
+        $this->ouvrage = $optimizer->doTasks()->getOptiTemplate();
 
         $this->log->info('Summary', $completer->getSummaryLog());
 

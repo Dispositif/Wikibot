@@ -30,7 +30,7 @@ class OuvrageOptimizeTest extends TestCase
         $ouvrage = WikiTemplateFactory::create('ouvrage');
         $ouvrage->hydrate($data);
 
-        $optimized = (new OuvrageOptimize($ouvrage))->doTasks()->getOuvrage();
+        $optimized = (new OuvrageOptimize($ouvrage))->doTasks()->getOptiTemplate();
         $this::assertSame(
             $expected,
             $optimized->serialize(true)
@@ -161,7 +161,7 @@ class OuvrageOptimizeTest extends TestCase
         $parse = TemplateParser::parseAllTemplateByName('ouvrage', $raw);
         $origin = $parse['ouvrage'][0]['model'];
 
-        $optimized = (new OuvrageOptimize($origin))->doTasks()->getOuvrage();
+        $optimized = (new OuvrageOptimize($origin))->doTasks()->getOptiTemplate();
         $this::assertSame(
             '{{Ouvrage|langue=en|prénom1=Ernest|nom1=Nègre|titre=Toponymie|sous-titre=France|tome=3|éditeur=|année=|pages totales=|passage=15-27|isbn=978-2-600-02884-4|isbn2=2-600-02884-6|id=ZE}}',
             $optimized->serialize(true)
@@ -181,7 +181,7 @@ class OuvrageOptimizeTest extends TestCase
         $ouvrage = WikiTemplateFactory::create('ouvrage');
         $ouvrage->hydrate($data);
 
-        $optimized = (new OuvrageOptimize($ouvrage))->doTasks()->getOuvrage();
+        $optimized = (new OuvrageOptimize($ouvrage))->doTasks()->getOptiTemplate();
         $this::assertSame(
             $expected,
             $optimized->serialize(true)
@@ -282,7 +282,7 @@ class OuvrageOptimizeTest extends TestCase
         $origin = WikiTemplateFactory::create('ouvrage');
         $origin->hydrate($data);
 
-        $optimized = (new OuvrageOptimize($origin))->doTasks()->getOuvrage();
+        $optimized = (new OuvrageOptimize($origin))->doTasks()->getOptiTemplate();
         $this::assertSame(
             $expected,
             $optimized->serialize(true)
@@ -356,7 +356,7 @@ class OuvrageOptimizeTest extends TestCase
         $ouvrage->hydrateFromText('{{ouvrage|auteur=Marie Durand, Pierre Berger, Francois Morgand|titre=Bla}}');
 
         $optimizer = (new OuvrageOptimize($ouvrage))->doTasks();
-        $final = $optimizer->getOuvrage();
+        $final = $optimizer->getOptiTemplate();
 
         $this::assertSame(
             '{{Ouvrage|auteur1=Marie Durand|auteur2=Pierre Berger|auteur3=Francois Morgand|titre=Bla|éditeur=|année=|pages totales=|isbn=}}',
