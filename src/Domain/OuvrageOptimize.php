@@ -33,17 +33,9 @@ class OuvrageOptimize extends AbstractTemplateOptimizer
 
     const WIKI_LANGUAGE = 'fr';
 
-    protected $originTemplate;
-
-    protected $wikiPageTitle;
-
-    protected $summaryLog = [];
-
     public $notCosmetic = false;
 
     public $major = false;
-
-    protected $optiTemplate;
 
     /**
      * @return $this
