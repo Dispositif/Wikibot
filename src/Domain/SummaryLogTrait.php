@@ -11,7 +11,7 @@ declare(strict_types=1);
 namespace App\Domain;
 
 /**
- * Refac to inject class ?
+ * todo Refac to class ?
  * Trait SummaryLogTrait
  */
 trait SummaryLogTrait
@@ -24,6 +24,11 @@ trait SummaryLogTrait
     public function getSummaryLog(): array
     {
         return $this->summaryLog;
+    }
+
+    public function resetSummaryLog(): void
+    {
+        $this->summaryLog = [];
     }
 
     /**

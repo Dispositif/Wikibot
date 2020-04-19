@@ -14,6 +14,7 @@ use App\Domain\OuvrageComplete;
 use App\Domain\OuvrageFactory;
 use App\Domain\OuvrageOptimize;
 use App\Domain\Publisher\Wikidata2Ouvrage;
+use App\Domain\SummaryLogTrait;
 use App\Domain\Utils\TemplateParser;
 use App\Infrastructure\Logger;
 use App\Infrastructure\Memory;
@@ -32,6 +33,7 @@ use Throwable;
  */
 class OuvrageCompleteWorker
 {
+    use SummaryLogTrait;
     /**
      * Exclusion requête BnF/Google/etc
      * Format EAN ou ISBN10 sans tiret.
@@ -51,7 +53,6 @@ class OuvrageCompleteWorker
     private $raw = '';
     private $page; // article title
 
-    private $summaryLog = [];
     private $notCosmetic = false;
     private $major = false;
     /**
@@ -90,7 +91,7 @@ class OuvrageCompleteWorker
             $this->log->info($memory->getMemory(true));
 
             // initialise variables
-            $this->summaryLog = [];
+            $this->resetSummaryLog();
             $this->ouvrage = null;
             $this->notCosmetic = false;
             $this->major = false;
@@ -113,7 +114,7 @@ class OuvrageCompleteWorker
             $optimizer = new OuvrageOptimize($origin, $this->page, new Logger());
             $optimizer->doTasks();
             $this->ouvrage = $optimizer->getOptiTemplate();
-            $this->summaryLog = array_merge($this->summaryLog, $optimizer->getSummaryLog());
+            $this->summaryLog = array_merge($this->getSummaryLog(), $optimizer->getSummaryLog());
             $this->notCosmetic = ($optimizer->notCosmetic || $this->notCosmetic);
 
             /**
@@ -291,7 +292,7 @@ class OuvrageCompleteWorker
             $this->major = true;
         }
         $this->notCosmetic = ($completer->notCosmetic || $this->notCosmetic);
-        $this->summaryLog = array_merge($this->summaryLog, $completer->getSummaryLog());
+        $this->summaryLog = array_merge($this->getSummaryLog(), $completer->getSummaryLog());
         unset($optimizer);
         unset($completer);
     }
@@ -305,7 +306,7 @@ class OuvrageCompleteWorker
             'raw' => $this->raw,
             'opti' => $this->serializeFinalOpti(),
             'optidate' => date("Y-m-d H:i:s"),
-            'modifs' => mb_substr(implode(',', $this->summaryLog), 0, 250),
+            'modifs' => mb_substr(implode(',', $this->getSummaryLog()), 0, 250),
             'notcosmetic' => ($this->notCosmetic) ? 1 : 0,
             'major' => ($this->major) ? 1 : 0,
             'isbn' => substr($isbn13, 0, 20),
