@@ -209,7 +209,7 @@ class GoogleTransformer
 
         $optimizer = new OuvrageOptimize($ouvrage, null, new Logger());
         $optimizer->doTasks();
-        $ouvrage2 = $optimizer->getOuvrage();
+        $ouvrage2 = $optimizer->getOptiTemplate();
 
         return $ouvrage2->serialize();
     }

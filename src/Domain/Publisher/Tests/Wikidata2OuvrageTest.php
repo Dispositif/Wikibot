@@ -1,4 +1,9 @@
 <?php
+/**
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019/2020 © Philippe M. <dispositif@gmail.com>
+ * For the full copyright and MIT license information, please view the license file.
+ */
 
 declare(strict_types=1);
 
@@ -49,7 +54,7 @@ class Wikidata2OuvrageTest extends TestCase
         $optimizer->doTasks();
         $this::assertSame(
             '{{Ouvrage|auteur1=Bob|lien auteur1=Michel Houellebecq|titre=Ma vie|lien titre=La Carte et le Territoire|éditeur=|année=|passage=407-408 |pages totales=|isbn=}}',
-            $optimizer->getOuvrage()->serialize(true)
+            $optimizer->getOptiTemplate()->serialize(true)
         );
     }
 }

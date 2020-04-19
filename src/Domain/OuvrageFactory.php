@@ -65,6 +65,6 @@ class OuvrageFactory
         $proc = new OuvrageOptimize($ouvrage, null, new Logger());
         $proc->doTasks();
 
-        return $proc->getOuvrage();
+        return $proc->getOptiTemplate();
     }
 }
