@@ -33,6 +33,8 @@ class OuvrageOptimize extends AbstractTemplateOptimizer
 
     const WIKI_LANGUAGE = 'fr';
 
+    const PUBLISHER_FRWIKI_FILENAME = __DIR__.'/resources/data_editors_wiki.json';
+
     public $notCosmetic = false;
 
     public $major = false;
@@ -225,8 +227,6 @@ class OuvrageOptimize extends AbstractTemplateOptimizer
             }
         }
     }
-
-
 
     /**
      * Find year of book publication.
@@ -663,6 +663,16 @@ class OuvrageOptimize extends AbstractTemplateOptimizer
             $this->unsetParam('lien éditeur');
         }
 
+        if (empty($editeurUrl)) {
+            $editeurUrl = $this->predictPublisherWikiTitle($editeurStr);
+            if (!empty($editeurUrl) && $this->wikiPageTitle !== $editeurUrl) {
+                $this->addSummaryLog('+lien éditeur');
+                $this->notCosmetic = true;
+                $this->major = true;
+            }
+        }
+
+
         $newEditeur = $editeurStr;
         if (!empty($editeurUrl)) {
             $newEditeur = WikiTextUtil::wikilink($editeurStr, $editeurUrl);
@@ -673,5 +683,26 @@ class OuvrageOptimize extends AbstractTemplateOptimizer
             $this->addSummaryLog('±éditeur');
             $this->notCosmetic = true;
         }
+    }
+
+    /**
+     * todo move (cf. Article/Lien web optimizing)
+     *
+     * @param string $publisherName
+     *
+     * @return string|null
+     */
+    public function predictPublisherWikiTitle(string $publisherName): ?string
+    {
+        try {
+            $data = json_decode(file_get_contents(self::PUBLISHER_FRWIKI_FILENAME), true);
+        } catch (\Throwable $e) {
+            $this->log->error('Catch EDITOR_TITLES_FILENAME import '.$e->getMessage());
+        }
+        if (isset($data[$publisherName])) {
+            return (string)urldecode($data[$publisherName]);
+        }
+
+        return null;
     }
 }

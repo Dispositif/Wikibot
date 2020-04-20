@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Tests;
 
+use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\OuvrageOptimize;
 use App\Domain\Utils\TemplateParser;
 use App\Domain\WikiTemplateFactory;
@@ -40,6 +41,11 @@ class OuvrageOptimizeTest extends TestCase
     public function provideSomeParam()
     {
         return [
+            [
+                // importation wikilink editeur
+                ['éditeur' => 'Gallimard'],
+                '{{Ouvrage|titre=|éditeur=[[Éditions Gallimard|Gallimard]]|année=|pages totales=|isbn=}}',
+            ],
             [
                 // prédiction paramètre
                 ['citation' => 'blabla'],
@@ -100,7 +106,7 @@ class OuvrageOptimizeTest extends TestCase
             ],
             [
                 // fusion 'lien auteur', 'lien titre'
-                ['auteur' => 'Bob', 'lien auteur' => 'Bob (artiste)', 'titre' => 'bla', 'lien titre'=>'Bla'],
+                ['auteur' => 'Bob', 'lien auteur' => 'Bob (artiste)', 'titre' => 'bla', 'lien titre' => 'Bla'],
                 '{{Ouvrage|auteur1=[[Bob (artiste)|Bob]]|titre=[[Bla]]|éditeur=|année=|pages totales=|isbn=}}',
             ],
             [
@@ -129,7 +135,7 @@ class OuvrageOptimizeTest extends TestCase
             ],
             [
                 # lieu traduit
-                ['lieu' => 'London', 'langue'=> 'fr'],
+                ['lieu' => 'London', 'langue' => 'fr'],
                 '{{Ouvrage|langue=fr|titre=|lieu=Londres|éditeur=|année=|pages totales=|isbn=}}',
             ],
             [
@@ -191,16 +197,16 @@ class OuvrageOptimizeTest extends TestCase
     public function provideProcessTitle()
     {
         return [
-//            [
-//                // tome/volume en romain
-//                ['tome' => '4', 'volume' => '34'],
-//                '{{Ouvrage|titre=|volume=34|tome=4|éditeur=|année=|pages totales=|isbn=}}',
-//            ],
-//            [
-//                // tome/volume bizarre
-//                ['tome' => '4c', 'volume' => 'E'],
-//                '{{Ouvrage|titre=|volume=E|tome=4c|éditeur=|année=|pages totales=|isbn=}}',
-//            ],
+            //            [
+            //                // tome/volume en romain
+            //                ['tome' => '4', 'volume' => '34'],
+            //                '{{Ouvrage|titre=|volume=34|tome=4|éditeur=|année=|pages totales=|isbn=}}',
+            //            ],
+            //            [
+            //                // tome/volume bizarre
+            //                ['tome' => '4c', 'volume' => 'E'],
+            //                '{{Ouvrage|titre=|volume=E|tome=4c|éditeur=|année=|pages totales=|isbn=}}',
+            //            ],
             [
                 // bug 17 nov [[titre:sous-titre]]
                 ['title' => '[[Fu:bar]]'],
@@ -211,18 +217,18 @@ class OuvrageOptimizeTest extends TestCase
                 ['title' => '[[Fubar]]'],
                 '{{Ouvrage|titre=[[Fubar]]|éditeur=|année=|pages totales=|isbn=}}',
             ],
-//            [
-//                // desactivé (livre FR avec titre EN)
-//                // {{lang}} + [[ ]]
-//                ['title' => '{{lang|en|[[Fubar]]}}'],
-//                '{{Ouvrage|langue=en|titre=[[Fubar]]|éditeur=|année=|pages totales=|isbn=}}',
-//            ],
-//            [
-//                // desactivé (livre FR avec titre EN)
-//                // {{lang}}
-//                ['title' => '{{lang|en|fubar}}'],
-//                '{{Ouvrage|langue=en|titre=Fubar|éditeur=|année=|pages totales=|isbn=}}',
-//            ],
+            //            [
+            //                // desactivé (livre FR avec titre EN)
+            //                // {{lang}} + [[ ]]
+            //                ['title' => '{{lang|en|[[Fubar]]}}'],
+            //                '{{Ouvrage|langue=en|titre=[[Fubar]]|éditeur=|année=|pages totales=|isbn=}}',
+            //            ],
+            //            [
+            //                // desactivé (livre FR avec titre EN)
+            //                // {{lang}}
+            //                ['title' => '{{lang|en|fubar}}'],
+            //                '{{Ouvrage|langue=en|titre=Fubar|éditeur=|année=|pages totales=|isbn=}}',
+            //            ],
             [
                 // lien externe -> déplacé
                 ['title' => '[http://google.fr/bla Fubar]'],
@@ -294,7 +300,7 @@ class OuvrageOptimizeTest extends TestCase
         return [
             [
                 // bug iblis/isbn Mexican ISBN
-                ['isbn'=>'970-07-6492-3'],
+                ['isbn' => '970-07-6492-3'],
                 '{{Ouvrage|titre=|éditeur=|année=|pages totales=|isbn=978-970-07-6492-4|isbn2=970-07-6492-3}}',
             ],
             [
@@ -361,6 +367,19 @@ class OuvrageOptimizeTest extends TestCase
         $this::assertSame(
             '{{Ouvrage|auteur1=Marie Durand|auteur2=Pierre Berger|auteur3=Francois Morgand|titre=Bla|éditeur=|année=|pages totales=|isbn=}}',
             $final->serialize(true)
+        );
+    }
+
+    public function testPredictPublisherWikiTitle()
+    {
+        $optimizer = new OuvrageOptimize(new OuvrageTemplate());
+        $this::assertSame(
+            'Éditions Gallimard',
+            $optimizer->predictPublisherWikiTitle('Gallimard')
+        );
+        $this::assertSame(
+            null,
+            $optimizer->predictPublisherWikiTitle('fubar')
         );
     }
 }
