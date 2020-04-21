@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of dispositif/wikibot application (@github)
  * 2019/2020 © Philippe M. <dispositif@gmail.com>
@@ -9,7 +10,6 @@ declare(strict_types=1);
 
 namespace App\Application;
 
-use App\Domain\GoogleTransformer;
 use App\Domain\Utils\WikiTextUtil;
 use App\Infrastructure\DbAdapter;
 use App\Infrastructure\Memory;
@@ -17,7 +17,6 @@ use App\Infrastructure\ServiceFactory;
 use Exception;
 use LogicException;
 use Mediawiki\Api\UsageException;
-use Mediawiki\DataModel\EditInfo;
 use Normalizer;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -30,6 +29,8 @@ use Throwable;
  */
 class OuvrageEditWorker
 {
+    use EditSummaryTrait, TalkPageEditTrait;
+
     const TASK_NAME = 'Amélioration bibliographique';
     /**
      * poster ou pas le message en PD signalant les erreurs à résoudre
@@ -43,11 +44,9 @@ class OuvrageEditWorker
 
     private $db;
     private $bot;
-    private $wiki;
     private $wikiText;
 
     private $citationSummary;
-    private $citationVersion = '';
     private $errorWarning = [];
     private $importantSummary = [];
 
@@ -62,14 +61,15 @@ class OuvrageEditWorker
      * @var Memory
      */
     private $memory;
-    /**
-     * @var GoogleTransformer
-     */
-    private $refGooConverter;
+
     /**
      * @var LoggerInterface|NullLogger
      */
     private $log;
+    /**
+     * @var mixed
+     */
+    private $citationVersion;
 
     /**
      * OuvrageEditWorker constructor.
@@ -77,35 +77,18 @@ class OuvrageEditWorker
      * @param DbAdapter            $dbAdapter
      * @param WikiBotConfig        $bot
      * @param Memory               $memory
-     * @param GoogleTransformer    $refGoogleBook
      * @param LoggerInterface|null $log
-     *
-     * @throws UsageException
      */
     public function __construct(
         DbAdapter $dbAdapter,
         WikiBotConfig $bot,
         Memory $memory,
-        GoogleTransformer $refGoogleBook,
         ?LoggerInterface $log = null
     ) {
         $this->db = $dbAdapter;
         $this->bot = $bot;
         $this->memory = $memory;
-        $this->refGooConverter = $refGoogleBook;
         $this->log = $log ?? new NullLogger();
-
-        $this->wikiLogin(true);
-    }
-
-    /**
-     * @param bool $forceLogin
-     *
-     * @throws UsageException
-     */
-    private function wikiLogin($forceLogin = false): void
-    {
-        $this->wiki = ServiceFactory::wikiApi($forceLogin);
     }
 
     /**
@@ -142,10 +125,10 @@ class OuvrageEditWorker
 
         try {
             $title = $data[0]['page'];
-            echo "$title \n";
-            $page = new WikiPageAction($this->wiki, $title);
+            echo $title." \n";
+            $page = ServiceFactory::wikiPageAction($title, true);
         } catch (Exception $e) {
-            $this->log->warning("*** WikiPageAction error : $title \n");
+            $this->log->warning("*** WikiPageAction error : ".$title." \n");
             sleep(20);
 
             return false;
@@ -213,13 +196,12 @@ class OuvrageEditWorker
         }
 
         // Conversion <ref>http//books.google
-
-        try {
-            $this->wikiText = $this->refGooConverter->process($this->wikiText);
-        } catch (Throwable $e) {
-            $this->log->warning('refGooConverter->process exception : '.$e->getMessage());
-            unset($e);
-        }
+        //        try {
+        //            $this->wikiText = $this->refGooConverter->process($this->wikiText);
+        //        } catch (Throwable $e) {
+        //            $this->log->warning('refGooConverter->process exception : '.$e->getMessage());
+        //            unset($e);
+        //        }
 
         // EDIT THE PAGE
         if (!$this->wikiText) {
@@ -237,7 +219,7 @@ class OuvrageEditWorker
             // corona Covid :)
             $miniSummary .= (date('H:i') === '20:00') ? ' 🏥' : ''; // 🏥🦠
 
-            $editInfo = new EditInfo($miniSummary, $this->minorFlag, $this->botFlag, 5);
+            $editInfo = ServiceFactory::editInfo($miniSummary, $this->minorFlag, $this->botFlag, 5);
             $success = $page->editPage(Normalizer::normalize($this->wikiText), $editInfo);
         } catch (Throwable $e) {
             // Invalid CSRF token.
@@ -261,8 +243,8 @@ class OuvrageEditWorker
             }
 
             try {
-                if (self::EDIT_SIGNALEMENT) {
-                    $this->sendErrorMessage($data);
+                if (self::EDIT_SIGNALEMENT && !empty($this->errorWarning[$title])) {
+                    $this->sendOuvrageErrorsOnTalkPage($data, $this->log);
                 }
             } catch (Throwable $e) {
                 $this->log->warning('Exception in editPage() '.$e->getMessage());
@@ -350,6 +332,7 @@ class OuvrageEditWorker
     }
 
     /**
+     * todo extract
      * Vérifie alerte d'erreurs humaines.
      *
      * @param array $data
@@ -425,11 +408,12 @@ class OuvrageEditWorker
 
         // mention BnF si ajout donnée + ajout identifiant bnf=
         if (!empty($this->importantSummary) && preg_match('#BnF#i', $data['modifs'], $matches) > 0) {
-            $this->addSummaryTag('©BnF');
+            $this->addSummaryTag('©[[BnF]]');
         }
     }
 
     /**
+     * todo extract
      * Pour éviter les doublons dans signalements d'erreur.
      *
      * @param string $page
@@ -439,120 +423,6 @@ class OuvrageEditWorker
     {
         if (!isset($this->errorWarning[$page]) || !in_array($text, $this->errorWarning[$page])) {
             $this->errorWarning[$page][] = $text;
-        }
-    }
-
-    /**
-     * For substantive or ambiguous modifications done.
-     *
-     * @param string $tag
-     */
-    private function addSummaryTag(string $tag)
-    {
-        if (!in_array($tag, $this->importantSummary)) {
-            $this->importantSummary[] = $tag;
-        }
-    }
-
-    /**
-     * Generate wiki edition summary.
-     *
-     * @return string
-     */
-    public function generateSummary(): string
-    {
-        // Start summary with "WikiBotConfig" when using botflag, else "*"
-        $prefix = ($this->botFlag) ? 'bot' : '☆'; //🧐 🤖
-        // add "/!\" when errorWarning
-        $prefix .= (!empty($this->errorWarning)) ? ' ⚠️' : '';
-
-        // basic modifs
-        $citeSummary = implode(' ', $this->citationSummary);
-        // replace by list of modifs to verify by humans
-        if (!empty($this->importantSummary)) {
-            $citeSummary = implode(', ', $this->importantSummary);
-        }
-
-        $summary = sprintf(
-            '%s [%s/%s] %s %s : %s',
-            $prefix,
-            str_replace('v', '', $this->bot::getGitVersion()),
-            str_replace(['v0.', 'v1.'], '', $this->citationVersion),
-            self::TASK_NAME,
-            $this->nbRows,
-            $citeSummary
-        );
-
-        if (!empty($this->importantSummary)) {
-            $summary .= '...';
-        }
-
-        // shrink long summary if no important details to verify
-        if (empty($this->importantSummary)) {
-            $length = strlen($summary);
-            $summary = mb_substr($summary, 0, 80);
-            $summary .= ($length > strlen($summary)) ? '…' : '';
-        }
-
-        return $summary;
-    }
-
-    /**
-     * @param array $rows Collection of citations
-     *
-     * @return bool
-     */
-    private function sendErrorMessage(array $rows): bool
-    {
-        if (!isset($rows[0]) || empty($this->errorWarning[$rows[0]['page']])) {
-            return false;
-        }
-        $mainTitle = $rows[0]['page'];
-        if (!$this->botFlag) {
-            $this->log->notice("** Send Error Message on talk page. Wait 3...");
-        }
-        sleep(3);
-
-        // format wiki message
-        $errorList = '';
-        foreach ($this->errorWarning[$mainTitle] as $error) {
-            $errorList .= sprintf("* <span style=\"background:#FCDFE8\"><nowiki>%s</nowiki></span> \n", $error);
-        }
-
-        $diffStr = '';
-        try {
-            // get last bot revision ID
-            $main = new WikiPageAction($this->wiki, $mainTitle);
-            if (getenv('BOT_NAME') === $main->getLastRevision()->getUser()) {
-                $id = $main->getLastRevision()->getId();
-                $diffStr = sprintf(
-                    ' ([https://fr.wikipedia.org/w/index.php?title=%s&diff=%s diff])',
-                    str_replace(' ', '_', $mainTitle),
-                    $id
-                );
-            }
-        } catch (Throwable $e) {
-            unset($e);
-        }
-
-        $errorCategoryName = sprintf('Signalement %s', getenv('BOT_NAME'));
-
-        $errorMessage = file_get_contents(self::ERROR_MSG_TEMPLATE);
-        $errorMessage = str_replace('##CATEGORY##', $errorCategoryName, $errorMessage);
-        $errorMessage = str_replace('##ERROR LIST##', trim($errorList), $errorMessage);
-        $errorMessage = str_replace('##ARTICLE##', $mainTitle, $errorMessage);
-        $errorMessage = str_replace('##DIFF##', $diffStr, $errorMessage);
-
-        // Edit wiki talk page
-        try {
-            $talkPage = new WikiPageAction($this->wiki, 'Discussion:'.$mainTitle);
-            $editInfo = new EditInfo('Signalement erreur {ouvrage}', false, false, 5);
-
-            return $talkPage->addToBottomOrCreatePage($errorMessage, $editInfo);
-        } catch (Throwable $e) {
-            $this->log->warning('Exception after addToBottomOrCreatePage() '.$e->getMessage());
-
-            return false;
         }
     }
 

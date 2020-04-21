@@ -9,11 +9,13 @@ declare(strict_types=1);
 
 namespace App\Infrastructure;
 
+use App\Application\WikiPageAction;
 use Exception;
 use Mediawiki\Api\ApiUser;
 use Mediawiki\Api\MediawikiApi;
 use Mediawiki\Api\MediawikiFactory;
 use Mediawiki\Api\UsageException;
+use Mediawiki\DataModel\EditInfo;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 
@@ -32,7 +34,7 @@ class ServiceFactory
      */
     private static $wikiApi;
 
-    private static $dbConnection;
+    //    private static $dbConnection;
 
     /**
      * @var MediawikiApi
@@ -77,16 +79,19 @@ class ServiceFactory
         return $channel;
     }
 
-    /**
-     * @throws Exception
-     */
-    public static function closeAMQPconnection()
-    {
-        if (isset(self::$AMQPConnection)) {
-            self::$AMQPConnection->close();
-            self::$AMQPConnection = null;
-        }
-    }
+    // --Commented out by Inspection START (21/04/2020 02:45):
+    //    /**
+    //     * @throws Exception
+    //     */
+    //    public static function closeAMQPconnection()
+    //    {
+    //        if (isset(self::$AMQPConnection)) {
+    //            self::$AMQPConnection->close();
+    //            self::$AMQPConnection = null;
+    //        }
+    //    }
+    // --Commented out by Inspection STOP (21/04/2020 02:45)
+
 
     /**
      * todo? replace that singleton pattern ??? (multi-lang wiki?).
@@ -112,16 +117,36 @@ class ServiceFactory
         return self::$wikiApi;
     }
 
-    /**
-     * @return DbAdapter
-     */
-    public static function sqlConnection(): DbAdapter
-    {
-        if (isset(self::$dbConnection)) {
-            return self::$dbConnection;
-        }
-        self::$dbConnection = new DbAdapter();
+    //    /**
+    //     * @return DbAdapter
+    //     */
+    //    public static function sqlConnection(): DbAdapter
+    //    {
+    //        if (isset(self::$dbConnection)) {
+    //            return self::$dbConnection;
+    //        }
+    //        self::$dbConnection = new DbAdapter();
+    //
+    //        return self::$dbConnection;
+    //    }
 
-        return self::$dbConnection;
+    /**
+     * @param string $title
+     * @param bool   $forceLogin
+     *
+     * @return WikiPageAction
+     * @throws UsageException
+     * @throws Exception
+     */
+    public static function wikiPageAction(string $title, $forceLogin = false): WikiPageAction
+    {
+        $wiki = self::wikiApi($forceLogin);
+
+        return new WikiPageAction($wiki, $title);
+    }
+
+    public static function editInfo($summary = '', $minor = false, $bot = false, $maxLag = 5)
+    {
+        return new EditInfo($summary, $minor, $bot, $maxLag);
     }
 }

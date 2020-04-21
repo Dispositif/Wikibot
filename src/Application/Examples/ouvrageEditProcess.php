@@ -11,7 +11,6 @@ namespace App\Application\Examples;
 
 use App\Application\OuvrageEditWorker;
 use App\Application\WikiBotConfig;
-use App\Domain\GoogleTransformer;
 use App\Infrastructure\DbAdapter;
 use App\Infrastructure\Logger;
 use App\Infrastructure\Memory;
@@ -28,7 +27,7 @@ while (true) {
         $logger->verbose = true;
         $logger->debug = true;
         $process = new OuvrageEditWorker(
-            new DbAdapter(), new WikiBotConfig(), new Memory(), new GoogleTransformer(), $logger
+            new DbAdapter(), new WikiBotConfig(), new Memory(), $logger
         );
         $process->run();
         $count = 0;
