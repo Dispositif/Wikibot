@@ -129,18 +129,13 @@ class OuvrageOptimizeTest extends TestCase
                 '{{Ouvrage|titre=|lieu=Paris|éditeur=|année=|isbn=}}',
             ],
             [
-                # lieu non traduit
-                ['lieu' => 'London'],
-                '{{Ouvrage|titre=|lieu=London|éditeur=|année=|isbn=}}',
-            ],
-            [
                 # lieu traduit
-                ['lieu' => 'London', 'langue' => 'fr'],
-                '{{Ouvrage|langue=fr|titre=|lieu=Londres|éditeur=|année=|isbn=}}',
+                ['lieu' => 'London', 'langue' => 'en'],
+                '{{Ouvrage|langue=en|titre=|lieu=Londres|éditeur=|année=|isbn=}}',
             ],
             [
                 ['lieu' => 'Köln'],
-                '{{Ouvrage|titre=|lieu=Köln|éditeur=|année=|isbn=}}',
+                '{{Ouvrage|titre=|lieu=Cologne|éditeur=|année=|isbn=}}',
             ],
             [
                 ['lieu' => 'Fu'],
