@@ -165,6 +165,8 @@ abstract class OuvrageTemplateAlias extends AbstractWikiTemplate
             'orig-year' => 'année première édition',
             // erreurs fréquentes
             'coauteur' => 'co-auteur',
+            "nature de l'ouvrage" => 'nature ouvrage',
+            "nature de l’ouvrage" => 'nature ouvrage',
 
             //            'nopp' =>  poubelle
 
