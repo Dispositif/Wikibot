@@ -56,11 +56,11 @@ class AbstractWikiTemplateTest extends TestCase
         );
         $ouvrage->setParam('auteur2', 'Sophie');
         $this::assertSame(
-            '{{Ouvrage|nom1=Michou|auteur2=Sophie|prénom1=Bob|titre=Au soleil|éditeur=|année=|pages totales=|isbn=}}',
+            '{{Ouvrage|nom1=Michou|auteur2=Sophie|prénom1=Bob|titre=Au soleil|éditeur=|année=|isbn=}}',
             $ouvrage->serialize()
         );
         $this::assertSame(
-            '{{Ouvrage|prénom1=Bob|nom1=Michou|auteur2=Sophie|titre=Au soleil|éditeur=|année=|pages totales=|isbn=}}',
+            '{{Ouvrage|prénom1=Bob|nom1=Michou|auteur2=Sophie|titre=Au soleil|éditeur=|année=|isbn=}}',
             $ouvrage->serialize(true)
         );
     }

@@ -67,42 +67,42 @@ class OuvrageCompleteTest extends TestCase
                 // Wikidata+BnF completion of sitelinks
                 '{{Ouvrage|prénom1=Paul|nom1=Durand|titre=La vie}}',
                 '{{Ouvrage|prénom1=Paul|nom1=Durand|lien auteur1=Paul Durand (écrivain)|titre=La Vie|lien titre=La Vie (livre)}}',
-                '{{Ouvrage|prénom1=Paul|nom1=Durand|lien auteur1=Paul Durand (écrivain)|titre=La vie|lien titre=La Vie (livre)|éditeur=|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|prénom1=Paul|nom1=Durand|lien auteur1=Paul Durand (écrivain)|titre=La vie|lien titre=La Vie (livre)|éditeur=|année=|isbn=}}',
             ],
             [
                 // Wikidata+BnF completion of sitelinks : prénoms différents
                 '{{Ouvrage|prénom1=Paul A.|nom1=Durand|titre=La vie|isbn=1234}}',
                 '{{Ouvrage|prénom1=Paul-André|nom1=Durand|lien auteur1=Paul Durand (écrivain)|titre=La Vie|isbn=1234}}',
-                '{{Ouvrage|prénom1=Paul A.|nom1=Durand|lien auteur1=Paul Durand (écrivain)|titre=La vie|éditeur=|année=|pages totales=|isbn=1234}}',
+                '{{Ouvrage|prénom1=Paul A.|nom1=Durand|lien auteur1=Paul Durand (écrivain)|titre=La vie|éditeur=|année=|isbn=1234}}',
             ],
             [
                 // Google partiel
                 '{{Ouvrage|titre=}}',
                 '{{Ouvrage|titre=|présentation en ligne=https://books.google.com/books?id=day56Sz-rEEC}}',
-                '{{Ouvrage|titre=|éditeur=|année=|pages totales=|isbn=|lire en ligne=https://books.google.com/books?id=day56Sz-rEEC}}',
+                '{{Ouvrage|titre=|éditeur=|année=|isbn=|lire en ligne=https://books.google.com/books?id=day56Sz-rEEC}}',
             ],
             [
                 // Google total
                 '{{Ouvrage|titre=}}',
                 '{{Ouvrage|titre=|lire en ligne=https://books.google.com/books?id=day56Sz-rEEC}}',
-                '{{Ouvrage|titre=|éditeur=|année=|pages totales=|isbn=|lire en ligne=https://books.google.com/books?id=day56Sz-rEEC}}',
+                '{{Ouvrage|titre=|éditeur=|année=|isbn=|lire en ligne=https://books.google.com/books?id=day56Sz-rEEC}}',
             ],
             [
                 //isbn invalide
                 '{{Ouvrage|titre=}}',
                 '{{Ouvrage|titre=|isbn invalide=bla}}',
-                '{{Ouvrage|titre=|éditeur=|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=|éditeur=|année=|isbn=}}',
             ],
             // date/année
             [
                 '{{Ouvrage|titre=}}',
                 '{{Ouvrage|titre=|année=2009}}',
-                '{{Ouvrage|titre=|éditeur=|année=2009|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=|éditeur=|année=2009|isbn=}}',
             ],
             [
                 '{{Ouvrage|titre=|date=2011}}',
                 '{{Ouvrage|titre=|année=2009}}',
-                '{{Ouvrage|titre=|éditeur=|date=2011|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=|éditeur=|date=2011|isbn=}}',
             ],
             /*
              * titre + sous-titre
@@ -110,48 +110,48 @@ class OuvrageCompleteTest extends TestCase
             [
                 '{{Ouvrage|titre = Loiret Joli|titre chapitre=Bla}}',
                 '{{Ouvrage|titre = Loiret Joli|sous-titre=un département}}',
-                '{{Ouvrage|titre=Loiret Joli|éditeur=|année=|pages totales=|isbn=|titre chapitre=Bla}}',
+                '{{Ouvrage|titre=Loiret Joli|éditeur=|année=|isbn=|titre chapitre=Bla}}',
             ],
             // titres identiques mais sous-titre manquant
             [
                 '{{Ouvrage|titre = Loiret Joli}}',
                 '{{Ouvrage|titre = Loiret Joli|sous-titre=un département}}',
-                '{{Ouvrage|titre=Loiret Joli|sous-titre=un département|éditeur=|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=Loiret Joli|sous-titre=un département|éditeur=|année=|isbn=}}',
             ],
             // punctuation titre différente, sous-titre manquant
             [
                 '{{Ouvrage|titre = Loiret Joli !!!!}}',
                 '{{Ouvrage|titre = Loiret Joli|sous-titre=un département}}',
-                '{{Ouvrage|titre=Loiret Joli !!!!|sous-titre=un département|éditeur=|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=Loiret Joli !!!!|sous-titre=un département|éditeur=|année=|isbn=}}',
             ],
             // sous-titre inclus dans titre original
             [
                 '{{Ouvrage|titre = Loiret Joli : un département}}',
                 '{{Ouvrage|titre = Loiret Joli|sous-titre=un département}}',
-                '{{Ouvrage|titre=Loiret Joli|sous-titre=un département|éditeur=|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=Loiret Joli|sous-titre=un département|éditeur=|année=|isbn=}}',
             ],
             // sous-titre absent online
             [
                 '{{Ouvrage|titre = Loiret Joli|sous-titre=un département}}',
                 '{{Ouvrage|titre = Loiret Joli}}',
-                '{{Ouvrage|titre=Loiret Joli|sous-titre=un département|éditeur=|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=Loiret Joli|sous-titre=un département|éditeur=|année=|isbn=}}',
             ],
             // titre absent online
             [
                 '{{Ouvrage|auteur1=bla|titre = Loiret Joli}}',
                 '{{Ouvrage|auteur1=bla}}',
-                '{{Ouvrage|auteur1=bla|titre=Loiret Joli|éditeur=|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|auteur1=bla|titre=Loiret Joli|éditeur=|année=|isbn=}}',
             ],
             // titre volume existe -> skip
             [
                 '{{Ouvrage|titre = Loiret Joli|titre volume=Bla}}',
                 '{{Ouvrage|titre = Loiret Joli|sous-titre=Fubar}}',
-                '{{Ouvrage|titre=Loiret Joli|titre volume=Bla|éditeur=|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=Loiret Joli|titre volume=Bla|éditeur=|année=|isbn=}}',
             ],
             [
                 '{{Ouvrage|titre = Loiret Joli|collection=Bla}}',
                 '{{Ouvrage|titre = Loiret Joli|sous-titre=Fubar}}',
-                '{{Ouvrage|titre=Loiret Joli|éditeur=|collection=Bla|année=|pages totales=|isbn=}}',
+                '{{Ouvrage|titre=Loiret Joli|éditeur=|collection=Bla|année=|isbn=}}',
             ],
         ];
     }

@@ -1,5 +1,6 @@
 ## Versions des règles de corrections/complètement ##
 
+* 0.80 : pas d'ajout 'pages totales=' si vide
 * 0.79 : +wikification éditeur (d'après alias Wikidata)
 * 0.78 : ordre 'lieu,éditeur', pas traduction ville si !fr [Éduarel]
 * 0.77 : wikif [auteur], [titre]

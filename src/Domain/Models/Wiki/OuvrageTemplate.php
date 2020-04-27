@@ -31,7 +31,7 @@ class OuvrageTemplate extends OuvrageTemplateAlias implements WikiTemplateInterf
             'titre' => '', // obligatoire
             'éditeur' => '',
             'année' => '', // géré dans serialize
-            'pages totales' => '',
+            //            'pages totales' => '', // jamais de complètement par humains.
             //            'passage' => '', // pas pertinent sur biblio et liste oeuvres
             'isbn' => '',
         ];
