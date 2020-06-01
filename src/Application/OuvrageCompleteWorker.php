@@ -88,7 +88,7 @@ class OuvrageCompleteWorker
                 $this->raw
             );
 
-            $this->log->info($memory->getMemory(true));
+            $this->log->debug($memory->getMemory(true));
 
             // initialise variables
             $this->resetSummaryLog();
@@ -187,7 +187,7 @@ class OuvrageCompleteWorker
         sleep(10);
 
         try {
-            $this->log->info('BIBLIO NAT FRANCE...');
+            $this->log->debug('BIBLIO NAT FRANCE...');
             // BnF sait pas trouver un vieux livre (10) d'après ISBN-13... FACEPALM !
             $bnfOuvrage = null;
             if ($isbn10) {
@@ -213,11 +213,16 @@ class OuvrageCompleteWorker
                 }
             }
         } catch (Throwable $e) {
-            echo sprintf(
-                "*** ERREUR BnF Isbn Search %s %s %s \n",
-                $e->getMessage(),
-                $e->getFile(),
-                $e->getLine()
+            if (strpos($e->getMessage(), 'Could not resolve host') !== false) {
+                throw $e;
+            }
+            $this->log->error(
+                sprintf(
+                    "*** ERREUR BnF Isbn Search %s %s %s \n",
+                    $e->getMessage(),
+                    $e->getFile(),
+                    $e->getLine()
+                )
             );
         }
 
@@ -228,7 +233,7 @@ class OuvrageCompleteWorker
                 $googleOuvrage = OuvrageFactory::GoogleFromIsbn($isbn);
                 $this->completeOuvrage($googleOuvrage);
             } catch (Throwable $e) {
-                echo "*** ERREUR GOOGLE Isbn Search ***".$e->getMessage()."\n";
+                $this->log->warning("*** ERREUR GOOGLE Isbn Search ***".$e->getMessage());
                 if (strpos($e->getMessage(), 'Could not resolve host: www.googleapis.com') === false) {
                     throw $e;
                 }
@@ -244,7 +249,7 @@ class OuvrageCompleteWorker
                     $this->completeOuvrage($openLibraryOuvrage);
                 }
             } catch (Throwable $e) {
-                echo '**** ERREUR OpenLibrary Isbn Search';
+                $this->log->warning('**** ERREUR OpenLibrary Isbn Search');
             }
         }
     }
@@ -316,7 +321,7 @@ class OuvrageCompleteWorker
         // Json ?
         $result = $this->queueAdapter->sendCompletedData($finalData);
 
-        $this->log->notice($result ? 'OK DB' : 'erreur sendCompletedData()');
+        $this->log->debug($result ? 'OK DB' : 'erreur sendCompletedData()');
     }
 
     /**

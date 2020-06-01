@@ -19,13 +19,20 @@ use Throwable;
 include __DIR__.'/../myBootstrap.php';
 
 // sort of process management
+$logger = new Logger();
+$logger->debug = true;
 $count = 0;
 while (true) {
     try {
         echo "*** NEW COMPLETE PROCESS\n";
-        dump('Google quota : ', (new GoogleApiQuota())->getCount());
-        $logger = new Logger();
-        $logger->debug = true;
+        $googleQuota = (new GoogleApiQuota())->getCount();
+        dump('Google quota : ', $googleQuota);
+        if ($googleQuota >= 950) {
+            $logger->warning(' Quota Google dépassé dans ouvrageCompleteProcess ('.$googleQuota.'). Sleep 4h');
+            sleep(60 * 60 * 4);
+            continue;
+        }
+
         $process = new OuvrageCompleteWorker(new DbAdapter(), $logger);
         $process->run();
         $count = 0; // reinitialise boucle erreur
@@ -44,6 +51,15 @@ while (true) {
             sleep(60 * 60 * 12);
             (new SMS())->send('SQL refusé');
             echo "Wake up\n";
+            continue;
+        }
+        // cURL error 6: Could not resolve
+        if (strpos($e->getMessage(), 'cURL error 6: Could not resolve') !== false) {
+            $count = 0;
+            $logger->warning('DNS refusé. Sleep 5min.');
+            sleep(60 * 5);
+            echo "Wake up\n";
+            continue;
         }
         if (strpos($e->getMessage(), 'Quota Google') !== false
             || strpos($e->getMessage(), 'Daily Limit Exceeded') !== false
@@ -52,6 +68,7 @@ while (true) {
             echo "Google Quota dépassé : sleep 12h\n";
             sleep(60 * 60 * 12);
             echo "Wake up\n";
+            continue;
         }
         if ($count > 2) {
             echo "\n3 erreurs à la suite => exit\n";

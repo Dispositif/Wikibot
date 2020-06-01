@@ -29,17 +29,18 @@ class Logger extends AbstractLogger implements LoggerInterface
     public function log($level, $message, array $context = [])
     {
         if (is_array($message)) {
-            var_dump($message);
+            dump($message);
             echo "Envoi de array comme message de log...\n";
 
             return;
         }
         $message = trim($message);
+        $date = date('Y-m-d H:i');
         switch ($level) {
             case 'emergency':
             case 'alert':
             case 'critical':
-                echo Color::BG_RED.Color::WHITE.">>> ".$message."\n".Color::NORMAL;
+                echo Color::BG_RED.Color::WHITE."[$level] ".$date.' : '.$message."\n".Color::NORMAL;
                 if (!empty($context)) {
                     dump($context);
                 }
@@ -47,20 +48,20 @@ class Logger extends AbstractLogger implements LoggerInterface
                 break;
             case 'error':
             case 'warning':
-                echo Color::BG_YELLOW.Color::BLACK.">>> ".$message."\n".Color::NORMAL;
+            echo Color::BG_YELLOW.Color::BLACK."[$level] ".$date.' : '.$message."\n".Color::NORMAL;
                 if (!empty($context)) {
                     dump($context);
                 }
                 break;
             case 'notice':
-                echo ">>> ".$message."\n".Color::NORMAL;
+                echo "[$level] ".$message."\n".Color::NORMAL;
                 if (!empty($context)) {
                     dump($context);
                 }
                 break;
             case 'info':
                 if ($this->verbose || $this->debug) {
-                    echo Color::GRAY."> ".$message."\n".Color::NORMAL;
+                    echo Color::GRAY."[$level] ".$message."\n".Color::NORMAL;
                     if (!empty($context)) {
                         dump($context);
                     }
@@ -68,7 +69,7 @@ class Logger extends AbstractLogger implements LoggerInterface
                 break;
             case 'debug':
                 if ($this->debug) {
-                    echo Color::GRAY."> ".$message."\n".Color::NORMAL;
+                    echo Color::GRAY."[$level] ".$message."\n".Color::NORMAL;
                     if (!empty($context)) {
                         dump($context);
                     }
