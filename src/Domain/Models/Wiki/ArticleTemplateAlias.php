@@ -118,5 +118,6 @@ abstract class ArticleTemplateAlias extends AbstractWikiTemplate
             'coauthors' => 'co-auteur',
 
             'type' => 'nature article',
+            'nature document' => 'nature article',
         ];
 }

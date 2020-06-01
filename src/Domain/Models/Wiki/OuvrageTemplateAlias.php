@@ -167,7 +167,8 @@ abstract class OuvrageTemplateAlias extends AbstractWikiTemplate
             'coauteur' => 'co-auteur',
             "nature de l'ouvrage" => 'nature ouvrage',
             "nature de l’ouvrage" => 'nature ouvrage',
-
+            "nature document" => 'nature ouvrage',
+            "nature du document" => 'nature ouvrage',
             //            'nopp' =>  poubelle
 
         ];
