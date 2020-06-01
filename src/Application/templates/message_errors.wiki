@@ -10,5 +10,6 @@ pas à corriger moi-même. J'ai signalé ces erreurs avec des commentaires (invi
 
 ##ERROR LIST##
 
-Après correction, vous pouvez supprimer ce message, sinon je le ferai moi-même.<br/>
+Après correction, je vous invite à supprimer ce message pour qu'un autre contributeur ne soit pas incité
+à refaire la même correction. À défaut, je le ferai moi-même.<br/>
 Le robot ~~~~

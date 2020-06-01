@@ -45,12 +45,19 @@ class Monitor
 
     public function run(): void
     {
+        $i = 0;
         while (true) {
+            $i++;
             echo "\n-----MONITOR------------------------\n\n";
             //$memory->echoMemory(true);
 
             $this->pageProcess();
             sleep(self::SLEEP_TIME);
+
+            if ($i > 1000) {
+                echo "1000 monitoring => break";
+                break;
+            }
         }
     }
 
