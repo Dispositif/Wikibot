@@ -25,7 +25,7 @@ while (true) {
         echo "*** NEW EDIT PROCESS\n";
         $logger = new Logger();
         $logger->verbose = true;
-        $logger->debug = true;
+//        $logger->debug = true;
         $process = new OuvrageEditWorker(
             new DbAdapter(), new WikiBotConfig(), new Memory(), $logger
         );

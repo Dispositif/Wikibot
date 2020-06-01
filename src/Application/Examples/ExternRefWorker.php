@@ -18,7 +18,7 @@ use Codedungeon\PHPCliColors\Color;
 use Throwable;
 
 include __DIR__.'/../ZiziBot_Bootstrap.php';
-// VOIR EN BAS
+// todo VOIR EN BAS
 
 /**
  * TODO move PROCESS FROM BOTTOM
