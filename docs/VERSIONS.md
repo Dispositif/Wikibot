@@ -1,5 +1,6 @@
 ## Versions des règles de corrections/complètement ##
 
+* 0.82 : distinction éditeur/réimpression/numéro d'édition (Citebook:edition)
 * 0.81 : ville d'édition toujours traduite FR
 * 0.80 : pas d'ajout 'pages totales=' si vide
 * 0.79 : +wikification éditeur (d'après alias Wikidata)

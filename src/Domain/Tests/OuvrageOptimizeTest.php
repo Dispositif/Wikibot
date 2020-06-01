@@ -41,6 +41,20 @@ class OuvrageOptimizeTest extends TestCase
     public function provideSomeParam()
     {
         return [
+            // "edition" [ordinal number] from {Cite book} => "réimpression" (année) ou "numéro d'édition"
+            // (origyear=>"année première édition")
+            [
+                ['edition' => '3rd'],
+                "{{Ouvrage|titre=|éditeur=|année=|numéro d'édition=3|isbn=}}",
+            ],
+            [
+                ['edition' => '1985'],
+                '{{Ouvrage|titre=|éditeur=|année=|réimpression=1985|isbn=}}',
+            ],
+            [
+                ['edition' => '1985', 'éditeur' => 'TOTO'],
+                '{{Ouvrage|titre=|éditeur=TOTO|année=|réimpression=1985|isbn=}}',
+            ],
             [
                 // importation wikilink editeur
                 ['éditeur' => 'Gallimard'],

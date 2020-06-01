@@ -118,7 +118,7 @@ abstract class OuvrageTemplateAlias extends AbstractWikiTemplate
             //.org/wiki/Discussion_mod%C3%A8le:Ouvrage#Paramètre_"autres"
             'trans_title' => 'titre traduit',
             'type' => 'nature ouvrage',
-            'edition' => "numéro d'édition",
+            'edition' => "numéro d'édition", // {cite book}. si année => "réimpression"
             //            'series' => '',
             'date' => 'date',
             'month' => 'mois',

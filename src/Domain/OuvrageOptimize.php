@@ -54,6 +54,9 @@ class OuvrageOptimize extends AbstractTemplateOptimizer
 
         $this->processTitle();
         $this->convertLienAuteurTitre();
+
+        $this->processEditionCitebook();
+
         $this->processEditeur();
         $this->processDates();
         $this->externalTemplates();
@@ -700,5 +703,71 @@ class OuvrageOptimize extends AbstractTemplateOptimizer
         }
 
         return null;
+    }
+
+    /**
+     * {Cite book}:"edition" [ordinal number] => {ouvrage}::"numéro d'édition" (ou "réimpression" [année])
+     * {Cite book}:origyear => {ouvrage}:"année première édition"
+     * https://wstat.fr/template/index.php?title=Ouvrage&query=paramvalue&param=edition&limit=5000&searchtext=.&searchre=1
+     * Pas mal de corrupted sur "éditions"
+     * https://wstat.fr/template/index.php?title=Ouvrage&query=paramvalue&param=%C3%A9dition&limit=5000&searchtext=.&searchre=1
+     */
+    private function processEditionCitebook(): void
+    {
+        $this->correctReimpressionByParam("numéro d'édition");
+        $this->correctReimpressionByParam("éditeur-doublon");
+        $this->correctReimpressionByParam("éditeur");
+    }
+
+    private function correctReimpressionByParam(string $param): void
+    {
+        $editionNumber = $this->getParam($param);
+        if (!empty($editionNumber) && $this->isEditionYear($editionNumber)) {
+            $this->unsetParam($param);
+            $this->setParam('réimpression', $editionNumber);
+            $this->addSummaryLog('+réimpression');
+            $this->notCosmetic = true;
+
+            return;
+        }
+
+        $editionOrdinal = $this->getEditionOrdinalNumber($editionNumber);
+        if (!empty($editionNumber) && !$this->isEditionYear($editionNumber) && $editionOrdinal) {
+            $this->unsetParam($param);
+            $this->setParam("numéro d'édition", $editionOrdinal);
+            $this->addSummaryLog("±numéro d'édition");
+            $this->notCosmetic = true;
+        }
+    }
+
+    private function getEditionOrdinalNumber(?string $str): ?string
+    {
+        if (!$str) {
+            return null;
+        }
+        // {{5e}}
+        if (preg_match('#^\{\{([0-9]+)e\}\}$#', $str, $matches)) {
+            return $matches[1];
+        }
+        // "1st ed."
+        if (preg_match(
+            '#^([0-9]+) ?(st|nd|rd|th|e|ème)? ?(ed|ed\.|edition|reprint|published|publication)?$#i',
+            $str,
+            $matches
+        )
+        ) {
+            return $matches[1];
+        }
+
+        return null;
+    }
+
+    private function isEditionYear(string $str): bool
+    {
+        if (preg_match('#^[0-9]{4}$#', $str) && intval($str) > 1700 && intval($str) < 2025) {
+            return true;
+        }
+
+        return false;
     }
 }
