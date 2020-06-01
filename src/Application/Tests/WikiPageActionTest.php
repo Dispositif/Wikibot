@@ -71,6 +71,13 @@ class WikiPageActionTest extends TestCase
                 '{{Ouvrage|langue=fr|titre=BLO}}',
                 'zzzzzzz {{Ouvrage|langue=fr|titre=BLO}} zzzz {{fr}} {{Ouvrage|langue=fr|titre=BLO}} zerqsdfqs',
             ],
+            //            [
+            //                // TODO
+            //                '{{en}}{{Ouvrage |auteur=Mary|titre=Labour}}',
+            //                '{{Ouvrage |auteur=Mary|titre=Labour}}',
+            //                '{{Ouvrage |auteur=Mary |titre=BETTER}}',
+            //                '{{Ouvrage |langue=en |auteur=Mary |titre=BETTER}}',
+            //            ],
         ];
     }
 

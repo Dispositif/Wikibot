@@ -265,8 +265,9 @@ class WikiPageAction
                 // example : {{en}} {{template|lang=ru}}
                 // BUG: prefix {{de}}  incompatible avec langue de {{Ouvrage |langue= |prénom1=Hartmut |nom1=Atsma
                 if (!empty($lang) && self::SKIP_LANG_INDICATOR !== $lang
-                    && !preg_match('#lang(ue)?='.$lang.'#i', $tplReplace)
-                    && !preg_match('#\| ?langue= ?\|#', $tplReplace)
+                    && preg_match('#langue *=#', $tplReplace)
+                    && !preg_match('#langue *= ?'.$lang.'#i', $tplReplace)
+                    && !preg_match('#\| ?langue *= ?\n?\|#', $tplReplace)
                 ) {
                     echo sprintf(
                         'prefix %s incompatible avec langue de %s',
@@ -278,8 +279,15 @@ class WikiPageAction
                     return $text; // return null ?
                 }
 
-                // FIX dirty : {{en}} mais pas de langue sur template...
-                if ($lang && preg_match('#\| ?langue= ?\|#', $tplReplace) > 0) {
+                //                // FIX dirty mai 2020 : {{en}} mais pas de paramètre sur template...
+                //                if ($lang && !preg_match('#\| ?langue *= ?\n?\|#', $tplReplace) > 0) {
+                //                    $previousTpl = $tplReplace;
+                //                    $tplReplace = str_replace('langue=', 'langue='.$lang, $tplReplace);
+                //                    $text = str_replace($previousTpl, $tplReplace, $text);
+                //                }
+
+                // FIX dirty : {{en}} mais pas langue= non définie sur new template...
+                if ($lang && preg_match('#\| ?langue *= ?\n?\|#', $tplReplace) > 0) {
                     $previousTpl = $tplReplace;
                     $tplReplace = str_replace('langue=', 'langue='.$lang, $tplReplace);
                     $text = str_replace($previousTpl, $tplReplace, $text);
