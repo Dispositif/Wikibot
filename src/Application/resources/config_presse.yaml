@@ -73,12 +73,13 @@ lesechos.fr:
     template: auto
     périodiques: '[[Les Échos]]'
 
-archives.org:
-    # caca URL proposée ne retient pas mot de recherche
-    desactived
-    site: ''
+web.archive.org:
+    # caca : URL proposée ne retient pas mot de recherche
+    template: lien web
+    site: '[[Internet Archive]]'
 sports-reference.com:
-    site: '[[Sports Reference]]'
+    desactived
+#site: '[[Sports Reference]]'
 #ouest-france.fr:
 #letempsarchives.ch:
 #jstor.org:
