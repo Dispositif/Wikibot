@@ -126,7 +126,7 @@ class TalkBotConfig extends WikiBotConfig
      */
     private function getRandomSentence(): string
     {
-        $sentences = file(self::BOT_TALK_FILE);
+        $sentences = file(self::BOT_TALK_FILE, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
         if (!$sentences) {
             throw new ConfigException('Pas de phrases disponibles pour TalkBot');
         }

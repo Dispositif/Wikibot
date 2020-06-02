@@ -1,4 +1,9 @@
 <?php
+/**
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019/2020 © Philippe M. <dispositif@gmail.com>
+ * For the full copyright and MIT license information, please view the license file.
+ */
 
 declare(strict_types=1);
 
@@ -23,7 +28,7 @@ $bot = new WikiBotConfig();
 
 // Get raw list of articles
 $filename = __DIR__.'/../resources/plume.txt';
-$titles = file($filename);
+$titles = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 $auto = false;
 
 

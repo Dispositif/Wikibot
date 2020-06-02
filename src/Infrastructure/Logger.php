@@ -48,7 +48,7 @@ class Logger extends AbstractLogger implements LoggerInterface
                 break;
             case 'error':
             case 'warning':
-            echo Color::BG_YELLOW.Color::BLACK."[$level] ".$date.' : '.$message."\n".Color::NORMAL;
+                echo Color::BG_YELLOW.Color::BLACK."[$level] ".$date.' : '.$message."\n".Color::NORMAL;
                 if (!empty($context)) {
                     dump($context);
                 }
@@ -80,7 +80,11 @@ class Logger extends AbstractLogger implements LoggerInterface
 
     private function logInFile($level, string $message)
     {
-        file_put_contents(__DIR__.'/resources/critical.log', date('d-m-Y H:i')." : $level : ".$message, FILE_APPEND);
+        file_put_contents(
+            __DIR__.'/resources/critical.log',
+            date('d-m-Y H:i')." : $level : ".$message.PHP_EOL,
+            'E_APPEND'
+        );
     }
 
 }

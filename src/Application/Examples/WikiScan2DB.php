@@ -25,7 +25,7 @@ include __DIR__.'/../myBootstrap.php';
  */
 $process = new WikiScan2DB();
 
-$articles = file(__DIR__.'/../resources/importISBN_nov.txt');
+$articles = file(__DIR__.'/../resources/importISBN_nov.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
 foreach ($articles as $article) {
     $article = trim($article);
