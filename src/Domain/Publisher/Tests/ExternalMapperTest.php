@@ -1,4 +1,9 @@
 <?php
+/**
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019/2020 © Philippe M. <dispositif@gmail.com>
+ * For the full copyright and MIT license information, please view the license file.
+ */
 
 declare(strict_types=1);
 
@@ -60,7 +65,7 @@ class ExternalMapperTest extends TestCase
                     'url' => 'http://journals.openedition.org/encyclopedieberbere/2434',
                     'consulté le' => '11-04-2020',
                     'date' => '01-07-1986',
-                    'url-access' => 'limité',
+                    //                    'url-access' => 'limité',
                     'périodique' => 'Encyclopédie berbère',
                     'et al.' => 'oui',
                     'auteur1' => 'Camps, G.; Leglay, M.',
@@ -101,7 +106,7 @@ class ExternalMapperTest extends TestCase
                     'url' => 'http://www.lefigaro.fr/sciences/face-au-covid-19-les-cliniques-privees-mobilisees-mais-en-manque-de-masques-20200318',
                     'date' => '18-03-2020',
                     'auteur1' => 'Marie-Cécile Renault',
-                    'url-access' => 'limité',
+                    //                    'url-access' => 'limité',
                 ],
             ],
             [
@@ -114,7 +119,7 @@ class ExternalMapperTest extends TestCase
                     'url' => 'https://www.liberation.fr/france/2020/03/20/en-bretagne-le-parisiens-bashing-guette_1782471',
                     'date' => '20-03-2020',
                     'auteur1' => 'Pierre-Henri Allain',
-                    'url-access' => 'ouvert',
+                    //                    'url-access' => 'ouvert',
                 ],
             ],
 

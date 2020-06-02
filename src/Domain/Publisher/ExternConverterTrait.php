@@ -83,6 +83,24 @@ trait ExternConverterTrait
         return null;
     }
 
+    public function cleanAuthor(?string $str = null): ?string
+    {
+        if ($str === null) {
+            return null;
+        }
+        $str = $this->clean($str);
+        // "https://www.facebook.com/search/top/?q=..."
+        if (preg_match('#^https?://.+#i', $str)) {
+            return null;
+        }
+        // "Par Bob"
+        if (preg_match('#^Par (.+)$#i', $str, $matches)) {
+            return $matches[1];
+        }
+
+        return $str;
+    }
+
     // TODO encodage + normalizer
     public function clean(?string $str = null): ?string
     {
@@ -90,14 +108,16 @@ trait ExternConverterTrait
             return null;
         }
         $str = str_replace(
-            ['&#39;', '&#039;', '&apos;', "\n", "&#10;", "|", "&eacute;"],
+            ["\n", "\t", '&#x27;', '&#39;', '&#039;', '&apos;', "\n", "&#10;", "&eacute;"],
             [
+                ' ',
+                ' ',
+                "’",
                 "'",
                 "'",
                 "'",
                 '',
                 ' ',
-                '/',
                 "é",
             ],
             $str
@@ -172,7 +192,9 @@ trait ExternConverterTrait
             }
 
             // "author" => [ "@type" => "Person", "name" => [] ]
-            return html_entity_decode($data['author'][$indice]['name'][0]);
+            if (isset($data['author'][$indice]['name'][0])) {
+                return html_entity_decode($data['author'][$indice]['name'][0]);
+            }
         }
 
         return null;
@@ -209,6 +231,7 @@ trait ExternConverterTrait
         try {
             $date = new DateTime($str);
         } catch (Exception $e) {
+            // 23/11/2015 00:00:00
             dump('EXCEPTION DATE');
 
             return $str;

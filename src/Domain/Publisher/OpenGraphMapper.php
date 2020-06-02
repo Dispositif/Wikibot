@@ -40,15 +40,15 @@ class OpenGraphMapper implements MapperInterface
                 $meta['og:locale'] ?? $meta['DC.language'] ?? $meta['citation_language'] ?? null
             ),
             'consulté le' => date('d-m-Y'),
-            'auteur' => $this->clean(
+            'auteur' => $this->cleanAuthor(
                 $meta['og:article:author'] ?? $meta['article:author'] ?? $meta['citation_author'] ?? null
             ),
             'format' => $this->convertOGtype2format($meta['og:type'] ?? null),
             'date' => $this->convertDate(
-                $meta['og:article:published_time'] ??
-                $meta['article:published_time'] ?? $meta['DC.date'] ?? $meta['citation_date'] ?? null
+                $meta['og:article:published_time'] ?? $meta['article:published_time'] ??
+                $meta['DC.date'] ?? $meta['citation_date'] ?? $meta['citation_publication_date'] ?? null
             ),
-            'url-access' => $this->convertURLaccess($meta),
+            //            'url-access' => $this->convertURLaccess($meta),
 
             // DUBLIN CORE ONLY
             'périodique' => $this->clean($meta['DC.isPartOf'] ?? $meta['citation_journal_title'] ?? null),
@@ -66,8 +66,8 @@ class OpenGraphMapper implements MapperInterface
             'volume' => $meta['citation_volume'] ?? null,
             'numéro' => $meta['citation_issue'] ?? null,
             'page' => $this->convertDCpage($meta),
-            'doi' => $meta['citation_doi'] ?? null,
-            'éditeur' => $meta['DC.publisher'] ?? null, // Persée dégeulasse todo?
+            'doi' => $meta['citation_doi'] ?? $meta['DOI'] ?? null,
+            'éditeur' => $meta['DC.publisher'] ?? $meta['dc.publisher'] ?? null, // Persée dégeulasse todo?
             'pmid' => $meta['citation_pmid'] ?? null,
             'issn' => $meta["citation_issn"] ?? null,
             'isbn' => $meta["citation_isbn"] ?? null,
