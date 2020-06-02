@@ -28,7 +28,7 @@ include __DIR__.'/../ZiziBot_Bootstrap.php';
  */
 class ExternRefWorker extends RefBotWorker
 {
-    const TASK_NAME           = "Amélioration références : URL ⇒ {modèle}"; // 😎
+    const TASK_NAME           = "Amélioration références : URL ⇒ modèle"; // 😎
     const TASK_BOT_FLAG       = false;
     const SLEEP_AFTER_EDITION = 30;
 
@@ -54,7 +54,7 @@ class ExternRefWorker extends RefBotWorker
     // todo private (refac constructor->run())
     public function processRefContent($refContent): string
     {
-        // todo Temporary Skip URL
+        // todo // hack Temporary Skip URL
         if (preg_match('#books\.google#', $refContent)) {
             return $refContent;
         }

@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Application;
 
+use App\Application\Http\ExternHttpClient;
 use App\Domain\ExternDomains;
 use App\Domain\ExternPageFactory;
 use App\Domain\Models\Wiki\AbstractWikiTemplate;
@@ -32,6 +33,7 @@ use Symfony\Component\Yaml\Yaml;
  */
 class ExternRefTransformer implements TransformerInterface
 {
+    const HTTP_REQUEST_LOOP_DELAY = 20;
 
     const SKIPPED_FILE_LOG  = __DIR__.'/resources/external_skipped.log';
     const LOG_REQUEST_ERROR = __DIR__.'/resources/external_request_error.log';
@@ -81,7 +83,10 @@ class ExternRefTransformer implements TransformerInterface
 
         // todo REFAC DataObject[]
         $this->config = Yaml::parseFile(__DIR__.'/resources/config_presse.yaml');
-        $skipFromFile = file(__DIR__.'/resources/config_skip_domain.txt');
+        $skipFromFile = file(
+            __DIR__.'/resources/config_skip_domain.txt',
+            FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES
+        );
         $this->skip_domain = ($skipFromFile) ? $skipFromFile : [];
 
         $this->data['newspaper'] = json_decode(file_get_contents(__DIR__.'/resources/data_newspapers.json'), true);
@@ -98,38 +103,56 @@ class ExternRefTransformer implements TransformerInterface
     }
 
     /**
-     * @param string $string
+     * @param string $url
      *
      * @return string
      * @throws \Exception
      */
-    public function process(string $string): string
+    public function process(string $url): string
     {
-        if (!$this->isURLAutorized($string)) {
-            return $string;
+        if (!$this->isURLAutorized($url)) {
+            return $url;
         }
         try {
-            sleep(5);
-            $this->externalPage = ExternPageFactory::fromURL($string, $this->log);
+            sleep(self::HTTP_REQUEST_LOOP_DELAY);
+            $this->externalPage = ExternPageFactory::fromURL($url, $this->log);
             $pageData = $this->externalPage->getData();
             $this->log->debug('metaData', $this->externalPage->getData());
         } catch (\Exception $e) {
-            // ne pas générer de {lien brisé}, car peut-être 404 temporaire
-            $this->log->notice('erreur sur extractWebData '.$e->getMessage());
-            file_put_contents(self::LOG_REQUEST_ERROR, $this->domain);
+            // "410 gone" => {lien brisé}
+            if (preg_match('#410 Gone#i', $e->getMessage())) {
+                $this->log->notice('410 page définitivement disparue : '.$url);
+
+                return sprintf(
+                    '{{Lien brisé |url= %s |titre= %s |brisé le=%s}}',
+                    $url,
+                    'page définitivement disparue',
+                    date('d-m-Y')
+                );
+            } // 403
+            elseif (preg_match('#403 Forbidden#i', $e->getMessage())) {
+                $this->log->warning('403 Forbidden : '.$url);
+                file_put_contents(self::LOG_REQUEST_ERROR, '403 Forbidden : '.$this->domain."\n", FILE_APPEND);
+            } else {
+                // 404 ou autre : ne pas générer de {lien brisé}, car peut-être 404 temporaire
+                $this->log->notice('erreur sur extractWebData '.$e->getMessage());
+                file_put_contents(self::LOG_REQUEST_ERROR, $this->domain."\n", FILE_APPEND);
+
+                return $url;
+            }
         }
 
         if (empty($pageData)
             || (empty($pageData['JSON-LD']) && empty($pageData['meta']))
         ) {
             // site avec HTML pourri
-            return $string;
+            return $url;
         }
 
         if (isset($pageData['robots']) && strpos($pageData['robots'], 'noindex') !== false) {
             $this->log->notice('SKIP robots: noindex');
 
-            return $string;
+            return $url;
         }
 
         $mapData = $this->mapper->process($pageData);
@@ -145,7 +168,7 @@ class ExternRefTransformer implements TransformerInterface
                 unset($e);
             }
 
-            return $string;
+            return $url;
         }
 
         $this->tagAndLog($mapData);
@@ -156,6 +179,13 @@ class ExternRefTransformer implements TransformerInterface
         $mapData = $this->replaceSitenameByConfig($mapData, $template);
         $mapData = $this->replaceURLbyOriginal($mapData);
 
+
+        if ($template instanceof ArticleTemplate) {
+            unset($mapData['site']);
+        }
+        unset($mapData['DATA-TYPE']); // ugly
+        unset($mapData['DATA-ARTICLE']); // ugly
+
         $template->hydrate($mapData);
 
         $serialized = $template->serialize(true);
@@ -165,21 +195,25 @@ class ExternRefTransformer implements TransformerInterface
     }
 
     /**
-     * @param string $string
+     * @param string $url
      *
      * @return bool
      * @throws \Exception
      */
-    protected function isURLAutorized(string $string): bool
+    protected function isURLAutorized(string $url): bool
     {
-        if (!preg_match('#^http?s://[^ ]+$#i', $string)) {
+        if (!ExternHttpClient::isWebURL($url)) {
+            $this->log->debug('Skip : not an URL : '.$url);
+
             return false;
         }
 
-        $this->url = $string;
+        $this->url = $url;
         $this->domain = ExternDomains::extractSubDomain($this->url);
 
         if (in_array($this->domain, $this->skip_domain)) {
+            $this->log->notice("Skip domain ".$this->domain);
+
             return false;
         }
 
@@ -245,6 +279,10 @@ class ExternRefTransformer implements TransformerInterface
         $this->config[$this->domain]['template'] = $this->config[$this->domain]['template'] ?? [];
         $mapData['DATA-ARTICLE'] = $mapData['DATA-ARTICLE'] ?? false;
 
+        if (!empty($mapData['doi'])) {
+            $templateName = 'article';
+        }
+
         if ($this->config[$this->domain]['template'] === 'article'
             || ($this->config[$this->domain]['template'] === 'auto' && $mapData['DATA-ARTICLE'])
             || ($mapData['DATA-ARTICLE'] && !empty($this->data['newspaper'][$this->domain]))
@@ -255,6 +293,11 @@ class ExternRefTransformer implements TransformerInterface
         if (!isset($templateName) || $this->config[$this->domain]['template'] === 'lien web') {
             $templateName = 'lien web';
         }
+        // date obligatoire pour {article}
+        if (!isset($mapData['date'])) {
+            $templateName = 'lien web';
+        }
+
         $template = WikiTemplateFactory::create($templateName);
         $template->userSeparator = " |";
 
