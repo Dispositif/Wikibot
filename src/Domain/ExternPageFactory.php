@@ -28,7 +28,7 @@ class ExternPageFactory
     public static function fromURL($url, ?Log $log = null): ExternPage
     {
         if (!ExternHttpClient::isWebURL($url)) {
-            throw new \Exception('string is not an URL');
+            throw new \Exception('string is not an URL '.$url);
         }
         $adapter = new ExternHttpClient($log);
         $html = $adapter->getHTML($url);

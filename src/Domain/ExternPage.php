@@ -50,7 +50,7 @@ class ExternPage
     public function __construct(string $url, string $html, ?LoggerInterface $log = null)
     {
         if (!ExternHttpClient::isWebURL($url)) {
-            throw new Exception('string is not an URL');
+            throw new Exception('string is not an URL '.$url);
         }
         $this->url = $url;
         $this->html = $html;

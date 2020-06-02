@@ -17,7 +17,7 @@ class ExternDomains
     public static function extractSubDomain(string $url): string
     {
         if (!ExternHttpClient::isWebURL($url)) {
-            throw new \Exception('string is not an URL');
+            throw new \Exception('string is not an URL '.$url);
         }
         $parseURL = parse_url($url);
 

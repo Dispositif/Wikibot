@@ -72,7 +72,10 @@ class ExternHttpClient implements HttpClientInterface
 
     public static function isWebURL(string $url): bool
     {
-        if (!filter_var($url, FILTER_VALIDATE_URL) || !preg_match('#^https?://#i', $url)) {
+        //$url = filter_var($url, FILTER_SANITIZE_URL); // strip "é" !!!
+        // FILTER_VALIDATE_URL restreint à caractères ASCII : renvoie false avec "é" dans URL / not multibyte capable
+        // !filter_var($url, FILTER_VALIDATE_URL)
+        if (!filter_var($url, FILTER_VALIDATE_URL) || !preg_match('#^https?://[^ ]+#i', $url)) {
             return false;
         }
 
