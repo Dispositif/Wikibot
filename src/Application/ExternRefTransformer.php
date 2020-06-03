@@ -190,8 +190,10 @@ class ExternRefTransformer implements TransformerInterface
         $template->hydrate($mapData);
 
         $optimizer = OptimizerFactory::fromTemplate($template);
+        $optimizer->doTasks();
+        $templateOptimized = $optimizer->getOptiTemplate();
 
-        $serialized = $template->serialize(true);
+        $serialized = $templateOptimized->serialize(true);
         $this->log->info($serialized."\n");
 
         return Normalizer::normalize($serialized);
