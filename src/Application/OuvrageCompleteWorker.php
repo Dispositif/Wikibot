@@ -10,9 +10,9 @@ declare(strict_types=1);
 namespace App\Application;
 
 use App\Domain\Models\Wiki\OuvrageTemplate;
+use App\Domain\OptimizerFactory;
 use App\Domain\OuvrageComplete;
 use App\Domain\OuvrageFactory;
-use App\Domain\OuvrageOptimize;
 use App\Domain\Publisher\Wikidata2Ouvrage;
 use App\Domain\SummaryLogTrait;
 use App\Domain\Utils\TemplateParser;
@@ -34,6 +34,7 @@ use Throwable;
 class OuvrageCompleteWorker
 {
     use SummaryLogTrait;
+
     /**
      * Exclusion requête BnF/Google/etc
      * Format EAN ou ISBN10 sans tiret.
@@ -111,7 +112,7 @@ class OuvrageCompleteWorker
             }
 
             // Final optimizing (with online predictions)
-            $optimizer = new OuvrageOptimize($origin, $this->page, new Logger());
+            $optimizer = OptimizerFactory::fromTemplate($origin, $this->page, new Logger());
             $optimizer->doTasks();
             $this->ouvrage = $optimizer->getOptiTemplate();
             $this->summaryLog = array_merge($this->getSummaryLog(), $optimizer->getSummaryLog());
@@ -281,14 +282,14 @@ class OuvrageCompleteWorker
     private function completeOuvrage(OuvrageTemplate $onlineOuvrage)
     {
         $this->log->info($onlineOuvrage->serialize(true));
-        $optimizer = new OuvrageOptimize($onlineOuvrage, $this->page, new Logger());
+        $optimizer = OptimizerFactory::fromTemplate($onlineOuvrage, $this->page, new Logger());
         $onlineOptimized = ($optimizer)->doTasks()->getOptiTemplate();
 
         $completer = new OuvrageComplete($this->ouvrage, $onlineOptimized, new Logger());
         $this->ouvrage = $completer->getResult();
 
         // todo move that optimizing in OuvrageComplete ?
-        $optimizer = new OuvrageOptimize($this->ouvrage, $this->page, new Logger());
+        $optimizer = OptimizerFactory::fromTemplate($this->ouvrage, $this->page, new Logger());
         $this->ouvrage = $optimizer->doTasks()->getOptiTemplate();
 
         $this->log->info('Summary', $completer->getSummaryLog());

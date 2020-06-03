@@ -207,7 +207,7 @@ class GoogleTransformer
             }
         }
 
-        $optimizer = new OuvrageOptimize($ouvrage, null, new Logger());
+        $optimizer = OptimizerFactory::fromTemplate($ouvrage, null, new Logger());
         $optimizer->doTasks();
         $ouvrage2 = $optimizer->getOptiTemplate();
 

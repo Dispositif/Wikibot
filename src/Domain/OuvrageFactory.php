@@ -62,7 +62,7 @@ class OuvrageFactory
     {
         $ouvrage = new OuvrageClean();
         $ouvrage->hydrate($data);
-        $proc = new OuvrageOptimize($ouvrage, null, new Logger());
+        $proc = OptimizerFactory::fromTemplate($ouvrage, null, new Logger());
         $proc->doTasks();
 
         return $proc->getOptiTemplate();

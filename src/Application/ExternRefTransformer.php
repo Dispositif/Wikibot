@@ -16,6 +16,7 @@ use App\Domain\Models\Wiki\AbstractWikiTemplate;
 use App\Domain\Models\Wiki\ArticleTemplate;
 use App\Domain\Models\Wiki\LienWebTemplate;
 use App\Domain\Models\Wiki\OuvrageTemplate;
+use App\Domain\OptimizerFactory;
 use App\Domain\Publisher\ExternMapper;
 use App\Domain\Utils\WikiTextUtil;
 use App\Domain\WikiTemplateFactory;
@@ -187,6 +188,8 @@ class ExternRefTransformer implements TransformerInterface
         unset($mapData['DATA-ARTICLE']); // ugly
 
         $template->hydrate($mapData);
+
+        $optimizer = OptimizerFactory::fromTemplate($template);
 
         $serialized = $template->serialize(true);
         $this->log->info($serialized."\n");

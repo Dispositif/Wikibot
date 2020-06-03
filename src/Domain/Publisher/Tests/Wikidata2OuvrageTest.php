@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Publisher\Tests;
 
-use App\Domain\OuvrageOptimize;
+use App\Domain\OptimizerFactory;
 use App\Domain\Publisher\Wikidata2Ouvrage;
 use App\Domain\WikiTemplateFactory;
 use App\Infrastructure\WikidataAdapter;
@@ -50,7 +50,7 @@ class Wikidata2OuvrageTest extends TestCase
         );
 
         // Après optimization
-        $optimizer = new OuvrageOptimize($wdOuvrage, 'Bla');
+        $optimizer = OptimizerFactory::fromTemplate($wdOuvrage, 'Bla');
         $optimizer->doTasks();
         $this::assertSame(
             '{{Ouvrage|auteur1=Bob|lien auteur1=Michel Houellebecq|titre=Ma vie|lien titre=La Carte et le Territoire|éditeur=|année=|passage=407-408 |pages totales=|isbn=}}',
