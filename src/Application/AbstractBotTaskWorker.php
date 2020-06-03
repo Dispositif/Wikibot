@@ -21,8 +21,9 @@ use Throwable;
 
 abstract class AbstractBotTaskWorker
 {
-    const TASK_NAME = "bot : Amélioration bibliographique";
-    const SLEEP_AFTER_EDITION = 60;
+    const TASK_NAME                   = "bot : Amélioration bibliographique";
+    const SLEEP_AFTER_EDITION         = 60;
+    const DELAY_AFTER_LAST_HUMAN_EDIT = 10;
     /**
      * @var PageListInterface
      */
@@ -174,8 +175,8 @@ abstract class AbstractBotTaskWorker
 
             return false;
         }
-        if ($this->bot->minutesSinceLastEdit($title) < 4) {
-            echo "SKIP : édition humaine dans les dernières 4 minutes.\n";
+        if ($this->bot->minutesSinceLastEdit($title) < static::DELAY_AFTER_LAST_HUMAN_EDIT) {
+            echo "SKIP : édition humaine dans les dernières ".static::DELAY_AFTER_LAST_HUMAN_EDIT." minutes.\n";
 
             return false;
         }

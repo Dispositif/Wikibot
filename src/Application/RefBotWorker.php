@@ -49,6 +49,7 @@ abstract class RefBotWorker extends AbstractBotTaskWorker
     {
         $refs = WikiTextUtil::extractAllRefs($text);
         if (empty($refs)) {
+            $this->log->debug('empty extractAllRefs()');
             return $text;
         }
 

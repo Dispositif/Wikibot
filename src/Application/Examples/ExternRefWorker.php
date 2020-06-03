@@ -13,6 +13,7 @@ use App\Application\ExternRefTransformer;
 use App\Application\RefBotWorker;
 use App\Application\WikiBotConfig;
 use App\Infrastructure\CirrusSearch;
+use App\Infrastructure\PageList;
 use App\Infrastructure\ServiceFactory;
 use Codedungeon\PHPCliColors\Color;
 use Throwable;
@@ -28,9 +29,10 @@ include __DIR__.'/../ZiziBot_Bootstrap.php';
  */
 class ExternRefWorker extends RefBotWorker
 {
-    const TASK_NAME           = "Amélioration références : URL ⇒ modèle"; // 😎
-    const TASK_BOT_FLAG       = false;
-    const SLEEP_AFTER_EDITION = 30;
+    const TASK_NAME                   = "Complètement de références : URL ⇒ modèle"; // 😎
+    const TASK_BOT_FLAG               = false;
+    const SLEEP_AFTER_EDITION         = 30;
+    const DELAY_AFTER_LAST_HUMAN_EDIT = 10;
 
     protected $botFlag = false;
     protected $modeAuto = false;
@@ -77,16 +79,14 @@ class ExternRefWorker extends RefBotWorker
         if (!$this->transformer->skipUnauthorised) {
             echo Color::BG_LIGHT_RED."--".Color::NORMAL." ".$refContent."\n";
             echo Color::BG_LIGHT_GREEN."++".Color::NORMAL." $result \n\n";
-            $ask = readline(Color::LIGHT_MAGENTA."*** Conserver cette modif ? [y/n]".Color::NORMAL);
-            if ($ask !== 'y') {
-                return $refContent;
-            }
+            //            $ask = readline(Color::LIGHT_MAGENTA."*** Conserver cette modif ? [y/n]".Color::NORMAL);
+            //            if ($ask !== 'y') {
+            //                return $refContent;
+            //            }
         }
 
         return $result;
     }
-
-
 
 }
 
@@ -98,10 +98,12 @@ $list = new CirrusSearch(
     'https://fr.wikipedia.org/w/api.php?action=query&list=search'
     //    .'&srsearch=%22https%3A%2F%2Fjournals.openedition.org%22+insource%3A%2F%5C%3Cref%5C%3Ehttps%5C%3A%5C%2F%5C%2Fjournals%5C.openedition%5C.org%5B%5E%5C%3E%5D%2B%5C%3C%5C%2Fref%3E%2F'
     .'&srsearch=%22https%3A%2F%2F%22+insource%3A%2F%5C%3Cref%5C%3Ehttps%5C%3A%5C%2F%5C%2F%5B%5E%5C%3E%5D%2B%5C%3C%5C%2Fref%3E%2F'
-    .'&formatversion=2&format=json&srnamespace=0&srlimit=100&srqiprofile=popular_inclinks_pv&srsort=random'
+    .'&formatversion=2&format=json&srnamespace=0&srlimit=100&srqiprofile=popular_inclinks_pv&srsort=last_edit_desc'
+//srsort=random'
 );
 
-
-//$list = new PageList(['Pierre Zind', 'Économie du Soudan du Sud']);
+if (!empty($argv[1])) {
+    $list = new PageList([trim($argv[1])]);
+}
 
 new ExternRefWorker($botConfig, $wiki, $list);
