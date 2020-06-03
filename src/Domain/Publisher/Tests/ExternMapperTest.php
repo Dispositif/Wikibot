@@ -15,7 +15,7 @@ use App\Infrastructure\Logger;
 use Exception;
 use PHPUnit\Framework\TestCase;
 
-class ExternalMapperTest extends TestCase
+class ExternMapperTest extends TestCase
 {
 
     /**

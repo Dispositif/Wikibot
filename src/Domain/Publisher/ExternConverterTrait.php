@@ -56,7 +56,7 @@ trait ExternConverterTrait
         if (empty($authors)) {
             return null;
         }
-        // conserve juste les 3 premiers auteurs TODO : refactor
+        // conserve juste les 2 premiers auteurs TODO : refactor
         // Bob, Martin ; Yul, Bar ; ... ; ...
         if (preg_match('#([^;]+;[^;]+);[^;]+;.+#', $authors, $matches)) {
             return ($modeEtAl) ? 'oui' : $matches[1];

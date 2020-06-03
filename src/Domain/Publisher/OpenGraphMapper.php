@@ -56,10 +56,12 @@ class OpenGraphMapper implements MapperInterface
                 $meta['citation_authors'] ?? $meta['DC.Contributor'] ?? null,
                 true
             ),
-            'auteur1' => $this->wikifyPressAgency(
-                $this->clean(
-                    $this->authorsEtAl(
-                        $meta['citation_authors'] ?? $meta['DC.Contributor'] ?? null
+            'auteur1' => $this->cleanAuthor(
+                $this->wikifyPressAgency(
+                    $this->clean(
+                        $this->authorsEtAl(
+                            $meta['citation_authors'] ?? $meta['DC.Contributor'] ?? null
+                        )
                     )
                 )
             ),

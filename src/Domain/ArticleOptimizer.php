@@ -16,6 +16,7 @@ class ArticleOptimizer extends AbstractTemplateOptimizer
 
     public function doTasks()
     {
-        // TODO: Implement doTasks() method.
+        // Implement doTasks() method.
+        return $this;
     }
 }

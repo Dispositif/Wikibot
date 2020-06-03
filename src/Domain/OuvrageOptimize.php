@@ -43,7 +43,7 @@ class OuvrageOptimize extends AbstractTemplateOptimizer
      * @return $this
      * @throws Exception
      */
-    public function doTasks(): self
+    public function doTasks()
     {
         $this->cleanAndPredictErrorParameters();
 
@@ -256,7 +256,7 @@ class OuvrageOptimize extends AbstractTemplateOptimizer
     {
         $oldtitre = $this->getParam('titre');
         $this->langInTitle();
-        $this->deWikifyExternalLink('titre');
+        $this->extractExternalLink('titre');
         $this->upperCaseFirstLetter('titre');
         $this->typoDeuxPoints('titre');
 
@@ -269,7 +269,7 @@ class OuvrageOptimize extends AbstractTemplateOptimizer
         }
 
         $this->valideNumeroChapitre();
-        $this->deWikifyExternalLink('titre chapitre');
+        $this->extractExternalLink('titre chapitre');
         $this->upperCaseFirstLetter('titre chapitre');
     }
 
@@ -414,14 +414,15 @@ class OuvrageOptimize extends AbstractTemplateOptimizer
 
     /**
      * Bool ?
-     * déwikification du titre : consensus Bistro 27 août 2011
+     * Retire lien externe du titre : consensus Bistro 27 août 2011
      * idem  'titre chapitre'.
+     * Lien externe déplacé éventuellement dans "lire en ligne"
      *
      * @param string $param
      *
      * @throws Exception
      */
-    protected function deWikifyExternalLink(string $param): void
+    protected function extractExternalLink(string $param): void
     {
         if (empty($this->getParam($param))) {
             return;

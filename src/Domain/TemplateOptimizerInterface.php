@@ -16,7 +16,7 @@ use App\Domain\Models\Wiki\AbstractWikiTemplate;
 interface TemplateOptimizerInterface
 {
     // todo add doTasks() in constructor if no optional method needed between doTasks() and getOptiTemplate()
-    public function doTasks();
+    public function doTasks(); // :self allowed in PHP7.4
 
     public function getOptiTemplate(): AbstractWikiTemplate;
 
