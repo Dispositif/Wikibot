@@ -9,9 +9,6 @@
 # Nuance sur les sous-domaines : entre 'test.com' et 'blabla.test.com' (les www servent à rien)
 # si y'a pas d'espace ou crochets ou autre caractère louche, les guillemets sont facultatifs
 
-# URL validées pour traitement automatique par CodexBot
-# https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Le_Bistro/29_mars_2020#Les_100_sites_de_presse/revue_des_{articles}
-
 lemonde.fr:
     périodique: '[[Le Monde]]'
     site: '[[Le Monde|Le Monde.fr]]'
@@ -79,7 +76,6 @@ web.archive.org:
     site: '[[Internet Archive]]'
 sports-reference.com:
     desactived
-#site: '[[Sports Reference]]'
 #ouest-france.fr:
 #letempsarchives.ch:
 #jstor.org:
@@ -88,3 +84,6 @@ la-croix.com:
     périodique: '[[La Croix]]'
     template: auto
 
+
+
+#fin de fichier

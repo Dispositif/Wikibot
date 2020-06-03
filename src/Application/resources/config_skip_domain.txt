@@ -3,6 +3,7 @@ archive.wikiwix.com
 wikiwix.com
 archive.org
 books.google.fr
+books.google.com
 fr.wikipedia.org
 wikipedia.org
 wikimedia.org
