@@ -127,7 +127,6 @@ class ExternRefTransformer implements TransformerInterface
                 return sprintf(
                     '{{Lien brisé |url= %s |brisé le=%s}}',
                     $url,
-                    'page définitivement disparue',
                     date('d-m-Y')
                 );
             } // 403
