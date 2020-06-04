@@ -23,13 +23,25 @@ class LienWebOptimizer extends AbstractTemplateOptimizer
         return $this;
     }
 
-    private function doublonSitePeriodique()
+    private function doublonSitePeriodique(): void
     {
+        if (empty($this->getParam('périodique'))) {
+            return;
+        }
         // doublon site - périodique
-        if (!empty($this->getParam('site'))
-            && ($this->getParam('site') === $this->getParam('périodique'))
-        ) {
-            $this->unsetParam('site');
+        if ($this->getParam('site') === $this->getParam('périodique')) {
+            $this->unsetParam('périodique');
+            $this->log->info('doublon site/périodique');
+
+            return;
+        }
+
+        //quasi doublon site - périodique
+        $periodiqueWords = strtolower(str_replace([' ', '-'], '', $this->getParam('périodique')));
+        $siteWords = strtolower(str_replace([' ', '-'], '', $this->getParam('site')));
+        if (strpos($siteWords, $periodiqueWords) !== false) {
+            $this->unsetParam('périodique');
+            $this->log->info('quasi doublon site/périodique');
         }
     }
 

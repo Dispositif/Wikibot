@@ -57,7 +57,7 @@ class LienWebOptimizerTest extends TestCase
                     'site' => "[[L'Équipe]]",
                     'périodique' => "[[L'Équipe]]",
                 ],
-                "{{lien web|titre=Bla|url=http://test.com|périodique=[[L'Équipe]]|consulté le=}}",
+                "{{lien web|titre=Bla|url=http://test.com|site=[[L'Équipe]]|consulté le=}}",
             ],
             [
                 // auteur1 = Rédaction
@@ -68,6 +68,11 @@ class LienWebOptimizerTest extends TestCase
                 // doublon site / périodique
                 ['titre' => 'bla', 'url' => 'http://test.com', 'auteur1' => 'Le Monde', 'site' => '[[Le Monde]]'],
                 "{{lien web|titre=Bla|url=http://test.com|site=[[Le Monde]]|consulté le=}}",
+            ],
+            [
+                // quasi doublon site / périodique
+                ['titre' => 'Bla', 'site' => 'France24.com', 'périodique' => 'France 24'],
+                '{{lien web|titre=Bla|url=|site=France24.com|consulté le=}}',
             ],
         ];
     }
