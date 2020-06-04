@@ -51,7 +51,9 @@ abstract class OuvrageTemplateAlias extends AbstractWikiTemplate
             'titre vo' => 'titre original',
             'location' => 'lieu',
             'year' => 'année',
-            'édition' => 'éditeur',
+            // édition = alias de "éditeur", mais OuvrageOptimize: numéro d'édition, réimpression, éditeur
+            'édition' => "numéro d'édition",
+            'edition' => "numéro d'édition", // {cite book}. si année => "réimpression"
             'publisher' => 'éditeur',
             'numéro édition' => "numéro d'édition",
             'origyear' => 'année première édition',
@@ -118,7 +120,6 @@ abstract class OuvrageTemplateAlias extends AbstractWikiTemplate
             //.org/wiki/Discussion_mod%C3%A8le:Ouvrage#Paramètre_"autres"
             'trans_title' => 'titre traduit',
             'type' => 'nature ouvrage',
-            'edition' => "numéro d'édition", // {cite book}. si année => "réimpression"
             //            'series' => '',
             'date' => 'date',
             'month' => 'mois',

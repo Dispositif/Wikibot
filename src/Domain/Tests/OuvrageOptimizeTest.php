@@ -44,6 +44,25 @@ class OuvrageOptimizeTest extends TestCase
             // "edition" [ordinal number] from {Cite book} => "réimpression" (année) ou "numéro d'édition"
             // (origyear=>"année première édition")
             [
+                [
+                    'auteur1' => 'Laurence',
+                    'titre' => 'Le cinéma italien',
+                    'éditeur' => 'Armand Colin',
+                    'édition' => '3',
+                    'année' => '2013',
+                    'isbn' => '978-2-200-27262-3',
+                ],
+                "{{Ouvrage|auteur1=Laurence|titre=Le cinéma italien|éditeur=[[Armand Colin]]|année=2013|numéro d'édition=3|isbn=978-2-200-27262-3}}",
+            ],
+            [
+                ['édition' => 'Bob Press'],
+                "{{Ouvrage|titre=|éditeur=Bob Press|année=|isbn=}}",
+            ],
+            [
+                ['édition' => '1985'],
+                "{{Ouvrage|titre=|éditeur=|année=|réimpression=1985|isbn=}}",
+            ],
+            [
                 ['edition' => '3rd'],
                 "{{Ouvrage|titre=|éditeur=|année=|numéro d'édition=3|isbn=}}",
             ],

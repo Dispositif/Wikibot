@@ -712,12 +712,27 @@ class OuvrageOptimize extends AbstractTemplateOptimizer
      * https://wstat.fr/template/index.php?title=Ouvrage&query=paramvalue&param=edition&limit=5000&searchtext=.&searchre=1
      * Pas mal de corrupted sur "éditions"
      * https://wstat.fr/template/index.php?title=Ouvrage&query=paramvalue&param=%C3%A9dition&limit=5000&searchtext=.&searchre=1
+     * Note : impossible de faire getParam("éditeur-doublon")
      */
     private function processEditionCitebook(): void
     {
+        // "édition" alias de "éditeur", mais OuvrageTemplateAlias:"édition"=>"numéro d'édition" à cause des doublons
+        if (!empty($this->getParam("numéro d'édition"))) {
+            $numeroEdition = $this->getParam("numéro d'édition");
+            if (empty($this->getParam('éditeur'))
+                && $this->getEditionOrdinalNumber($numeroEdition) === null
+                && $this->isEditionYear($numeroEdition) === false
+            ) {
+                $this->setParam('éditeur', $numeroEdition);
+                $this->unsetParam("numéro d'édition");
+                $this->addSummaryLog('±éditeur');
+            }
+        }
+
+        // Correction nom de paramètre selon type de valeur
         $this->correctReimpressionByParam("numéro d'édition");
-        $this->correctReimpressionByParam("éditeur-doublon");
         $this->correctReimpressionByParam("éditeur");
+        $this->correctReimpressionByParam("édition");
     }
 
     private function correctReimpressionByParam(string $param): void
