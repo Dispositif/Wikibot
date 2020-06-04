@@ -191,9 +191,11 @@ abstract class AbstractBotTaskWorker
 
     protected function doEdition(string $newText): void
     {
+        $prefixSummary = ($this->botFlag) ? 'bot: ' : '';
+
         $result = $this->pageAction->editPage(
             $newText,
-            new EditInfo($this->taskName, $this->minorFlag, $this->botFlag, $this->maxLag)
+            new EditInfo($prefixSummary.$this->taskName, $this->minorFlag, $this->botFlag, $this->maxLag)
         );
         dump($result);
         echo "Sleep ".(string)static::SLEEP_AFTER_EDITION."\n";

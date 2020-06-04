@@ -338,6 +338,9 @@ class OuvrageCompleteWorker
         //        }
         $finalOpti = $this->ouvrage->serialize(true);
         $finalOpti = Normalizer::normalize($finalOpti);
+        if (empty($finalOpti) || !is_string($finalOpti)) {
+            throw new \Exception('normalized $finalOpti serialize in OuvrageComplete is not a string');
+        }
 
         return $finalOpti;
     }
