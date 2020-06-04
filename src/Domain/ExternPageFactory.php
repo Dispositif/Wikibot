@@ -7,9 +7,7 @@
 
 declare(strict_types=1);
 
-
 namespace App\Domain;
-
 
 use App\Application\Http\ExternHttpClient;
 use Psr\Log\LoggerInterface as Log;
@@ -32,9 +30,12 @@ class ExternPageFactory
         }
         $adapter = new ExternHttpClient($log);
         $html = $adapter->getHTML($url);
-        $html = \Normalizer::normalize($html);
         if (empty($html)) {
-            throw new \DomainException('No HTML from requested URL');
+            throw new \DomainException('No HTML from requested URL '.$url);
+        }
+        $html = \Normalizer::normalize($html);
+        if (!is_string($html) || empty($html)) {
+            throw new \DomainException('normalized html is not a string : '.$url);
         }
 
         return new ExternPage($url, $html, $log);

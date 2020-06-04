@@ -83,7 +83,7 @@ class Logger extends AbstractLogger implements LoggerInterface
         file_put_contents(
             __DIR__.'/resources/critical.log',
             date('d-m-Y H:i')." : $level : ".$message.PHP_EOL,
-            'E_APPEND'
+            FILE_APPEND
         );
     }
 

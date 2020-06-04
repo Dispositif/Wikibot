@@ -32,6 +32,7 @@ class ExternHttpClient implements HttpClientInterface
                 'timeout' => 60,
                 'allow_redirects' => true,
                 'headers' => ['User-Agent' => getenv('USER_AGENT')],
+                'verify' => false, // CURLOPT_SSL_VERIFYHOST
                 //                'proxy'           => '192.168.16.1:10',
             ]
         );
