@@ -166,7 +166,7 @@ class GoogleTransformer
             // ID n'existe pas sur Google Books
             if (strpos($e->getMessage(), '"message": "The volume ID could n')) {
                 return sprintf(
-                    '{{lien brisé |url= %s |titre= %s |brisé le=%s}}',
+                    '{{lien brisé |url= %s |brisé le=%s}}',
                     $url,
                     'Ouvrage inexistant sur Google Books',
                     date('d-m-Y')

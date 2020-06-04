@@ -34,7 +34,7 @@ use Symfony\Component\Yaml\Yaml;
  */
 class ExternRefTransformer implements TransformerInterface
 {
-    const HTTP_REQUEST_LOOP_DELAY = 20;
+    const HTTP_REQUEST_LOOP_DELAY = 10;
 
     const SKIPPED_FILE_LOG  = __DIR__.'/resources/external_skipped.log';
     const LOG_REQUEST_ERROR = __DIR__.'/resources/external_request_error.log';
@@ -125,7 +125,7 @@ class ExternRefTransformer implements TransformerInterface
                 $this->log->notice('410 page définitivement disparue : '.$url);
 
                 return sprintf(
-                    '{{Lien brisé |url= %s |titre= %s |brisé le=%s}}',
+                    '{{Lien brisé |url= %s |brisé le=%s}}',
                     $url,
                     'page définitivement disparue',
                     date('d-m-Y')
