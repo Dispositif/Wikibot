@@ -17,6 +17,7 @@ use Exception;
 use Mediawiki\Api\MediawikiFactory;
 use Mediawiki\Api\UsageException;
 use Mediawiki\DataModel\EditInfo;
+use Psr\Log\LoggerInterface;
 use Throwable;
 
 abstract class AbstractBotTaskWorker
@@ -24,6 +25,7 @@ abstract class AbstractBotTaskWorker
     const TASK_NAME                   = "bot : Amélioration bibliographique";
     const SLEEP_AFTER_EDITION         = 60;
     const DELAY_AFTER_LAST_HUMAN_EDIT = 10;
+    const CHECK_EDIT_CONFLICT         = false;
     /**
      * @var PageListInterface
      */
@@ -47,7 +49,7 @@ abstract class AbstractBotTaskWorker
     protected $modeAuto = false;
     protected $maxLag = 5;
     /**
-     * @var Logger|\Psr\Log\LoggerInterface
+     * @var Logger|LoggerInterface
      */
     protected $log;
 
@@ -75,6 +77,11 @@ abstract class AbstractBotTaskWorker
     {
     }
 
+    /**
+     * @throws ConfigException
+     * @throws Throwable
+     * @throws UsageException
+     */
     public function run()
     {
         $titles = $this->getTitles();
@@ -186,6 +193,11 @@ abstract class AbstractBotTaskWorker
 
     /**
      * return $newText for editing
+     *
+     * @param string $title
+     * @param string $text
+     *
+     * @return string|null
      */
     abstract protected function processDomain(string $title, string $text): ?string;
 
@@ -193,10 +205,19 @@ abstract class AbstractBotTaskWorker
     {
         $prefixSummary = ($this->botFlag) ? 'bot: ' : '';
 
-        $result = $this->pageAction->editPage(
-            $newText,
-            new EditInfo($prefixSummary.$this->taskName, $this->minorFlag, $this->botFlag, $this->maxLag)
-        );
+        try {
+            $result = $this->pageAction->editPage(
+                $newText,
+                new EditInfo($prefixSummary.$this->taskName, $this->minorFlag, $this->botFlag, $this->maxLag),
+                static::CHECK_EDIT_CONFLICT
+            );
+        } catch (Throwable $e) {
+            // exemple : Wiki Conflict : Page has been edited after getText()
+            $this->log->warning($e->getMessage());
+
+            return;
+        }
+
         dump($result);
         echo "Sleep ".(string)static::SLEEP_AFTER_EDITION."\n";
         sleep(static::SLEEP_AFTER_EDITION);

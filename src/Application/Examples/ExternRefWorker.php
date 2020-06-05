@@ -31,8 +31,9 @@ class ExternRefWorker extends RefBotWorker
 {
     const TASK_NAME                   = "Complètement de références : URL ⇒ modèle"; // 😎
     const TASK_BOT_FLAG               = false;
-    const SLEEP_AFTER_EDITION         = 30;
-    const DELAY_AFTER_LAST_HUMAN_EDIT = 10;
+    const SLEEP_AFTER_EDITION         = 30; // sec
+    const DELAY_AFTER_LAST_HUMAN_EDIT = 15; // minutes
+    const CHECK_EDIT_CONFLICT         = true;
 
     protected $botFlag = false;
     protected $modeAuto = false;
@@ -90,6 +91,7 @@ class ExternRefWorker extends RefBotWorker
 
 }
 
+/** @noinspection PhpUnhandledExceptionInspection */
 $wiki = ServiceFactory::wikiApi();
 $botConfig = new WikiBotConfig();
 

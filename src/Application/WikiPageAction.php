@@ -11,6 +11,7 @@ namespace App\Application;
 
 use App\Domain\Enums\Language;
 use App\Infrastructure\TagParser;
+use DomainException;
 use Exception;
 use Mediawiki\Api\MediawikiFactory;
 use Mediawiki\DataModel\Content;
@@ -42,6 +43,10 @@ class WikiPageAction
      * @var int
      */
     private $ns;
+    /**
+     * @var Revision|null
+     */
+    private $lastTextRevision;
 
     /**
      * WikiPageAction constructor.
@@ -71,12 +76,12 @@ class WikiPageAction
      */
     public function getText(): ?string
     {
-        // page doesn't exist
-        if (empty($this->page->getRevisions()->getLatest())) {
+        $latest = $this->getLastRevision();
+        $this->lastTextRevision = $latest;
+
+        if (empty($latest)) {
             return null;
         }
-
-        $latest = $this->page->getRevisions()->getLatest();
 
         return ($latest) ? $latest->getContent()->getData() : null;
     }
@@ -146,13 +151,19 @@ class WikiPageAction
      * Edit the page with new text.
      * Opti : EditInfo optional param ?
      *
-     * @param string   $newText
-     * @param EditInfo $editInfo
+     * @param string    $newText
+     * @param EditInfo  $editInfo
+     * @param bool|null $checkConflict
      *
      * @return bool
      */
-    public function editPage(string $newText, EditInfo $editInfo): bool
+    public function editPage(string $newText, EditInfo $editInfo, ?bool $checkConflict = false): bool
     {
+        if ($checkConflict && $this->isPageEditedAfterGetText()) {
+            throw new DomainException('Wiki Conflict : Page has been edited after getText()');
+            // return false ?
+        }
+
         $revision = $this->page->getPageIdentifier();
 
         $content = new Content($newText);
@@ -163,9 +174,29 @@ class WikiPageAction
     }
 
     /**
+     * Check if wiki has been edited by someone since bot's getText().
+     *
+     * @return bool
+     */
+    private function isPageEditedAfterGetText(): bool
+    {
+        $updatedPage = $this->wiki->newPageGetter()->getFromTitle($this->title);
+        $updatedLastRevision = $updatedPage->getRevisions()->getLatest();
+
+        // Non-strict object equality comparison
+        /** @noinspection PhpNonStrictObjectEqualityInspection */
+        if ($updatedLastRevision && $updatedLastRevision == $this->lastTextRevision) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Create a new page.
      *
-     * @param string $text
+     * @param string        $text
+     * @param EditInfo|null $editInfo
      *
      * @return bool
      * @throws Exception
