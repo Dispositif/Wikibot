@@ -64,9 +64,9 @@ class WikiBotConfig
      */
     public $log;
 
-    public function __construct()
+    public function __construct(?LoggerInterface $logger = null)
     {
-        $this->log = new Logger();
+        $this->log = ($logger) ? $logger : new Logger();
         ini_set('user_agent', getenv('USER_AGENT'));
     }
 
@@ -128,7 +128,7 @@ class WikiBotConfig
         // don't catch Exception (stop process if error)
         $wiki = ServiceFactory::wikiApi();
         $pageAction = new WikiPageAction($wiki, $title);
-        $text = $pageAction->getText();
+        $text = $pageAction->getText() ?? '';
         $lastEditor = $pageAction->getLastEditor() ?? 'unknown';
 
         if (preg_match('#({{stop}}|{{Stop}}|STOP)#', $text) > 0) {
