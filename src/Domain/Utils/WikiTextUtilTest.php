@@ -32,6 +32,35 @@ class WikiTextUtilTest extends TestCase
         ];
     }
 
+    public function testExtractAllRefs()
+    {
+        $text = <<<EOF
+bla <ref>toto.</ref> bla <ref name="tutu">Plop</ref>.
+
+* [[bob]]
+* https://test.com/page.html
+*https://example.com/papa.
+
+EOF;
+        $expected = [
+            0 => ['<ref>toto.</ref>', 'toto.'],
+            1 => ['<ref name="tutu">Plop</ref>', 'Plop'],
+            2 => [
+                "* https://test.com/page.html\n",
+                'https://test.com/page.html',
+            ],
+            3 => [
+                "*https://example.com/papa.\n",
+                'https://example.com/papa',
+            ],
+        ];
+
+        $this::assertSame(
+            $expected,
+            WikiTextUtil::extractRefsAndListOfLinks($text)
+        );
+    }
+
     /**
      * @dataProvider provideWikilink
      */

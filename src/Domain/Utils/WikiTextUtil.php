@@ -18,15 +18,22 @@ class WikiTextUtil extends TextUtil
      *
      * @return array [0=>['<ref>fu</ref>', 'fu'], 1=> ...]
      */
-    public static function extractAllRefs(string $text): array
+    public static function extractRefsAndListOfLinks(string $text): array
     {
         // s = "\n" include in "." // m = ^multiline$
         // Exclusion des imbrications
-        if (!preg_match_all('#<ref[^>]*>((?:(?!</ref>).)*)</ref>#ism', $text, $refs, PREG_SET_ORDER)) {
+        if (!preg_match_all('#<ref[^>/]*>((?:(?!</ref>).)*)</ref>#ism', $text, $refs, PREG_SET_ORDER)) {
             return [];
         }
+        $result = $refs;
 
-        return $refs;
+        // extraction des liens externes
+        // ^\* *(https?:\/\/[^ ]+[^ .])$
+        if (preg_match_all('#^\* *(https?://[^ \n]+[^ \n.])\.? *\n#im', $text, $liensExternes, PREG_SET_ORDER)) {
+            $result = array_merge($result, $liensExternes);
+        }
+
+        return $result;
     }
 
     /**
