@@ -1,8 +1,8 @@
 <?php
 /**
- * This file is part of dispositif/wikibot application
- * 2019 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019/2020 © Philippe M. <dispositif@gmail.com>
+ * For the full copyright and MIT license information, please view the license file.
  */
 
 declare(strict_types=1);
@@ -58,7 +58,7 @@ class ErrorReport
     public function deleteAllReports(string $text, ?string $botName = 'CodexBot'): string
     {
         $pattern = sprintf(
-            '#== Ouvrage avec erreur de paramètre ==(.*)Le robot \[\[Utilisateur:%s\|%s\]\] \(\[\[Discussion utilisateur:%s\|discuter\]\]\) [0-9a-zéà: ]+ \([A-Z]+\)[\n]*#s',
+            '#== Ouvrage avec erreur de paramètre ==(.*)Le robot \[\[Utilisateur:%s\|%s\]\] \(\[\[Discussion utilisateur:%s\|[^\]]+\]\]\) [0-9a-zéà: ]+ \([A-Z]+\)[\n]*#s',
             $botName,
             $botName,
             $botName
