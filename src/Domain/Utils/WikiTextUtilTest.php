@@ -32,6 +32,27 @@ class WikiTextUtilTest extends TestCase
         ];
     }
 
+    /**
+     * @dataProvider provideWikilink
+     */
+    public function testWikilink($data, $expected)
+    {
+        $this::assertSame(
+            $expected,
+            WikiTextUtil::wikilink($data[0], $data[1] ?? null)
+        );
+    }
+
+    public function provideWikilink()
+    {
+        return [
+            [['fu_bar'], '[[fu bar]]'],
+            [['fu', 'Fu'], '[[fu]]'],
+            [['fu', 'bar'], '[[Bar|fu]]'],
+            [['fu', '[[Bar]]'], '[[Bar|fu]]'], // Erreur "|lien auteur=[[Bla]]"
+        ];
+    }
+
     public function testUpperfirst()
     {
         $this::assertSame(
@@ -107,7 +128,7 @@ class WikiTextUtilTest extends TestCase
             ['[[wikilien]', 'wikilien'],
             ['[[wiki|wikilien]]', 'wikilien'],
             ['{{en}}', '{{en}}'],
-            ['{{Lien|Jeffrey Robinson}}','Jeffrey Robinson'],
+            ['{{Lien|Jeffrey Robinson}}', 'Jeffrey Robinson'],
         ];
     }
 }

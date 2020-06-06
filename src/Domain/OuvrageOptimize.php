@@ -140,6 +140,8 @@ class OuvrageOptimize extends AbstractTemplateOptimizer
                     )
                 );
                 $this->unsetParam('lien '.$auteurParam);
+                $this->addSummaryLog('±lien '.$auteurParam);
+                $this->notCosmetic = true;
             }
         }
     }

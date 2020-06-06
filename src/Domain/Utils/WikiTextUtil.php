@@ -85,8 +85,8 @@ class WikiTextUtil extends TextUtil
      */
     public static function wikilink(string $label, ?string $page = null): string
     {
-        $label = trim($label);
-        $page = trim($page);
+        $label = trim(str_replace('_', ' ', self::unWikify($label)));
+        $page = ($page) ? trim(self::unWikify($page)) : null;
 
         // fu_bar => [[fu_bar]] / Fu, fu => [[fu]]
         if (empty($page) || self::str2WikiTitle($label) === self::str2WikiTitle($page)) {
@@ -103,6 +103,9 @@ class WikiTextUtil extends TextUtil
 
     /**
      * "fu_bar_ " => "Fu bar".
+     * @param string $str
+     *
+     * @return string
      */
     private static function str2WikiTitle(string $str): string
     {
