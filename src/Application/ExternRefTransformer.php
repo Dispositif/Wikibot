@@ -133,9 +133,13 @@ class ExternRefTransformer implements TransformerInterface
             elseif (preg_match('#403 Forbidden#i', $e->getMessage())) {
                 $this->log->warning('403 Forbidden : '.$url);
                 file_put_contents(self::LOG_REQUEST_ERROR, '403 Forbidden : '.$this->domain."\n", FILE_APPEND);
+            } elseif (preg_match('#404 Not Found#i', $e->getMessage())) {
+                $this->log->notice('404 Not Found sur extractWebData');
+
+                return $url;
             } else {
-                // 404 ou autre : ne pas générer de {lien brisé}, car peut-être 404 temporaire
-                $this->log->notice('erreur sur extractWebData '.$e->getMessage());
+                //  autre : ne pas générer de {lien brisé}, car peut-être 404 temporaire
+                $this->log->warning('erreur sur extractWebData '.$e->getMessage());
                 file_put_contents(self::LOG_REQUEST_ERROR, $this->domain."\n", FILE_APPEND);
 
                 return $url;

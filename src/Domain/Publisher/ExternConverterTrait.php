@@ -222,6 +222,8 @@ trait ExternConverterTrait
         if (empty($str)) {
             return null;
         }
+        $str = str_replace(' 00:00:00', '', $str);
+        $str = str_replace('/', '-', $str);
 
         // "2012"
         if (preg_match('#^[12][0-9]{3}$#', $str)) {
@@ -234,7 +236,7 @@ trait ExternConverterTrait
             // 23/11/2015 00:00:00
             dump('EXCEPTION DATE');
 
-            return $str;
+            return '<!-- '.$str.' -->';
         }
 
         return $date->format('d-m-Y');
