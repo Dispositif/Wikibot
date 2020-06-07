@@ -31,7 +31,7 @@ include __DIR__.'/../ZiziBot_Bootstrap.php';
  */
 class ExternRefWorker extends RefBotWorker
 {
-    const TASK_NAME                   = "[3] Complètement de références : URL ⇒ modèle"; // 😎
+    const TASK_NAME                   = "[4] Complètement de références : URL ⇒ modèle"; // 😎
     const TASK_BOT_FLAG               = false;
     const SLEEP_AFTER_EDITION         = 30; // sec
     const DELAY_AFTER_LAST_HUMAN_EDIT = 15; // minutes

@@ -47,7 +47,7 @@ class LienWebOptimizer extends AbstractTemplateOptimizer
 
     private function cleanAuthor()
     {
-        if ($this->getParam('auteur1') === 'Rédaction') {
+        if (in_array($this->getParam('auteur1'), ['Rédaction', 'La Rédaction'])) {
             $this->unsetParam('auteur1');
         }
         // doublon auteur - site  ou doublon auteur - périodique

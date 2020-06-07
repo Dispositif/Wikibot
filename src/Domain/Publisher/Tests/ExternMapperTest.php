@@ -53,6 +53,7 @@ class ExternMapperTest extends TestCase
                     'titre' => 'Coronavirus : la Californie placée à son tour en confinement',
                     'url' => 'https://www.lemonde.fr/planete/article/2020/03/20/coronavirus-la-californie-placee-en-confinement_6033754_3244.html',
                     'date' => '20-03-2020',
+                    'consulté le' => '11-04-2020',
                 ],
             ],
             [
@@ -106,6 +107,7 @@ class ExternMapperTest extends TestCase
                     'url' => 'http://www.lefigaro.fr/sciences/face-au-covid-19-les-cliniques-privees-mobilisees-mais-en-manque-de-masques-20200318',
                     'date' => '18-03-2020',
                     'auteur1' => 'Marie-Cécile Renault',
+                    'consulté le' => '11-04-2020'
                     //                    'url-access' => 'limité',
                 ],
             ],
@@ -119,6 +121,7 @@ class ExternMapperTest extends TestCase
                     'url' => 'https://www.liberation.fr/france/2020/03/20/en-bretagne-le-parisiens-bashing-guette_1782471',
                     'date' => '20-03-2020',
                     'auteur1' => 'Pierre-Henri Allain',
+                    'consulté le' => '11-04-2020'
                     //                    'url-access' => 'ouvert',
                 ],
             ],

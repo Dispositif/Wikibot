@@ -30,6 +30,7 @@ class JsonLDMapper implements MapperInterface
             'auteur2' => $this->cleanAuthor($this->convertAuteur($jsonLD, 1)),
             'auteur3' => $this->cleanAuthor($this->convertAuteur($jsonLD, 2)),
             'auteur institutionnel' => $this->cleanAuthor($this->convertInstitutionnel($jsonLD)),
+            'consulté le' => date('d-m-Y'),
             //            'url-access' => $this->convertURLaccess($jsonLD),
         ];
     }
