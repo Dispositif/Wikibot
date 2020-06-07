@@ -125,8 +125,9 @@ class ExternRefTransformer implements TransformerInterface
                 $this->log->notice('410 page définitivement disparue : '.$url);
 
                 return sprintf(
-                    '{{Lien brisé |url= %s |brisé le=%s}}',
+                    '{{Lien brisé |url= %s |titre=%s |brisé le=%s}}',
                     $url,
+                    $this->url2TextStyleTitle($url),
                     date('d-m-Y')
                 );
             } // 403
@@ -370,6 +371,24 @@ class ExternRefTransformer implements TransformerInterface
         $mapData['url'] = $this->url;
 
         return $mapData;
+    }
+
+    /**
+     * todo move ?
+     * URL => "parismatch.com/People/bla…"
+     *
+     * @param string $url
+     *
+     * @return string
+     */
+    public function url2TextStyleTitle(string $url): string
+    {
+        $text = str_replace(['https://', 'http://', 'www.'], '', $url);
+        if (strlen($text) > 30) {
+            $text = substr($text, 0, 30).'…';
+        }
+
+        return $text;
     }
 
 }
