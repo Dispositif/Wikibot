@@ -266,6 +266,7 @@ class WikiPageAction
     public static function replaceTemplateInText(string $text, string $tplOrigin, string $tplReplace): string
     {
         // "{{en}} {{zh}} {{ouvrage...}}"
+        // todo test U
         if (preg_match_all(
             '#(?<langTemp>{{[a-z][a-z]}} ?{{[a-z][a-z]}}) ?'.preg_quote($tplOrigin, '#').'#i',
             $text,
@@ -294,7 +295,6 @@ class WikiPageAction
 
                 // detect inconsistency between lang indicator and lang param
                 // example : {{en}} {{template|lang=ru}}
-                // BUG: prefix {{de}}  incompatible avec langue de {{Ouvrage |langue= |prénom1=Hartmut |nom1=Atsma
                 if (!empty($lang) && self::SKIP_LANG_INDICATOR !== $lang
                     && preg_match('#langue *=#', $tplReplace)
                     && !preg_match('#langue *= ?'.$lang.'#i', $tplReplace)
@@ -310,17 +310,18 @@ class WikiPageAction
                     return $text; // return null ?
                 }
 
-                //                // FIX dirty mai 2020 : {{en}} mais pas de paramètre sur template...
-                //                if ($lang && !preg_match('#\| ?langue *= ?\n?\|#', $tplReplace) > 0) {
-                //                    $previousTpl = $tplReplace;
-                //                    $tplReplace = str_replace('langue=', 'langue='.$lang, $tplReplace);
-                //                    $text = str_replace($previousTpl, $tplReplace, $text);
-                //                }
+                // FIX dirty juil 2020 : {{en}} mais aucun param/value sur new template
+                if (!empty($lang) && $lang !== 'fr' && !preg_match('#\| ?langue *=#', $tplReplace) > 0) {
+                    // skip all the replacements of that template
 
-                // FIX dirty : {{en}} mais pas langue= non définie sur new template...
-                if ($lang && preg_match('#\| ?langue *= ?\n?\|#', $tplReplace) > 0) {
+                    return $text;
+                }
+
+                // FIX dirty : {{en}} mais langue= avec value non définie sur new template...
+                if (!empty($lang) && preg_match('#\| ?(langue *=) ?\n? ?\|#', $tplReplace, $matchLangue) > 0) {
                     $previousTpl = $tplReplace;
-                    $tplReplace = str_replace('langue=', 'langue='.$lang, $tplReplace);
+                    $tplReplace = str_replace($matchLangue[1], 'langue='.$lang, $tplReplace);
+                    //dump('origin', $tplOrigin);
                     $text = str_replace($previousTpl, $tplReplace, $text);
                 }
 

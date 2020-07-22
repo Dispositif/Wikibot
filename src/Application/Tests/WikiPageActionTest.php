@@ -34,6 +34,69 @@ class WikiPageActionTest extends TestCase
     {
         return [
             [
+                // Bug de suppression {{en}} sur citation étendue ==> SKIPPED
+                // See https://fr.wikipedia.org/w/index
+                //.php?title=Les_Sept_Samoura%C3%AFs&diff=prev&oldid=172046229&diffmode=source
+                "* {{en}} {{Ouvrage
+| titre=Seven Samurai
+| éditeur=Loorrimer
+| auteur= [[Donald Richie]] (ed.)
+| lieu=Londres
+| année=[[1970]]
+| isbn=
+| id=
+}}",
+                "{{Ouvrage
+| titre=Seven Samurai
+| éditeur=Loorrimer
+| auteur= [[Donald Richie]] (ed.)
+| lieu=Londres
+| année=[[1970]]
+| isbn=
+| id=
+}}",
+                "{{Ouvrage
+| auteur1=[[Donald Richie]] (ed.)
+| titre=Seven Samurai
+| lieu=Londres
+| éditeur=Loorrimer
+| année=1970
+| isbn=
+}}",
+                // expected = identique à version WP
+                "* {{en}} {{Ouvrage
+| titre=Seven Samurai
+| éditeur=Loorrimer
+| auteur= [[Donald Richie]] (ed.)
+| lieu=Londres
+| année=[[1970]]
+| isbn=
+| id=
+}}",
+
+            ],
+            [
+                // {{en}} {{ouvrage}} et langue=en
+                "{{en}} {{Ouvrage|titre=bla}}",
+                '{{Ouvrage|titre=bla}}',
+                '{{Ouvrage|langue=en|titre=BLO}}',
+                "{{Ouvrage|langue=en|titre=BLO}}",
+            ],
+            [
+                // {{en}} {{ouvrage}} et pas de 'langue'
+                "{{en}} {{Ouvrage|titre=bla}}",
+                '{{Ouvrage|titre=bla}}',
+                '{{Ouvrage|titre=BLO}}',
+                "{{en}} {{Ouvrage|titre=bla}}", // skiped => inchangé
+            ],
+            [
+                // gestion {{fr}}
+                "{{fr}} {{Ouvrage|auteur1=TOOOO Smollett|titre=Aventures de Roderick Random|lieu=Paris|éditeur=|année=1948|pages totales=542}}",
+                "{{Ouvrage|auteur1=TOOOO Smollett|titre=Aventures de Roderick Random|lieu=Paris|éditeur=|année=1948|pages totales=542}}",
+                "{{Ouvrage|auteur1=Tobias Smollett|titre=Aventures de Roderick Random|lieu=Paris|éditeur=|année=1948|pages totales=542}}",
+                "{{fr}} {{Ouvrage|auteur1=Tobias Smollett|titre=Aventures de Roderick Random|lieu=Paris|éditeur=|année=1948|pages totales=542}}",
+            ],
+            [
                 // saut de ligne {{en}} \n{{ouvrage}}
                 "zzzzzzz {{Ouvrage|langue=|titre=bla}} zzzz {{de}}
 {{Ouvrage|langue=|titre=bla}} zerqsdfqs",
@@ -50,8 +113,8 @@ class WikiPageActionTest extends TestCase
             [
                 'zzzzzzz {{Ouvrage|titre=bla}} zzzz {{en}} {{Ouvrage|titre=bla}} zerqsdfqs',
                 '{{Ouvrage|titre=bla}}',
-                '{{Ouvrage|lang=en|titre=BLO}}',
-                'zzzzzzz {{Ouvrage|lang=en|titre=BLO}} zzzz {{Ouvrage|lang=en|titre=BLO}} zerqsdfqs',
+                '{{Ouvrage|langue=en|titre=BLO}}',
+                'zzzzzzz {{Ouvrage|langue=en|titre=BLO}} zzzz {{Ouvrage|langue=en|titre=BLO}} zerqsdfqs',
             ],
             [
                 'zzzzzzz {{Ouvrage|titre=bla}} zzzz {{fr}} {{Ouvrage|titre=bla}} zerqsdfqs',
