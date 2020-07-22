@@ -11,7 +11,7 @@
 
 lemonde.fr:
     périodique: '[[Le Monde]]'
-    site: '[[Le Monde|Le Monde.fr]]'
+    site: '[[Le Monde|lemonde.fr]]'
     template: auto
 
 leparisien.fr:
@@ -28,14 +28,14 @@ persee.fr:
     éditeur: '[[Persée (portail)|Persée]]'
     template: article
 lequipe.fr:
-    site: '[[L''Équipe]]'
+    site: '[[L''Équipe|lequipe.fr]]'
     stripfromtitle: ["- L'ÉQUIPE", "L'ÉQUIPE -", "L'Équipe"]
     template: lien web
 letemps.ch:
     périodique: '[[Le Temps (quotidien suisse)|Le Temps]]'
     template: auto
 strategies.fr:
-    site: '[[Stratégies]]'
+    site: '[[Stratégies|strategies.fr]]'
 cairn.info:
     desactived
 # 403 forbidden :  Contact: DataAccess@datadome.co
@@ -62,7 +62,7 @@ courrierinternational.com:
     articleDetectType: 'article'
 ladepeche.fr:
     template: auto
-    site: '[[La Dépêche du Midi|La Dépêche]]'
+    site: '[[La Dépêche du Midi|ladepeche.fr]]'
     périodique: '[[La Dépêche du Midi|La Dépêche]]'
 
 #theguardian.com:

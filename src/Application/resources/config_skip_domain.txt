@@ -8,3 +8,4 @@ fr.wikipedia.org
 wikipedia.org
 wikimedia.org
 cairn.info
+ouest-france.fr
