@@ -56,7 +56,7 @@ ISBN
 </small></div>
 <div style="text-align: center"><small>{{formatnum:##NUMBER##}} citations analysées sur {{formatnum:978085}}
 </small></div>
-{{Requête en cours}} : Complétion de références transformée en {ouvrage}, {article} ou {lien web} [https://fr.wikipedia.org/w/index.php?title=Lynchage&diff=prev&oldid=169428793].
+{{Requête en cours}} : [[Utilisateur:ZiziBot/Complétion liens web|Complétion de liens web]] 
 </div>
 EOF;
 
@@ -65,7 +65,7 @@ $newText = str_replace('##PAGEEDITED##', $pageNb, $newText);
 
 // Put content on wiki
 $title = 'Utilisateur:ZiziBot/task';
-$summary = 'bot : mise à jour';
+$summary = 'bot : ⚙ mise à jour';
 
 echo "Mise à jour avancement ?\n";
 echo "sleep 20...\n";
