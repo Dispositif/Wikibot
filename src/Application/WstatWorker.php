@@ -20,7 +20,7 @@
 //use Throwable;
 //
 ///**
-// * DESACTIVED : The template from Wstat are not consistent (\n and multiples spaces trim)
+// * deactivated : The template from Wstat are not consistent (\n and multiples spaces trim)
 // *
 // * Class WstatWorker
 // *

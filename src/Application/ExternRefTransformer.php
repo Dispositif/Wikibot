@@ -238,7 +238,7 @@ class ExternRefTransformer implements TransformerInterface
         $this->config[$this->domain] = $this->config[$this->domain] ?? [];
         $this->config[$this->domain] = is_array($this->config[$this->domain]) ? $this->config[$this->domain] : [];
 
-        if ($this->config[$this->domain] === 'desactived' || isset($this->config[$this->domain]['desactived'])) {
+        if ($this->config[$this->domain] === 'deactivated' || isset($this->config[$this->domain]['deactivated'])) {
             $this->log->info("Domain ".$this->domain." desactivé\n");
 
             return false;

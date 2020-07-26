@@ -4,7 +4,7 @@
 # périodique = wikification pour paramètre de {{article}}
 # site = wikification pour paramètre de {{lien web}}
 # template = forcer le choix du modèle : 'lien web', article, auto (pour automatique).
-# desactived = le domaine sera ignoré par le bot
+# deactivated = le domaine sera ignoré par le bot
 #
 # Nuance sur les sous-domaines : entre 'test.com' et 'blabla.test.com' (les www servent à rien)
 # si y'a pas d'espace ou crochets ou autre caractère louche, les guillemets sont facultatifs
@@ -37,7 +37,7 @@ letemps.ch:
 strategies.fr:
     site: '[[Stratégies|strategies.fr]]'
 cairn.info:
-    desactived
+    deactivated
 # 403 forbidden :  Contact: DataAccess@datadome.co
 ncbi.nlm.nih.gov:
     # PubMed Central

@@ -122,7 +122,7 @@ class OuvrageOptimize extends AbstractTemplateOptimizer
     protected function processAuthors()
     {
         $this->distinguishAuthors();
-        //$this->fusionFirstNameAndName(); // desactived : no consensus
+        //$this->fusionFirstNameAndName(); // deactivated : no consensus
     }
 
     protected function convertLienAuteurTitre(): void

@@ -15,7 +15,7 @@ class ServiceFactoryTest extends TestCase
 {
     public function testCreateQueueChannel()
     {
-        $this::markTestSkipped('integration webservice desactived');
+        $this::markTestSkipped('integration webservice deactivated');
 //        $channel = ServiceFactory::queueChannel('foo');
 //        $this::assertInstanceOf(AMQPChannel::class, $channel);
     }
@@ -27,7 +27,7 @@ class ServiceFactoryTest extends TestCase
 
     public function testWikiApi()
     {
-        $this::markTestSkipped('integration webservice desactived');
+        $this::markTestSkipped('integration webservice deactivated');
 //        $wiki = ServiceFactory::wikiApi();
 //        $this::assertInstanceOf(MediawikiFactory::CLASS, $wiki);
     }
