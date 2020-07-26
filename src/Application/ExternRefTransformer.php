@@ -11,6 +11,7 @@ namespace App\Application;
 
 use App\Application\Http\ExternHttpClient;
 use App\Domain\ExternDomains;
+use App\Domain\ExternPage;
 use App\Domain\ExternPageFactory;
 use App\Domain\Models\Wiki\AbstractWikiTemplate;
 use App\Domain\Models\Wiki\ArticleTemplate;
@@ -22,9 +23,11 @@ use App\Domain\Utils\WikiTextUtil;
 use App\Domain\WikiTemplateFactory;
 use App\Infrastructure\Logger;
 use Codedungeon\PHPCliColors\Color;
+use Exception;
 use Normalizer;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Yaml\Yaml;
+use Throwable;
 
 /**
  * todo move Domain
@@ -36,7 +39,6 @@ class ExternRefTransformer implements TransformerInterface
 {
     const HTTP_REQUEST_LOOP_DELAY = 10;
 
-    const SKIPPED_FILE_LOG  = __DIR__.'/resources/external_skipped.log';
     const LOG_REQUEST_ERROR = __DIR__.'/resources/external_request_error.log';
     public $skipUnauthorised = true;
     /**
@@ -67,9 +69,9 @@ class ExternRefTransformer implements TransformerInterface
     /**
      * @var array
      */
-    private $skip_domain = [];
+    private $skip_domain;
     /**
-     * @var \App\Domain\ExternPage
+     * @var ExternPage
      */
     private $externalPage;
 
@@ -107,11 +109,11 @@ class ExternRefTransformer implements TransformerInterface
      * @param string $url
      *
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function process(string $url): string
     {
-        if (!$this->isURLAutorized($url)) {
+        if (!$this->isURLAuthorized($url)) {
             return $url;
         }
         try {
@@ -119,7 +121,7 @@ class ExternRefTransformer implements TransformerInterface
             $this->externalPage = ExternPageFactory::fromURL($url, $this->log);
             $pageData = $this->externalPage->getData();
             $this->log->debug('metaData', $this->externalPage->getData());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // "410 gone" => {lien brisé}
             if (preg_match('#410 Gone#i', $e->getMessage())) {
                 $this->log->notice('410 page définitivement disparue : '.$url);
@@ -163,15 +165,9 @@ class ExternRefTransformer implements TransformerInterface
         $mapData = $this->mapper->process($pageData);
 
         // check dataValide
+        // Pas de skip domaine car s'agit peut-être d'un 404 ou erreur juste sur cette URL
         if (empty($mapData) || empty($mapData['url']) || empty($mapData['titre'])) {
-            $this->skip_domain[] = $this->domain;
             $this->log->info('Mapping incomplet');
-            // Todo : temp data
-            try {
-                file_put_contents(self::SKIPPED_FILE_LOG, $this->domain.",".$this->url."\n", FILE_APPEND);
-            } catch (\Throwable $e) {
-                unset($e);
-            }
 
             return $url;
         }
@@ -207,13 +203,17 @@ class ExternRefTransformer implements TransformerInterface
      * @param string $url
      *
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
-    protected function isURLAutorized(string $url): bool
+    protected function isURLAuthorized(string $url): bool
     {
         if (!ExternHttpClient::isWebURL($url)) {
             $this->log->debug('Skip : not an URL : '.$url);
 
+            return false;
+        }
+
+        if ($this->hasForbiddenFilenameExtension($url)) {
             return false;
         }
 
@@ -281,6 +281,11 @@ class ExternRefTransformer implements TransformerInterface
 
     /**
      * todo refac lisible
+     *
+     * @param array $mapData
+     *
+     * @return AbstractWikiTemplate
+     * @throws Exception
      */
     private function chooseTemplateByData(array $mapData): AbstractWikiTemplate
     {
@@ -358,7 +363,7 @@ class ExternRefTransformer implements TransformerInterface
         if (empty($mapData['site']) && $template instanceof LienWebTemplate) {
             try {
                 $mapData['site'] = $this->externalPage->getPrettyDomainName();
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 unset($e);
             }
         }
@@ -389,6 +394,27 @@ class ExternRefTransformer implements TransformerInterface
         }
 
         return $text;
+    }
+
+    /**
+     * Skip PDF GIF etc
+     * https://fr.wikipedia.org/wiki/Liste_d%27extensions_de_fichiers
+     *
+     * @param string $url
+     *
+     * @return bool
+     */
+    private function hasForbiddenFilenameExtension(string $url): bool
+    {
+        if (preg_match(
+            '#\.(pdf|jpg|jpeg|gif|png|xls|xlsx|xlr|xml|xlt|xlsx|txt|csv|js|docx|exe|gz|zip|ini|movie|mp3|mp4|ogg|raw|rss|tar|tgz|wma)$#i',
+            $url
+        )
+        ) {
+            return true;
+        }
+
+        return false;
     }
 
 }
