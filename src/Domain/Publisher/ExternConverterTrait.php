@@ -229,6 +229,10 @@ trait ExternConverterTrait
         if (preg_match('#^[12][0-9]{3}$#', $str)) {
             return $str;
         }
+        // "1775-1783" (Gallica)
+        if (preg_match('#^[12][0-9]{3}-[12][0-9]{3}$#', $str)) {
+            return $str;
+        }
 
         try {
             $date = new DateTime($str);
