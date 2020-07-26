@@ -14,6 +14,7 @@ use App\Domain\Utils\WikiTextUtil;
 use App\Infrastructure\DbAdapter;
 use App\Infrastructure\Memory;
 use App\Infrastructure\ServiceFactory;
+use Codedungeon\PHPCliColors\Color;
 use Exception;
 use LogicException;
 use Mediawiki\Api\UsageException;
@@ -38,9 +39,9 @@ class OuvrageEditWorker
     const EDIT_SIGNALEMENT = true;
 
     const CITATION_LIMIT         = 150;
-    const DELAY_BOTFLAG_SECONDS  = 30;
-    const DELAY_NOBOT_IN_SECONDS = 120;
-    const ERROR_MSG_TEMPLATE     = __DIR__.'/templates/message_errors.wiki';
+    const DELAY_BOTFLAG_SECONDS    = 20;
+    const DELAY_NO_BOTFLAG_SECONDS = 50;
+    const ERROR_MSG_TEMPLATE       = __DIR__.'/templates/message_errors.wiki';
 
     private $db;
     private $bot;
@@ -125,7 +126,7 @@ class OuvrageEditWorker
 
         try {
             $title = $data[0]['page'];
-            echo $title." \n";
+            echo Color::BG_CYAN.$title.Color::NORMAL." \n";
             $page = ServiceFactory::wikiPageAction($title, true);
         } catch (Exception $e) {
             $this->log->warning("*** WikiPageAction error : ".$title." \n");
@@ -210,14 +211,14 @@ class OuvrageEditWorker
 
         $miniSummary = $this->generateSummary();
         $this->log->notice($miniSummary);
-        $this->log->info("sleep 30...");
-        sleep(30);
+        $this->log->debug("sleep 2...");
+        sleep(2); // todo ???
 
         pageEdit:
 
         try {
             // corona Covid :)
-            $miniSummary .= (date('H:i') === '20:00') ? ' 🏥' : ''; // 🏥🦠
+            //$miniSummary .= (date('H:i') === '20:00') ? ' 🏥' : ''; // 🏥🦠
 
             $editInfo = ServiceFactory::editInfo($miniSummary, $this->minorFlag, $this->botFlag, 5);
             $success = $page->editPage(Normalizer::normalize($this->wikiText), $editInfo);
@@ -234,7 +235,7 @@ class OuvrageEditWorker
             }
         }
 
-        $this->log->info($success ? "Ok\n" : "***** Erreur edit\n");
+        $this->log->info($success ? "Edition Ok\n" : "***** Edition KO !\n");
 
         if ($success) {
             // updata DB
@@ -252,11 +253,11 @@ class OuvrageEditWorker
             }
 
             if (!$this->botFlag) {
-                $this->log->info("sleep ".self::DELAY_NOBOT_IN_SECONDS);
-                sleep(self::DELAY_NOBOT_IN_SECONDS);
+                $this->log->debug("sleep ".self::DELAY_NO_BOTFLAG_SECONDS);
+                sleep(self::DELAY_NO_BOTFLAG_SECONDS);
             }
             if ($this->botFlag) {
-                $this->log->info("sleep ".self::DELAY_BOTFLAG_SECONDS);
+                $this->log->debug("sleep ".self::DELAY_BOTFLAG_SECONDS);
                 sleep(self::DELAY_BOTFLAG_SECONDS);
             }
         }
