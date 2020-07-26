@@ -74,8 +74,8 @@ web.archive.org:
     # caca : URL proposée ne retient pas mot de recherche
     template: lien web
     site: '[[Internet Archive]]'
-sports-reference.com:
-    desactived
+huffingtonpost.fr:
+    template: 'lien web'
 #ouest-france.fr:
 #letempsarchives.ch:
 #jstor.org:
