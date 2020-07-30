@@ -20,7 +20,7 @@ include __DIR__.'/../myBootstrap.php';
 
 // sort of process management
 $logger = new Logger();
-$logger->debug = true;
+//$logger->debug = true;
 $count = 0;
 while (true) {
     try {
@@ -45,6 +45,12 @@ while (true) {
             (new SMS())->send('no more queue to process');
             exit;
         }
+        if (preg_match('#DNS refusé#', $e->getMessage())) {
+            echo "\nDNS refusé (curl error 6). EXIT\n";
+            sleep(60 * 10);
+            exit;
+        }
+
         if (strpos($e->getMessage(), 'SQLSTATE[HY000] [2002] Connection refused') !== false) {
             $count = 0;
             echo "SQL refusé : sleep 12h avant SMS\n";
@@ -53,25 +59,19 @@ while (true) {
             echo "Wake up\n";
             continue;
         }
-        // cURL error 6: Could not resolve
-        if (strpos($e->getMessage(), 'cURL error 6: Could not resolve') !== false) {
-            $count = 0;
-            $logger->warning('DNS refusé. Sleep 5min.');
-            sleep(60 * 5);
-            echo "Wake up\n";
-            continue;
-        }
-        if (strpos($e->getMessage(), 'Quota Google') !== false
-            || strpos($e->getMessage(), 'Daily Limit Exceeded') !== false
+
+        if (stripos($e->getMessage(), 'Quota Google') !== false
+            || stripos($e->getMessage(), 'Daily Limit Exceeded') !== false
         ) {
             $count = 0;
-            echo "Google Quota dépassé : sleep 12h\n";
-            sleep(60 * 60 * 12);
+            echo "Google Quota dépassé : sleep 6h\n";
+            sleep(60 * 60 * 6);
             echo "Wake up\n";
             continue;
         }
         if ($count > 2) {
             echo "\n3 erreurs à la suite => exit\n";
+            sleep(10 * 60);
             exit;
         }
         dump($e);

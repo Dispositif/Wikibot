@@ -29,6 +29,7 @@ persee.fr:
     template: article
 lequipe.fr:
     site: '[[L''Équipe|lequipe.fr]]'
+    périodique: ''
     stripfromtitle: ["- L'ÉQUIPE", "L'ÉQUIPE -", "L'Équipe"]
     template: lien web
 letemps.ch:

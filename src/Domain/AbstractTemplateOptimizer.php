@@ -27,6 +27,8 @@ abstract class AbstractTemplateOptimizer implements TemplateOptimizerInterface
 
     protected $optiTemplate;
 
+    public $notCosmetic = false;
+
     /**
      * @var LoggerInterface|NullLogger
      */
