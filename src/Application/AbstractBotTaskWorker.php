@@ -22,10 +22,9 @@ use Throwable;
 
 abstract class AbstractBotTaskWorker
 {
-    const TASK_NAME                   = "bot : Amélioration bibliographique";
     const SLEEP_AFTER_EDITION         = 60;
-    const DELAY_AFTER_LAST_HUMAN_EDIT = 10;
-    const CHECK_EDIT_CONFLICT         = false;
+    const DELAY_AFTER_LAST_HUMAN_EDIT = 15;
+    const CHECK_EDIT_CONFLICT         = true;
     /**
      * @var PageListInterface
      */
@@ -42,8 +41,11 @@ abstract class AbstractBotTaskWorker
      * @var WikiPageAction
      */
     protected $pageAction;
-    // TODO : move taskName, botFlag... to to WikiBotConfig
-    protected $taskName;
+    protected $defaultTaskname;
+    protected $titleTaskname;
+
+    // TODO : move botFlag... to to WikiBotConfig
+
     protected $minorFlag = false;
     protected $botFlag = false;
     protected $modeAuto = false;
@@ -70,6 +72,9 @@ abstract class AbstractBotTaskWorker
         }
         $this->setUpInConstructor();
 
+        $this->defaultTaskname = $bot->taskName;
+
+        // @throw exception on "Invalid CSRF token"
         $this->run();//todo delete that and use (Worker)->run($duration) or process management
     }
 
@@ -117,7 +122,7 @@ abstract class AbstractBotTaskWorker
         echo "---------------------\n".Color::BG_CYAN."  $title ".Color::NORMAL."\n";
         sleep(1);
 
-        $this->taskName = static::TASK_NAME;
+        $this->titleTaskname = $this->defaultTaskname;
 
         $text = $this->getText($title);
         if (empty($text) || !$this->checkAllowedEdition($title, $text)) {
@@ -174,7 +179,6 @@ abstract class AbstractBotTaskWorker
      */
     protected function checkAllowedEdition(string $title, string $text): bool
     {
-        // CONTROLES EDITION
         $this->bot->checkStopOnTalkpage(true);
 
         if (WikiBotConfig::isEditionRestricted($text)) {
@@ -208,11 +212,16 @@ abstract class AbstractBotTaskWorker
         try {
             $result = $this->pageAction->editPage(
                 $newText,
-                new EditInfo($prefixSummary.$this->taskName, $this->minorFlag, $this->botFlag, $this->maxLag),
+                new EditInfo($prefixSummary.$this->titleTaskname, $this->minorFlag, $this->botFlag, $this->maxLag),
                 static::CHECK_EDIT_CONFLICT
             );
         } catch (Throwable $e) {
-            // exemple : Wiki Conflict : Page has been edited after getText()
+            if (preg_match('#Invalid CSRF token#', $e->getMessage())) {
+                throw new \Exception('Invalid CSRF token');
+            }
+
+            // If not a critical edition error
+            // example : Wiki Conflict : Page has been edited after getText()
             $this->log->warning($e->getMessage());
 
             return;

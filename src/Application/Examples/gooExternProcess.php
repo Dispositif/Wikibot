@@ -14,12 +14,18 @@ use App\Infrastructure\GoogleApiQuota;
 use App\Infrastructure\ServiceFactory;
 
 
+/**
+ * Cherche des liens bruts Google Books (<ref> et liste * ) et les transforme en {ouvrage}
+ * Consomme du quota journalier GB
+ */
+
 include __DIR__.'/../myBootstrap.php';
 
 dump('Google quota : ', (new GoogleApiQuota())->getCount());
 
 $wiki = ServiceFactory::wikiApi();
 $bot = new WikiBotConfig();
+$bot->taskName = "Amélioration bibliographique : lien Google Books ⇒ {ouvrage}";
 
 // les "* https://..." en biblio et liens externes
 // "https://books.google" insource:/\* https\:\/\/books\.google[^ ]+/

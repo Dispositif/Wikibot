@@ -50,8 +50,7 @@ class WikiBotConfig
 
     const EDIT_LAPS_FLAGBOT = 8;
 
-
-    public $taskName = 'Améliorations bibliographiques';
+    public $taskName = 'Améliorations indéfinie';
 
     public static $gitVersion;
 

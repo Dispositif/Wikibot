@@ -21,7 +21,6 @@ use Throwable;
  */
 class GoogleBooksWorker extends AbstractBotTaskWorker
 {
-    const TASK_NAME           = "Amélioration bibliographique : lien Google Books ⇒ {ouvrage}"; // 😎
     const SLEEP_AFTER_EDITION = 300;
     protected $botFlag = false;
 
