@@ -131,6 +131,7 @@ class LienWebTemplate extends AbstractWikiTemplate
             'archive-url',
             'archive-date',
             'dead-url',
+            'note',
         ];
 
     protected function setTitre(string $titre)

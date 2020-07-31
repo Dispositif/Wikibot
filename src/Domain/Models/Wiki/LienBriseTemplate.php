@@ -38,6 +38,7 @@ class LienBriseTemplate extends AbstractWikiTemplate implements ArticleOrLienBri
             'isbn',
             'consulté le',
             'brisé le',
+            'note',
         ];
 
     protected function setTitre(string $titre)

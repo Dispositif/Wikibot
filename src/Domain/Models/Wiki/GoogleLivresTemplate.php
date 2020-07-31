@@ -39,7 +39,7 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
      * @var array
      */
     protected $parametersByOrder
-        = ['id', 'titre', 'couv', 'page', 'romain', 'page autre', 'surligne'];
+        = ['id', 'titre', 'couv', 'page', 'romain', 'page autre', 'surligne', 'note'];
 
     /**
      * Create {Google Book} from URL.
