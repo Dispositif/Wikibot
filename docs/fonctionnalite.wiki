@@ -1,3 +1,5 @@
+{{Utilisateur:ZiziBot/menu}}
+[[File:Blank_page_intentionally_end_of_book.jpg|thumb|right]]
 Légende : {{fait}} module activé / {{pas fait}} module pas activé / {{attendre}} (consensus)
 
 === Traitement modèle {Ouvrage} ===
@@ -13,7 +15,7 @@ Style : conservation partielle du style rédactionnel du modèle : {{pas fait}} 
 espacement/retour ligne, {{pas fait}} noms de paramètre. [https://fr.wikipedia.org/w/index.php?title=Alfred_de_Schamphela%C3%ABre&diff=prev&oldid=164495257]
 
 Complètement de données d'après des bases bibliographiques :
-* recherche par {{fait}}ISBN, {{pas fait}} lien Google, {{pas fait}}  auteur+titre
+* recherche par {{fait}}ISBN, {{fait}} lien Google, {{pas fait}}  auteur+titre
 * Bases interrogées : {{fait}} [[Google Books]], {{fait}} [[Open Library]], {{fait}}[[BnF]], {{mort}}[[WorldCat]],{{fait}}[[WikiData]]
 * todo: décrire fiabilité données
 * {{fait}} comparaison titre/auteur pour fiabilité infos
@@ -37,13 +39,13 @@ Auteur :
 * {{attendre}} Prénom1+Nom1=>Auteur1 (si prénom/nom uniques ou prénom avec initiale) [invisible]
 * {{attendre}} distinction prénom/nom si 2 prénoms (ancrage).
 * {{fait}}  distinction auteurs multiples [https://fr.wikipedia.org/w/index.php?title=Sains_(Ille-et-Vilaine)&diff=prev&oldid=163949271]
-* {{pas fait}} prédiction wikilien page d'auteur
+* {{fait}} ajout wikilien page d'auteur
 
 Editeur :
 * {{fait}} 'lien éditeur' (obsolète) remplacé par wikilien [invisible]
 * {{attendre}} correction typographique : abbréviations du genre "(Éd.)"
 * {{attendre}} forme brève : Éd. de La Gourde => [[Éditions de La Gourde|La Gourde]], mais 'Éditions de Minuit' inchangé
-* {{pas fait}} {{3/4}} prédiction du wikilien éditeur
+* {{fait}} ajout du wikilien éditeur
 
 Lieu :
 * {{fait}} francisation des villes : London->Londres [https://raw.githubusercontent.com/Dispositif/Wikibot/master/src/Domain/resources/traduction_ville.csv voir liste]
@@ -71,7 +73,7 @@ Lien vers Google Books :
 * {{fait}} conversion en {{m|Google Livres}} [https://fr.wikipedia.org/w/index.php?title=Alexandrinisme&diff=prev&oldid=164635139]
 * {{fait}} ajout lien Google si livre d'accès complet.
 * {{fait}} ajout lien Google présentation en ligne [https://fr.wikipedia.org/w/index.php?title=Arthur_Somerset&diff=prev&oldid=165170630&diffmode=source]
-* {{attendre}} ajout 'présentation en ligne' si livre d'accès partiel.
+* {{fait}} ajout 'lire en ligne' si livre d'accès partiel.
 
 Lien vers Internet Archive :
 * {{fait}} ajout 'lire en ligne' vers livre numérisé (accès libre ou empruntable)
