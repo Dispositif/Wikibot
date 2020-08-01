@@ -24,7 +24,8 @@ class TalkBotConfig extends WikiBotConfig
 {
     const BOT_TALK_SUMMARY = 'Réponse artificielle';
 
-    const BOT_TALK_FILE = __DIR__.'/resources/phrases_zizibot.txt';
+    const BOT_TALK_FILE       = __DIR__.'/resources/phrases_zizibot.txt';
+    const TALKCONFIG_FILENAME = __DIR__.'/resources/botTalk_config.json';
 
     /**
      * Add a freaky response in the bottom of the talk page.
@@ -36,6 +37,8 @@ class TalkBotConfig extends WikiBotConfig
      */
     public function botTalk(?string $pageTitle = null): bool
     {
+        $talkConfig = $this->getTalkConfig();
+
         // ugly dependency
         $wiki = ServiceFactory::wikiApi();
         if (!$pageTitle) {
@@ -45,11 +48,20 @@ class TalkBotConfig extends WikiBotConfig
         $last = $page->page->getRevisions()->getLatest();
 
         // No response if the last edition from bot or bot owner
-        if (!$last->getUser()
-            || in_array($last->getUser(), [getenv('BOT_NAME'), getenv('BOT_OWNER')])
-            || 'Flow talk page manager' === $last->getUser()
+        if (!$last->getUser() || 'Flow talk page manager' === $last->getUser()
+            || in_array($last->getUser(), [getenv('BOT_NAME')])
         ) {
-            // compare with timestamp
+            return false;
+        }
+        if (in_array($last->getUser(), [getenv('BOT_OWNER')])) {
+            $talkConfig['owner_last_time'] = time();
+            file_put_contents(self::TALKCONFIG_FILENAME, json_encode($talkConfig));
+
+            return false;
+        }
+        // No response if time < 24h after last owner response
+        if (!isset($talkConfig['owner_last_time']) || $talkConfig['owner_last_time'] > (time() - 60 * 60 * 24)) {
+            echo "No response if time < 24h after last owner response\n";
             return false;
         }
 
@@ -145,5 +157,16 @@ class TalkBotConfig extends WikiBotConfig
             .'&ucnamespace=0&uclimit=40&ucprop=title|timestamp|comment&format=json';
 
         return file_get_contents($url);
+    }
+
+    private function getTalkConfig(): ?array
+    {
+        try {
+            $text = file_get_contents(self::TALKCONFIG_FILENAME);
+
+            return json_decode($text, true);
+        } catch (\Throwable $e) {
+            return [];
+        }
     }
 }
