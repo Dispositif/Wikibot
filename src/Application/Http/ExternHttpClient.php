@@ -11,7 +11,9 @@ namespace App\Application\Http;
 
 use DomainException;
 use GuzzleHttp\Client;
+use Normalizer;
 use Psr\Log\LoggerInterface;
+use Throwable;
 
 class ExternHttpClient implements HttpClientInterface
 {
@@ -29,7 +31,7 @@ class ExternHttpClient implements HttpClientInterface
         $this->log = $log;
         $this->client = new Client(
             [
-                'timeout' => 60,
+                'timeout' => 30,
                 'allow_redirects' => true,
                 'headers' => ['User-Agent' => getenv('USER_AGENT')],
                 'verify' => false, // CURLOPT_SSL_VERIFYHOST
@@ -42,11 +44,12 @@ class ExternHttpClient implements HttpClientInterface
      * import source from URL with Guzzle.
      * todo abstract + refac async request
      *
-     * @param string $url
+     * @param string    $url
+     * @param bool|null $normalized
      *
      * @return string|null
      */
-    public function getHTML(string $url): ?string
+    public function getHTML(string $url, ?bool $normalized=false): ?string
     {
         // todo : check banned domains ?
         // todo : check DNS record => ban ?
@@ -68,7 +71,9 @@ class ExternHttpClient implements HttpClientInterface
             return null;
         }
 
-        return (string)$response->getBody()->getContents() ?? '';
+        $html = (string)$response->getBody()->getContents() ?? '';
+
+        return ($normalized) ? $this->normalizeHtml($html, $url) : $html;
     }
 
     public static function isWebURL(string $url): bool
@@ -81,6 +86,66 @@ class ExternHttpClient implements HttpClientInterface
         }
 
         return true;
+    }
+
+    /**
+     * Normalize and converting to UTF-8 encoding
+     *
+     * @param string      $html
+     * @param string|null $url
+     *
+     * @return string|null
+     */
+    private function normalizeHtml(string $html, ?string $url = ''): ?string
+    {
+        if(empty($html)) {
+            return $html;
+        }
+
+        $html2 = Normalizer::normalize($html);
+
+        if (is_string($html2) && !empty($html2)) {
+            return $html2;
+        }
+
+        $charset = $this->extractCharset($html) ?? 'WINDOWS-1252';
+
+        if (empty($charset)) {
+            throw new DomainException('normalized html error and no charset found : '.$url);
+        }
+        try {
+            $html2 = iconv($charset ?? 'pouet', 'UTF-8//TRANSLIT', $html);
+            $html2 = Normalizer::normalize($html2);
+        } catch (Throwable $e) {
+            throw new DomainException("error converting : $charset to UTF-8".$url);
+        }
+
+
+        return $html2;
+    }
+
+    /**
+     * Extract charset from HTML text
+     *
+     * @param string $html
+     *
+     * @return string|null
+     */
+    private function extractCharset(string $html): ?string
+    {
+        if (preg_match(
+            '#<meta(?!\s*(?:name|value)\s*=)(?:[^>]*?content\s*=[\s"\']*)?([^>]*?)[\s"\';]*charset\s*=[\s"\']*([^\s"\'/>]*)#',
+            $html,
+            $matches
+        )
+        ) {
+            $charset = $matches[2] ?? $matches[1] ?? null;
+        }
+        if (empty($charset)) {
+            $encoding = mb_detect_encoding($html, mb_detect_order(), true);
+            $charset = is_string($encoding) ? strtoupper($encoding) : null;
+        }
+        return $charset;
     }
 
 }

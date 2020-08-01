@@ -13,5 +13,5 @@ namespace App\Application\Http;
 
 interface HttpClientInterface
 {
-
+    public function getHTML(string $url, ?bool $normalized=false): ?string;
 }

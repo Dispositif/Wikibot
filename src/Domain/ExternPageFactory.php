@@ -10,6 +10,8 @@ declare(strict_types=1);
 namespace App\Domain;
 
 use App\Application\Http\ExternHttpClient;
+use DomainException;
+use Exception;
 use Psr\Log\LoggerInterface as Log;
 
 class ExternPageFactory
@@ -21,23 +23,20 @@ class ExternPageFactory
      * @param Log|null $log
      *
      * @return ExternPage
-     * @throws \Exception
+     * @throws Exception
      */
     public static function fromURL($url, ?Log $log = null): ExternPage
     {
         if (!ExternHttpClient::isWebURL($url)) {
-            throw new \Exception('string is not an URL '.$url);
+            throw new Exception('string is not an URL '.$url);
         }
         $adapter = new ExternHttpClient($log);
-        $html = $adapter->getHTML($url);
+        $html = $adapter->getHTML($url, true);
         if (empty($html)) {
-            throw new \DomainException('No HTML from requested URL '.$url);
-        }
-        $html = \Normalizer::normalize($html);
-        if (!is_string($html) || empty($html)) {
-            throw new \DomainException('normalized html is not a string : '.$url);
+            throw new DomainException('No HTML from requested URL '.$url);
         }
 
         return new ExternPage($url, $html, $log);
     }
+
 }
