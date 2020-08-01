@@ -146,10 +146,10 @@ class ExternPage
     }
 
     /**
-     * test.com => Test.com
-     * bla.test.com => Test.com
-     * test.co.uk => google.co.uk (national commercial subdomain)
-     * site.google.com => site.google.com ;)
+     * test.com => test.com
+     * bla.test.com => test.com
+     * test.co.uk => test.co.uk (national commercial subdomain)
+     * site.google.com => site.google.com (blog)
      *
      * @return string
      * @throws Exception
@@ -158,12 +158,12 @@ class ExternPage
     {
         $subDomain = $this->getSubDomain();
 
-        if (!strpos($subDomain, '.co.uk') && !strpos($subDomain, '.co.ma')
+        if (!strpos($subDomain, '.co.uk') && !strpos($subDomain, '.co.ma') && !strpos($subDomain, '.co.kr')
             && !strpos($subDomain, 'site.google.')
         ) {
             // bla.test.com => Test.com
             if (preg_match('#\w+\.\w+$#', $subDomain, $matches)) {
-                return ucfirst($matches[0]);
+                return $matches[0];
             }
         }
 
