@@ -72,14 +72,6 @@ class OuvrageEditWorker
      */
     private $citationVersion;
 
-    /**
-     * OuvrageEditWorker constructor.
-     *
-     * @param DbAdapter            $dbAdapter
-     * @param WikiBotConfig        $bot
-     * @param Memory               $memory
-     * @param LoggerInterface|null $log
-     */
     public function __construct(
         DbAdapter $dbAdapter,
         WikiBotConfig $bot,
@@ -99,8 +91,8 @@ class OuvrageEditWorker
     {
         while (true) {
             echo "\n-------------------------------------\n\n";
-            echo date("Y-m-d H:i")."\n";
-            $this->log->notice($this->memory->getMemory(true));
+            echo date("Y-m-d H:i")." ";
+            $this->log->info($this->memory->getMemory(true));
             $this->pageProcess();
         }
     }
@@ -153,26 +145,34 @@ class OuvrageEditWorker
         if (empty($this->wikiText)) {
             return false;
         }
-        if (WikiBotConfig::isEditionRestricted($this->wikiText)) {
-            $this->log->info("SKIP : protection/3R.\n");
-            $this->db->skipArticle($title);
-
-            return false;
-        }
-
-        if ($this->bot->minutesSinceLastEdit($title) < 15) {
-            $this->log->info("SKIP : édition humaine dans les dernières 15 minutes.\n");
-
-            return false;
-        }
 
         // Skip AdQ
-        if (preg_match('#{{ ?En-tête label#i', $this->wikiText) > 0) {
-            $this->log->info("SKIP : AdQ ou BA.\n");
+        if (preg_match('#{{ ?En-tête label ?\| ?AdQ#i', $this->wikiText)) {
+            $this->db->setLabel($title, 2);
+            $this->log->info("SKIP : AdQ.\n"); // BA ??
             $this->db->skipArticle($title);
 
             return false;
         }
+        if (preg_match('#{{ ?En-tête label ?\| ?BA#i', $this->wikiText)) {
+            $this->db->setLabel($title, 1);
+            $this->log->info("BA !!\n");
+        }
+
+        if (WikiBotConfig::isEditionRestricted($this->wikiText)) {
+            $this->log->info("SKIP : protection/3R/travaux.\n");
+            $this->db->skipArticle($title);
+
+            return false;
+        }
+
+        if ($this->bot->minutesSinceLastEdit($title) < 20) {
+            $this->log->info("SKIP : édition humaine dans les dernières 20 minutes.\n");
+
+            return false;
+        }
+
+
 
         // GET all article lines from db
         $this->log->info(sprintf("%s rows to process\n", count($data)));
@@ -182,8 +182,8 @@ class OuvrageEditWorker
         foreach ($data as $dat) {
             // hack temporaire pour éviter articles dont CompleteProcess incomplet
             if (empty($dat['opti']) || empty($dat['optidate']) || $dat['optidate'] < DbAdapter::OPTI_VALID_DATE) {
-                $this->log->notice("SKIP : Complètement incomplet de l'article");
-
+                $this->log->notice("SKIP : Complètement incomplet de l'article. sleep 10min");
+                sleep(600);
                 return false;
             }
             $success = $this->dataProcess($dat);
@@ -195,14 +195,6 @@ class OuvrageEditWorker
 
             return false;
         }
-
-        // Conversion <ref>http//books.google
-        //        try {
-        //            $this->wikiText = $this->refGooConverter->process($this->wikiText);
-        //        } catch (Throwable $e) {
-        //            $this->log->warning('refGooConverter->process exception : '.$e->getMessage());
-        //            unset($e);
-        //        }
 
         // EDIT THE PAGE
         if (!$this->wikiText) {

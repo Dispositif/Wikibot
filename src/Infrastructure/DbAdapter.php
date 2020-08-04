@@ -24,7 +24,7 @@ use Throwable;
  */
 class DbAdapter implements QueueInterface
 {
-const OPTI_VALID_DATE = '2019-11-20 14:00:00';
+const OPTI_VALID_DATE = '2020-04-05 00:00:00'; // v0.77
     protected $db;
     protected $pdoConn; // v.34 sous-titre sans maj
 
@@ -138,7 +138,7 @@ const OPTI_VALID_DATE = '2019-11-20 14:00:00';
                         )
                     AND A.page = B.page
                     )
-                ORDER BY A.priority,RAND()
+                ORDER BY A.priority DESC,RAND()
                 LIMIT '.$limit.'
                 '
             );
@@ -171,6 +171,23 @@ const OPTI_VALID_DATE = '2019-11-20 14:00:00';
                 'page_ouvrages',
                 ['page' => $title], // condition
                 ['skip' => true]
+            );
+        } catch (MysqlException $e) {
+            dump($e);
+
+            return false;
+        }
+
+        return !empty($result);
+    }
+
+    public function setLabel(string $title, ?int $val=0): bool
+    {
+        try {
+            $result = $this->db->update(
+                'page_ouvrages',
+                ['page' => $title], // condition
+                ['label' => $val]
             );
         } catch (MysqlException $e) {
             dump($e);
