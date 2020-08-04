@@ -101,15 +101,20 @@ trait ExternConverterTrait
         return $str;
     }
 
-    // TODO encodage + normalizer
+    /**
+     * @param string|null $str
+     *
+     * @return string|null
+     */
     public function clean(?string $str = null): ?string
     {
         if ($str === null) {
             return null;
         }
         $str = str_replace(
-            ["\n", "\t", '&#x27;', '&#39;', '&#039;', '&apos;', "\n", "&#10;", "&eacute;"],
+            ['|', "\n", "\t", '&#x27;', '&#39;', '&#039;', '&apos;', "\n", "&#10;", "&eacute;"],
             [
+                '/',
                 ' ',
                 ' ',
                 "’",
