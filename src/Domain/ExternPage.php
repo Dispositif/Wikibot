@@ -101,7 +101,7 @@ class ExternPage
             }
             $data = json_decode($json, true);
             if (!is_array($data)
-                || (isset($data['@type']) && preg_match('#Breadcrumb#i', $data['@type']))
+                || (isset($data['@type']) && is_string($data['@type']) && preg_match('#Breadcrumb#i', $data['@type']))
             ) {
                 continue;
             }
