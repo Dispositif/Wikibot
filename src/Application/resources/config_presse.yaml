@@ -65,7 +65,8 @@ ladepeche.fr:
     template: auto
     site: '[[La Dépêche du Midi|ladepeche.fr]]'
     périodique: '[[La Dépêche du Midi|La Dépêche]]'
-
+youtube.com:
+    site: '[[YouTube]]'
 #theguardian.com:
 lesechos.fr:
     template: auto

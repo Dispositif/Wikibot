@@ -2,6 +2,7 @@ sports-reference.com
 archive.wikiwix.com
 wikiwix.com
 archive.org
+web.archive.org
 books.google.fr
 books.google.com
 fr.wikipedia.org
