@@ -1,8 +1,8 @@
 <?php
 /**
- * This file is part of dispositif/wikibot application
- * 2019 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019/2020 © Philippe M. <dispositif@gmail.com>
+ * For the full copyright and MIT license information, please view the license file.
  */
 
 declare(strict_types=1);
@@ -24,15 +24,34 @@ class CirrusSearch implements PageListInterface
      * @var string
      */
     private $url;
+    private $options = [];
 
     /**
      * CirrusSearch constructor.
      *
      * @param string|null $url
+     * @param array|null  $options
      */
-    public function __construct(?string $url = null)
+    public function __construct(?string $url = null, ?array $options=[])
     {
         $this->url = $url;
+        $this->options = $options;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getOptions(): ?array
+    {
+        return $this->options;
+    }
+
+    /**
+     * @param array|null $options
+     */
+    public function setOptions(?array $options): void
+    {
+        $this->options = $options;
     }
 
     public function setUrl(string $url)
@@ -66,6 +85,10 @@ class CirrusSearch implements PageListInterface
         $titles = [];
         foreach ($result as $res) {
             $titles[] = trim($res['title']);
+        }
+
+        if(isset($this->options['reverse']) && $this->options['reverse'] === true ) {
+            krsort($titles);
         }
 
         return $titles;
