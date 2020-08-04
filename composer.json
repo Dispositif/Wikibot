@@ -30,7 +30,8 @@
     "koff/transliterator": "^3.0",
     "ext-readline": "*",
     "symfony/yaml": "4.*",
-    "codedungeon/php-cli-colors": "~1.0"
+    "codedungeon/php-cli-colors": "~1.0",
+    "ext-iconv": "*"
   },
   "autoload": {
     "psr-4": {
