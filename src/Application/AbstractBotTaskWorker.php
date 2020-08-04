@@ -12,6 +12,7 @@ namespace App\Application;
 use App\Domain\Exceptions\ConfigException;
 use App\Infrastructure\Logger;
 use App\Infrastructure\PageListInterface;
+use App\Infrastructure\ServiceFactory;
 use Codedungeon\PHPCliColors\Color;
 use Exception;
 use Mediawiki\Api\MediawikiFactory;
@@ -22,9 +23,14 @@ use Throwable;
 
 abstract class AbstractBotTaskWorker
 {
+    const TASK_BOT_FLAG               = false;
     const SLEEP_AFTER_EDITION         = 60;
     const DELAY_AFTER_LAST_HUMAN_EDIT = 15;
     const CHECK_EDIT_CONFLICT         = true;
+    const ARTICLE_ANALYZED_FILENAME   = __DIR__.'/resources/article_edited.txt';
+    const SKIP_LASTEDIT_BY_BOT       = true;
+    const SKIP_NOT_IN_MAIN_WIKISPACE = true;
+
     /**
      * @var PageListInterface
      */
@@ -47,13 +53,17 @@ abstract class AbstractBotTaskWorker
     // TODO : move botFlag... to to WikiBotConfig
 
     protected $minorFlag = false;
-    protected $botFlag = false;
+    protected $titleBotFlag = false;
     protected $modeAuto = false;
     protected $maxLag = 5;
     /**
      * @var Logger|LoggerInterface
      */
     protected $log;
+    /**
+     * array des articles déjà anal
+     */
+    private $pastAnalyzed;
 
     /**
      * Goo2ouvrageWorker constructor.
@@ -74,6 +84,9 @@ abstract class AbstractBotTaskWorker
 
         $this->defaultTaskname = $bot->taskName;
 
+        $analyzed = @file(static::ARTICLE_ANALYZED_FILENAME, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        $this->pastAnalyzed = ($analyzed !== false ) ? $analyzed : [];
+
         // @throw exception on "Invalid CSRF token"
         $this->run();//todo delete that and use (Worker)->run($duration) or process management
     }
@@ -90,11 +103,10 @@ abstract class AbstractBotTaskWorker
     public function run()
     {
         $titles = $this->getTitles();
-
-        echo date('d-m-Y H:i')."\n";
-
+        echo date('d-m-Y H:i')." *** NEW WORKER ***\n";
         foreach ($titles as $title) {
             $this->titleProcess($title);
+            sleep(3);
         }
     }
 
@@ -119,18 +131,31 @@ abstract class AbstractBotTaskWorker
      */
     protected function titleProcess(string $title): void
     {
-        echo "---------------------\n".Color::BG_CYAN."  $title ".Color::NORMAL."\n";
+        echo "---------------------\n";
+        echo date('d-m-Y H:i'). ' '. Color::BG_CYAN."  $title ".Color::NORMAL."\n";
         sleep(1);
 
+        if(in_array($title, $this->pastAnalyzed)) {
+            echo "Skip : déjà analysé\n";
+            return;
+        }
+        
         $this->titleTaskname = $this->defaultTaskname;
+        $this->titleBotFlag = static::TASK_BOT_FLAG;
 
         $text = $this->getText($title);
+        if( static::SKIP_LASTEDIT_BY_BOT && $this->pageAction->getLastEditor() === getenv('BOT_NAME') ) {
+            echo "Skip : déjà édité par le bot\n";
+            return;
+        }
         if (empty($text) || !$this->checkAllowedEdition($title, $text)) {
             return;
         }
 
         $newText = $this->processDomain($title, $text);
 
+        $this->memorizeAndSaveAnalyzedPage($title);
+        
         if (empty($newText) || $newText === $text) {
             echo "Skip identique ou vide\n";
 
@@ -160,8 +185,8 @@ abstract class AbstractBotTaskWorker
      */
     protected function getText(string $title): ?string
     {
-        $this->pageAction = new WikiPageAction($this->wiki, $title); // throw Exception
-        if ($this->pageAction->getNs() !== 0) {
+        $this->pageAction = ServiceFactory::wikiPageAction($title);
+        if (static::SKIP_NOT_IN_MAIN_WIKISPACE && $this->pageAction->getNs() !== 0) {
             throw new Exception("La page n'est pas dans Main (ns!==0)");
         }
 
@@ -169,6 +194,7 @@ abstract class AbstractBotTaskWorker
     }
 
     /**
+     * todo distinguer 2 methodes : ban temporaire et permanent (=> logAnalyzed)
      * Controle droit d'edition.
      *
      * @param string $title
@@ -182,12 +208,17 @@ abstract class AbstractBotTaskWorker
         $this->bot->checkStopOnTalkpage(true);
 
         if (WikiBotConfig::isEditionRestricted($text)) {
-            echo "SKIP : protection/3R.\n";
+            echo "SKIP : protection/3R/travaux.\n";
 
             return false;
         }
         if ($this->bot->minutesSinceLastEdit($title) < static::DELAY_AFTER_LAST_HUMAN_EDIT) {
             echo "SKIP : édition humaine dans les dernières ".static::DELAY_AFTER_LAST_HUMAN_EDIT." minutes.\n";
+
+            return false;
+        }
+        if (preg_match('#{{ ?En-tête label ?\| ?AdQ#i', $text)) {
+            echo "SKIP : AdQ.\n"; // BA ??
 
             return false;
         }
@@ -207,12 +238,12 @@ abstract class AbstractBotTaskWorker
 
     protected function doEdition(string $newText): void
     {
-        $prefixSummary = ($this->botFlag) ? 'bot: ' : '';
+        $prefixSummary = ($this->titleBotFlag) ? 'bot: ' : '';
 
         try {
             $result = $this->pageAction->editPage(
                 $newText,
-                new EditInfo($prefixSummary.$this->titleTaskname, $this->minorFlag, $this->botFlag, $this->maxLag),
+                new EditInfo($prefixSummary.$this->titleTaskname, $this->minorFlag, $this->titleBotFlag, $this->maxLag),
                 static::CHECK_EDIT_CONFLICT
             );
         } catch (Throwable $e) {
@@ -230,5 +261,14 @@ abstract class AbstractBotTaskWorker
         dump($result);
         echo "Sleep ".(string)static::SLEEP_AFTER_EDITION."\n";
         sleep(static::SLEEP_AFTER_EDITION);
+    }
+
+    /**
+     * @param string $title
+     */
+    private function memorizeAndSaveAnalyzedPage(string $title):void
+    {
+        $this->pastAnalyzed[] = $title;
+        @file_put_contents(static::ARTICLE_ANALYZED_FILENAME, $title.PHP_EOL, FILE_APPEND);
     }
 }

@@ -20,11 +20,12 @@ use Throwable;
 class ExternRefWorker extends RefBotWorker
 {
     const TASK_BOT_FLAG               = false;
-    const SLEEP_AFTER_EDITION         = 30; // sec
+    const SLEEP_AFTER_EDITION         = 10; // sec
     const DELAY_AFTER_LAST_HUMAN_EDIT = 15; // minutes
-    const CHECK_EDIT_CONFLICT         = true;
+    const CHECK_EDIT_CONFLICT       = true;
+    const ARTICLE_ANALYZED_FILENAME = __DIR__.'/resources/article_externRef_edited.txt';
 
-    protected $botFlag = false;
+    protected $titleBotFlag = false;
     protected $modeAuto = true;
     /**
      * @var ExternRefTransformer
@@ -74,10 +75,20 @@ class ExternRefWorker extends RefBotWorker
         if (!$this->transformer->skipUnauthorised) {
             echo Color::BG_LIGHT_RED."--".Color::NORMAL." ".$refContent."\n";
             echo Color::BG_LIGHT_GREEN."++".Color::NORMAL." $result \n\n";
-            //            $ask = readline(Color::LIGHT_MAGENTA."*** Conserver cette modif ? [y/n]".Color::NORMAL);
-            //            if ($ask !== 'y') {
-            //                return $refContent;
-            //            }
+
+            if (!$this->modeAuto) {
+                $ask = readline(Color::LIGHT_MAGENTA."*** Conserver cette modif ? [y/n/auto]".Color::NORMAL);
+                if ($ask === 'auto') {
+                    $this->modeAuto = true;
+                }
+                if ($ask !== 'y' && $ask !== 'auto') {
+                    return $refContent;
+                }
+            }
+        }
+        if (preg_match('#{{lien brisé#i', $result)) {
+            $this->titleTaskname .= ', ⚠️️lien brisé';
+            $this->titleBotFlag = false;
         }
 
         return $result;

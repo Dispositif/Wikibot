@@ -22,7 +22,6 @@ use App\Domain\Publisher\ExternMapper;
 use App\Domain\Utils\WikiTextUtil;
 use App\Domain\WikiTemplateFactory;
 use App\Infrastructure\Logger;
-use Codedungeon\PHPCliColors\Color;
 use Exception;
 use Normalizer;
 use Psr\Log\LoggerInterface;
@@ -124,7 +123,7 @@ class ExternRefTransformer implements TransformerInterface
         } catch (Exception $e) {
             // "410 gone" => {lien brisé}
             if (preg_match('#410 Gone#i', $e->getMessage())) {
-                $this->log->notice('410 page définitivement disparue : '.$url);
+                $this->log->notice('410 page disparue : '.$url);
 
                 return sprintf(
                     '{{Lien brisé |url= %s |titre=%s |brisé le=%s}}',
@@ -137,13 +136,13 @@ class ExternRefTransformer implements TransformerInterface
                 $this->log->warning('403 Forbidden : '.$url);
                 file_put_contents(self::LOG_REQUEST_ERROR, '403 Forbidden : '.$this->domain."\n", FILE_APPEND);
             } elseif (preg_match('#404 Not Found#i', $e->getMessage())) {
-                $this->log->notice('404 Not Found sur extractWebData');
+                $this->log->notice('404 Not Found : '.$url);
 
                 return $url;
             } else {
                 //  autre : ne pas générer de {lien brisé}, car peut-être 404 temporaire
                 $this->log->warning('erreur sur extractWebData '.$e->getMessage());
-                file_put_contents(self::LOG_REQUEST_ERROR, $this->domain."\n", FILE_APPEND);
+                //file_put_contents(self::LOG_REQUEST_ERROR, $this->domain."\n", FILE_APPEND);
 
                 return $url;
             }
@@ -227,12 +226,12 @@ class ExternRefTransformer implements TransformerInterface
         }
 
         if (!isset($this->config[$this->domain])) {
-            $this->log->info("Domain ".$this->domain." non configuré\n");
+            $this->log->debug("Domain ".$this->domain." non configuré");
             if ($this->skipUnauthorised) {
                 return false;
             }
         } else {
-            echo "> Domaine ".Color::LIGHT_GREEN.$this->domain.Color::NORMAL." configuré\n";
+            $this->log->debug("Domain ".$this->domain." configuré");
         }
 
         $this->config[$this->domain] = $this->config[$this->domain] ?? [];
