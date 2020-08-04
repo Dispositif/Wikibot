@@ -168,7 +168,6 @@ Je suis très conscient que cette page, normalement dédiée à la discussion, n
 Bon puisque tous le monde est contre cette amélioration, je ne vais pas m'y opposer. Que la démocratie l'emporte !
 Cependant, nous ne pouvons pas faire de généralité, ne l'ayant pas tester. Dommage pour ma part, j'y voyais du mieux...
 Ce qui équivaudrait à mon avis à une disparition de l'actuel. Mais rien n'interdit d'aller au bout de la logique.
-je ne pense pas qu'il faille limiter la discussion à une éventuelle suppression, mais au contraire penser à une réforme en profondeur, si possible en repensant de fond en comble l'utilité de la chose
 Mais au fond, il n'y a pas d'urgence : on n'est pas encore franchement en phase de finalisation.
 On n'en avait peut-être pas besoin jusqu'à maintenant, mais la communauté grandit de plus en plus.
 Je préfère personnellement éviter de prendre des risques et de faire des choses qui sont limite, surtout ici.
@@ -215,7 +214,6 @@ C'est redondant à mon avis.
 Ce qui fait la force de WP par rapport aux encyclopédies classiques, c'est d'être très réactif.
 L'intention est louable
 Je ne vois pas trop le problème
-Je ne vais pas pleurer sur les Rastignac qui se brûlent les ailes en cherchant à détourner Wikipédia de son but encyclopédique.
 Ce serait ouvrir la boite de Pandore pour des limitations futures sur d'autres choses et à la fin nous n'aurons plus accès à rien ou presque.
 De toute façon, dès lors qu'un contournement de ces propositions est possible ça ne sert à rien de les adopter parce qu'au final ça fera deux poids deux mesures entre ceux qui sauront comment faire pour contourner (et qui donc arriveront à leurs fins quand même) et les autres.
 Ne voyant pas du tout de quoi tu parles, j'apprécierai un exemple de ce que tu préconises.
@@ -238,7 +236,6 @@ Dans ce genre de cas, demander est un préalable évident pour moi.
 L'utilisateur doit connaitre l'existence de l'outil, des capacités et limitations, ce qui est favorisé par une démarche volontaire, et probablement pas les cas avec une attribution automatique.
 C'est bien lourd pour juste faciliter la vie. Si la fonction n'est pas mise automatiquement.
 Autre façon de faire (narrée par Irønie), que je ne désapprouve pas.
-D'une certaine façon, nos administrateurs ont pouvoir de ''justice''. Je fais confiance à chacun d'eux.
 Des explications sur le fonctionnement de Wikidata et son utilisation sur Wikipédia sont consultables sur la page « [[Wikipédia:Wikidata]] ».
 Ce système n'a pas besoin de l'assentiment de la communauté francophone pour être opérationnelle
 Réponse: Pour les wikipédias qui ont déjà le système, c'est elles qui l'ont demandé. Pour les autres, le système sera mis à disposition et chacun se débrouille.
@@ -273,7 +270,7 @@ Oui, c’est exactement ça, l’intendance suivra ! Cordialement
 Oui, ayons confiance. Ce n'est pas parce que moi, toi ou un autre ne savent pas le faire qu'il ne faut pas prendre une décision dans l'absolu, à charge pour les gens plus compétents d'atteindre petit à petit ce qui a été décidé.
 Attention: soyez conscients que, selon les cas, il peut s'agir d'une modification technique qui ne peut pas être
 réalisée localement et qui relève des développeurs de mediawiki. Or, l'acceptation d'une demande d'évolution sur [https://phabricator.wikimedia.org/ bugzilla] n'a rien d'évident. Les contributeurs qui se prononceront gagneront à savoir au moins si ce qui est proposé est immédiatement faisable ou si sa mise en place est totalement incertaine.
-Je suis d’accord. Le dernier est faisable localement en javascript, mais ça tiendrait plus du bidouillage qu’autre chose…
+Je suis d’accord.
 Mais il faut le savoir à l'avance et donc ne pas repousser à « ensuite » la mise au point des solutions techniques {{clin}}
 Je vous rappelle que les questions de complexité croissante de la syntaxe sont assez sensibles et que cela risque fort d'être très dissuasif.
 Cela ne semble présenter que des désavantages, d'abord en ne facilitant plus le clic (cf. argumentaire de Lgd ci-dessus), ensuite en étant techniquement complexe, et enfin c'est une solution jamais vue de mémoire d'homme (du moins, pour moi) !
@@ -283,7 +280,6 @@ Pas compris, désolé. Les lecteurs non connectés n'ont accès à aucune forme 
 En marge, je pense qu'il faudrait une introduction avançant les quelques enjeux et les quelques arguments pour/contre, de manière à centrer la question sur son énoncé et les modalités.
 Merci pour cette proposition {{sourire}}
 Je l'avais compris comme ça {{clin}}
-Je l'avais compris comme ça {{Clin d'oeil}}. Je viens également d'ajouter quelque-chose à propos des {{refnec}}, peut-être pas évident pour le wikipédien, mais à l'usage constaté pas si simples pour le lecteur.
 On ne va pas recommencer à faire du sur-place, pitié {{clin}}
 Demander aux gens de continuer à utiliser un modèle dont le rendu est totalement invisible, je ne pense pas que ce soit très réaliste ? <small>Même si l'idée de lancer le culte de la virgule rose invisible me plairait beaucoup</small>
 Grumble ! Quel con ! Donc y’a pas de solution ?
@@ -319,29 +315,25 @@ Fausse bonne idée, même si l'intention est louable.
 Donc la communauté, sur cet aspect technique et juridique, n'a pas à se prononcer.
 La solution proposée me semble pas envisageable car elle complique le travail et le crédit d'auteur des contributeurs pour un gain minime
 J'avoue que je suis tombé sur le séant quand j'ai vu passer le diff en question il y a quelques minutes...
-Qu'un admin s'amuse à faire joujou avec des faux-nez pour des expériences et/ou imposer un point de vue, c'est déjà gros, mais quand en plus il se fait prendre sur une manip aussi ridicule, il faut à mon avis sévir. On n'est plus au niveau du simple abus d'outils
-Techniquement, aussi, il n'y a pas abus des outils. Mais peut on encore faire confiance à quelqu'un qui joue de la sorte avec WP ? Ça me semble un sujet de discussion intéressant, quelle qu'en soit l'issue.
-Franchement, à la vue du résultat, je suis franchement de l'avis de LittleTony87 ci-dessus.
-Autant le blocage indéfini dans le cas présent serait plus qu'inutile, autant une absence de sanction donnerait blanc-seing à tout comportement totalement identique qui serait découvert ultérieurement en créant une jurisprudence plutôt mauvaise.
+Techniquement, aussi, il n'y a pas abus des outils.
+Ça me semble un sujet de discussion intéressant, quelle qu'en soit l'issue.
 Et bien là je suis carrément scié... Complètement d'accord avec LT87, il faut sanctionner ce comportement parfaitement inadmissible.
 On vient de franchir un sacré niveau dans l'impudence, je n'en reviens pas moi non plus !
-On vient de franchir un sacré niveau dans l'impudence, je n'en reviens pas moi non plus ! Il me semble inutile de passer des semaines sur ce contributeur qui a fait déjà perdre beaucoup de temps à la communauté ; je suis même profondément navré pour tous ces contributeurs ou ceux des questions techniques — qui méritent au passage de chaleureuses félicitations — qui ont pris de leur temps pour lui expliquer comment répondre sur une page de discussion, comment créer une page de brouillon, comment modifier la documentation d'un modèle, à quoi sert « à faire », etc.
 Un comble pour quelqu'un qui connaît parfaitement les rouages de Wikipedia !
 Les expériences ont du bon, mais celles qui se font sur le dos du projet sont à bannir
 ça montre quelque part une étrange façon de contribuer au projet, et un certain mépris des avis de la communauté
 Je précise qu'il n'est aucunement dans mes intentions, malgré cette étrange remarque récente, d'effectuer « quelques relances amicales [...] l'invitant à mieux s'exprimer ».
-On peut en effet attendre le 25, quitte, par exemple, à lui demander de ne pas utiliser ses outils d'ici là. La bonne ou mauvaise volonté qui s'ensuivra pourra toujours influer sur la décision finale.
-Bon, les mesures proposées me semblent raisonnables mais il faudrait peut-être garder le sens des proportions, l'« expérience » n'était qu'une proposition en page de discussion <small>(incidemment, il est d'ailleurs assez savoureux qu'elle ait été signalée par l'auteur d'[[épilation à la pelle]])</small>, pas un ajout dans un article, il n'y a eu aucune tentative de faire nombre en participant aux mêmes votes ou discussions, ni effort pour « pousser » un point de vue et toutes les contributions en question étaient de qualité.
+Bon, les mesures proposées me semblent raisonnables mais il faudrait peut-être garder le sens des proportions, l'« expérience » n'était qu'une proposition en page de discussion
 J'ai cependant du mal à y voir le scandale du siècle ni aucune urgence particulière.
 Jusqu'à maintenant, tout le monde semble d'accord pour 1 mois/indef, est-ce que ça pose un problème à quelqu'un ?
 Ne soyez pas surpris de voir une vingtaine de messages ainsi déposés et, surtout, n'y voyez aucune « manœuvre complotiste » {{Clin d'œil}}. Bien cordialement
 La dernière fois que quelqu’un a fait ça, on l’a envoyé chier aussi sec.
 Malheureusement, à moins d'une reconnaissance automatique des langues, c'est pour le moment impossible.
-Je n'ai pas de certitude sur l'interprétation du code. Mais il semble absurde de mettre un tel modèle de formatage du texte dans un élément qui n'a pas vocation à être visible mais simplement lu par un logiciel.
-Dans ce cas, ton alternative conviendrait parfaitement. N'hésite pas à expliquer au contributeur, qui a peut-être fait une telle modification par inattention, que cette dernière n'apparaît pas pertinente et peu altérer l'accessibilité, raison d'être de ce paramètre descriptif des images.
+Je n'ai pas de certitude sur l'interprétation du code.
+Dans ce cas, ton alternative conviendrait parfaitement.
 Logique... un grand merci ! je vais donc rétablir, comme j'écrivais mes alternatives !
 Si oui à la deuxième question, ne faudrait-il pas modifier le modèle Lien en conséquence ? Cordialement,
-Salut. Je ne comprends pas bien la question : le lien rouge qui apparaît est le lien vers l'article français inexistant. Il n'y a donc pas lieu de lire dans une autre langue.
+Salut. Je ne comprends pas bien la question : le lien rouge qui apparaît est le lien vers l'article français inexistant.
 Le mieux à l'insertion des modèles Lien est d'utiliser tous les paramètres disponibles (langue, trad, fr et texte), l'écriture compacte étant aussi permise bien sûr mais moins explicite pour les novices.
 Mon avis personnel sur ta question serait de mettre le modèle Langue autour du Lien si le texte est dans une autre langue que le français mais pas davantage que pour les autres passages ou expressions dans une autre langue dans la page concernée.
 Cela est surtout valable pour les articles ayant une forte probabilité d'être crées/admissibles, dans l'optique de la conversion future en lien interne classique.
@@ -365,7 +357,9 @@ Peut-être qu'il faudrait demander à un bot de corriger ça.
 En revanche pour la conversion automatisée, notamment si l'article a été crée sur frwiki sous un titre non francophone identique au texte à afficher (paramètre <code>texte</code> hors modèle Langue éventuel), je n'ai pas la réponse en termes d'accessibilité à la question déjà posée plus haut et reformulée par Daehan à  la fin de son message du 25 mars 2020 à 22:28.
 Je me permets de remettre en question certains points (chui chiant, mais c'est pas méchant :)
 Un utilisateur de lien peut avoir utilisé une forme dans un article, un autre utilisateur la forme trad et fr avec les titres dans les deux langues dans un autre article.
-100 % {{OK}} avec toi. Des éventualités à considérer : les petits malins qui s'amusent à corriger les redirections sans discernement
+100 % {{OK}} avec toi.
+100 % {{OK}} avec toi.
+100 % {{OK}} avec toi.
 J'ai trouver un bon concurrent {{clin}} ; j'aime bien également les réponses factuelles. Réponses dans le texte, entre les lignes.
 J'avoue que j'ai un peu de mal à comprendre toute cette excitation soudaine.
 est techniquement totalement en panne : cela a son importance dans la mesure où les uns et les autres s'en remettent finalement à des arguments techniques (généralement mal maîtrisés) alors que, tout bêtement, il n'y a aucun développement en cours ni envisagé, bref aucune réponse technique à attendre au moins à moyen terme ;
@@ -379,8 +373,7 @@ En effet, d'un côté c'est mal de compliquer la syntaxe wiki de la source de l'
 comme cela se fait un peu au pifomètre dans beaucoup d'autres articles où il s'agit d'un titre d'oeuvre, à propos desquels on ne parvient pas à se décider à passer par l'infobox et à gérer la chose comme pour les articles de biologie.
 Il faut arbitrer entre au moins trois exigences immédiates, également fortes et tout aussi légitimes, que de bêtes limitations techniques dues à certains choix fondamentaux de mediawiki rendent parfois contradictoires
 d'une part sémantiser et accessibiliser Wikipédia pour en favoriser l'accès mais aussi la réutilisabilité et la pérennité, d'autre part permettre le respect de ce qu'une part des contributeurs considèrent comme des normes typographiques qu'il faut suivre bien qu'on ne soit plus sur le même media que l'imprimé, et enfin conserver une raisonnable facilité d'édition des articles et d'appropriation de la syntaxe de ceux-ci. Pas simple, pas si simple... Cordialement,
-Le microcosme wikipédien en est tombé à ce niveau-là, à tout personnaliser sans qu'on sache trop pourquoi ? C'est étonnant et un peu embêtant. Ce n'est pas vraiment encourageant, non plus.
-Depuis plusieurs années, les prises de décision rencontrent des difficultés récurrentes.
+C'est étonnant et un peu embêtant. Ce n'est pas vraiment encourageant, non plus.
 Mais devant l'indifférence générale (à part od†n), j'avoue que j'avais laissé tomber.
 Sur un mode plus constructif : mettre à jour les pages d'aide pour enlever ce qui donne un résultat problématique quand il s'agit des syntaxes wiki ala-attributs de présentation HTML serait vraiment nécessaire à présent.
 Sinon, les gens vont inévitablement continuer à les utiliser, alors que le but est d'en réduire l'usage. Il va sans doute falloir créer des classes, pour cela. Enfin, peut-être. La question de quelle syntaxe est intuitive pour les contributeurs n'a pas vraiment été prise en compte par les développeurs...
@@ -389,8 +382,6 @@ Merci, c'est bon d'avoir des pros dans le coin {{clin}}
 Pour une fois qu'on a un processus de qualification des articles explicite, documenté et rigoureux (mais améliorable), pourquoi diable ne pas en faire bénéficier le lecteur ?
 Les raisons du non m'échappent complètement, surtout cette idée que ce serait à voir au cas par cas ou que ce serait une surcharge.
 Pour te répondre un peu brutalement mais très simplement : je me demande s'il n'y a pas une position un peu moins con que celles des agités de l'un ou de l'autre bord, dans l'intérêt de ce projet. Elle est forcément suspect, dans une approche des choses devenue binaire.
-Mais si tu pouvais quand même demander le statut de bot ? Au moins, ça éviterait en lisant les RC de voir que vous continuez à vous agiter sur la question ? Ça ne pourrait qu'aider à vous lâcher la grappe {{Clin d'oeil}}.
-Mais si tu pouvais quand même demander le statut de bot ? Au moins, ça éviterait en lisant les RC de voir que vous continuez à vous agiter sur la question ? Ça ne pourrait qu'aider à vous lâcher la grappe {{Clin d'oeil}}.
 Mais si tu pouvais quand même demander le statut de bot ? Au moins, ça éviterait en lisant les RC de voir que vous continuez à vous agiter sur la question ? Ça ne pourrait qu'aider à vous lâcher la grappe {{Clin d'oeil}}.
 Un jour de mauvaise humeur, il se peut je procède au blocage indef (et idiot) de ce bot non déclaré, ce qui ne serait que l'application formelle et indiscutable des règles de base de Wikipédia sur les modifications massives : quand on veut jouer au con...
 Mais bon, tout cela est laissé au hasard des initiatives désordonnées de qui passe par là...
@@ -490,7 +481,6 @@ Une discussion visant à modifier cette position avait été entamée en 2018 ma
 Wikipédia n'est pas un vase clos. La totalité des références vient par exemple de l'extérieur, et c'est sain.
 Je ne vois aucune raison à ne pas prendre en compte des éléments externes à l'évaluation globale d'une situation.
 Réduisons les risques de conflit interminables
-Je doute aussi très fortement que « casser les dents d'un contributeur » soit considéré par un juge comme une solution proportionnée et acceptable.
 Apportera un peu plus de sérénité.
 Totalement d'accord sur le fond
 Formulation alambiquée, et cela ne réponds pas à un problème réel.
@@ -505,7 +495,6 @@ Je l'utilise, puis je veux annuler et le machin m'affiche un message en franglai
 Si quelqu'un sait ce qu'il faut faire...
 Trop gros. Passera pas.
 Ah oui? Comment ça?
-Soit la communauté en a décidé ainsi explicitement un jour, soit c'est une implémentation de [[WP:ICR]]. Il n'y a donc
-pas de problème.
+Soit la communauté en a décidé ainsi explicitement un jour, soit c'est une implémentation de [[WP:ICR]]. Il n'y a donc pas de problème.
 Parfois, je pense qu'il est préférable de bloquer une situation une douzaine d'heure histoire de voir comment on peut la gérer au mieux pour la suite.
 Je suis dubitatif.

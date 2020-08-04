@@ -28,7 +28,7 @@ $process->run();
  */
 class Monitor
 {
-    const SLEEP_TIME = 5;
+    const SLEEP_TIME = 60;
 
     private $db;
     private $lastTitle = '';

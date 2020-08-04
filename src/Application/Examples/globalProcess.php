@@ -7,18 +7,18 @@
 
 namespace App\Application\Examples;
 
-$filename = __DIR__.'/resources/global_process.json';
-
-$saveData = function ($data) use ($filename) {
-    $res = file_put_contents($filename, json_encode($data));
-    if ($res === false) {
-        throw new \Exception("impossible d'enregistrer $filename");
-    }
-};
+//$filename = __DIR__.'/resources/global_process.json';
+//
+//$saveData = function ($data) use ($filename) {
+//    $res = file_put_contents($filename, json_encode($data));
+//    if ($res === false) {
+//        throw new \Exception("impossible d'enregistrer $filename");
+//    }
+//};
 
 while (true) {
     echo "\n*** GLOBAL PROCESS ***\n";
-    $data = json_decode($filename, true);
+//    $data = json_decode($filename, true);
 
     include __DIR__."/Monitor.php";
     include __DIR__."/botstats.php";

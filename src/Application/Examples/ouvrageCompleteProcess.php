@@ -24,12 +24,12 @@ $logger = new Logger();
 $count = 0;
 while (true) {
     try {
-        echo "*** NEW COMPLETE PROCESS\n";
+        echo "*** NEW PROCESS ouvrageCompleteProcess\n";
         $googleQuota = (new GoogleApiQuota())->getCount();
         dump('Google quota : ', $googleQuota);
         if ($googleQuota >= 950) {
             $logger->warning(' Quota Google dépassé dans ouvrageCompleteProcess ('.$googleQuota.'). Sleep 4h');
-            sleep(60 * 60 * 4);
+            sleep(60 * 60 * 6);
             continue;
         }
 
@@ -38,6 +38,7 @@ while (true) {
         $count = 0; // reinitialise boucle erreur
     } catch (Throwable $e) {
         $count++;
+        echo "catch in ouvrageCompleteProcess\n";
         echo $e->getMessage();
         if (preg_match('#no more queue to process#', $e->getMessage())) {
             echo "\nno more queue to process. Sleep 6h avant SMS\n";
@@ -46,8 +47,13 @@ while (true) {
             exit;
         }
         if (preg_match('#DNS refusé#', $e->getMessage())) {
-            echo "\nDNS refusé (curl error 6). EXIT\n";
+            echo "\nDNS refusé (curl error 6). Sleep 10min and EXIT\n";
             sleep(60 * 10);
+            exit;
+        }
+        if(preg_match('#Quota exceeded#', $e->getMessage())) {
+            echo "ouvrageCompleteProcess : Quota exceeded. Sleep 4h and EXIT.";
+            sleep(60*60*4);
             exit;
         }
 
@@ -66,11 +72,10 @@ while (true) {
             $count = 0;
             echo "Google Quota dépassé : sleep 6h\n";
             sleep(60 * 60 * 6);
-            echo "Wake up\n";
-            continue;
+            exit;
         }
         if ($count > 2) {
-            echo "\n3 erreurs à la suite => exit\n";
+            echo "\n3 erreurs à la suite => exit. Sleep 10min. \n";
             sleep(10 * 60);
             exit;
         }

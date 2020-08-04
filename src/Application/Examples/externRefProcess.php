@@ -40,6 +40,8 @@ $list = new CirrusSearch(
     .'&srsearch=%22https%3A%2F%2F%22+insource%3A%2F%5C%3Cref%5C%3Ehttps%5C%3A%5C%2F%5C%2F%5B%5E%5C%3E%5D%2B%5C%3C%5C%2Fref%3E%2F'
     .'&formatversion=2&format=json&srnamespace=0&srlimit=10000&srqiprofile=popular_inclinks_pv&srsort=last_edit_desc'
 );
+//$list->setOptions(['reverse' => true]);
+
 
 //// RANDOM :
 //$list = new CirrusSearch(
@@ -50,6 +52,7 @@ $list = new CirrusSearch(
 
 if (!empty($argv[1])) {
     $list = new PageList([trim($argv[1])]);
+    $botConfig->taskName = '🐞'.$botConfig->taskName;
 }
 
 new ExternRefWorker($botConfig, $wiki, $list);
