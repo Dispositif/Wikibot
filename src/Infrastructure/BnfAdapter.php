@@ -49,6 +49,7 @@ class BnfAdapter extends AbstractBookApiAdapter implements BookApiInterface
         $isbn = str_replace([' ', '-'], '', $isbn);
 
         // bib.isbn adj "978-2-344-01689-3"
+        // todo verify http_build_query() enc_type parameter
         $url = self::API_URL.http_build_query(
                 [
                     'version' => '1.2',

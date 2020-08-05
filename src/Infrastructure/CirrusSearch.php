@@ -13,6 +13,7 @@ namespace App\Infrastructure;
 use App\Domain\Exceptions\ConfigException;
 
 /**
+ * https://fr.wikipedia.org/w/api.php?action=help&modules=query%2Bsearch
  * Dirty.
  * Class CirrusSearch
  *

@@ -35,14 +35,15 @@ if (!empty($argv[1])) {
 
 
 //// Catégories : Article potentiellement bon, Article potentiellement de qualité
-//$list = PageList::FromWikiCategory('Article potentiellement de qualité');
-//$list = PageList::FromWikiCategory('Article potentiellement bon');
+//$ba = PageList::FromWikiCategory('Article potentiellement de qualité');
+//$adq = PageList::FromWikiCategory('Article potentiellement bon');
+//$list = new PageList(array_merge($ba->getPageTitles(),$adq->getPageTitles()));
 //new ScanWiki2DB($wiki, new DbAdapter(), new WikiBotConfig(), $list, 20);
 //exit;
 
 
 // 100 dernier articles édités contenant un {ouvrage}
-echo "100 dernier articles édités contenant un {ouvrage} \n";
+echo "1000 dernier articles édités contenant un {ouvrage} \n";
 $list = new CirrusSearch(
     [
         'srsearch' => '"{{ouvrage" insource:/\{\{[oO]uvrage/',

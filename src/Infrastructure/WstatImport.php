@@ -51,7 +51,7 @@ class WstatImport implements PageListInterface
     public function getUrl()
     {
         $this->params['format'] = 'json';
-
+        // todo verify http_build_query() enc_type parameter
         return 'https://wstat.fr/template/index.php?'.http_build_query($this->params);
     }
 

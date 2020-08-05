@@ -42,6 +42,7 @@ class OpenLibraryAdapter extends AbstractBookApiAdapter implements BookApiInterf
     {
         $isbn = str_replace([' ', '-'], '', $isbn);
 
+        // todo verify http_build_query() enc_type parameter
         $url = 'https://openlibrary.org/api/books?'.http_build_query(
                 [
                     'bibkeys' => sprintf('ISBN:%s', urlencode($isbn)),

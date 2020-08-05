@@ -23,13 +23,13 @@ use Throwable;
 
 abstract class AbstractBotTaskWorker
 {
-    const TASK_BOT_FLAG               = false;
+    const TASK_BOT_FLAG                       = false;
     const SLEEP_AFTER_EDITION                 = 60;
     const MINUTES_DELAY_AFTER_LAST_HUMAN_EDIT = 15;
     const CHECK_EDIT_CONFLICT                 = true;
-    const ARTICLE_ANALYZED_FILENAME   = __DIR__.'/resources/article_edited.txt';
-    const SKIP_LASTEDIT_BY_BOT       = true;
-    const SKIP_NOT_IN_MAIN_WIKISPACE = true;
+    const ARTICLE_ANALYZED_FILENAME           = __DIR__.'/resources/article_edited.txt';
+    const SKIP_LASTEDIT_BY_BOT                = true;
+    const SKIP_NOT_IN_MAIN_WIKISPACE          = true;
 
     /**
      * @var PageListInterface
@@ -85,7 +85,7 @@ abstract class AbstractBotTaskWorker
         $this->defaultTaskname = $bot->taskName;
 
         $analyzed = @file(static::ARTICLE_ANALYZED_FILENAME, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        $this->pastAnalyzed = ($analyzed !== false ) ? $analyzed : [];
+        $this->pastAnalyzed = ($analyzed !== false) ? $analyzed : [];
 
         // @throw exception on "Invalid CSRF token"
         $this->run();//todo delete that and use (Worker)->run($duration) or process management
@@ -93,6 +93,7 @@ abstract class AbstractBotTaskWorker
 
     protected function setUpInConstructor(): void
     {
+        // optional implementation
     }
 
     /**
@@ -132,20 +133,22 @@ abstract class AbstractBotTaskWorker
     protected function titleProcess(string $title): void
     {
         echo "---------------------\n";
-        echo date('d-m-Y H:i'). ' '. Color::BG_CYAN."  $title ".Color::NORMAL."\n";
+        echo date('d-m-Y H:i').' '.Color::BG_CYAN."  $title ".Color::NORMAL."\n";
         sleep(1);
 
-        if(in_array($title, $this->pastAnalyzed)) {
+        if (in_array($title, $this->pastAnalyzed)) {
             echo "Skip : déjà analysé\n";
+
             return;
         }
-        
+
         $this->titleTaskname = $this->defaultTaskname;
         $this->titleBotFlag = static::TASK_BOT_FLAG;
 
         $text = $this->getText($title);
-        if( static::SKIP_LASTEDIT_BY_BOT && $this->pageAction->getLastEditor() === getenv('BOT_NAME') ) {
+        if (static::SKIP_LASTEDIT_BY_BOT && $this->pageAction->getLastEditor() === getenv('BOT_NAME')) {
             echo "Skip : déjà édité par le bot\n";
+
             return;
         }
         if (empty($text) || !$this->checkAllowedEdition($title, $text)) {
@@ -155,7 +158,7 @@ abstract class AbstractBotTaskWorker
         $newText = $this->processDomain($title, $text);
 
         $this->memorizeAndSaveAnalyzedPage($title);
-        
+
         if (empty($newText) || $newText === $text) {
             echo "Skip identique ou vide\n";
 
@@ -266,9 +269,12 @@ abstract class AbstractBotTaskWorker
     /**
      * @param string $title
      */
-    private function memorizeAndSaveAnalyzedPage(string $title):void
+    private function memorizeAndSaveAnalyzedPage(string $title): void
     {
-        $this->pastAnalyzed[] = $title;
-        @file_put_contents(static::ARTICLE_ANALYZED_FILENAME, $title.PHP_EOL, FILE_APPEND);
+        if (!in_array($title, $this->pastAnalyzed)) {
+            $this->pastAnalyzed[] = $title;
+            @file_put_contents(static::ARTICLE_ANALYZED_FILENAME, $title.PHP_EOL, FILE_APPEND);
+            sleep(1);
+        }
     }
 }

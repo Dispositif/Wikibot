@@ -34,12 +34,12 @@ $botConfig = new WikiBotConfig($logger);
 $botConfig->taskName = "🔗 Complètement de références : URL ⇒ modèle"; // 😎🐞
 
 // LAST EDIT
-// TODO : <ref name="bla"> et liste à puces * http://...
+// TODO : \<ref[^\>]*\> et liste à puces * http://...
+// todo 1600 avec espace entre <ref> et http : "http" insource:/\<ref[^\>]*\> +https?\:\/\/[^\>]+\<\/ref>/
 $list = new CirrusSearch(
     [
         'srsearch' => '"http" insource:/\<ref\>https?\:\/\/[^\>]+\<\/ref>/',
-        'srnamespace' => '0',
-        'srlimit' => '1000',
+        'srlimit' => '500',
         'srqiprofile' => 'popular_inclinks_pv',
         'srsort' => 'last_edit_desc',
     ]

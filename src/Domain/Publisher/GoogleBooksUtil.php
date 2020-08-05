@@ -146,6 +146,7 @@ abstract class GoogleBooksUtil
             $googleURL = str_replace('.com', $gooDomain, $googleURL);
         }
 
+        // todo verify http_build_query() enc_type parameter
         // todo http_build_query() process an urlencode, but a not encoded q= value ("fu+bar") is beautiful
         return $googleURL.'?'.http_build_query($dat);
     }
