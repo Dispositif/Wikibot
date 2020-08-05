@@ -13,6 +13,7 @@ use App\Application\Http\ExternHttpClient;
 use App\Domain\ExternDomains;
 use App\Domain\ExternPage;
 use App\Domain\ExternPageFactory;
+use App\Domain\Models\Summary;
 use App\Domain\Models\Wiki\AbstractWikiTemplate;
 use App\Domain\Models\Wiki\ArticleTemplate;
 use App\Domain\Models\Wiki\LienWebTemplate;
@@ -37,8 +38,9 @@ use Throwable;
 class ExternRefTransformer implements TransformerInterface
 {
     const HTTP_REQUEST_LOOP_DELAY = 10;
+    const LOG_REQUEST_ERROR       = __DIR__.'/resources/external_request_error.log';
+    const SKIP_DOMAIN_FILENAME    = __DIR__.'/resources/config_skip_domain.txt';
 
-    const LOG_REQUEST_ERROR = __DIR__.'/resources/external_request_error.log';
     public $skipUnauthorised = true;
     /**
      * @var array
@@ -73,45 +75,30 @@ class ExternRefTransformer implements TransformerInterface
      * @var ExternPage
      */
     private $externalPage;
-
     /**
-     * ExternalRefTransformer constructor.
-     *
-     * @param LoggerInterface $log
+     * @var Summary
      */
+    private $summary;
+
     public function __construct(LoggerInterface $log)
     {
         $this->log = $log;
 
-        // todo REFAC DataObject[]
-        $this->config = Yaml::parseFile(__DIR__.'/resources/config_presse.yaml');
-        $skipFromFile = file(
-            __DIR__.'/resources/config_skip_domain.txt',
-            FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES
-        );
-        $this->skip_domain = ($skipFromFile) ? $skipFromFile : [];
-
-        $this->data['newspaper'] = json_decode(file_get_contents(__DIR__.'/resources/data_newspapers.json'), true);
-        $this->data['scientific domain'] = json_decode(
-            file_get_contents(__DIR__.'/resources/data_scientific_domain.json'),
-            true
-        );
-        $this->data['scientific wiki'] = json_decode(
-            file_get_contents(__DIR__.'/resources/data_scientific_wiki.json'),
-            true
-        );
+        $this->importConfigAndData();
 
         $this->mapper = new ExternMapper(new Logger());
     }
 
     /**
-     * @param string $url
+     * @param string       $url
+     * @param Summary|null $summary
      *
      * @return string
      * @throws Exception
      */
-    public function process(string $url): string
+    public function process(string $url, Summary $summary): string
     {
+        $this->summary = $summary;
         if (!$this->isURLAuthorized($url)) {
             return $url;
         }
@@ -142,6 +129,7 @@ class ExternRefTransformer implements TransformerInterface
             } else {
                 //  autre : ne pas générer de {lien brisé}, car peut-être 404 temporaire
                 $this->log->warning('erreur sur extractWebData '.$e->getMessage());
+
                 //file_put_contents(self::LOG_REQUEST_ERROR, $this->domain."\n", FILE_APPEND);
 
                 return $url;
@@ -151,12 +139,13 @@ class ExternRefTransformer implements TransformerInterface
         if (empty($pageData)
             || (empty($pageData['JSON-LD']) && empty($pageData['meta']))
         ) {
-            // site avec HTML pourri
+            $this->log->notice('SKIP no metadata : '.$url);
+
             return $url;
         }
 
         if (isset($pageData['robots']) && strpos($pageData['robots'], 'noindex') !== false) {
-            $this->log->notice('SKIP robots: noindex');
+            $this->log->notice('SKIP robots: noindex : '.$url);
 
             return $url;
         }
@@ -166,7 +155,7 @@ class ExternRefTransformer implements TransformerInterface
         // check dataValide
         // Pas de skip domaine car s'agit peut-être d'un 404 ou erreur juste sur cette URL
         if (empty($mapData) || empty($mapData['url']) || empty($mapData['titre'])) {
-            $this->log->info('Mapping incomplet');
+            $this->log->info('Mapping incomplet : '.$url);
 
             return $url;
         }
@@ -185,6 +174,7 @@ class ExternRefTransformer implements TransformerInterface
         }
         unset($mapData['DATA-TYPE']); // ugly
         unset($mapData['DATA-ARTICLE']); // ugly
+        unset($mapData['url-access']);
 
         $template->hydrate($mapData);
 
@@ -249,15 +239,23 @@ class ExternRefTransformer implements TransformerInterface
     private function tagAndLog(array $mapData)
     {
         $this->log->debug('mapData', $mapData);
+        $this->summary->citationNumber++;
 
         if (isset($mapData['DATA-ARTICLE']) && $mapData['DATA-ARTICLE']) {
             $this->log->notice("Article OK");
         }
         if (isset($this->data['newspaper'][$this->domain])) {
             $this->log->notice('PRESSE');
+            $this->summary->memo['presse'] = true;
         }
         if ($this->isScientificDomain()) {
             $this->log->notice('SCIENCE');
+            $this->summary->memo['science'] = true;
+        }
+        if (!isset($this->summary->memo['sites'])
+            || !in_array($this->externalPage->getPrettyDomainName(), $this->summary->memo['sites'])
+        ) {
+            $this->summary->memo['sites'][] = $this->externalPage->getPrettyDomainName();
         }
     }
 
@@ -313,6 +311,7 @@ class ExternRefTransformer implements TransformerInterface
 
         $template = WikiTemplateFactory::create($templateName);
         $template->userSeparator = " |";
+        $this->summary->memo['count '.$templateName] = 1 + ($this->summary->memo['count '.$templateName] ?? 0);
 
         return $template;
     }
@@ -414,6 +413,27 @@ class ExternRefTransformer implements TransformerInterface
         }
 
         return false;
+    }
+
+    protected function importConfigAndData(): void
+    {
+        // todo REFAC DataObject[]
+        $this->config = Yaml::parseFile(__DIR__.'/resources/config_presse.yaml');
+        $skipFromFile = file(
+            self::SKIP_DOMAIN_FILENAME,
+            FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES
+        );
+        $this->skip_domain = ($skipFromFile) ? $skipFromFile : [];
+
+        $this->data['newspaper'] = json_decode(file_get_contents(__DIR__.'/resources/data_newspapers.json'), true);
+        $this->data['scientific domain'] = json_decode(
+            file_get_contents(__DIR__.'/resources/data_scientific_domain.json'),
+            true
+        );
+        $this->data['scientific wiki'] = json_decode(
+            file_get_contents(__DIR__.'/resources/data_scientific_wiki.json'),
+            true
+        );
     }
 
 }

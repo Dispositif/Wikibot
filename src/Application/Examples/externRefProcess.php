@@ -31,7 +31,7 @@ $wiki = ServiceFactory::wikiApi();
 $logger = new Logger();
 //$logger->debug = true;
 $botConfig = new WikiBotConfig($logger);
-$botConfig->taskName = "🔗 Complètement de références : URL ⇒ modèle"; // 😎🐞
+$botConfig->taskName = "🔗 Complètement de références : URL ⇒ "; // 😎🐞
 
 // LAST EDIT
 // TODO : \<ref[^\>]*\> et liste à puces * http://...
@@ -52,7 +52,7 @@ $list->setOptions(['reverse' => true]);
 //    [
 //        'srsearch' => '"http" insource:/\<ref\>https?\:\/\/[^\>]+\<\/ref>/',
 //        'srnamespace' => '0',
-//        'srlimit' => '10000',
+//        'srlimit' => '100',
 //        'srsort' => 'random',
 //    ]
 //);

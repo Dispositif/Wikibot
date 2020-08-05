@@ -20,7 +20,6 @@ abstract class RefBotWorker extends AbstractBotTaskWorker
     const TASK_BOT_FLAG = false;
 
     protected $warning = false;
-    protected $botFlagOnPage;
 
     public function hasWarning(): bool
     {
@@ -33,8 +32,6 @@ abstract class RefBotWorker extends AbstractBotTaskWorker
      */
     protected function processDomain(string $title, string $text): ?string
     {
-        $this->botFlagOnPage = static::TASK_BOT_FLAG;
-
         return $this->processText($text);
     }
 
@@ -49,6 +46,7 @@ abstract class RefBotWorker extends AbstractBotTaskWorker
         $refs = WikiTextUtil::extractRefsAndListOfLinks($text);
         if (empty($refs)) {
             $this->log->debug('empty extractRefsAndListOfLinks');
+
             return $text;
         }
 

@@ -25,7 +25,6 @@ class ExternRefWorker extends RefBotWorker
     const CHECK_EDIT_CONFLICT                 = true;
     const ARTICLE_ANALYZED_FILENAME           = __DIR__.'/resources/article_externRef_edited.txt';
 
-    protected $titleBotFlag = false;
     protected $modeAuto = true;
     /**
      * @var ExternRefTransformer
@@ -58,7 +57,7 @@ class ExternRefWorker extends RefBotWorker
         }
 
         try {
-            $result = $this->transformer->process($refContent);
+            $result = $this->transformer->process($refContent, $this->summary);
         } catch (Throwable $e) {
             echo "** Problème détecté 234242\n";
             $this->log->critical($e->getMessage()." ".$e->getFile().":".$e->getLine());
@@ -87,11 +86,44 @@ class ExternRefWorker extends RefBotWorker
             }
         }
         if (preg_match('#{{lien brisé#i', $result)) {
-            $this->titleTaskname .= ', ⚠️️lien brisé';
-            $this->titleBotFlag = false;
+            $this->summary->memo['count lien brisé'] = 1 + ($this->summary->memo['count lien brisé'] ?? 0);
+            $this->summary->setBotFlag(false);
         }
 
+        $this->summary->memo['count URL'] = 1 + ($this->summary->memo['count URL'] ?? 0);
+
         return $result;
+    }
+
+    /**
+     * todo move to a Summary child ?
+     * Rewriting default Summary::serialize()
+     *
+     * @return string
+     */
+    protected function generateSummaryText(): string
+    {
+        $prefixSummary = ($this->summary->isBotFlag()) ? 'bot: ' : '';
+        $suffix = '';
+        if (isset($this->summary->memo['count article'])) {
+            $suffix .= ' '.$this->summary->memo['count article'].'x {article}';
+        }
+        if (isset($this->summary->memo['count lien web'])) {
+            $suffix .= ' '.$this->summary->memo['count lien web'].'x {lien web}';
+        }
+        if (isset($this->summary->memo['presse'])) {
+            $suffix .= ' 📰';
+        }
+        if (isset($this->summary->memo['science'])) {
+            $suffix .= ' 🔬';
+        }
+        if (isset($this->summary->memo['count lien brisé'])) {
+            $suffix .= ', ⚠️️lien brisé';
+            $suffix .= ($this->summary->memo['count lien brisé'] > 1) ? ' x'.$this->summary->memo['count lien brisé'] :
+                '';
+        }
+
+        return $prefixSummary.$this->summary->taskName.$suffix;
     }
 
 }

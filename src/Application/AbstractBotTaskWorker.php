@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Application;
 
 use App\Domain\Exceptions\ConfigException;
+use App\Domain\Models\Summary;
 use App\Infrastructure\Logger;
 use App\Infrastructure\PageListInterface;
 use App\Infrastructure\ServiceFactory;
@@ -50,10 +51,7 @@ abstract class AbstractBotTaskWorker
     protected $defaultTaskname;
     protected $titleTaskname;
 
-    // TODO : move botFlag... to to WikiBotConfig
-
-    protected $minorFlag = false;
-    protected $titleBotFlag = false;
+    // todo move (modeAuto, maxLag) to BotConfig
     protected $modeAuto = false;
     protected $maxLag = 5;
     /**
@@ -63,7 +61,11 @@ abstract class AbstractBotTaskWorker
     /**
      * array des articles déjà anal
      */
-    private $pastAnalyzed;
+    protected $pastAnalyzed;
+    /**
+     * @var Summary
+     */
+    protected $summary;
 
     /**
      * Goo2ouvrageWorker constructor.
@@ -143,7 +145,6 @@ abstract class AbstractBotTaskWorker
         }
 
         $this->titleTaskname = $this->defaultTaskname;
-        $this->titleBotFlag = static::TASK_BOT_FLAG;
 
         $text = $this->getText($title);
         if (static::SKIP_LASTEDIT_BY_BOT && $this->pageAction->getLastEditor() === getenv('BOT_NAME')) {
@@ -154,6 +155,9 @@ abstract class AbstractBotTaskWorker
         if (empty($text) || !$this->checkAllowedEdition($title, $text)) {
             return;
         }
+
+        $this->summary = new Summary($this->defaultTaskname);
+        $this->summary->setBotFlag(static::TASK_BOT_FLAG);
 
         $newText = $this->processDomain($title, $text);
 
@@ -241,12 +245,12 @@ abstract class AbstractBotTaskWorker
 
     protected function doEdition(string $newText): void
     {
-        $prefixSummary = ($this->titleBotFlag) ? 'bot: ' : '';
+        $summaryText = $this->generateSummaryText();
 
         try {
             $result = $this->pageAction->editPage(
                 $newText,
-                new EditInfo($prefixSummary.$this->titleTaskname, $this->minorFlag, $this->titleBotFlag, $this->maxLag),
+                new EditInfo($summaryText, $this->summary->isMinorFlag(), $this->summary->isBotFlag(), $this->maxLag),
                 static::CHECK_EDIT_CONFLICT
             );
         } catch (Throwable $e) {
@@ -276,5 +280,13 @@ abstract class AbstractBotTaskWorker
             @file_put_contents(static::ARTICLE_ANALYZED_FILENAME, $title.PHP_EOL, FILE_APPEND);
             sleep(1);
         }
+    }
+
+    /**
+     * @return string
+     */
+    protected function generateSummaryText(): string
+    {
+        return $this->summary->serialize();
     }
 }
