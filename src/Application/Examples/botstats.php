@@ -11,6 +11,7 @@ namespace App\Application\Examples;
 
 use App\Application\WikiPageAction;
 use App\Domain\Utils\DateUtil;
+use App\Infrastructure\DbAdapter;
 use App\Infrastructure\ServiceFactory;
 use DateTime;
 use Mediawiki\DataModel\EditInfo;
@@ -37,7 +38,7 @@ $data['not analyzed citation'] = (int)$monitor['count(id)'];
 $monitor = $db->fetchRow('select count(id) from page_ouvrages where optidate is not null');
 $data['analyzed citation'] = (int)$monitor['count(id)'];
 
-$monitor = $db->fetchRow('select count(distinct page) as n from page_ouvrages where skip=1 and edited is null');
+$monitor = $db->fetchRow('select count(distinct page) as n from page_ouvrages where skip=1 and edited is null'); //  ?
 $data['skip pages'] = (int)$monitor['n'];
 
 $monitor = $db->fetchRow('select count(distinct page) as n from page_ouvrages where edited is true');
@@ -53,15 +54,17 @@ $monitor = $db->fetchRow('select count(distinct page) as n from page_ouvrages wh
 $data['edited pages 24H'] = (int)$monitor['n'];
 
 $monitor = $db->fetchRow('SELECT count(distinct A.page) FROM page_ouvrages A
-                WHERE notcosmetic=1.
+                WHERE A.notcosmetic=1 AND A.opti IS NOT NULL
                 AND NOT EXISTS
                     (SELECT B.* FROM page_ouvrages B
                     WHERE (
-                        B.edited IS NOT NULL
-                        OR B.optidate < "2019-11-20 14:00:00"
-                        OR B.optidate IS NULL
-                        OR B.opti=""
+                        B.edited IS NOT NULL 
+                        OR B.optidate < "'.DbAdapter::OPTI_VALID_DATE.'" 
+                        OR B.optidate IS NULL 
+                        OR B.opti IS NULL
+                        OR B.opti="" 
                         OR B.skip=1
+                        OR B.raw=""
                         )
                     AND A.page = B.page
                     )');

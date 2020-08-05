@@ -24,7 +24,7 @@ use Throwable;
  */
 class DbAdapter implements QueueInterface
 {
-const OPTI_VALID_DATE = '2020-04-05 00:00:00'; // v0.77
+    const OPTI_VALID_DATE = '2020-04-05 00:00:00'; // v0.77
     protected $db;
     protected $pdoConn; // v.34 sous-titre sans maj
 
@@ -61,6 +61,7 @@ const OPTI_VALID_DATE = '2020-04-05 00:00:00'; // v0.77
 
     /**
      * Get one new row (page, raw) to complete.
+     * Order by isbn (NULL first)
      *
      * @return array|null
      */
@@ -69,7 +70,7 @@ const OPTI_VALID_DATE = '2020-04-05 00:00:00'; // v0.77
         try {
             $row = $this->db->fetchRow(
                 'SELECT page,raw FROM page_ouvrages 
-                WHERE raw <> "" AND (opti = "" OR optidate IS NULL OR optidate < :validDate ) AND (edited IS NULL)
+                WHERE raw <> "" AND (opti IS NULL OR opti = "" OR optidate IS NULL OR optidate < :validDate ) AND (edited IS NULL)
                 ORDER BY priority DESC,id
                 LIMIT 1',
                 [
@@ -125,20 +126,21 @@ const OPTI_VALID_DATE = '2020-04-05 00:00:00'; // v0.77
             $pageInfo = $this->pdoConn->query(
                 '
                 SELECT A.page FROM page_ouvrages A
-                WHERE notcosmetic=1. 
+                WHERE A.notcosmetic=1 AND A.opti IS NOT NULL
                 AND NOT EXISTS
                     (SELECT B.* FROM page_ouvrages B
                     WHERE (
                         B.edited IS NOT NULL 
                         OR B.optidate < "'.self::OPTI_VALID_DATE.'" 
                         OR B.optidate IS NULL 
+                        OR B.opti IS NULL
                         OR B.opti="" 
                         OR B.skip=1
                         OR B.raw=""
                         )
                     AND A.page = B.page
                     )
-                ORDER BY A.priority DESC,RAND()
+                ORDER BY A.priority DESC,A.optidate,RAND()
                 LIMIT '.$limit.'
                 '
             );
@@ -164,6 +166,22 @@ const OPTI_VALID_DATE = '2020-04-05 00:00:00'; // v0.77
         return $json;
     }
 
+    public function deleteArticle(string $title): bool
+    {
+        try {
+            $result = $this->db->delete(
+                'page_ouvrages',
+                ['page' => $title] // condition
+            );
+        } catch (MysqlException $e) {
+            dump($e);
+
+            return false;
+        }
+
+        return !empty($result);
+    }
+
     public function skipArticle(string $title): bool
     {
         try {
@@ -181,7 +199,7 @@ const OPTI_VALID_DATE = '2020-04-05 00:00:00'; // v0.77
         return !empty($result);
     }
 
-    public function setLabel(string $title, ?int $val=0): bool
+    public function setLabel(string $title, ?int $val = 0): bool
     {
         try {
             $result = $this->db->update(
@@ -238,61 +256,6 @@ const OPTI_VALID_DATE = '2020-04-05 00:00:00'; // v0.77
 
         return !empty($result);
     }
-
-    //------------------------------------------------------
-
-    //    /**
-    //     * Dirty naive ORM.
-    //     *
-    //     * @param object $object
-    //     *
-    //     * @return array|bool
-    //     */
-    //    public function saveEntity(object $object)
-    //    {
-    //        if ($object instanceof App\Infrastructure\unused\DbEditedPage) {
-    //            /*
-    //             * @var $object DbEditedPage
-    //             */
-    //            try {
-    //                return $this->db->replace('editedpages', $object->getVars());
-    //            } catch (MysqlException $e) {
-    //                unset($e);
-    //            }
-    //        }
-    //
-    //        return false;
-    //    }
-
-    //    /**
-    //     * Dirty naive ORM.
-    //     *
-    //     * @param $table
-    //     * @param $primary
-    //     *
-    //     * @return object|null
-    //     */
-    //    public function findEntity($table, $primary): ?object
-    //    {
-    //        if ('editedpages' === $table) {
-    //            /*
-    //             * @var $object DbEditedPage
-    //             */
-    //            try {
-    //                $res = $this->db->fetchRow('SELECT * FROM editedpages WHERE title = :title', ['title' => $primary]);
-    //                $obj = new DbEditedPage($this);
-    //                $obj->setTitle($primary);
-    //                $obj->setCompleted($res['completed']);
-    //                $obj->setEdited($res['edited']);
-    //
-    //                return $obj;
-    //            } catch (MysqlException $e) {
-    //                unset($e);
-    //            }
-    //        }
-    //
-    //        return null;
-    //    }
 
     /**
      * Get a row to monitor edits.
