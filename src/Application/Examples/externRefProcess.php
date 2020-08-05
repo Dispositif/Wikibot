@@ -34,20 +34,27 @@ $botConfig = new WikiBotConfig($logger);
 $botConfig->taskName = "🔗 Complètement de références : URL ⇒ modèle"; // 😎🐞
 
 // LAST EDIT
-// &srqiprofile=popular_inclinks_pv&srsort=last_edit_desc
+// TODO : <ref name="bla"> et liste à puces * http://...
 $list = new CirrusSearch(
-    'https://fr.wikipedia.org/w/api.php?action=query&list=search'
-    .'&srsearch=%22https%3A%2F%2F%22+insource%3A%2F%5C%3Cref%5C%3Ehttps%5C%3A%5C%2F%5C%2F%5B%5E%5C%3E%5D%2B%5C%3C%5C%2Fref%3E%2F'
-    .'&formatversion=2&format=json&srnamespace=0&srlimit=10000&srqiprofile=popular_inclinks_pv&srsort=last_edit_desc'
+    [
+        'srsearch' => '"http" insource:/\<ref\>https?\:\/\/[^\>]+\<\/ref>/',
+        'srnamespace' => '0',
+        'srlimit' => '1000',
+        'srqiprofile' => 'popular_inclinks_pv',
+        'srsort' => 'last_edit_desc',
+    ]
 );
-//$list->setOptions(['reverse' => true]);
+$list->setOptions(['reverse' => true]);
 
 
 //// RANDOM :
 //$list = new CirrusSearch(
-//    'https://fr.wikipedia.org/w/api.php?action=query&list=search'
-//    .'&srsearch=%22https%3A%2F%2F%22+insource%3A%2F%5C%3Cref%5C%3Ehttps%5C%3A%5C%2F%5C%2F%5B%5E%5C%3E%5D%2B%5C%3C%5C%2Fref%3E%2F'
-//    .'&formatversion=2&format=json&srnamespace=0&srlimit=10000&srsort=random'
+//    [
+//        'srsearch' => '"http" insource:/\<ref\>https?\:\/\/[^\>]+\<\/ref>/',
+//        'srnamespace' => '0',
+//        'srlimit' => '10000',
+//        'srsort' => 'random',
+//    ]
 //);
 
 if (!empty($argv[1])) {

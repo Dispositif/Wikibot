@@ -20,30 +20,53 @@ use App\Domain\Exceptions\ConfigException;
  */
 class CirrusSearch implements PageListInterface
 {
-    /**
-     * @var string
-     */
-    private $url;
-    private $options = [];
+    const BASE_URL = 'https://fr.wikipedia.org/w/api.php';
 
-    /**
-     * CirrusSearch constructor.
-     *
-     * @param string|null $url
-     * @param array|null  $options
-     */
-    public function __construct(?string $url = null, ?array $options=[])
+    private $params;
+    private $options;
+    private $defaultParams
+        = [
+            'action' => 'query',
+            'list' => 'search',
+            'formatversion' => '2',
+            'format' => 'json',
+            'srnamespace' => '0',
+            'srlimit' => '100',
+        ];
+
+    public function __construct(array $params, ?array $options = [])
     {
-        $this->url = $url;
+        $this->params = $params;
         $this->options = $options;
     }
 
     /**
-     * @return array|null
+     * todo move to ApiSearch
+     *
+     * @return array
+     * @throws ConfigException
      */
-    public function getOptions(): ?array
+    public function getPageTitles(): array
     {
-        return $this->options;
+        $arrayResp = $this->httpRequest();
+
+        if (!isset($arrayResp['query']) || empty($arrayResp['query']['search'])) {
+            return [];
+        }
+        $results = $arrayResp['query']['search'];
+
+        $titles = [];
+        foreach ($results as $res) {
+            if (!empty($res['title'])) {
+                $titles[] = trim($res['title']); // trim utile ?
+            }
+        }
+
+        if (isset($this->options['reverse']) && $this->options['reverse'] === true) {
+            krsort($titles);
+        }
+
+        return $titles;
     }
 
     /**
@@ -54,43 +77,36 @@ class CirrusSearch implements PageListInterface
         $this->options = $options;
     }
 
-    public function setUrl(string $url)
+    private function getURL(): string
     {
-        $this->url = $url;
+        if (empty($this->params['srsearch'])) {
+            throw new \InvalidArgumentException('No "srsearch" argument in params.');
+        }
+
+        $allParams = array_merge($this->defaultParams, $this->params);
+        // RFC3986 : space => %20
+        $query = http_build_query($allParams, 'bla', '&', PHP_QUERY_RFC3986);
+
+        return self::BASE_URL.'?'.$query;
     }
 
     /**
-     * TODO: use Wiki API library or Guzzle
+     * todo Guzzle or Wiki API
      *
      * @return array
      * @throws ConfigException
      */
-    public function getPageTitles(): array
+    private function httpRequest(): array
     {
-        if (!$this->url) {
+        if (!$this->getURL()) {
             throw new ConfigException('CirrusSearch null URL');
         }
 
-        $json = file_get_contents($this->url);
+        $json = file_get_contents($this->getURL());
         if (false === $json) {
             return [];
         }
 
-        $myArray = json_decode($json, true);
-        $result = $myArray['query']['search'];
-        if (empty($result)) {
-            return [];
-        }
-
-        $titles = [];
-        foreach ($result as $res) {
-            $titles[] = trim($res['title']);
-        }
-
-        if(isset($this->options['reverse']) && $this->options['reverse'] === true ) {
-            krsort($titles);
-        }
-
-        return $titles;
+        return json_decode($json, true);
     }
 }

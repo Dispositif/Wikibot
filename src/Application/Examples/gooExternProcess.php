@@ -29,13 +29,14 @@ $bot->taskName = "Amélioration bibliographique : lien Google Books ⇒ {ouvrage
 
 // les "* https://..." en biblio et liens externes
 // "https://books.google" insource:/\* https\:\/\/books\.google[^ ]+/
+$list = new CirrusSearch(
+    [
+        'srsearch' => '"https://books.google" insource:/\*https\:\/\/books\.google/',
+        'srnamespace' => '0',
+        'srlimit' => '100',
+        'srqiprofile' => 'popular_inclinks_pv',
+        'srsort' => 'last_edit_desc',
+    ]
+);
 
-$cirrusURL
-    = 'https://fr.wikipedia.org/w/api.php?action=query&list=search'.'&srsearch='.urlencode(
-        '"https://books.google" insource:/\* https\:\/\/books\.google/'
-    ).'&formatversion=2&format=json&srnamespace=0'.'&srlimit=100&srqiprofile=popular_inclinks_pv&srsort=last_edit_desc';
-//            .'&srlimit=100&srsort=random';
-$pageListGen = new CirrusSearch($cirrusURL);
-
-
-new GoogleBooksWorker($bot, $wiki, $pageListGen);
+new GoogleBooksWorker($bot, $wiki, $list);

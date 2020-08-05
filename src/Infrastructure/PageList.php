@@ -10,6 +10,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure;
 
+use Mediawiki\Api\UsageException;
+
 /**
  * List of wiki-pages titles.
  * Class PageList
@@ -32,17 +34,22 @@ class PageList implements PageListInterface
         return $this->titles;
     }
 
+    public function count():int
+    {
+        return count($this->titles);
+    }
+
     /**
      * @param $filename
      *
      * @return PageList
      */
-    public static function FromFile($filename):PageList
+    public static function FromFile(string $filename): PageList
     {
         $names = @file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
         $titles = [];
-        if( !empty($names)){
+        if (!empty($names)) {
             foreach ($names as $name) {
                 $title = trim($name);
                 if (!empty($title)) {
@@ -52,5 +59,27 @@ class PageList implements PageListInterface
         }
 
         return new PageList((array)$titles);
+    }
+
+    /**
+     * @param string $categoryName
+     *
+     * @return PageList
+     * @throws UsageException
+     */
+    public static function FromWikiCategory(string $categoryName): PageList
+    {
+        $wiki = ServiceFactory::wikiApi();
+        $wikiPages = $wiki->newPageListGetter()->getPageListFromCategoryName('Catégorie:'.$categoryName);
+        $wikiPages = $wikiPages->toArray();
+        $titles = [];
+        foreach ($wikiPages as $wikiPage) {
+            $title = $wikiPage->getPageIdentifier()->getTitle()->getText();
+            $title = str_replace('Talk:', 'Discussion:', $title); // todo refac
+            $titles[] = $title;
+        }
+        // arsort($titles);
+
+        return new PageList($titles);
     }
 }
