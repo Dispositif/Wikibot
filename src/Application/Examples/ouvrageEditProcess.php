@@ -24,8 +24,10 @@ while (true) {
     try {
         echo "*** NEW EDIT PROCESS\n";
         $logger = new Logger();
-//        $logger->verbose = true;
-        //        $logger->debug = true;
+        if (getenv('ENV') === 'DEV') {
+            $logger->verbose = true;
+//            $logger->debug = true;
+        }
         $process = new OuvrageEditWorker(
             new DbAdapter(), new WikiBotConfig(), new Memory(), $logger
         );
@@ -36,7 +38,7 @@ while (true) {
         echo $e->getMessage();
         if ($count > 2) {
             echo "\n3 erreurs à la suite => sleep 2h + exit\n";
-            sleep(3600* 2);
+            sleep(3600 * 2);
             exit;
         }
         unset($e);

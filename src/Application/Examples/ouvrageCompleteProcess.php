@@ -25,6 +25,7 @@ $count = 0;
 while (true) {
     try {
         echo "*** NEW PROCESS ouvrageCompleteProcess\n";
+        echo 'Environment= '.getenv('ENV')."\n";
         $googleQuota = (new GoogleApiQuota())->getCount();
         dump('Google quota : ', $googleQuota);
         if ($googleQuota >= 950) {

@@ -41,6 +41,11 @@ $phrases = [
 ];
 
 
+
+// todo refac
+//$list = PageList::FromWikiCategory('Signalement_'.$botName);
+// todo $list->setOptions(['reverse'=>true]);
+
 /**
  * Chopper les noms de page discussion de la cat
  */

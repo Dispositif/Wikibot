@@ -24,9 +24,9 @@ use Throwable;
 abstract class AbstractBotTaskWorker
 {
     const TASK_BOT_FLAG               = false;
-    const SLEEP_AFTER_EDITION         = 60;
-    const DELAY_AFTER_LAST_HUMAN_EDIT = 15;
-    const CHECK_EDIT_CONFLICT         = true;
+    const SLEEP_AFTER_EDITION                 = 60;
+    const MINUTES_DELAY_AFTER_LAST_HUMAN_EDIT = 15;
+    const CHECK_EDIT_CONFLICT                 = true;
     const ARTICLE_ANALYZED_FILENAME   = __DIR__.'/resources/article_edited.txt';
     const SKIP_LASTEDIT_BY_BOT       = true;
     const SKIP_NOT_IN_MAIN_WIKISPACE = true;
@@ -212,8 +212,8 @@ abstract class AbstractBotTaskWorker
 
             return false;
         }
-        if ($this->bot->minutesSinceLastEdit($title) < static::DELAY_AFTER_LAST_HUMAN_EDIT) {
-            echo "SKIP : édition humaine dans les dernières ".static::DELAY_AFTER_LAST_HUMAN_EDIT." minutes.\n";
+        if ($this->bot->minutesSinceLastEdit($title) < static::MINUTES_DELAY_AFTER_LAST_HUMAN_EDIT) {
+            echo "SKIP : édition humaine dans les dernières ".static::MINUTES_DELAY_AFTER_LAST_HUMAN_EDIT." minutes.\n";
 
             return false;
         }

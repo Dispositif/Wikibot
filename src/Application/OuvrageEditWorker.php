@@ -119,10 +119,18 @@ class OuvrageEditWorker
         try {
             $title = $data[0]['page'];
             echo Color::BG_CYAN.$title.Color::NORMAL." \n";
-            $page = ServiceFactory::wikiPageAction($title, true);
+            $page = ServiceFactory::wikiPageAction($title, false); // , true ?
         } catch (Exception $e) {
             $this->log->warning("*** WikiPageAction error : ".$title." \n");
             sleep(20);
+
+            return false;
+        }
+
+        // Page supprimée ?
+        if($page->getLastRevision() === null) {
+            $this->log->warning("SKIP : page supprimée !\n");
+            $this->db->deleteArticle($title);
 
             return false;
         }
@@ -156,7 +164,8 @@ class OuvrageEditWorker
         }
         if (preg_match('#{{ ?En-tête label ?\| ?BA#i', $this->wikiText)) {
             $this->db->setLabel($title, 1);
-            $this->log->info("BA !!\n");
+            $this->botFlag = false;
+            $this->log->warning("Bon article !!\n");
         }
 
         if (WikiBotConfig::isEditionRestricted($this->wikiText)) {
