@@ -102,6 +102,8 @@ trait ExternConverterTrait
     }
 
     /**
+     * Note : à appliquer AVANT wikification (sinon bug sur | )
+     *
      * @param string|null $str
      *
      * @return string|null
@@ -253,6 +255,7 @@ trait ExternConverterTrait
 
     /**
      * Wikification des noms/acronymes d'agences de presse.
+     * Note : utiliser APRES clean() et cleanAuthor() sinon bug "|"
      *
      * @param string $str
      *
