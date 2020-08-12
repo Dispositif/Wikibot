@@ -1,8 +1,8 @@
 <?php
 /**
- * This file is part of dispositif/wikibot application
- * 2019 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019/2020 © Philippe M. <dispositif@gmail.com>
+ * For the full copyright and MIT license information, please view the license file.
  */
 
 declare(strict_types=1);
@@ -222,12 +222,14 @@ trait OuvrageTemplateParams
             'dnb',
             'doi',
             'pmid',
+            'pmcid',
             'jstor',
             'bibcode',
             'math reviews',
             'zbl',
             'arxiv',
             'sudoc',
+            'hal',
             'wikisource',
             'présentation en ligne',
             'lire en ligne',
