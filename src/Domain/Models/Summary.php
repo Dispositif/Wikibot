@@ -34,7 +34,7 @@ class Summary
 
     public function serialize(): string
     {
-        $prefixSummary = ($this->botFlag) ? 'bot: ' : '☆ ';
+        $prefixSummary = ($this->botFlag) ? 'bot: ' : '';
 
         return trim($prefixSummary.$this->taskName);
     }

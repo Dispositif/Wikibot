@@ -13,7 +13,6 @@ use App\Domain\GoogleTransformer;
 use Throwable;
 
 /**
- * todo Refac duplication
  * externe goo
  * Class GoogleBooksWorker
  *
@@ -21,8 +20,10 @@ use Throwable;
  */
 class GoogleBooksWorker extends AbstractBotTaskWorker
 {
-    const SLEEP_AFTER_EDITION = 300;
-    protected $titleBotFlag = false;
+    const SLEEP_AFTER_EDITION       = 180;
+    const TASK_BOT_FLAG             = false;
+    const ARTICLE_ANALYZED_FILENAME = __DIR__.'/resources/gooBot_edited.txt';
+    const SKIP_LASTEDIT_BY_BOT      = false;
 
     protected $modeAuto = true;
 

@@ -17,7 +17,7 @@ include __DIR__.'/../myBootstrap.php';
 //include __DIR__.'/../ZiziBot_Bootstrap.php';
 $botName = 'CodexBot';
 
-$taskName = 'bot : suppression de mon signalement ♻'; // 👍 ♻♻
+$taskName = 'bot : suppression de mon signalement 🍺'; // 👍 ♻♻ 🍺
 
 $phrases = [
     'erreurs corrigées',

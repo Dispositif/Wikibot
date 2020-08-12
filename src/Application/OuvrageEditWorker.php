@@ -32,15 +32,15 @@ class OuvrageEditWorker
 {
     use EditSummaryTrait, TalkPageEditTrait;
 
-    const TASK_NAME = 'Amélioration bibliographique';
+    const TASK_NAME = '📗 Amélioration bibliographique'; // 📖📔📘📗
     /**
      * poster ou pas le message en PD signalant les erreurs à résoudre
      */
     const EDIT_SIGNALEMENT = true;
 
     const CITATION_LIMIT         = 150;
-    const DELAY_BOTFLAG_SECONDS    = 20;
-    const DELAY_NO_BOTFLAG_SECONDS = 50;
+    const DELAY_BOTFLAG_SECONDS    = 60;
+    const DELAY_NO_BOTFLAG_SECONDS = 60;
     const ERROR_MSG_TEMPLATE       = __DIR__.'/templates/message_errors.wiki';
 
     private $db;
@@ -365,13 +365,13 @@ class OuvrageEditWorker
         if (preg_match("#isbn invalide ?=[^|}]+#i", $data['opti'], $matches) > 0) {
             $this->addErrorWarning($data['page'], $matches[0]);
             $this->botFlag = false;
-            $this->addSummaryTag('ISBN invalide');
+            $this->addSummaryTag('ISBN invalide 💩');
         }
 
         // Edits avec ajout conséquent de donnée
         if (preg_match('#distinction des auteurs#', $data['modifs']) > 0) {
             $this->botFlag = false;
-            $this->addSummaryTag('distinction des auteurs');
+            $this->addSummaryTag('distinction auteurs 🧠');
         }
         // prédiction paramètre correct
         if (preg_match('#[^,]+(=>|⇒)[^,]+#', $data['modifs'], $matches) > 0) {
@@ -389,13 +389,13 @@ class OuvrageEditWorker
             $this->addSummaryTag('tracking');
         }
         if (preg_match('#présentation en ligne#', $data['modifs']) > 0) {
-            $this->addSummaryTag('+présentation en ligne');
+            $this->addSummaryTag('+présentation en ligne✨');
         }
         if (preg_match('#distinction auteurs#', $data['modifs']) > 0) {
-            $this->addSummaryTag('distinction auteurs');
+            $this->addSummaryTag('distinction auteurs 🧠');
         }
         if (preg_match('#\+lire en ligne#', $data['modifs']) > 0) {
-            $this->addSummaryTag('+lire en ligne');
+            $this->addSummaryTag('+lire en ligne✨');
         }
         if (preg_match('#\+lien #', $data['modifs']) > 0) {
             $this->addSummaryTag('wikif');

@@ -31,35 +31,36 @@ $wiki = ServiceFactory::wikiApi();
 $logger = new Logger();
 //$logger->debug = true;
 $botConfig = new WikiBotConfig($logger);
-$botConfig->taskName = "🔗 Complètement de références : URL ⇒ "; // 😎🐞
+$botConfig->taskName = "🌐 Complètement de références : URL ⇒ "; // 🐞 🌐  🔗
 
 // LAST EDIT
 // TODO : \<ref[^\>]*\> et liste à puces * http://...
 // todo 1600 avec espace entre <ref> et http : "http" insource:/\<ref[^\>]*\> +https?\:\/\/[^\>]+\<\/ref>/
-$list = new CirrusSearch(
-    [
-        'srsearch' => '"http" insource:/\<ref\>https?\:\/\/[^\>]+\<\/ref>/',
-        'srlimit' => '500',
-        'srqiprofile' => 'popular_inclinks_pv',
-        'srsort' => 'last_edit_desc',
-    ]
-);
-$list->setOptions(['reverse' => true]);
-
-
-//// RANDOM :
 //$list = new CirrusSearch(
 //    [
 //        'srsearch' => '"http" insource:/\<ref\>https?\:\/\/[^\>]+\<\/ref>/',
-//        'srnamespace' => '0',
-//        'srlimit' => '100',
-//        'srsort' => 'random',
+//        'srlimit' => '5000',
+//        'srqiprofile' => 'popular_inclinks_pv',
+//        'srsort' => 'last_edit_desc',
 //    ]
 //);
+//$list->setOptions(['reverse' => true]);
+
+
+// RANDOM :
+$list = new CirrusSearch(
+    [
+        'srsearch' => '"http" insource:/\<ref\>https?\:\/\/[^\>]+\<\/ref>/',
+        'srlimit' => '5000',
+        'srsort' => 'random',
+    ]
+);
 
 if (!empty($argv[1])) {
     $list = new PageList([trim($argv[1])]);
-    $botConfig->taskName = '🐞'.$botConfig->taskName;
+//    $botConfig->taskName = '🐞'.$botConfig->taskName;
 }
 
 new ExternRefWorker($botConfig, $wiki, $list);
+
+sleep(600);

@@ -34,7 +34,7 @@ trait EditSummaryTrait
     public function generateSummary(): string
     {
         // Start summary with "WikiBotConfig" when using botFlag, else "*"
-        $prefix = ($this->botFlag) ? 'bot' : '☆'; //🧐 🤖
+        $prefix = ($this->botFlag) ? 'bot ' : ''; //🧐 🤖
         // add "/!\" when errorWarning
         $prefix .= (!empty($this->errorWarning)) ? ' ⚠️' : '';
 
@@ -46,10 +46,9 @@ trait EditSummaryTrait
         }
 
         $summary = sprintf(
-            '%s [%s/%s] %s %sx : %s',
+            '%s [%s] %s %sx : %s',
             $prefix,
-            str_replace('v', '', $this->bot::getGitVersion()),
-            str_replace(['v0.', 'v1.'], '', $this->citationVersion),
+            str_replace('v', '', $this->citationVersion),
             self::TASK_NAME,
             $this->nbRows,
             $citeSummary

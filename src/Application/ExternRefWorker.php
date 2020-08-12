@@ -19,7 +19,7 @@ use Throwable;
  */
 class ExternRefWorker extends RefBotWorker
 {
-    const TASK_BOT_FLAG                       = false;
+    const TASK_BOT_FLAG                       = true;
     const SLEEP_AFTER_EDITION                 = 10; // sec
     const MINUTES_DELAY_AFTER_LAST_HUMAN_EDIT = 20; // minutes
     const CHECK_EDIT_CONFLICT                 = true;
@@ -89,6 +89,9 @@ class ExternRefWorker extends RefBotWorker
             $this->summary->memo['count lien brisé'] = 1 + ($this->summary->memo['count lien brisé'] ?? 0);
             $this->summary->setBotFlag(false);
         }
+        if ($this->summary->citationNumber >= 8) {
+            $this->summary->setBotFlag(false);
+        }
 
         $this->summary->memo['count URL'] = 1 + ($this->summary->memo['count URL'] ?? 0);
 
@@ -103,7 +106,7 @@ class ExternRefWorker extends RefBotWorker
      */
     protected function generateSummaryText(): string
     {
-        $prefixSummary = ($this->summary->isBotFlag()) ? 'bot: ' : '';
+        $prefixSummary = ($this->summary->isBotFlag()) ? 'bot ' : '';
         $suffix = '';
         if (isset($this->summary->memo['count article'])) {
             $suffix .= ' '.$this->summary->memo['count article'].'x {article}';
@@ -112,15 +115,18 @@ class ExternRefWorker extends RefBotWorker
             $suffix .= ' '.$this->summary->memo['count lien web'].'x {lien web}';
         }
         if (isset($this->summary->memo['presse'])) {
-            $suffix .= ' 📰';
+            $suffix .= ' 🗞️'; // 🗞️ 📰
         }
         if (isset($this->summary->memo['science'])) {
-            $suffix .= ' 🔬';
+            $suffix .= ' 🧪'; // 🧪 🔬
         }
         if (isset($this->summary->memo['count lien brisé'])) {
-            $suffix .= ', ⚠️️lien brisé';
+            $suffix .= ', ⚠️️️lien brisé'; //⚠️💩
             $suffix .= ($this->summary->memo['count lien brisé'] > 1) ? ' x'.$this->summary->memo['count lien brisé'] :
                 '';
+        }
+        if ($this->summary->citationNumber >= 8) {
+            $suffix .= ' 🔥';
         }
 
         return $prefixSummary.$this->summary->taskName.$suffix;

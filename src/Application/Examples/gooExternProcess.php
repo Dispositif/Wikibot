@@ -21,17 +21,24 @@ use App\Infrastructure\ServiceFactory;
 
 include __DIR__.'/../myBootstrap.php';
 
-dump('Google quota : ', (new GoogleApiQuota())->getCount());
+$quota = new GoogleApiQuota();
+dump('Google quota : '. $quota ->getCount());
+
+if( $quota->isQuotaReached() ) {
+    throw new \Exception("Google Books API quota reached => exit");
+}
+
 
 $wiki = ServiceFactory::wikiApi();
 $bot = new WikiBotConfig();
-$bot->taskName = "Amélioration bibliographique : lien Google Books ⇒ {ouvrage}";
+$bot->taskName = "🌐✨📘 Amélioration bibliographique : lien Google Books ⇒ {ouvrage}";
 
 // les "* https://..." en biblio et liens externes
 // "https://books.google" insource:/\* https\:\/\/books\.google[^ ]+/
 $list = new CirrusSearch(
     [
-        'srsearch' => '"https://books.google" insource:/\*https\:\/\/books\.google/',
+//        'srsearch' => '"https://books.google" insource:/\* ?https\:\/\/books\.google/', // liste à puce
+        'srsearch' => '"https://books.google" insource:/\<ref[^\>]*\> ?https?\:\/\/books\.google/', // juste les <ref>
         'srnamespace' => '0',
         'srlimit' => '100',
         'srqiprofile' => 'popular_inclinks_pv',
@@ -40,3 +47,4 @@ $list = new CirrusSearch(
 );
 
 new GoogleBooksWorker($bot, $wiki, $list);
+// todo desactivate "Skip : déjà analysé"

@@ -114,7 +114,7 @@ trait ExternConverterTrait
             return null;
         }
         $str = str_replace(
-            ['|', "\n", "\t", '&#x27;', '&#39;', '&#039;', '&apos;', "\n", "&#10;", "&eacute;"],
+            ['|', "\n", "\t", '&#x27;', '&#39;', '&#039;', '&apos;', "\n", "&#10;", "&eacute;",'©'],
             [
                 '/',
                 ' ',
@@ -126,6 +126,7 @@ trait ExternConverterTrait
                 '',
                 ' ',
                 "é",
+                '',
             ],
             $str
         );

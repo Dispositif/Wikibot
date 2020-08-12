@@ -80,6 +80,7 @@ class OuvrageCompleteWorker
             $row = $this->getNewRow2Complete();
             $this->raw = $row['raw'];
             $this->page = $row['page'];
+            // Note : $row['id'] défini
 
             echo sprintf(
                 "-------------------------------\n%s [%s]\n%s\n%s\n",
@@ -102,12 +103,28 @@ class OuvrageCompleteWorker
                 $parse = TemplateParser::parseAllTemplateByName('ouvrage', $this->raw);
                 $origin = $parse['ouvrage'][0]['model'] ?? null;
             } catch (Throwable $e) {
-                echo sprintf("*** ERREUR impossible de transformer en modèle %s \n", $this->raw);
+                $this->log->warning(
+                    sprintf(
+                        "*** ERREUR 432 impossible de transformer en modèle => skip %s : %s \n",
+                        $row['id'],
+                        $this->raw
+                    )
+                );;
+                $this->queueAdapter->skipRow(intval($row['id']));
+                sleep(10);
                 continue;
             }
 
             if (!$origin instanceof OuvrageTemplate) {
-                echo sprintf("*** ERREUR impossible de transformer en modèle %s \n", $this->raw);
+                $this->log->warning(
+                    sprintf(
+                        "*** ERREUR 433 impossible de transformer en modèle => skip %s : %s \n",
+                        $row['id'],
+                        $this->raw
+                    )
+                );
+                $this->queueAdapter->skipRow(intval($row['id']));
+                sleep(10);
                 continue;
             }
 
