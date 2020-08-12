@@ -69,8 +69,8 @@ class DbAdapter implements QueueInterface
     {
         try {
             $row = $this->db->fetchRow(
-                'SELECT page,raw FROM page_ouvrages 
-                WHERE raw <> "" AND (opti IS NULL OR opti = "" OR optidate IS NULL OR optidate < :validDate ) AND (edited IS NULL)
+                'SELECT id,page,raw FROM page_ouvrages 
+                WHERE raw <> "" AND (opti IS NULL OR opti = "" OR optidate IS NULL OR optidate < :validDate ) AND (edited IS NULL) AND skip=0
                 ORDER BY priority DESC,id
                 LIMIT 1',
                 [
@@ -188,7 +188,7 @@ class DbAdapter implements QueueInterface
             $result = $this->db->update(
                 'page_ouvrages',
                 ['page' => $title], // condition
-                ['skip' => true]
+                ['skip' => 1]
             );
         } catch (MysqlException $e) {
             dump($e);
@@ -222,7 +222,7 @@ class DbAdapter implements QueueInterface
             $result = $this->db->update(
                 'page_ouvrages',
                 ['id' => $id], // condition
-                ['skip' => true]
+                ['skip' => 1]
             );
         } catch (MysqlException $e) {
             dump($e);

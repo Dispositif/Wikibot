@@ -14,4 +14,7 @@ interface QueueInterface
     public function getNewRaw(): ?array;
 
     public function sendCompletedData(array $finalData): bool;
+
+    public function skipRow(int $id):bool;
+
 }
