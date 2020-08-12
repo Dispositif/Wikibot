@@ -31,7 +31,8 @@
     "ext-readline": "*",
     "symfony/yaml": "4.*",
     "codedungeon/php-cli-colors": "~1.0",
-    "ext-iconv": "*"
+    "ext-iconv": "*",
+    "ext-http": "*"
   },
   "autoload": {
     "psr-4": {
