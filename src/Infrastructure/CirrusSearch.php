@@ -11,6 +11,8 @@ declare(strict_types=1);
 namespace App\Infrastructure;
 
 use App\Domain\Exceptions\ConfigException;
+use GuzzleHttp\Psr7\Response;
+use HttpException;
 
 /**
  * https://fr.wikipedia.org/w/api.php?action=help&modules=query%2Bsearch
@@ -34,11 +36,13 @@ class CirrusSearch implements PageListInterface
             'srnamespace' => '0',
             'srlimit' => '100',
         ];
+    private $client;
 
     public function __construct(array $params, ?array $options = [])
     {
         $this->params = $params;
         $this->options = $options;
+        $this->client = ServiceFactory::httpClient(['timeout' => 300]);
     }
 
     /**
@@ -92,10 +96,11 @@ class CirrusSearch implements PageListInterface
     }
 
     /**
-     * todo Guzzle or Wiki API
+     * todo Wiki API ?
      *
      * @return array
      * @throws ConfigException
+     * @throws HttpException
      */
     private function httpRequest(): array
     {
@@ -103,11 +108,25 @@ class CirrusSearch implements PageListInterface
             throw new ConfigException('CirrusSearch null URL');
         }
 
-        $json = file_get_contents($this->getURL());
+        $response = $this->client->get($this->getURL());
+        /**
+         * @var $response Response
+         */
+        if ($response->getStatusCode() !== 200) {
+            throw new HttpException(
+                'CirrusSearch error : '.$response->getStatusCode().' '.$response->getReasonPhrase()
+            );
+        }
+        $json = $response->getBody()->getContents();
         if (false === $json) {
             return [];
         }
+        try {
+            $array = json_decode($json, true);
+        } catch (\Throwable $e) {
+            throw new \Exception($e->getMessage());
+        }
 
-        return json_decode($json, true);
+        return $array;
     }
 }
