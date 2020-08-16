@@ -50,7 +50,7 @@ $botConfig->taskName = "🌐 Complètement de références : URL ⇒ "; // 🐞 
 // RANDOM :
 $list = new CirrusSearch(
     [
-        'srsearch' => '"http" insource:/\<ref\>https?\:\/\/[^\>]+\<\/ref>/',
+        'srsearch' => '"http" insource:/\<ref[^\>]*\> ?https?\:\/\/[^\>]+\<\/ref>/',
         'srlimit' => '5000',
         'srsort' => 'random',
     ]
