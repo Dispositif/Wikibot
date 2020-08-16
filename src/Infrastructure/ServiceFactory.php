@@ -94,8 +94,27 @@ class ServiceFactory
     //    }
     // --Commented out by Inspection STOP (21/04/2020 02:45)
 
+    /**
+     * @param bool|null $forceLogin
+     *
+     * @return MediawikiApi
+     * @throws UsageException
+     */
+    public static function getMediawikiApi(?bool $forceLogin = false): MediawikiApi
+    {
+        if (isset(self::$api) && !$forceLogin) {
+            return self::$api;
+        }
+        self::$api = new MediawikiApi(getenv('WIKI_API_URL'));
+        self::$api->login(
+            new ApiUser(getenv('WIKI_API_USERNAME'), getenv('WIKI_API_PASSWORD'))
+        );
+
+        return self::$api;
+    }
 
     /**
+     * todo rename
      * todo? replace that singleton pattern ??? (multi-lang wiki?).
      *
      * @param bool|null $forceLogin
@@ -109,28 +128,12 @@ class ServiceFactory
             return self::$wikiApi;
         }
 
-        self::$api = new MediawikiApi(getenv('WIKI_API_URL'));
-        self::$api->login(
-            new ApiUser(getenv('WIKI_API_USERNAME'), getenv('WIKI_API_PASSWORD'))
-        );
+        $api = self::getMediawikiApi($forceLogin);
 
-        self::$wikiApi = new MediawikiFactory(self::$api);
+        self::$wikiApi = new MediawikiFactory($api);
 
         return self::$wikiApi;
     }
-
-    //    /**
-    //     * @return DbAdapter
-    //     */
-    //    public static function sqlConnection(): DbAdapter
-    //    {
-    //        if (isset(self::$dbConnection)) {
-    //            return self::$dbConnection;
-    //        }
-    //        self::$dbConnection = new DbAdapter();
-    //
-    //        return self::$dbConnection;
-    //    }
 
     /**
      * @param string $title
