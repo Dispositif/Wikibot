@@ -253,6 +253,26 @@ class WikiPageAction
     }
 
     /**
+     * Add text to the top of the page.
+     *
+     * @param string   $addText
+     * @param EditInfo $editInfo
+     *
+     * @return bool success
+     * @throws Exception
+     */
+    public function addToTopOfThePage(string $addText, EditInfo $editInfo): bool
+    {
+        if (empty($this->page->getRevisions()->getLatest())) {
+            throw new Exception('That page does not exist');
+        }
+        $oldText = $this->getText();
+        $newText = $addText.$oldText;
+
+        return $this->editPage($newText, $editInfo);
+    }
+
+    /**
      * todo Move to WikiTextUtil ?
      * Replace serialized template and manage {{en}} prefix.
      * Don't delete {{fr}} on frwiki.
