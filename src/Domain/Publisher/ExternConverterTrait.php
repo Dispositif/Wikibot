@@ -113,8 +113,10 @@ trait ExternConverterTrait
         if ($str === null) {
             return null;
         }
+        $str = $this->stripEmailAdress($str);
+
         $str = str_replace(
-            ['|', "\n", "\t", '&#x27;', '&#39;', '&#039;', '&apos;', "\n", "&#10;", "&eacute;",'©'],
+            ['|', "\n", "\t", '&#x27;', '&#39;', '&#039;', '&apos;', "\n", "&#10;", "&eacute;", '©'],
             [
                 '/',
                 ' ',
@@ -132,6 +134,15 @@ trait ExternConverterTrait
         );
 
         return html_entity_decode($str);
+    }
+
+    public function stripEmailAdress(?string $str = null): ?string
+    {
+        if ($str === null) {
+            return null;
+        }
+
+        return preg_replace('# ?[^ ]+@[^ ]+\.[A-Z]+#i', '', $str);
     }
 
     protected function convertOGtype2format(?string $ogType): ?string
