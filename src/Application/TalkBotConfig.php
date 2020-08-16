@@ -53,20 +53,21 @@ class TalkBotConfig extends WikiBotConfig
         ) {
             return false;
         }
+        // No response if time < 24h since last bot owner response
         if (in_array($last->getUser(), [getenv('BOT_OWNER')])) {
-            $talkConfig['owner_last_time'] = time();
+            $talkConfig['owner_last_time'] = intval(strtotime($last->getTimestamp()));
             file_put_contents(self::TALKCONFIG_FILENAME, json_encode($talkConfig));
 
             return false;
         }
-        // No response if time < 24h after last owner response
-        if (!isset($talkConfig['owner_last_time']) || $talkConfig['owner_last_time'] > (time() - 60 * 60 * 24)) {
+        // No response if time < 24h since last owner response
+        if (isset($talkConfig['owner_last_time']) && intval($talkConfig['owner_last_time']) > (time() - 60 * 60 * 24)) {
             echo "No response if time < 24h after last owner response\n";
             return false;
         }
 
-        $identation = $this->predictTalkIndentation($page->getText() ?? '', $last->getUser()); // ':::'
-        $addText = $this->generateTalkText($last->getUser(), $identation);
+        $indentation = $this->predictTalkIndentation($page->getText() ?? '', $last->getUser()); // ':::'
+        $addText = $this->generateTalkText($last->getUser(), $indentation);
 
         echo "Prepare to talk on $pageTitle / Sleep 3 min...\n";
         echo sprintf("-> %s \n", $addText);
