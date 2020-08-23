@@ -10,3 +10,4 @@ wikipedia.org
 wikimedia.org
 cairn.info
 ouest-france.fr
+leparisien.fr

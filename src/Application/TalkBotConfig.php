@@ -53,6 +53,12 @@ class TalkBotConfig extends WikiBotConfig
         ) {
             return false;
         }
+
+        // blacklist users
+        if (in_array($last->getUser(), self::BLACKLIST_EDITOR)) {
+            return false;
+        }
+
         // No response if time < 24h since last bot owner response
         if (in_array($last->getUser(), [getenv('BOT_OWNER')])) {
             $talkConfig['owner_last_time'] = intval(strtotime($last->getTimestamp()));
@@ -63,6 +69,7 @@ class TalkBotConfig extends WikiBotConfig
         // No response if time < 24h since last owner response
         if (isset($talkConfig['owner_last_time']) && intval($talkConfig['owner_last_time']) > (time() - 60 * 60 * 24)) {
             echo "No response if time < 24h after last owner response\n";
+
             return false;
         }
 
