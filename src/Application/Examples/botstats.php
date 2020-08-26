@@ -32,7 +32,7 @@ $pdo = $pdo->connect('utf8', ['port' => getenv('MYSQL_PORT')]);
 $db = new Mysql($pdo);
 $data = [];
 
-$monitor = $db->fetchRow('select count(id) from page_ouvrages where optidate is null and edited is null');
+$monitor = $db->fetchRow('select count(id) from page_ouvrages where optidate is null and edited is null and skip=0');
 $data['not analyzed citation'] = (int)$monitor['count(id)'];
 
 $monitor = $db->fetchRow('select count(id) from page_ouvrages where optidate is not null');
