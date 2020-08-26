@@ -221,6 +221,7 @@ trait OuvrageTemplateParams
             'lccn',
             'dnb',
             'doi',
+            'accès doi', // non-officiel
             'pmid',
             'pmcid',
             'jstor',
@@ -233,6 +234,7 @@ trait OuvrageTemplateParams
             'wikisource',
             'présentation en ligne',
             'lire en ligne',
+            'accès url',
             'écouter en ligne',
             'format électronique',
             'consulté le',
@@ -251,8 +253,7 @@ trait OuvrageTemplateParams
             'archivedate',
             'brisé le',
 
-            /* paramètres top-secrets 😁  */
-            'url-access', // enwiki. Bientôt sur frwiki !
+            /* paramètres non officiel 😁  */
             'note', // pour afficher message bot ?
         ];
 }

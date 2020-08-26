@@ -119,5 +119,7 @@ abstract class ArticleTemplateAlias extends AbstractWikiTemplate
 
             'type' => 'nature article',
             'nature document' => 'nature article',
+            "url-access" => "accès url",
+            "doi-access" => "accès doi",
         ];
 }

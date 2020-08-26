@@ -48,7 +48,7 @@ class OpenGraphMapper implements MapperInterface
                 $meta['og:article:published_time'] ?? $meta['article:published_time'] ??
                 $meta['DC.date'] ?? $meta['citation_date'] ?? $meta['citation_publication_date'] ?? null
             ),
-            //            'url-access' => $this->convertURLaccess($meta),
+            'accès url' => $this->convertURLaccess($meta),
 
             // DUBLIN CORE ONLY
             'périodique' => $this->clean($meta['DC.isPartOf'] ?? $meta['citation_journal_title'] ?? null),

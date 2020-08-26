@@ -21,17 +21,22 @@ class LienWebTemplate extends AbstractWikiTemplate
     const REQUIRED_PARAMETERS = ['titre', 'url'];
 
     const MINIMUM_PARAMETERS
-                     = [
-//            'langue' => '', // suggéré
+        = [
+            //            'langue' => '', // suggéré
             'titre' => '', // required
             'url' => '', // required
-//            'date' => '', // suggéré
-//            'site' => '', // suggéré
+            //            'date' => '', // suggéré
+            //            'site' => '', // suggéré
             'consulté le' => '', // required ?
         ];
 
     // TODO  https://fr.wikipedia.org/wiki/Mod%C3%A8le:Lien_web#TemplateData
-    const PARAM_ALIAS = ['lang' => 'langue']; // test purpose
+    const PARAM_ALIAS
+        = [
+            'lang' => 'langue',
+            "url-access" => "accès url",
+            "doi-access" => "accès doi",
+        ]; // test purpose
 
     protected $parametersByOrder
         = [
@@ -98,6 +103,7 @@ class LienWebTemplate extends AbstractWikiTemplate
             'traduction titre',
             'description', // obligatoire
             'url',
+            'accès url',
             'format',
             'série',
             'site',

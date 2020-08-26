@@ -29,11 +29,14 @@ class JsonLDMapper implements MapperInterface
             'auteur1' => $this->wikifyPressAgency($this->cleanAuthor($this->convertAuteur($jsonLD, 0))),
             'auteur2' => $this->cleanAuthor($this->convertAuteur($jsonLD, 1)),
             'auteur3' => $this->cleanAuthor($this->convertAuteur($jsonLD, 2)),
-            'auteur institutionnel' => $this->wikifyPressAgency($this->cleanAuthor($this->convertInstitutionnel
-            ($jsonLD))),
+            'auteur institutionnel' => $this->wikifyPressAgency(
+                $this->cleanAuthor(
+                    $this->convertInstitutionnel($jsonLD)
+                )
+            ),
             //'éditeur' => $jsonLD['publisher']['name'] ?? null,
             'consulté le' => date('d-m-Y'),
-            //            'url-access' => $this->convertURLaccess($jsonLD),
+            'accès url' => $this->convertURLaccess($jsonLD),
         ];
     }
 }

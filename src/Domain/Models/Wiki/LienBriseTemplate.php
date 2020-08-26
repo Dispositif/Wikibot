@@ -34,6 +34,7 @@ class LienBriseTemplate extends AbstractWikiTemplate implements ArticleOrLienBri
     protected $parametersByOrder
         = [
             'url',
+            'accès url',
             'titre',
             'isbn',
             'consulté le',

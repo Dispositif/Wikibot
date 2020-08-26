@@ -1,8 +1,8 @@
 <?php
 /**
- * This file is part of dispositif/wikibot application
- * 2019 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019/2020 © Philippe M. <dispositif@gmail.com>
+ * For the full copyright and MIT license information, please view the license file.
  */
 
 declare(strict_types=1);
@@ -189,6 +189,7 @@ trait ArticleTemplateParams
             'ean', //<!-- code EAN de la revue si elle n'a pas ISBN ou ISSN -->
             'résumé',
             'lire en ligne',
+            'accès url',
             'archiveurl',
             'archivedate',
             'format',
@@ -198,6 +199,7 @@ trait ArticleTemplateParams
             'pmid',
             'pmcid',
             'doi',
+            'accès doi',
             'jstor',
             'bibcode',
             'math reviews',

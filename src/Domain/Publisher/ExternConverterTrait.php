@@ -25,20 +25,60 @@ trait ExternConverterTrait
         return false;
     }
 
+    /**
+     * mapping "accès url" : libre, inscription, limité, payant/abonnement.
+     * https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Le_Bistro/25_ao%C3%BBt_2020#Lien_externe_:_paramètre_pour_accessibilité_restreinte_(abonnement,_article_payant)
+     *
+     * @param $data
+     *
+     * @return string|null
+     */
     protected function convertURLaccess($data): ?string
     {
-        // NYT, Figaro
-        if (isset($data['isAccessibleForFree'])) {
-            return $data['isAccessibleForFree'] ? 'ouvert' : 'limité';
-        }
-        if (isset($data['DC.rights'])) {
-            return (in_array($data['DC.rights'], ['free', 'public domain'])) ? 'ouvert' : 'limité';
-        }
+        // https://developers.facebook.com/docs/instant-articles/subscriptions/content-tiering/?locale=fr_FR
         if (isset($data['og:article:content_tier'])) {
-            return ($data['og:article:content_tier'] === 'free') ? 'ouvert' : 'limité';
+            switch (strtolower($data['og:article:content_tier'])) {
+                case 'free':
+                    return 'libre';
+                case 'locked':
+                    return 'payant';
+                case 'metered':
+                    return 'limité';
+            }
         }
 
+        // NYT, Figaro
+        // Todo : Si pas libre => limité ou payant ?
+        if (isset($data['isAccessibleForFree'])) {
+            return ($this->sameAsTrue($data['isAccessibleForFree'])) ? 'libre' : 'limité';
+        }
+
+        if (isset($data['DC.rights'])) {
+            if (in_array(strtolower($data['DC.rights']), ['free', 'public domain'])) {
+                return 'libre';
+            }
+        }
+
+        // TODO : https://terms.tdwg.org/wiki/dcterms:accessRights
+        // "	Information about who access the resource or an indication of its security status."
+
         return null;
+    }
+
+    protected function sameAsTrue($str = null): bool
+    {
+        if ($str === null) {
+            return false;
+        }
+        if (is_bool($str)) {
+            return $str;
+        }
+        $str = strtolower($str);
+        if (in_array($str, ['true', '1', 'yes', 'oui', 'ok'])) {
+            return true;
+        }
+
+        return false;
     }
 
     /**

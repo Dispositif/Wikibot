@@ -171,6 +171,7 @@ abstract class OuvrageTemplateAlias extends AbstractWikiTemplate
             "nature document" => 'nature ouvrage',
             "nature du document" => 'nature ouvrage',
             //            'nopp' =>  poubelle
-
+            "url-access" => "accès url",
+            "doi-access" => "accès doi",
         ];
 }

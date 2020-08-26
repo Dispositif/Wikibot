@@ -257,6 +257,12 @@ class ExternRefTransformer implements TransformerInterface
         ) {
             $this->summary->memo['sites'][] = $this->externalPage->getPrettyDomainName();
         }
+        if (isset($mapData['accès url'])) {
+            $this->log->notice('accès 🔒 '.$mapData['accès url']);
+            if ($mapData['accès url'] !== 'libre') {
+                $this->summary->memo['accès url non libre'] = true;
+            }
+        }
     }
 
     private function isScientificDomain(): bool

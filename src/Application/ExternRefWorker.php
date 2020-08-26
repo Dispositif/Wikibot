@@ -125,6 +125,10 @@ class ExternRefWorker extends RefBotWorker
             $suffix .= ($this->summary->memo['count lien brisé'] > 1) ? ' x'.$this->summary->memo['count lien brisé'] :
                 '';
         }
+        if (isset($this->summary->memo['accès url non libre'])) {
+            $suffix .= ' 🔒';
+        }
+
         if ($this->summary->citationNumber >= 8) {
             $suffix .= ' 🔥';
         }

@@ -60,6 +60,11 @@ class ExternMapper implements MapperInterface
                 $mapJson['langue'] = $mapMeta['langue'];
                 $mapJson['DATA-TYPE'] = 'JSON-LD+META';
             }
+            // récupère "accès url" de OpenGraph (prévaut sur JSON:'isAccessibleForFree'
+            if(isset($mapMeta['accès url']) ){
+                $mapJson['accès url'] = $mapMeta['accès url'];
+                $mapJson['DATA-TYPE'] = 'JSON-LD+META';
+            }
 
             return $mapJson;
         }
