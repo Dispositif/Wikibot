@@ -22,7 +22,7 @@ include __DIR__.'/../ZiziBot_Bootstrap.php'; // myBootstrap.php';
  */
 
 $wiki = ServiceFactory::wikiApi();
-$taskName = "bot # Erreur BnF sur langue/traduction";
+$taskName = "bot 🧹📗 Correction biblio (email)";
 
 $bot = new WikiBotConfig();
 
@@ -51,7 +51,7 @@ foreach ($titles as $title) {
     // preg_replace : 1ere occurrence = ${1} !!
     // https://wstat.fr/template/info/Ouvrage
 
-    $newText = preg_replace('#vol=([^<|]+) ?<!--PARAMETRE \'vol\' N\'EXISTE PAS -->#', 'volume=${1}', $newText);
+    $newText = preg_replace('# ?[^ =|]+@[^ =|]+\.[A-Z]+#i', '', $newText);
 
 //    if (preg_match_all('#{{extrait\|[^}]+}}#i', $text, $matches) > 0) {
 //        foreach ($matches[0] as $template) {

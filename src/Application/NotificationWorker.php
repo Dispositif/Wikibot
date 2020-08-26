@@ -111,14 +111,13 @@ class NotificationWorker
             if (isset($notif['title']) && in_array($notif['title']['namespace'], ['', 'Discussion'])) {
                 // PROCESS ARTICLES
                 $article = $notif['title']['text'];
-                $user = $notif['agent']['name'] ?? '';
 
                 // wikiScan for {ouvrage} completion
                 $this->processWikiscanForOuvrage($article);
 
                 // URL => wiki-template completion
                 $this->deleteEditedArticleFile($article);
-                $this->processExternLinks($article, $user);
+                $this->processExternLinks($article);
             }
         }
 
