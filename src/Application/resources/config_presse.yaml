@@ -35,6 +35,11 @@ lequipe.fr:
 letemps.ch:
     périodique: '[[Le Temps (quotidien suisse)|Le Temps]]'
     template: auto
+
+lenouvelliste.ch:
+    périodique: '[[Le Nouvelliste (Valais)|Le Nouvelliste]]'
+    template: article
+
 strategies.fr:
     site: '[[Stratégies|strategies.fr]]'
 cairn.info:

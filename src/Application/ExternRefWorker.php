@@ -129,7 +129,7 @@ class ExternRefWorker extends RefBotWorker
             $suffix .= ' 🔒';
         }
 
-        if ($this->summary->citationNumber >= 8) {
+        if ($this->summary->citationNumber >= 10) {
             $suffix .= ' 🔥';
         }
 
