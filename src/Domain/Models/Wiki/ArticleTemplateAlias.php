@@ -83,6 +83,8 @@ abstract class ArticleTemplateAlias extends AbstractWikiTemplate
 
 
             'accessdate' => 'consulté le',
+            'access-date' => 'consulté le',
+
             'chap' => 'titre chapitre',
             'chapter' => 'titre chapitre',
             'ref' => 'référence simplifiée',

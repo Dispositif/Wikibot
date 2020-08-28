@@ -36,6 +36,8 @@ class LienWebTemplate extends AbstractWikiTemplate
             'lang' => 'langue',
             "url-access" => "accès url",
             "doi-access" => "accès doi",
+            'access-date' => 'consulté le', // enwiki
+            'accessdate' => 'consulté le', // enwiki
         ]; // test purpose
 
     protected $parametersByOrder

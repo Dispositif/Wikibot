@@ -78,6 +78,7 @@ abstract class OuvrageTemplateAlias extends AbstractWikiTemplate
             'url' => 'lire en ligne',
             'url texte' => 'lire en ligne',
             'accessdate' => 'consulté le',
+            'access-date' => 'consulté le',
             'numéro' => 'numéro chapitre',
             'chapitre' => 'numéro chapitre',
             'chap' => 'titre chapitre',
