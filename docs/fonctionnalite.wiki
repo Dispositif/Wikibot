@@ -14,7 +14,7 @@ Correction syntaxique des paramètres :
 Style : conservation partielle du style rédactionnel du modèle : {{pas fait}} ordre des paramètres, {{fait}}
 espacement/retour ligne, {{pas fait}} noms de paramètre. [https://fr.wikipedia.org/w/index.php?title=Alfred_de_Schamphela%C3%ABre&diff=prev&oldid=164495257]
 
-Complètement de données d'après des bases bibliographiques :
+Amélioration de données d'après des bases bibliographiques :
 * recherche par {{fait}}ISBN, {{fait}} lien Google, {{pas fait}}  auteur+titre
 * Bases interrogées : {{fait}} [[Google Books]], {{fait}} [[Open Library]], {{fait}}[[BnF]], {{mort}}[[WorldCat]],{{fait}}[[WikiData]]
 * todo: décrire fiabilité données

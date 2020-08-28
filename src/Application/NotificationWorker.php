@@ -225,11 +225,7 @@ class NotificationWorker
             $logger = new Logger();
             //$logger->debug = true;
             $botConfig = new WikiBotConfig($logger);
-            $botConfig->taskName = sprintf(
-                "🔔🌐 Complètement de références (@[[User:%s|%s]]) : URL ⇒ ",
-                $username,
-                $username
-            );
+            $botConfig->taskName = '🔔🌐 Amélioration de références : URL ⇒ ';
             new ExternRefWorker($botConfig, $wiki, new PageList([$article]));
             sleep(10);
         } catch (\Throwable $e) {

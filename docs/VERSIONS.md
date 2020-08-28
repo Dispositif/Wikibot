@@ -1,4 +1,4 @@
-## Versions des règles de corrections/complètement ##
+## Versions des règles de corrections/amélioration ##
 
 * 0.84 : bug {en} {ouvrage} (@TwoWings)
 * 0.83 : Fix distinction éditeur/réimpression/numéro d'édition

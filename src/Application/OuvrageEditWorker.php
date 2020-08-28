@@ -191,7 +191,7 @@ class OuvrageEditWorker
         foreach ($data as $dat) {
             // hack temporaire pour éviter articles dont CompleteProcess incomplet
             if (empty($dat['opti']) || empty($dat['optidate']) || $dat['optidate'] < DbAdapter::OPTI_VALID_DATE) {
-                $this->log->notice("SKIP : Complètement incomplet de l'article. sleep 10min");
+                $this->log->notice("SKIP : Amélioration incomplet de l'article. sleep 10min");
                 sleep(600);
                 return false;
             }

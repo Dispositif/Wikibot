@@ -31,7 +31,7 @@ $wiki = ServiceFactory::wikiApi();
 $logger = new Logger();
 //$logger->debug = true;
 $botConfig = new WikiBotConfig($logger);
-$botConfig->taskName = "🌐 Complètement de références : URL ⇒ "; // 🐞 🌐  🔗
+$botConfig->taskName = "🌐 Amélioration de références : URL ⇒ "; // 🐞 🌐  🔗
 
 // LAST EDIT
 // TODO : \<ref[^\>]*\> et liste à puces * http://...

@@ -35,7 +35,7 @@ try {
 }
 
 echo $result."\n";
-dump($summary);
+//dump($summary);
 
 
 
