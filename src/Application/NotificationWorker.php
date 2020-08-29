@@ -115,6 +115,7 @@ class NotificationWorker
                 // wikiScan for {ouvrage} completion
                 $this->processWikiscanForOuvrage($article);
 
+
                 // URL => wiki-template completion
                 $this->deleteEditedArticleFile($article);
                 $this->processExternLinks($article);
@@ -227,6 +228,8 @@ class NotificationWorker
             $botConfig = new WikiBotConfig($logger);
             $botConfig->taskName = '🔔🌐 Amélioration de références : URL ⇒ ';
             new ExternRefWorker($botConfig, $wiki, new PageList([$article]));
+
+            new GoogleBooksWorker($botConfig, $wiki, new PageList([$article]));
             sleep(10);
         } catch (\Throwable $e) {
             unset($e);

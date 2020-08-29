@@ -11,6 +11,7 @@ use App\Application\GoogleBooksWorker;
 use App\Application\WikiBotConfig;
 use App\Infrastructure\CirrusSearch;
 use App\Infrastructure\GoogleApiQuota;
+use App\Infrastructure\PageList;
 use App\Infrastructure\ServiceFactory;
 
 
@@ -45,6 +46,10 @@ $list = new CirrusSearch(
         'srsort' => 'last_edit_desc',
     ]
 );
+
+if (!empty($argv[1])) {
+    $list = new PageList([trim($argv[1])]);
+}
 
 new GoogleBooksWorker($bot, $wiki, $list);
 // todo desactivate "Skip : déjà analysé"

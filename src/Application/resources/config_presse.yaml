@@ -31,7 +31,7 @@ lequipe.fr:
     site: '[[L''Équipe|lequipe.fr]]'
     périodique: ''
     stripfromtitle: ["- L'ÉQUIPE", "L'ÉQUIPE -", "L'Équipe"]
-    template: lien web
+    template: 'lien web'
 letemps.ch:
     périodique: '[[Le Temps (quotidien suisse)|Le Temps]]'
     template: auto
@@ -39,6 +39,11 @@ letemps.ch:
 lenouvelliste.ch:
     périodique: '[[Le Nouvelliste (Valais)|Le Nouvelliste]]'
     template: article
+
+francetvinfo.fr:
+    périodique: ''
+    site: '[[France Info|francetvinfo.fr]]'
+    template: 'lien web'
 
 strategies.fr:
     site: '[[Stratégies|strategies.fr]]'

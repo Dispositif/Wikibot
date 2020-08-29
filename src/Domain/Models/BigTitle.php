@@ -13,6 +13,12 @@ namespace App\Domain\Models;
 
 use App\Domain\Utils\ArrayProcessTrait;
 
+/**
+ * @notused
+ * Class BigTitle
+ *
+ * @package App\Domain\Models
+ */
 class BigTitle
 {
     use ArrayProcessTrait;
