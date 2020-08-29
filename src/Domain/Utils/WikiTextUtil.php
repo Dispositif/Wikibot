@@ -226,4 +226,31 @@ class WikiTextUtil extends TextUtil
 
         return $str;
     }
+
+    /**
+     * Normalize URL for inclusion as a wiki-template value.
+     * https://en.wikipedia.org/wiki/Template:Citation_Style_documentation/url
+     *
+     * @param string $url
+     *
+     * @return string
+     */
+    public static function normalizeUrlForTemplate(string $url): string
+    {
+        $searchReplace = [
+            ' ' => '%20',
+            '"' => '%22',
+            "'''" => '%27%27%27',
+            "''" => '%27%27',
+            '<' => '%3c',
+            '>' => '%3e',
+            '[' => '%5b',
+            ']' => '%5d',
+            '{{' => '%7b%7b',
+            '|' => '%7c',
+            '}}' => '%7d%7d',
+        ];
+
+        return str_replace(array_keys($searchReplace), array_values($searchReplace), $url);
+    }
 }

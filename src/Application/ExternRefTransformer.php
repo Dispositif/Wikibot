@@ -102,6 +102,9 @@ class ExternRefTransformer implements TransformerInterface
         if (!$this->isURLAuthorized($url)) {
             return $url;
         }
+
+        $url = WikiTextUtil::normalizeUrlForTemplate($url);
+
         try {
             sleep(self::HTTP_REQUEST_LOOP_DELAY);
             $this->externalPage = ExternPageFactory::fromURL($url, $this->log);
