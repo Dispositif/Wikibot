@@ -50,7 +50,7 @@ trait ExternConverterTrait
         // NYT, Figaro
         // Todo : Si pas libre => limité ou payant ?
         if (isset($data['isAccessibleForFree'])) {
-            return ($this->sameAsTrue($data['isAccessibleForFree'])) ? 'libre' : 'limité';
+            return ($this->sameAsTrue($data['isAccessibleForFree'])) ? 'libre' : 'payant';
         }
 
         if (isset($data['DC.rights'])) {
@@ -61,6 +61,12 @@ trait ExternConverterTrait
 
         // TODO : https://terms.tdwg.org/wiki/dcterms:accessRights
         // "	Information about who access the resource or an indication of its security status."
+        // Values are a mystery...
+        if (isset($data['DC.accessRights'])) {
+            if (in_array(strtolower($data['DC.accessRights']), ['free', 'public domain', 'public', 'available'])) {
+                return 'libre';
+            }
+        }
 
         return null;
     }

@@ -108,7 +108,7 @@ class ExternMapperTest extends TestCase
                     'date' => '18-03-2020',
                     'auteur1' => 'Marie-Cécile Renault',
                     'consulté le' => '11-04-2020',
-                    'accès url' => 'limité',
+                    'accès url' => 'payant',
                 ],
             ],
             [
@@ -122,7 +122,7 @@ class ExternMapperTest extends TestCase
                     'date' => '20-03-2020',
                     'auteur1' => 'Pierre-Henri Allain',
                     'consulté le' => '11-04-2020',
-                    'accès url' => 'limité'
+                    'accès url' => 'payant'
                 ],
             ],
 

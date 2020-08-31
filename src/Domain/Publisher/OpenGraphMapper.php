@@ -37,7 +37,9 @@ class OpenGraphMapper implements MapperInterface
             'titre' => $this->clean($meta['og:title'] ?? $meta['twitter:title'] ?? $meta['DC.title'] ?? null),
             'url' => $meta['og:url'] ?? $meta['URL'] ?? null,
             'langue' => $this->convertLangue(
-                $meta['og:locale'] ?? $meta['DC.language'] ?? $meta['citation_language'] ?? null
+                $meta['og:locale'] ?? $meta['DC.language'] ??
+                $meta['citation_language'] ?? $meta['lang'] ?? $meta['language'] ?? $meta['content-language'] ??
+                $meta['Content-Language'] ?? null
             ),
             'consulté le' => date('d-m-Y'),
             'auteur' => $this->cleanAuthor(

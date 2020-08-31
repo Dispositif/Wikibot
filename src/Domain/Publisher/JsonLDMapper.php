@@ -21,6 +21,7 @@ class JsonLDMapper implements MapperInterface
             'DATA-TYPE' => 'JSON-LD',
             'DATA-ARTICLE' => $jsonLD['@type'] === 'NewsArticle',
 
+            'langue' => $this->convertLangue($jsonLD['language'] ?? $jsonLD['inLanguage'] ?? null),
             'périodique' => $this->clean($jsonLD['publisher']['name'] ?? null),
             'titre' => $this->clean($jsonLD['headline']), // obligatoire
             'url' => $jsonLD['url'] ?? $jsonLD['mainEntityOfPage']['@id'] ?? $jsonLD['mainEntityOfPage'] ?? null,
