@@ -11,3 +11,5 @@ wikimedia.org
 cairn.info
 ouest-france.fr
 leparisien.fr
+lanouvellerepublique.fr
+societe.com
