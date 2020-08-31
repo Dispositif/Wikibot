@@ -277,6 +277,8 @@ trait ExternConverterTrait
     }
 
     /**
+     * todo move to generalize as utility
+     *
      * @param string $str
      *
      * @return string
@@ -303,7 +305,9 @@ trait ExternConverterTrait
             $date = new DateTime($str);
         } catch (Exception $e) {
             // 23/11/2015 00:00:00
-            dump('EXCEPTION DATE');
+            if (isset($this) && isset($this->log) && method_exists($this->log, 'notice')) {
+                $this->log->notice('EXCEPTION DATE');
+            }
 
             return '<!-- '.$str.' -->';
         }

@@ -39,6 +39,7 @@ abstract class OuvrageTemplateAlias extends AbstractWikiTemplate
             'lien auteur' => 'lien auteur1',
             'auteur' => 'auteur1', // fréquent : ajouté sur params normaux malgré alias
             'directeur' => 'directeur1',
+            'direction' => 'directeur1',
             // non-documenté (Aristote)
             'author1' => 'auteur1',
             'author2' => 'auteur2',

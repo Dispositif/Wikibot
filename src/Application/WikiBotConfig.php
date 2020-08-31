@@ -263,9 +263,10 @@ class WikiBotConfig
      */
     public static function isEditionRestricted(string $text, ?string $botName = null): bool
     {
+        // travaux|en travaux| ??
         if (preg_match('#{{Protection#i', $text) > 0
             || preg_match('#\{\{3R\}\}#', $text) > 0
-            || preg_match('#\{\{(travaux|en travaux|en cours|formation)#i', $text) > 0
+            || preg_match('#\{\{(en cours|formation)#i', $text) > 0
             || self::isNoBotTag($text, $botName)
         ) {
             return true;

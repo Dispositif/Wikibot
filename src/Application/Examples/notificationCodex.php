@@ -21,7 +21,7 @@ require_once __DIR__.'/../myBootstrap.php';
 
 echo date('Y-m-d H\:i')." Check notifications... \n";
 new NotificationWorker();
-echo "sleep 4h\n";
-sleep(3600 * 4);
+echo "sleep 2h\n";
+sleep(3600 * 2);
 
 

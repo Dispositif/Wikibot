@@ -12,7 +12,6 @@ namespace App\Application\Examples;
 use App\Application\WikiBotConfig;
 use App\Application\WikiPageAction;
 use App\Infrastructure\ServiceFactory;
-use Exception;
 use Mediawiki\DataModel\EditInfo;
 
 include __DIR__.'/../ZiziBot_Bootstrap.php'; // myBootstrap.php';
@@ -22,7 +21,7 @@ include __DIR__.'/../ZiziBot_Bootstrap.php'; // myBootstrap.php';
  */
 
 $wiki = ServiceFactory::wikiApi();
-$taskName = "bot 🧹📗 Correction biblio (email)";
+$taskName = "bot : Correction biblio mineure (inscription nécessaire)"; // 🧹📗
 
 $bot = new WikiBotConfig();
 
@@ -35,14 +34,16 @@ $auto = false;
 foreach ($titles as $title) {
     sleep(2);
 
-    $bot->checkStopOnTalkpage(true);
+//    $bot->checkStopOnTalkpage(true);
 
     $title = trim($title);
     echo "$title \n";
 
     $pageAction = new WikiPageAction($wiki, $title);
     if ($pageAction->getNs() !== 0) {
-        throw new Exception("La page n'est pas dans Main (ns!==0)");
+        //throw new Exception("La page n'est pas dans Main (ns!==0)");
+        echo "La page n'est pas dans Main (ns!==0)\n";
+        continue;
     }
     $text = $pageAction->getText();
 
@@ -51,7 +52,10 @@ foreach ($titles as $title) {
     // preg_replace : 1ere occurrence = ${1} !!
     // https://wstat.fr/template/info/Ouvrage
 
-    $newText = preg_replace('# ?[^ =|]+@[^ =|]+\.[A-Z]+#i', '', $newText);
+    $newText = preg_replace("#\{\{inscription nécessaire[^}]+\}\}#i", '{{Inscription nécessaire}}', $newText);
+    //$newText = preg_replace('#publié le( *= ?[^}|]+)#i', 'date$1', $newText);
+
+    //$newText = preg_replace('#(\|\n? ?)direction *= ?(oui|yes) ?#i', '${1}directeur1 = oui', $newText);
 
 //    if (preg_match_all('#{{extrait\|[^}]+}}#i', $text, $matches) > 0) {
 //        foreach ($matches[0] as $template) {
