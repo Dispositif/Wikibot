@@ -37,6 +37,7 @@ class NotificationWorker
     const DEFAULT_WIKIS             = 'frwiki';
     const DIFF_URL                  = 'https://fr.wikipedia.org/w/index.php?diff=';
     const ARTICLE_ANALYZED_FILENAME = __DIR__.'/resources/article_externRef_edited.txt';
+    const SUMMARY                   = '⚙ mise à jour notifications (ping [[User:Irønie]])';
 
     /**
      * @var MediawikiApi
@@ -192,7 +193,7 @@ class NotificationWorker
 
         $success = $pageAction->addToTopOfThePage(
             $text,
-            new EditInfo('⚙ mise à jour notifications', false, false)
+            new EditInfo(self::SUMMARY, false, false)
         );
 //        dump($success);
 

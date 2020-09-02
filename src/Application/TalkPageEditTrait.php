@@ -72,7 +72,7 @@ trait TalkPageEditTrait
             $talkPage = ServiceFactory::wikiPageAction('Discussion:'.$mainTitle);
             $editInfo = ServiceFactory::editInfo('💩 Signalement erreur {ouvrage}', false, false, 5);
 
-            return $talkPage->addToBottomOrCreatePage($errorMessage, $editInfo);
+            return $talkPage->addToBottomOrCreatePage("\n".$errorMessage, $editInfo);
         } catch (Throwable $e) {
             $log->warning('Exception after addToBottomOrCreatePage() '.$e->getMessage());
 

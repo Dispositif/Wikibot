@@ -39,8 +39,8 @@ class OuvrageEditWorker
     const EDIT_SIGNALEMENT = true;
 
     const CITATION_LIMIT         = 150;
-    const DELAY_BOTFLAG_SECONDS    = 60;
-    const DELAY_NO_BOTFLAG_SECONDS = 60;
+    const DELAY_BOTFLAG_SECONDS    = 120;
+    const DELAY_NO_BOTFLAG_SECONDS = 120;
     const ERROR_MSG_TEMPLATE       = __DIR__.'/templates/message_errors.wiki';
 
     private $db;

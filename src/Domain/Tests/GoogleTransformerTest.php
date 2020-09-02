@@ -38,7 +38,7 @@ EOF;
                 ],
 
             ],
-            $trans->extractGoogleExternal($text)
+            $trans->extractGoogleExternalBullets($text)
         );
     }
 

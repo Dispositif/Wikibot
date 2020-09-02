@@ -71,7 +71,7 @@ class GoogleTransformer
             $text = $this->processRef($text, $refsData);
         }
 
-        $links = $this->extractGoogleExternal($text);
+        $links = $this->extractGoogleExternalBullets($text);
         if (!empty($links)) {
             $text = $this->processExternLinks($text, $links);
         }
