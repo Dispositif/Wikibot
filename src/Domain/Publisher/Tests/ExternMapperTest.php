@@ -85,6 +85,7 @@ class ExternMapperTest extends TestCase
                     'site' => 'PubMed Central (PMC)',
                     'titre' => 'The Diesel Exhaust in Miners Study: A Nested Case–Control Study of Lung Cancer and Diesel Exhaust',
                     'url' => 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3369553/',
+                    'langue' => 'en',
                     'consulté le' => '11-04-2020',
                     'date' => '06-06-2012',
                     'périodique' => 'JNCI Journal of the National Cancer Institute',
@@ -114,7 +115,7 @@ class ExternMapperTest extends TestCase
             [
                 __DIR__.'/fixture_liberation.html',
                 [
-                    'DATA-TYPE' => 'JSON-LD',
+                    'DATA-TYPE' => 'JSON-LD+META',
                     'DATA-ARTICLE' => true,
                     'périodique' => 'Libération',
                     'titre' => 'En Bretagne, le Parisiens-bashing guette',

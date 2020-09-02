@@ -74,6 +74,8 @@ class ExternPage
         $ld = $this->parseLdJson($this->html);
         $meta = $this->parseMetaTags($this->html);
 
+        $meta['html-lang'] = $this->parseHtmlLang($this->html); // <html lang="en">
+
         return ['JSON-LD' => $ld, 'meta' => $meta];
     }
 
@@ -184,5 +186,22 @@ class ExternPage
             }
             throw new Exception('ExternDomains::extractSubDomain NULL');
         }
+    }
+
+    /**
+     * Extract language from <html lang="en-us"> tag.
+     *
+     * @param string $html
+     */
+    private function parseHtmlLang(string $html): ?string
+    {
+        if (preg_match('#<html(?: [^>]+)? lang="([A-Z-]{2,15})"(?: [^>]+)?>#i', $html, $matches)) {
+            // 'en-us' => 'en' // todo move in Language
+            $lang = preg_replace('#^([a-z]+)-[a-z]+$#i', '$1', $matches[1]);
+
+            return $lang;
+        }
+
+        return null;
     }
 }

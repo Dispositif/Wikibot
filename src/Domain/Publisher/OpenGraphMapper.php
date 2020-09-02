@@ -39,7 +39,7 @@ class OpenGraphMapper implements MapperInterface
             'langue' => $this->convertLangue(
                 $meta['og:locale'] ?? $meta['DC.language'] ??
                 $meta['citation_language'] ?? $meta['lang'] ?? $meta['language'] ?? $meta['content-language'] ??
-                $meta['Content-Language'] ?? null
+                $meta['Content-Language'] ?? $meta['html-lang'] ?? null
             ),
             'consulté le' => date('d-m-Y'),
             'auteur' => $this->cleanAuthor(
