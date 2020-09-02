@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace App\Application\Examples;
 
-use App\Application\NotificationWorker;
+use App\Application\CodexNotificationWorker;
 
 require_once __DIR__.'/../myBootstrap.php';
 
@@ -17,11 +17,10 @@ require_once __DIR__.'/../myBootstrap.php';
  * Traitement des notifications du bot :
  * -> complète liste des notifications sur le wiki
  * -> ajoute articles à analyser (ouvrageComplete + externalLink)
+ * Appelé par cron (genre toutes les 2h)
  */
 
 echo date('Y-m-d H\:i')." Check notifications... \n";
-new NotificationWorker();
-echo "sleep 2h\n";
-sleep(3600 * 2);
+new CodexNotificationWorker();
 
 

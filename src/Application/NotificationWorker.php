@@ -9,9 +9,6 @@ declare(strict_types=1);
 
 namespace App\Application;
 
-use App\Infrastructure\DbAdapter;
-use App\Infrastructure\Logger;
-use App\Infrastructure\PageList;
 use App\Infrastructure\ServiceFactory;
 use Mediawiki\Api\MediawikiApi;
 use Mediawiki\Api\SimpleRequest;
@@ -19,6 +16,8 @@ use Mediawiki\Api\UsageException;
 use Mediawiki\DataModel\EditInfo;
 
 /**
+ * todo internationalize (enwiki, etc)
+ * Parsing last notifications to the bot (and set them read).
  * Doc API : https://www.mediawiki.org/wiki/Notifications/API
  * TYPES :
  * edit-user-talk
@@ -27,10 +26,7 @@ use Mediawiki\DataModel\EditInfo;
  * flowusertalk-post-reply (alerte,   "title": {
  * "full": "Discussion utilisateur:Ir\u00f8nie",
  * "namespace": "Discussion_utilisateur")
- * Parsing last unread notifications to the bot.
  * Class NotificationWorker
- *
- * @package App\Application
  */
 class NotificationWorker
 {
@@ -38,6 +34,14 @@ class NotificationWorker
     const DIFF_URL                  = 'https://fr.wikipedia.org/w/index.php?diff=';
     const ARTICLE_ANALYZED_FILENAME = __DIR__.'/resources/article_externRef_edited.txt';
     const SUMMARY                   = '⚙ mise à jour notifications (ping [[User:Irønie]])';
+    const PAGENAME_NOTIFICATION_LOG = 'Utilisateur:CodexBot/Notifications';
+    const SKIP_BOTPAGES
+                                    = [
+            'Utilisateur:CodexBot',
+            'Discussion utilisateur:CodexBot',
+            'Utilisateur:ZiziBot',
+            'Discussion utilisateur:ZiziBot',
+        ];
 
     /**
      * @var MediawikiApi
@@ -77,12 +81,7 @@ class NotificationWorker
             // Skip bot pages
             if (in_array(
                 $title,
-                [
-                    'Utilisateur:CodexBot',
-                    'Discussion utilisateur:CodexBot',
-                    'Utilisateur:ZiziBot',
-                    'Discussion utilisateur:ZiziBot',
-                ]
+                self::SKIP_BOTPAGES
             )
             ) {
                 continue;
@@ -103,24 +102,13 @@ class NotificationWorker
                 $notif['revid'] ?? '',
                 $notif['agent']['name'] ?? '???'
             );
-//            dump($notif);
+            //            dump($notif);
 
             if (!isset($notif['read'])) {
                 $this->postNotifAsRead($notif['id']);
             }
 
-            if (isset($notif['title']) && in_array($notif['title']['namespace'], ['', 'Discussion'])) {
-                // PROCESS ARTICLES
-                $article = $notif['title']['text'];
-
-                // wikiScan for {ouvrage} completion
-                $this->processWikiscanForOuvrage($article);
-
-
-                // URL => wiki-template completion
-                $this->deleteEditedArticleFile($article);
-                $this->processExternLinks($article);
-            }
+            $this->processSpecialActions($notif);
         }
 
         dump($wikilog);
@@ -135,15 +123,15 @@ class NotificationWorker
         $result = $this->api->getRequest(
             new SimpleRequest(
                 'query', [
-                           'meta' => 'notifications',
-                           'notwikis' => self::DEFAULT_WIKIS,
-                           'notfilter' => '!read', // default: read|!read
-                           'notlimit' => '30', // max 50
-                           //                   'notunreadfirst' => '1', // comment for false
-                           //                   'notgroupbysection' => '1',
-                           'notsections' => 'alert', // alert|message
-                           'format' => 'php',
-                       ]
+                    'meta' => 'notifications',
+                    'notwikis' => self::DEFAULT_WIKIS,
+                    'notfilter' => '!read', // default: read|!read
+                    'notlimit' => '30', // max 50
+                    //                   'notunreadfirst' => '1', // comment for false
+                    //                   'notgroupbysection' => '1',
+                    'notsections' => 'alert', // alert|message
+                    'format' => 'php',
+                ]
             )
         );
 
@@ -161,9 +149,9 @@ class NotificationWorker
             $this->api->postRequest(
                 new SimpleRequest(
                     'echomarkread', [
-                                      'list' => $id,
-                                      'token' => $this->api->getToken(),
-                                  ]
+                        'list' => $id,
+                        'token' => $this->api->getToken(),
+                    ]
                 )
             );
         } catch (\Throwable $e) {
@@ -189,67 +177,26 @@ class NotificationWorker
         $text = implode("\n", $wikilog)."\n";
 
         $wiki = ServiceFactory::wikiApi();
-        $pageAction = new WikiPageAction($wiki, 'Utilisateur:CodexBot/Notifications');
+        $pageAction = new WikiPageAction($wiki, self::PAGENAME_NOTIFICATION_LOG);
 
         $success = $pageAction->addToTopOfThePage(
             $text,
             new EditInfo(self::SUMMARY, false, false)
         );
-//        dump($success);
+
+        //        dump($success);
 
         return $success;
     }
 
     /**
-     * Delete article title in a log text file.
+     * Put there the special action to execute with each notification.
      *
-     * @param $title
+     * @param $notif
      */
-    private function deleteEditedArticleFile(string $title): void
+    protected function processSpecialActions($notif)
     {
-        $text = file_get_contents(self::ARTICLE_ANALYZED_FILENAME);
-        $newtext = str_replace($title."\n", '', $text);
-        if (!empty($text) && $text !== $newtext) {
-            @file_put_contents(self::ARTICLE_ANALYZED_FILENAME, $newtext);
-        }
+        // optional for children
     }
 
-    /**
-     * Process external URL completion to wiki-template.
-     *
-     * @param string      $article
-     * @param string|null $username
-     */
-    private function processExternLinks(string $article, ?string $username = '')
-    {
-        try {
-            $wiki = ServiceFactory::wikiApi();
-            $logger = new Logger();
-            //$logger->debug = true;
-            $botConfig = new WikiBotConfig($logger);
-            $botConfig->taskName = '🔔🌐 Amélioration de références : URL ⇒ ';
-            new ExternRefWorker($botConfig, $wiki, new PageList([$article]));
-
-            new GoogleBooksWorker($botConfig, $wiki, new PageList([$article]));
-            sleep(10);
-        } catch (\Throwable $e) {
-            unset($e);
-        }
-    }
-
-    /**
-     * Process wikiSan for future {ouvrage} completion
-     *
-     * @param string $article
-     */
-    private function processWikiscanForOuvrage(string $article): void
-    {
-        try {
-            $wiki = ServiceFactory::wikiApi();
-            $list = new PageList([$article]);
-            new ScanWiki2DB($wiki, new DbAdapter(), new WikiBotConfig(), $list, 15);
-        } catch (\Throwable $e) {
-            echo $e->getMessage();
-        }
-    }
 }
