@@ -40,6 +40,9 @@ class LienWebTemplate extends AbstractWikiTemplate
             'accessdate' => 'consulté le', // enwiki
             'via' => 'site',
             'trans_title' => 'traduction titre',
+            'lien langue' => 'langue',
+            'lang' => 'langue',
+            'Langue' => 'langue'
         ]; // test purpose
 
     protected $parametersByOrder
