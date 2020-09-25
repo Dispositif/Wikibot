@@ -75,6 +75,7 @@ class ExternPage
         $meta = $this->parseMetaTags($this->html);
 
         $meta['html-lang'] = $this->parseHtmlLang($this->html); // <html lang="en">
+        $meta['html-title'] = $this->parseHtmlTitle($this->html);
 
         return ['JSON-LD' => $ld, 'meta' => $meta];
     }
@@ -192,6 +193,8 @@ class ExternPage
      * Extract language from <html lang="en-us"> tag.
      *
      * @param string $html
+     *
+     * @return string|null
      */
     private function parseHtmlLang(string $html): ?string
     {
@@ -200,6 +203,23 @@ class ExternPage
             $lang = preg_replace('#^([a-z]+)-[a-z]+$#i', '$1', $matches[1]);
 
             return $lang;
+        }
+
+        return null;
+    }
+
+    /**
+     * Extract webpage title from HTML <title>
+     * not foolproof : example <!-- <title>bla</title> -->
+     *
+     * @param string $html
+     *
+     * @return string|null
+     */
+    private function parseHtmlTitle(string $html): ?string
+    {
+        if (preg_match('#<title>([^<]+)</title>#i', $html, $matches)) {
+            return trim(strip_tags($matches[1]));
         }
 
         return null;

@@ -54,7 +54,7 @@ trait ExternConverterTrait
         }
 
         if (isset($data['DC.rights'])) {
-            if (in_array(strtolower($data['DC.rights']), ['free', 'public domain'])) {
+            if (in_array(strtolower($data['DC.rights']), ['free', 'public domain', 'domaine public'])) {
                 return 'libre';
             }
         }
@@ -63,7 +63,17 @@ trait ExternConverterTrait
         // "	Information about who access the resource or an indication of its security status."
         // Values are a mystery...
         if (isset($data['DC.accessRights'])) {
-            if (in_array(strtolower($data['DC.accessRights']), ['free', 'public domain', 'public', 'available'])) {
+            if (in_array(
+                strtolower($data['DC.accessRights']),
+                [
+                    'free',
+                    'public domain',
+                    'public',
+                    'domaine public',
+                    'available',
+                ]
+            )
+            ) {
                 return 'libre';
             }
         }
@@ -162,11 +172,29 @@ trait ExternConverterTrait
         $str = $this->stripEmailAdress($str);
 
         $str = str_replace(
-            ['|', "\n", "\t", '&#x27;', '&#39;', '&#039;', '&apos;', "\n", "&#10;", "&eacute;", '©'],
+            [
+                '|',
+                "\n",
+                "\t",
+                "\r",
+                '&#x27;',
+                '&#39;',
+                '&#039;',
+                '&apos;',
+                "\n",
+                "&#10;",
+                "&eacute;",
+                '©',
+                '{{',
+                '}}',
+                '[[',
+                ']]',
+            ],
             [
                 '/',
                 ' ',
                 ' ',
+                '',
                 "’",
                 "'",
                 "'",
@@ -175,11 +203,18 @@ trait ExternConverterTrait
                 ' ',
                 "é",
                 '',
+                '',
+                '',
+                '',
+                '',
             ],
             $str
         );
 
-        return html_entity_decode($str);
+        $str = html_entity_decode($str);
+        $str = strip_tags($str);
+
+        return $str;
     }
 
     public function stripEmailAdress(?string $str = null): ?string

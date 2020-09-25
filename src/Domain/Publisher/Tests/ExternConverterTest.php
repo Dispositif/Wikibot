@@ -16,12 +16,27 @@ class ExternConverterTest extends TestCase
 {
     use ExternConverterTrait;
 
-    public function testClean()
+    /**
+     * @dataProvider provideCleanData
+     */
+    public function testClean($text, $expected)
     {
-        $string = 'bla|bla bob@gmail.com';
         $this::assertSame(
-            'bla/bla',
-            $this->clean($string));
+            $expected,
+            $this->clean($text)
+        );
+    }
+
+    public function provideCleanData()
+    {
+        return [
+            ['bla|bla bob@gmail.com', 'bla/bla'],
+            [
+                'author of <span style="color : orange;"><i>Ancillary Justice</i></span> (Imperial Radch 1 )',
+                'author of Ancillary Justice (Imperial Radch 1 )',
+            ],
+            ['{{bla}}','bla']
+        ];
     }
 
 }

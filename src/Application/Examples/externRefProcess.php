@@ -50,7 +50,7 @@ $botConfig->taskName = "🌐 Amélioration de références : URL ⇒ "; // 🐞 
 // RANDOM :
 $list = new CirrusSearch(
     [
-        'srsearch' => '"http" insource:/\<ref[^\>]*\> ?https?\:\/\/[^\>]+\<\/ref>/',
+        'srsearch' => '"http" insource:/\<ref[^\>]*\> ?https?\:\/\/[^\<\ ]+ *\<\/ref/',
         'srlimit' => '5000',
         'srsort' => 'random',
     ]
@@ -58,6 +58,13 @@ $list = new CirrusSearch(
 
 if (!empty($argv[1])) {
     $list = new PageList([trim($argv[1])]);
+
+    $file = __DIR__.'/../resources/article_externRef_edited.txt';
+    $text = file_get_contents($file);
+    $newText = str_replace(trim($argv[1])."\n", '', $text);
+    if (!empty($text) && $text !== $newText) {
+        @file_put_contents($file, $newText);
+    }
 //    $botConfig->taskName = '🐞'.$botConfig->taskName;
 }
 
