@@ -175,5 +175,6 @@ abstract class OuvrageTemplateAlias extends AbstractWikiTemplate
             //            'nopp' =>  poubelle
             "url-access" => "accès url",
             "doi-access" => "accès doi",
+            'commentaire biblio' => 'commentaire'
         ];
 }

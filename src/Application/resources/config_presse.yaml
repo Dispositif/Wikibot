@@ -69,7 +69,6 @@ lesoir.be:
 strategies.fr:
     site: '[[Stratégies|strategies.fr]]'
 #ouest-france.fr: bot interdit (email) => bloqué
-#lanouvellerepublique.fr : données pourries => bloqué
 
 huffingtonpost.fr:
     template: 'lien web'
@@ -172,5 +171,8 @@ journals.plos.org:
 minorplanetcenter.net:
     site: '[[Centre des planètes mineures|minorplanetcenter.net]]'
 
+halshs.archives-ouvertes.fr:
+    site: 'archives-ouvertes.fr'
+    template: article
 
 #fin de fichier

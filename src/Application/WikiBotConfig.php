@@ -34,7 +34,7 @@ class WikiBotConfig
     const EXIT_ON_CHECK_WATCHPAGE = false;
 
     // do not stop if they play with {stop} on bot talk page
-    const BLACKLIST_EDITOR  = ['NB80'];
+    const BLACKLIST_EDITOR = ['OrlodrimBot'];
 
     const BOT_FLAG = false;
 
@@ -136,7 +136,7 @@ class WikiBotConfig
                 "\n*** STOP ON TALK PAGE BY %s ***\n\n",
                 $lastEditor
             );
-            if(in_array($lastEditor, static::BLACKLIST_EDITOR)){
+            if (in_array($lastEditor, static::BLACKLIST_EDITOR)) {
                 return;
             }
 
@@ -192,7 +192,6 @@ class WikiBotConfig
 
     /**
      * @return array
-     *
      * @throws ConfigException
      */
     protected function getWatchPages(): array
@@ -230,7 +229,7 @@ class WikiBotConfig
     {
         $time = $this->getTimestamp($title);  // 2011-09-02T16:31:13Z
 
-        return (int) round((time() - strtotime($time)) / 60);
+        return (int)round((time() - strtotime($time)) / 60);
     }
 
     /**
@@ -265,8 +264,7 @@ class WikiBotConfig
     {
         // travaux|en travaux| ??
         if (preg_match('#{{Protection#i', $text) > 0
-            || preg_match('#\{\{3R\}\}#', $text) > 0
-            || preg_match('#\{\{(en cours|formation)#i', $text) > 0
+            || preg_match('#\{\{(R3R|Règle des 3 révocations|travaux|en travaux|en cours|formation)#i', $text) > 0
             || self::isNoBotTag($text, $botName)
         ) {
             return true;

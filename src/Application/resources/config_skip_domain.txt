@@ -10,7 +10,11 @@ wikipedia.org
 wikimedia.org
 cairn.info
 ouest-france.fr
+#leparisien.fr Donnée pourrie : 'datePublished' erronée = today
 leparisien.fr
-lanouvellerepublique.fr
 societe.com
 valeursactuelles.com
+# lanouvellerepublique.fr : envoie titre={{rubedo.current.page.title}}
+lanouvellerepublique.fr
+# nouvelle version legifrance. Blocage 15 jours / jusqu'à 1 oct. (URLs non valides)
+legifrance.gouv.fr

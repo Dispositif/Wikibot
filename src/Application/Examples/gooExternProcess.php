@@ -32,17 +32,20 @@ if( $quota->isQuotaReached() ) {
 
 $wiki = ServiceFactory::wikiApi();
 $bot = new WikiBotConfig();
-$bot->taskName = "🌐✨📘 Amélioration bibliographique : lien Google Books ⇒ {ouvrage}";
+$bot->taskName = "🌐📘 Amélioration bibliographique : lien Google Books ⇒ {ouvrage}";
 
 // les "* https://..." en biblio et liens externes
 // "https://books.google" insource:/\* https\:\/\/books\.google[^ ]+/
 $list = new CirrusSearch(
     [
-//        'srsearch' => '"https://books.google" insource:/\* ?https\:\/\/books\.google/', // liste à puce
-        'srsearch' => '"https://books.google" insource:/\<ref[^\>]*\> ?https?\:\/\/books\.google/', // juste les <ref>
+        //        'srsearch' => '"https://books.google" insource:/\* ?https\:\/\/books\.google/', // liste à puce
+        //        'srsearch' => '"https://books.google" insource:/\<ref[^\>]*\> *https\:\/\/books\.google/[^\ <]+ *<\/ref/',
+        //        'srsearch' => '"https://books.google" insource:/\<ref[^\>]*\> ?https\:\/\/books\.google[^\ <]+ *[^<]+\<\/ref/',
+        'srsearch' => '"https://books.google" insource:/\<ref[^\>]*\> *https\:\/\/books\.google/',
+//        'srsearch' => 'https://books.google" insource:/\* *https\:\/\/books\.google/', // liste à puces
         'srnamespace' => '0',
-        'srlimit' => '100',
-        'srqiprofile' => 'popular_inclinks_pv',
+        'srlimit' => '1000',
+        //        'srqiprofile' => 'popular_inclinks_pv',
         'srsort' => 'last_edit_desc',
     ]
 );

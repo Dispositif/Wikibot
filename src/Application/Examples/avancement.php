@@ -48,15 +48,15 @@ $pageNb = (int)$monitor['pages'];
 
 $newText = <<<EOF
 <div style="background:#EBF6E9;border:2px solid grey;padding:10px;border-radius:10px;">
-{{Requête en cours}} : [[Utilisateur:ZiziBot/features|Améliorations bibliographiques sur citations {ouvrage} (ISBN, 
-1 an)]]
+* 📗 [[Utilisateur:ZiziBot/features|Améliorations des références {ouvrage}]] (nov2019—mars2021)
  {{progression|##PAGEEDITED##|174569}}
-<div style="text-align: center"><small>{{formatnum:##PAGEEDITED##}} articles WP traités sur {{formatnum:182348}} contenant un 
+<div style="text-align: center"><small>{{formatnum:##PAGEEDITED##}} articles WP traités sur {{formatnum:197639}} contenant un 
 ISBN
 </small></div>
-<div style="text-align: center"><small>{{formatnum:##NUMBER##}} citations analysées sur {{formatnum:978085}}
+<div style="text-align: center"><small>{{formatnum:##NUMBER##}} citations analysées sur {{formatnum:1064113}}
 </small></div>
-{{Requête en cours}} : [[Utilisateur:ZiziBot/Complétion liens web|Complétion de liens web]] 
+* 📘 Conversion liens bruts Google Books > {ouvrage} (juin—sept2000): {{Avancement|100}}
+* 🌐 [[Utilisateur:ZiziBot/Complétion liens web|Conversion lien brut > {article}/{lien web}]] (juin2020-jan2021) : {{Avancement|14}}
 </div>
 EOF;
 

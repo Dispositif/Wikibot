@@ -11,7 +11,9 @@ namespace App\Application\Examples;
 
 use App\Application\WikiBotConfig;
 use App\Application\WikiPageAction;
+use App\Domain\GoogleTransformer;
 use App\Infrastructure\ServiceFactory;
+use Codedungeon\PHPCliColors\Color;
 use Mediawiki\DataModel\EditInfo;
 
 include __DIR__.'/../ZiziBot_Bootstrap.php'; // myBootstrap.php';
@@ -21,7 +23,8 @@ include __DIR__.'/../ZiziBot_Bootstrap.php'; // myBootstrap.php';
  */
 
 $wiki = ServiceFactory::wikiApi();
-$taskName = "bot : Correction biblio mineure (inscription nécessaire)"; // 🧹📗
+$taskName = "🧹📗 Correction de référence (lanouvellerepublique.fr : titre manquant)"; // 🧹📗🐵
+$botflag = false;
 
 $bot = new WikiBotConfig();
 
@@ -30,6 +33,23 @@ $filename = __DIR__.'/../resources/plume.txt';
 $titles = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 $auto = false;
 
+////// Liste "Lettre patente" <ref>http+ google.books Lettres patentes
+//$list = new CirrusSearch(
+//    [
+//        //'srsearch' => '"https://books.google" insource:/\<ref[^\>]*\> ?https\:\/\/books\.google/[^\ ]+ *\<\/ref/',
+//        'srsearch' => '""https://books.google" insource:/\<ref[^\>]*\> *https\:\/\/books\.google/',
+//        'srnamespace' => '0',
+//        'srlimit' => '1000',
+//        'srqiprofile' => 'popular_inclinks_pv',
+//        'srsort' => 'random', //'last_edit_desc',
+//    ]
+//);
+//$titles = $list->getPageTitles();
+
+echo count($titles)." articles !\n";
+
+// Google Books
+$trans = new GoogleTransformer();
 
 foreach ($titles as $title) {
     sleep(2);
