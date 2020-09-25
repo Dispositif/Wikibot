@@ -199,10 +199,7 @@ class ExternPage
     private function parseHtmlLang(string $html): ?string
     {
         if (preg_match('#<html(?: [^>]+)? lang="([A-Z-]{2,15})"(?: [^>]+)?>#i', $html, $matches)) {
-            // 'en-us' => 'en' // todo move in Language
-            $lang = preg_replace('#^([a-z]+)-[a-z]+$#i', '$1', $matches[1]);
-
-            return $lang;
+            return $matches[1];
         }
 
         return null;

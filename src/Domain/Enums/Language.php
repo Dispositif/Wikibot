@@ -1,8 +1,8 @@
 <?php
 /**
- * This file is part of dispositif/wikibot application
- * 2019 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019/2020 © Philippe M. <dispositif@gmail.com>
+ * For the full copyright and MIT license information, please view the license file.
  */
 
 declare(strict_types=1);
@@ -44,6 +44,12 @@ abstract class Language
             return $dat;
         }
 
+        if ($dat = self::html2iso639($lang)) {
+            if (self::isWikiLang($dat)) {
+                return $dat;
+            }
+        }
+
         return null;
     }
 
@@ -62,6 +68,18 @@ abstract class Language
         }
 
         return false;
+    }
+
+    /**
+     * HTML lang attribute : 'en-us' => 'en' (ISO 639-1)
+     */
+    public static function html2iso639(string $lang): ?string
+    {
+        if (preg_match('#^([a-z]{2})-[a-z]{2}+$#i', $lang, $matches)) {
+            return strtolower($matches[1]);
+        }
+
+        return null;
     }
 
     public static function iso2b2wiki(string $lang): ?string
