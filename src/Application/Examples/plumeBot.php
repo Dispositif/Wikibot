@@ -30,6 +30,8 @@ $bot = new WikiBotConfig();
 
 // Get raw list of articles
 $filename = __DIR__.'/../resources/plume.txt';
+
+
 $titles = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 $auto = false;
 
@@ -52,12 +54,12 @@ echo count($titles)." articles !\n";
 $trans = new GoogleTransformer();
 
 foreach ($titles as $title) {
-    sleep(2);
+    sleep(3);
 
-//    $bot->checkStopOnTalkpage(true);
+    //    $bot->checkStopOnTalkpage(true);
 
     $title = trim($title);
-    echo "$title \n";
+    echo Color::BG_GREEN.$title.Color::NORMAL."\n";
 
     $pageAction = new WikiPageAction($wiki, $title);
     if ($pageAction->getNs() !== 0) {
@@ -72,25 +74,76 @@ foreach ($titles as $title) {
     // preg_replace : 1ere occurrence = ${1} !!
     // https://wstat.fr/template/info/Ouvrage
 
-    $newText = preg_replace("#\{\{inscription nécessaire[^}]+\}\}#i", '{{Inscription nécessaire}}', $newText);
-    //$newText = preg_replace('#publié le( *= ?[^}|]+)#i', 'date$1', $newText);
+    // <ref>https://books.google.fr/books?id=KYbiAwAAQBAJ&pg=PA42 p. 41 - 42</ref>
+    //    if (!preg_match_all("#(<ref[^>]*>) *(https?://books\.google[^ <]+[a-z0-9_])[^a-z0-9_]? +([^<]+)</ref>#i",
+    //        $newText, $all,
+    //        PREG_SET_ORDER)) {
+    //
+    //        echo "not match\n";
+    //
+    //        continue;
+    //    }
+    //    echo count($all)." citations\n";
+    //
+    //    foreach($all as $matches) {
+    //
+    //
+    //        echo $matches[0]."\n";
+    //        echo Color::YELLOW.$matches[3].Color::NORMAL."\n";
+    //
+    //
+    //        try {
+    //            $template = $trans->convertGBurl2OuvrageCitation($matches[2]);
+    //        } catch (\Throwable $e) {
+    //            echo "Erreur avec ".$matches[0]."\n";
+    //            echo $e->getMessage();
+    //            continue;
+    //        }
+    //        echo ">> ".$template."\n";
+    //
+    //
+    //
+    //        $ask = readline(">> supprime [s], comment biblio [c], recycle [r], manuel [m], quit [q]");
+    //        if ('s' === $ask) {
+    //            $append = '';
+    //        }elseif ('cancel' === $ask){
+    //            continue 2;
+    //        }elseif ('c' === $ask){
+    //            $append = ' {{Commentaire biblio|'.trim($matches[3]).'}}';
+    //        }
+    //        elseif ('m' === $ask){
+    //            $manuel = readline(">> Quelle texte pour le commentaire biblio ?");
+    //            $append = ' {{Commentaire biblio|'.trim($manuel).'}}';
+    //        }
+    //        elseif ('q' === $ask){
+    //            continue;
+    //        }
+    //        else {
+    //            $append = '<!-- Bot: description à recycler : '.$matches[3].' -->';
+    //            $botflag = false;
+    //        }
+    //
+    //
+    //        $citation = sprintf(
+    //            '%s%s.%s</ref>',
+    //            $matches[1],
+    //            $template,
+    //            $append
+    //        );
+    //        echo $citation."\n";
+    //        $newText = str_replace($matches[0], $citation, $newText);
+    //    }
 
-    //$newText = preg_replace('#(\|\n? ?)direction *= ?(oui|yes) ?#i', '${1}directeur1 = oui', $newText);
+    //    $newText = preg_replace(
+    //        "#(<ref[^>]*>) ?(https?:\/\/[^ <\]\[\"]+) *\"?\]+\.?<\/ref>#i",
+    //        '$1$2</ref>',
+    //        $newText
+    //    );
 
-//    if (preg_match_all('#{{extrait\|[^}]+}}#i', $text, $matches) > 0) {
-//        foreach ($matches[0] as $template) {
-//            if (false === strpos($template, '=')) {
-//                $replacement = str_replace('{{extrait', '{{Citation bloc', $template);
-//                echo ">".$replacement."\n";
-//                $newText = str_replace($template, $replacement, $newText);
-//            }else{
-//                // {Début citation} et {{Fin citation}}
-//                $replacement = str_replace('{{extrait|', '{{Début citation}}', $template.'{{Fin citation}}');
-//                echo ">".$replacement."\n";
-//                $newText = str_replace($template, $replacement, $newText);
-//            }
-//        }
-//    }
+    $newText = str_replace('{{rubedo.current.page.title}}', '[titre manquant]', $newText);
+
+//    $newText = preg_replace('#(\{\{article[^}]+)\| *via( *= ?[^}|]+)#i', '$1', $newText);
+
 
     if ($newText === $text) {
         echo "Skip identique\n";
@@ -107,9 +160,12 @@ foreach ($titles as $title) {
         }
     }
 
-    $result = $pageAction->editPage($newText, new EditInfo($taskName, true, true));
+    $currentTaskName = $taskName;
+    if ($botflag === true) {
+        $currentTaskName = 'Bot '.$taskName;
+    }
+    $result = $pageAction->editPage($newText, new EditInfo($currentTaskName, false, $botflag));
     dump($result);
-    //sleep(60);
-    //echo ($result) ? "OK\n" : "*** ERROR ***\n";
+    sleep(10);
 }
 

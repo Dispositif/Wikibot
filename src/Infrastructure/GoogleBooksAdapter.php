@@ -21,7 +21,9 @@ use Scriptotek\GoogleBooks\Volume;
  */
 class GoogleBooksAdapter extends AbstractBookApiAdapter implements BookApiInterface
 {
-    const SCRIPT_GOOGLE_QUOTA = 900;
+    const SCRIPT_GOOGLE_QUOTA   = 900;
+    const SCRIPT_GOOGLE_COUNTRY = 'US';
+
     protected $api;
 
     protected $mapper;
@@ -38,7 +40,7 @@ class GoogleBooksAdapter extends AbstractBookApiAdapter implements BookApiInterf
             [
                 'key' => getenv('GOOGLE_BOOKS_API_KEY'),
                 'maxResults' => 5,
-                'country' => 'US',
+                'country' => self::SCRIPT_GOOGLE_COUNTRY,
             ]
         );
         // 'country' => 'FR' (ISO-3166 Country Codes?)

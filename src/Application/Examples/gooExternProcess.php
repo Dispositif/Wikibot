@@ -23,9 +23,9 @@ use App\Infrastructure\ServiceFactory;
 include __DIR__.'/../myBootstrap.php';
 
 $quota = new GoogleApiQuota();
-dump('Google quota : '. $quota ->getCount());
+dump('Google quota : '.$quota->getCount());
 
-if( $quota->isQuotaReached() ) {
+if ($quota->isQuotaReached()) {
     throw new \Exception("Google Books API quota reached => exit");
 }
 

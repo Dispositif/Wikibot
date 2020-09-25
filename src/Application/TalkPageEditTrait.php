@@ -70,7 +70,7 @@ trait TalkPageEditTrait
         // Edit wiki talk page
         try {
             $talkPage = ServiceFactory::wikiPageAction('Discussion:'.$mainTitle);
-            $editInfo = ServiceFactory::editInfo('💩 Signalement erreur {ouvrage}', false, false, 5);
+            $editInfo = ServiceFactory::editInfo('🍄 Signalement erreur {ouvrage}', false, false, 5); // 💩
 
             return $talkPage->addToBottomOrCreatePage("\n".$errorMessage, $editInfo);
         } catch (Throwable $e) {

@@ -111,10 +111,15 @@ class NotificationWorker
             $this->processSpecialActions($notif);
         }
 
+        if(empty($wikilog)) {
+            echo "Nothing.";
+            return;
+        }
+
         dump($wikilog);
 
-        echo "sleep 20";
-        sleep(20);
+        echo "Stop the script if you want to cancel the log edition on Wikipedia ! Waiting 30 seconds...\n";
+        sleep(30);
         $this->editWikilog($wikilog);
     }
 

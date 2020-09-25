@@ -67,7 +67,7 @@ class TalkBotConfig extends WikiBotConfig
             return false;
         }
         // No response if time < 24h since last owner response
-        if (isset($talkConfig['owner_last_time']) && intval($talkConfig['owner_last_time']) > (time() - 60 * 60 * 24)) {
+        if (isset($talkConfig['owner_last_time']) && intval($talkConfig['owner_last_time']) > (time() - 60 * 60 * 48)) {
             echo "No response if time < 24h after last owner response\n";
 
             return false;
