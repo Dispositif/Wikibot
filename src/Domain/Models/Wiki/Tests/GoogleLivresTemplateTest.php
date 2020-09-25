@@ -50,6 +50,16 @@ class GoogleLivresTemplateTest extends TestCase
     {
         return [
             [
+              // no 'id' but 'isbn' parameter
+              'https://books.google.fr/books?isbn=0403099501&ots=aZ3hKg3uDr',
+              'https://books.google.fr/books?isbn=0403099501'
+            ],
+            [
+                // 'id' not first parameter
+                'https://books.google.com/books?ots=aZ3hKg3uDr&id=QHrQoDLNBUIC&pg=PT19&lpg=PT19&sig=Y_zdZhNP-qNZE6WIDNivPPm-Urg&hl=en&sa=X&oi=book_result&resnum=8&ct=result',
+                'https://books.google.com/books?id=QHrQoDLNBUIC&pg=PT19'
+            ],
+            [
                 // OK : dq=full, q=null
                 // https://fr.wikipedia.org/w/index.php?title=Famille_de_Pontev%C3%A8s&diff=prev&oldid=168342034&diffmode=source
                 'https://books.google.fr/books?id=LkQoAAAAYAAJ&pg=PA341&dq=%22La+descendance+des+d\'Agoult+doit+%C3%AAtre+rejet%C3%A9e+comme+insuffisamment+%C3%A9tablie+;+celle+des+anciens+Pontev%C3%A8s+n\'est+que+vraisemblable,+mais+non+prouv%C3%A9e%22&hl=fr&sa=X&ved=0ahUKEwjVxaqCiv7ZAhXIt1kKHb1kD88Q6AEIJzAA#v=onepage&q=%22La%20descendance%20des%20d\'Agoult%20doit%20%C3%AAtre%20rejet%C3%A9e%20comme%20insuffisamment%20%C3%A9tablie%20%3B%20celle%20des%20anciens%20Pontev%C3%A8s%20n\'est%20que%20vraisemblable%2C%20mais%20non%20prouv%C3%A9e%22&f=false',

@@ -27,7 +27,7 @@ abstract class GoogleBooksUtil
     /**
      * todo refac regex with end of URL
      */
-    const GOOGLEBOOKS_START_URL_PATTERN = 'https?://(?:books|play)\.google\.[a-z\.]{2,6}/(?:books)?(?:books/[^\?]+\.html)?(?:/reader)?\?(?:[a-zA-Z=&]+&)?id=';
+    const GOOGLEBOOKS_START_URL_PATTERN = 'https?://(?:books|play)\.google\.[a-z\.]{2,6}/(?:books)?(?:books/[^\?]+\.html)?(?:/reader)?\?(?:[a-zA-Z=&]+&)?(?:[&=A-Z0-9-_%\+]+&)?(?:id|isbn)=';
 
     const TRACKING_PARAMETERS
         = [
@@ -89,10 +89,10 @@ abstract class GoogleBooksUtil
         }
 
         $gooDat = self::parseGoogleBookQuery($url);
-        if (empty($gooDat['id'])) {
-            throw new DomainException("no GoogleBook 'id' in URL");
+        if (empty($gooDat['id']) && empty($gooDat['isbn'])) {
+            throw new DomainException("no GoogleBook 'id' or 'isbn' in URL");
         }
-        if (!preg_match('#[0-9A-Za-z_\-]{12}#', $gooDat['id'])) {
+        if (isset($gooDat['id']) && !preg_match('#[0-9A-Za-z_\-]{12}#', $gooDat['id'])) {
             throw new DomainException("GoogleBook 'id' malformed");
         }
 
@@ -100,7 +100,7 @@ abstract class GoogleBooksUtil
         // keep only a few parameters (+'q' ?)
         // q : keywords search / dq : quoted phrase search
         // q can be empty !!!!
-        $keeps = ['id', 'pg', 'printsec', 'q', 'dq'];
+        $keeps = ['id', 'isbn', 'pg', 'printsec', 'q', 'dq'];
         foreach ($keeps as $keep) {
             if (isset($gooDat[$keep])) {
                 $dat[$keep] = $gooDat[$keep];

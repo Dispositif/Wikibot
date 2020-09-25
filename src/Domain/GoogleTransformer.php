@@ -150,12 +150,14 @@ class GoogleTransformer
         }
 
         $gooDat = GoogleBooksUtil::parseGoogleBookQuery($url);
-        if (empty($gooDat['id'])) {
-            throw new DomainException('Pas de ID Google Books');
+        if (empty($gooDat['isbn']) && empty($gooDat['id'])) {
+            throw new DomainException('Pas de ISBN ou ID Google Books');
         }
 
         try {
-            $ouvrage = $this->generateOuvrageFromGoogleData($gooDat['id']);
+            $identifiant = $gooDat['id'] ?? $gooDat['isbn'];
+            $isISBN = !empty($gooDat['isbn']);
+            $ouvrage = $this->generateOuvrageFromGoogleData($identifiant, $isISBN);
         } catch (Throwable $e) {
             // ID n'existe pas sur Google Books
             if (strpos($e->getMessage(), '"message": "The volume ID could n')) {
@@ -212,21 +214,26 @@ class GoogleTransformer
      * todo: move (injection) to other class.
      * Generate wiki-template {ouvrage} from GoogleBook ID.
      *
-     * @param string $id GoogleBooks ID
+     * @param string    $id GoogleBooks ID
+     * @param bool|null $isISBN
      *
      * @return OuvrageTemplate
      * @throws Exception
      */
-    private function generateOuvrageFromGoogleData(string $id): OuvrageTemplate
+    private function generateOuvrageFromGoogleData(string $id, ?bool $isISBN = false): OuvrageTemplate
     {
         // return cached OuvrageTemplate
-        if (isset($this->cacheOuvrageTemplate[$id])) {
+        if (!$isISBN && isset($this->cacheOuvrageTemplate[$id])) {
             return clone $this->cacheOuvrageTemplate[$id];
         }
 
         // Get Google data by ID ZvhBAAAAcAAJ
         $adapter = new GoogleBooksAdapter();
-        $volume = $adapter->getDataByGoogleId($id);
+        if ($isISBN === true) {
+            $volume = $adapter->getDataByIsbn($id);
+        } else {
+            $volume = $adapter->getDataByGoogleId($id);
+        }
 
         $mapper = new GoogleBookMapper();
         $mapper->mapLanguageData(true);
@@ -235,6 +242,7 @@ class GoogleTransformer
         // Generate wiki-template {ouvrage}
         $ouvrage = WikiTemplateFactory::create('ouvrage');
         $ouvrage->hydrate($data);
+        $ouvrage->setParam('consulté le', date('d-m-Y'));
 
         // cache
         $this->cacheOuvrageTemplate[$id] = clone $ouvrage;
