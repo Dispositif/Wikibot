@@ -50,6 +50,11 @@ class GoogleLivresTemplateTest extends TestCase
     {
         return [
             [
+                // new Google Book format (nov 2019)
+                'https://www.google.fr/books/edition/_/U4NmPwAACAAJ?hl=en',
+                'https://books.google.fr/books?id=U4NmPwAACAAJ'
+            ],
+            [
               // no 'id' but 'isbn' parameter
               'https://books.google.fr/books?isbn=0403099501&ots=aZ3hKg3uDr',
               'https://books.google.fr/books?isbn=0403099501'

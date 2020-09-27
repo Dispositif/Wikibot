@@ -27,7 +27,9 @@ abstract class GoogleBooksUtil
     /**
      * todo refac regex with end of URL
      */
-    const GOOGLEBOOKS_START_URL_PATTERN = 'https?://(?:books|play)\.google\.[a-z\.]{2,6}/(?:books)?(?:books/[^\?]+\.html)?(?:/reader)?\?(?:[a-zA-Z=&]+&)?(?:[&=A-Z0-9-_%\+]+&)?(?:id|isbn)=';
+    const GOOGLEBOOKS_START_URL_PATTERN = '(?:https?://(?:books|play)\.google\.[a-z\.]{2,6}/(?:books)?(?:books/[^\?]+\.html)?(?:/reader)?\?(?:[a-zA-Z=&]+&)?(?:[&=A-Z0-9-_%\+]+&)?(?:id|isbn)=|https://www\.google\.[a-z\.]{2,6}/books/edition/_/)';
+
+    const GOOGLEBOOKS_ID_REGEX = '[0-9A-Za-z_\-]{12}';
 
     const TRACKING_PARAMETERS
         = [
@@ -88,11 +90,18 @@ abstract class GoogleBooksUtil
             throw new Exception('not a Google Book URL');
         }
 
+
         $gooDat = self::parseGoogleBookQuery($url);
+
+        // New format https://www.google.fr/books/edition/_/U4NmPwAACAAJ?hl=en
+        if (self::isNewGoogleBookUrl($url) && self::getIDFromNewGBurl($url)) {
+            $gooDat['id'] = self::getIDFromNewGBurl($url);
+        }
+
         if (empty($gooDat['id']) && empty($gooDat['isbn'])) {
             throw new DomainException("no GoogleBook 'id' or 'isbn' in URL");
         }
-        if (isset($gooDat['id']) && !preg_match('#[0-9A-Za-z_\-]{12}#', $gooDat['id'])) {
+        if (isset($gooDat['id']) && !preg_match('#'.self::GOOGLEBOOKS_ID_REGEX.'#', $gooDat['id'])) {
             throw new DomainException("GoogleBook 'id' malformed");
         }
 
@@ -195,5 +204,40 @@ abstract class GoogleBooksUtil
     public static function googleUrlEncode(string $str): string
     {
         return str_replace(' ', '+', trim(urldecode($str)));
+    }
+
+    /**
+     * New Google Books format (nov 2019).
+     * Example : https://www.google.fr/books/edition/_/U4NmPwAACAAJ?hl=en
+     *
+     * @param string $url
+     *
+     * @return bool
+     */
+    private static function isNewGoogleBookUrl(string $url): bool
+    {
+        if (preg_match(
+            '#^https://www\.google\.[a-z.]{2,6}/books/edition/_/'.self::GOOGLEBOOKS_ID_REGEX.'(?:&.+)?#',
+            $url
+        )
+        ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private static function getIDFromNewGBurl(string $url): ?string
+    {
+        if (preg_match(
+            '#^https://www\.google\.[a-z.]{2,6}/books/edition/_/('.self::GOOGLEBOOKS_ID_REGEX.')(?:&.+)?#',
+            $url,
+            $matches
+        )
+        ) {
+            return $matches[1];
+        }
+
+        return null;
     }
 }
