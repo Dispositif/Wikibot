@@ -67,7 +67,7 @@ class VoteAdmin
         }
 
         $adminScore = $this->getAdminScore();
-        if ($adminScore && $adminScore < self::MIN_ADMIN_SCORE) {
+        if ($adminScore !== null && $adminScore < self::MIN_ADMIN_SCORE) {
             echo "Admin score => false";
 
             return false;
@@ -158,6 +158,8 @@ class VoteAdmin
 
             return $this->pageAction->editPage($insertVote, new EditInfo($summary, false, false), true);
         }
+
+        return false;
     }
 
     private function isAllowedToVote(string $wikitext): bool
@@ -204,7 +206,7 @@ class VoteAdmin
     {
         $list = file(self::FILENAME_BLACKLIST, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
-        return $list ?? [];
+        return $list ? $list : [];
     }
 
     /**

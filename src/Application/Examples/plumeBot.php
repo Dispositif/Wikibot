@@ -33,6 +33,7 @@ $filename = __DIR__.'/../resources/plume.txt';
 
 
 $titles = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+$titles = $titles ? $titles : [];
 $auto = false;
 
 ////// Liste "Lettre patente" <ref>http+ google.books Lettres patentes

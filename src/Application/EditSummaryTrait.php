@@ -13,6 +13,8 @@ namespace App\Application;
 
 trait EditSummaryTrait
 {
+    public $importantSummary = [];
+
     /**
      * For substantive or ambiguous modifications done.
      *

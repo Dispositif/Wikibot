@@ -86,7 +86,12 @@ abstract class AbstractBotTaskWorker
 
         $this->defaultTaskname = $bot->taskName;
 
-        $analyzed = @file(static::ARTICLE_ANALYZED_FILENAME, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        try {
+            $analyzed = file(static::ARTICLE_ANALYZED_FILENAME, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        } catch (\Throwable $e) {
+            $this->log->critical("Can't parse ARTICLE_ANALYZED_FILENAME : ".$e->getMessage());
+            $analyzed = [];
+        }
         $this->pastAnalyzed = ($analyzed !== false) ? $analyzed : [];
 
         // @throw exception on "Invalid CSRF token"

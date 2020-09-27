@@ -214,8 +214,9 @@ class ExternRefTransformer implements TransformerInterface
 
         if (in_array($this->domain, $this->skip_domain)) {
             $this->log->notice("Skip domain ".$this->domain);
-
-            return false;
+            if ($this->skipUnauthorised) {
+                return false;
+            }
         }
 
         if (!isset($this->config[$this->domain])) {

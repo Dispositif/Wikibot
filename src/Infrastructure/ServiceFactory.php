@@ -102,7 +102,7 @@ class ServiceFactory
      */
     public static function getMediawikiApi(?bool $forceLogin = false): MediawikiApi
     {
-        if (isset(self::$api) && !$forceLogin) {
+        if (isset(self::$api) && $forceLogin !== true) {
             return self::$api;
         }
         self::$api = new MediawikiApi(getenv('WIKI_API_URL'));

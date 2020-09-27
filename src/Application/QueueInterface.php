@@ -17,4 +17,6 @@ interface QueueInterface
 
     public function skipRow(int $id):bool;
 
+    public function insertPageOuvrages(array $data);
+
 }

@@ -14,6 +14,7 @@ namespace App\Domain\Publisher;
 class JsonLDMapper implements MapperInterface
 {
     use ExternConverterTrait;
+    // public $log;
 
     public function process($jsonLD): array
     {
