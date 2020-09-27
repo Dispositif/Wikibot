@@ -27,7 +27,9 @@ abstract class GoogleBooksUtil
     /**
      * todo refac regex with end of URL
      */
-    const GOOGLEBOOKS_START_URL_PATTERN = '(?:https?://(?:books|play)\.google\.[a-z\.]{2,6}/(?:books)?(?:books/[^\?]+\.html)?(?:/reader)?\?(?:[a-zA-Z=&]+&)?(?:[&=A-Z0-9-_%\+]+&)?(?:id|isbn)=|https://www\.google\.[a-z\.]{2,6}/books/edition/_/)';
+    const GOOGLEBOOKS_START_URL_PATTERN = '(?:https?://(?:books|play)\.google\.[a-z\.]{2,6}/(?:books)?(?:books/[^\?]+\.html)?(?:/reader)?\?(?:[a-zA-Z=&]+&)?(?:[&=A-Z0-9-_%\+]+&)?(?:id|isbn)=|https://www\.google\.[a-z\.]{2,6}/books/edition/[^/]+/)';
+
+    const GOOGLEBOOKS_NEW_START_URL_PATTERN = 'https://www\.google\.[a-z.]{2,6}/books/edition/[^/]+/';
 
     const GOOGLEBOOKS_ID_REGEX = '[0-9A-Za-z_\-]{12}';
 
@@ -217,7 +219,7 @@ abstract class GoogleBooksUtil
     private static function isNewGoogleBookUrl(string $url): bool
     {
         if (preg_match(
-            '#^https://www\.google\.[a-z.]{2,6}/books/edition/_/'.self::GOOGLEBOOKS_ID_REGEX.'(?:&.+)?#',
+            '#^'.self::GOOGLEBOOKS_NEW_START_URL_PATTERN.self::GOOGLEBOOKS_ID_REGEX.'(?:&.+)?#',
             $url
         )
         ) {
@@ -230,7 +232,7 @@ abstract class GoogleBooksUtil
     private static function getIDFromNewGBurl(string $url): ?string
     {
         if (preg_match(
-            '#^https://www\.google\.[a-z.]{2,6}/books/edition/_/('.self::GOOGLEBOOKS_ID_REGEX.')(?:&.+)?#',
+            '#^'.self::GOOGLEBOOKS_NEW_START_URL_PATTERN.'('.self::GOOGLEBOOKS_ID_REGEX.')(?:&.+)?#',
             $url,
             $matches
         )

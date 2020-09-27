@@ -55,6 +55,11 @@ class GoogleLivresTemplateTest extends TestCase
                 'https://books.google.fr/books?id=U4NmPwAACAAJ'
             ],
             [
+                // new Google Book format (nov 2019)
+                'https://www.google.com/books/edition/A_Wrinkle_in_Time/r119-dYq0mwC',
+                'https://books.google.com/books?id=r119-dYq0mwC'
+            ],
+            [
               // no 'id' but 'isbn' parameter
               'https://books.google.fr/books?isbn=0403099501&ots=aZ3hKg3uDr',
               'https://books.google.fr/books?isbn=0403099501'
