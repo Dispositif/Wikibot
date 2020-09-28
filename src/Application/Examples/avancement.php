@@ -1,8 +1,8 @@
 <?php
-/**
- * This file is part of dispositif/wikibot application
- * 2019 : Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+/*
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -56,7 +56,7 @@ ISBN
 <div style="text-align: center"><small>{{formatnum:##NUMBER##}} citations analysées sur {{formatnum:1064113}}
 </small></div>
 * 📘 Conversion liens bruts Google Books > {ouvrage} (juin—sept2000): {{Avancement|100}}
-* 🌐 [[Utilisateur:ZiziBot/Complétion liens web|Conversion lien brut > {article}/{lien web}]] (juin2020-jan2021) : {{Avancement|14}}
+* 🌐 [[Utilisateur:ZiziBot/Complétion liens web|Conversion lien brut > {article}/{lien web}]] (juin2020-jan2021) : {{Avancement|22}}
 </div>
 EOF;
 

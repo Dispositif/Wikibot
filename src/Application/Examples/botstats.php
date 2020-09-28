@@ -1,8 +1,8 @@
 <?php
-/**
- * This file is part of dispositif/wikibot application
- * 2019 : Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+/*
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -18,7 +18,11 @@ use Mediawiki\DataModel\EditInfo;
 use Simplon\Mysql\Mysql;
 use Simplon\Mysql\PDOConnector;
 
-include __DIR__.'/../ZiziBot_Bootstrap.php'; //myBootstrap.php';
+//include __DIR__.'/../ZiziBot_Bootstrap.php';
+include __DIR__.'/../myBootstrap.php';
+
+$monitoringPage = 'Utilisateur:CodexBot/Monitoring';
+$summary = 'bot ⚙ mise à jour monitoring';
 
 /**
  * oué c'est dégoutant et pas MVC...
@@ -134,12 +138,12 @@ echo LC_ALL;
 
 
 echo "Edition ? \n";
-echo "sleep 30...\n";
-sleep(30);
+echo "sleep 20...\n";
+sleep(20);
 
 $wiki = ServiceFactory::wikiApi();
-$pageAction = new WikiPageAction($wiki, 'Utilisateur:ZiziBot/monitoring');
+$pageAction = new WikiPageAction($wiki, $monitoringPage);
 
-$success = $pageAction->editPage($wikiText, new EditInfo('bot : ⚙ mise à jour', false, false));
+$success = $pageAction->editPage($wikiText, new EditInfo($summary, false, true));
 dump($success);
 

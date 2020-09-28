@@ -1,9 +1,9 @@
 <?php
 
-/**
+/*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the license file.
+ * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -142,6 +142,7 @@ class OuvrageEditWorker
 
             return false;
         }
+        // todo include a sandbox page ?
         if ($page->getNs() !== 0) {
             $this->log->notice("SKIP : page n'est pas dans Main (ns 0)\n");
             $this->db->skipArticle($title);
