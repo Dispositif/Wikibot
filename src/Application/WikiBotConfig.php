@@ -1,8 +1,8 @@
 <?php
-/**
- * This file is part of dispositif/wikibot application
- * 2019 : Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+/*
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Application;
 
 use App\Domain\Exceptions\ConfigException;
+use App\Domain\Utils\WikiTextUtil;
 use App\Infrastructure\Logger;
 use App\Infrastructure\ServiceFactory;
 use App\Infrastructure\SMS;
@@ -243,8 +244,10 @@ class WikiBotConfig
      */
     private static function isNoBotTag(string $text, ?string $botName = null): bool
     {
+        $text = WikiTextUtil::removeHTMLcomments($text);
         $botName = ($botName) ? $botName : getenv('BOT_NAME');
-        $denyReg = (!empty($botName)) ? '|\{\{bots ?\| ?deny\=[^\}]*'.preg_quote($botName, '#').'[^\}]*\}\}' : '';
+        $denyReg = (!empty($botName)) ? '|\{\{bots ?\| ?(optout|deny)\=[^\}]*'.preg_quote($botName, '#').'[^\}]*\}\}' :
+            '';
 
         if (preg_match('#({{nobots}}|{{bots ?\| ?(optout|deny) ?= ?all ?}}'.$denyReg.')#i', $text) > 0) {
             return true;
@@ -256,7 +259,8 @@ class WikiBotConfig
     /**
      * Detect wiki-templates restricting the edition on a frwiki page.
      *
-     * @param string $text
+     * @param string      $text
+     * @param string|null $botName
      *
      * @return bool
      */
