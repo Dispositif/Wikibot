@@ -1,8 +1,8 @@
 <?php
-/**
+/*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the license file.
+ * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -19,8 +19,9 @@ class ExternHttpClientTest extends TestCase
         $this::assertTrue(ExternHttpClient::isWebURL('https://fr.wikipedia.fr/wiki/WP:BOT'));
         $this::assertTrue(ExternHttpClient::isWebURL('http://test.com'));
         $this::assertTrue(ExternHttpClient::isWebURL('https://www.youtube.com/watch?v=2zIW8qDPhos'));
+        $this::assertTrue(ExternHttpClient::isWebURL('https://www.larousse.fr/dictionnaires/francais/île/41521'));
 
-        $this::assertFalse(
+        $this::assertTrue(
             ExternHttpClient::isWebURL(
                 'https://fr.wikisource.org/wiki/Dictionnaire_raisonné_de_l’architecture_française_du_XIe_au_XVIe_siècle/Baée,_Bée'
             )

@@ -1,9 +1,9 @@
 <?php
 
-/**
+/*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the license file.
+ * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 declare(strict_types=1);
 
@@ -49,7 +49,7 @@ class ExternHttpClient implements HttpClientInterface
      *
      * @return string|null
      */
-    public function getHTML(string $url, ?bool $normalized=false): ?string
+    public function getHTML(string $url, ?bool $normalized = false): ?string
     {
         // todo : check banned domains ?
         // todo : check DNS record => ban ?
@@ -81,7 +81,7 @@ class ExternHttpClient implements HttpClientInterface
         //$url = filter_var($url, FILTER_SANITIZE_URL); // strip "é" !!!
         // FILTER_VALIDATE_URL restreint à caractères ASCII : renvoie false avec "é" dans URL / not multibyte capable
         // !filter_var($url, FILTER_VALIDATE_URL)
-        if (!filter_var($url, FILTER_VALIDATE_URL) || !preg_match('#^https?://[^ ]+#i', $url)) {
+        if (!preg_match('#^https?://[^ ]+$#i', $url)) {
             return false;
         }
 
@@ -98,7 +98,7 @@ class ExternHttpClient implements HttpClientInterface
      */
     private function normalizeHtml(string $html, ?string $url = ''): ?string
     {
-        if(empty($html)) {
+        if (empty($html)) {
             return $html;
         }
 
@@ -145,6 +145,7 @@ class ExternHttpClient implements HttpClientInterface
             $encoding = mb_detect_encoding($html, mb_detect_order(), true);
             $charset = is_string($encoding) ? strtoupper($encoding) : null;
         }
+
         return $charset;
     }
 
