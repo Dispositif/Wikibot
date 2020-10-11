@@ -49,7 +49,7 @@ class OuvrageEditWorker
 
     private $citationSummary;
     private $errorWarning = [];
-    private $importantSummary = [];
+    public $importantSummary = [];
 
     private $nbRows;
 
