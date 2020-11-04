@@ -1,8 +1,8 @@
 <?php
-/**
+/*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the license file.
+ * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Application\Examples;
 
 use App\Application\CodexNotificationWorker;
+use App\Infrastructure\ServiceFactory;
 
 require_once __DIR__.'/../myBootstrap.php';
 
@@ -20,7 +21,7 @@ require_once __DIR__.'/../myBootstrap.php';
  * Appelé par cron (genre toutes les 2h)
  */
 
-echo date('Y-m-d H\:i')." Check notifications... \n";
-new CodexNotificationWorker();
+echo date('Y-m-d H\:i:s')." Check notifications... \n";
+new CodexNotificationWorker(ServiceFactory::getMediawikiApi(), []);
 
 

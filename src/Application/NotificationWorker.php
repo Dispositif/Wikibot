@@ -1,8 +1,8 @@
 <?php
-/**
+/*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the license file.
+ * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -33,7 +33,7 @@ class NotificationWorker
     const DEFAULT_WIKIS             = 'frwiki';
     const DIFF_URL                  = 'https://fr.wikipedia.org/w/index.php?diff=';
     const ARTICLE_ANALYZED_FILENAME = __DIR__.'/resources/article_externRef_edited.txt';
-    const SUMMARY                   = '⚙ mise à jour notifications (ping [[User:Irønie]])';
+    const SUMMARY                   = '⚙ mise à jour notifications';
     const PAGENAME_NOTIFICATION_LOG = 'Utilisateur:CodexBot/Notifications';
     const SKIP_BOTPAGES
                                     = [
@@ -55,12 +55,13 @@ class NotificationWorker
     /**
      * NotificationWorker constructor.
      *
-     * @throws UsageException
+     * @param MediawikiApi $api
+     * @param array|null   $option
      */
-    public function __construct(?array $option = null)
+    public function __construct(MediawikiApi $api, ?array $option = null)
     {
-        $this->api = ServiceFactory::getMediawikiApi();
-        $this->option = ($option) ?? [];
+        $this->api = $api;
+        $this->option = $option ?? [];
 
         $this->process();
     }

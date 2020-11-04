@@ -1,8 +1,8 @@
 <?php
-/**
+/*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the license file.
+ * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -19,6 +19,7 @@ use App\Infrastructure\ServiceFactory;
 class CodexNotificationWorker extends NotificationWorker
 {
     const PAGENAME_NOTIFICATION_LOG = 'Utilisateur:CodexBot/Notifications';
+    const PROCESS_TASKNAME          = '🔔🌐 Amélioration de références : URL ⇒ ';
 
     /**
      * todo Refac that stupid idea :)
@@ -48,7 +49,7 @@ class CodexNotificationWorker extends NotificationWorker
             $logger = new Logger();
             //$logger->debug = true;
             $botConfig = new WikiBotConfig($logger);
-            $botConfig->taskName = '🔔🌐 Amélioration de références : URL ⇒ ';
+            $botConfig->taskName = self::PROCESS_TASKNAME;
             new ExternRefWorker($botConfig, $wiki, new PageList([$article]));
 
             new GoogleBooksWorker($botConfig, $wiki, new PageList([$article]));
