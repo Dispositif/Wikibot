@@ -1,8 +1,8 @@
 <?php
-/**
+/*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the license file.
+ * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -20,6 +20,7 @@ class Logger extends AbstractLogger implements LoggerInterface
 
     public $verbose = false;
     public $debug = false;
+    public $colorMode = false;
 
     /**
      * Ultralight logger.
@@ -35,12 +36,12 @@ class Logger extends AbstractLogger implements LoggerInterface
             return;
         }
         $message = trim($message);
-        $date = date('Y-m-d H:i');
+        $date = date('Y-m-d H:i:s');
         switch ($level) {
             case 'emergency':
             case 'alert':
             case 'critical':
-                echo Color::BG_RED.Color::WHITE."[$level] ".$date.' : '.$message."\n".Color::NORMAL;
+                $this->echoColor("[$level] ".$date.' : '.$message."\n", Color::BG_RED.Color::WHITE);
                 if (!empty($context)) {
                     dump($context);
                 }
@@ -48,20 +49,20 @@ class Logger extends AbstractLogger implements LoggerInterface
                 break;
             case 'error':
             case 'warning':
-                echo Color::BG_YELLOW.Color::BLACK."[$level] ".$date.' : '.$message."\n".Color::NORMAL;
+                $this->echoColor("[$level] ".$date.' : '.$message."\n", Color::BG_YELLOW.Color::BLACK);
                 if (!empty($context)) {
                     dump($context);
                 }
                 break;
             case 'notice':
-                echo "[$level] ".$message."\n".Color::NORMAL;
+                $this->echoColor("[$level] ".$message."\n");
                 if (!empty($context)) {
                     dump($context);
                 }
                 break;
             case 'info':
                 if ($this->verbose || $this->debug) {
-                    echo Color::GRAY."[$level] ".$message."\n".Color::NORMAL;
+                    $this->echoColor("[$level] ".$message."\n", Color::GRAY);
                     if (!empty($context)) {
                         dump($context);
                     }
@@ -69,7 +70,7 @@ class Logger extends AbstractLogger implements LoggerInterface
                 break;
             case 'debug':
                 if ($this->debug) {
-                    echo Color::GRAY."[$level] ".$message."\n".Color::NORMAL;
+                    $this->echoColor("[$level] ".$message."\n", Color::GRAY);
                     if (!empty($context)) {
                         dump($context);
                     }
@@ -82,9 +83,19 @@ class Logger extends AbstractLogger implements LoggerInterface
     {
         file_put_contents(
             __DIR__.'/resources/critical.log',
-            date('d-m-Y H:i')." : $level : ".$message.PHP_EOL,
+            date('d-m-Y H:i:s')." : $level : ".$message.PHP_EOL,
             FILE_APPEND
         );
+    }
+
+    private function echoColor(string $text, ?string $color = null)
+    {
+        if ($this->colorMode && !empty($color)) {
+            echo $color.$text.Color::NORMAL;
+
+            return;
+        }
+        echo $text;
     }
 
 }
