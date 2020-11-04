@@ -1,8 +1,8 @@
 <?php
-/**
+/*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the license file.
+ * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -85,7 +85,7 @@ class OuvrageCompleteWorker
             echo sprintf(
                 "-------------------------------\n%s [%s]\n%s\n%s\n",
                 date("Y-m-d H:i:s"),
-                WikiBotConfig::getGitVersion() ?? '',
+                WikiBotConfig::VERSION ?? '',
                 $this->page,
                 $this->raw
             );
@@ -333,7 +333,7 @@ class OuvrageCompleteWorker
             'notcosmetic' => ($this->notCosmetic) ? 1 : 0,
             'major' => ($this->major) ? 1 : 0,
             'isbn' => substr($isbn13, 0, 20),
-            'version' => WikiBotConfig::getGitVersion() ?? null,
+            'version' => WikiBotConfig::VERSION ?? null,
         ];
         $this->log->info('finalData', $finalData);
         // Json ?

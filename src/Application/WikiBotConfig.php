@@ -14,7 +14,6 @@ use App\Domain\Utils\WikiTextUtil;
 use App\Infrastructure\Logger;
 use App\Infrastructure\ServiceFactory;
 use App\Infrastructure\SMS;
-use Bluora\LaravelGitInfo\GitInfo;
 use DateInterval;
 use DateTimeImmutable;
 use DomainException;
@@ -30,6 +29,8 @@ use Throwable;
  */
 class WikiBotConfig
 {
+    const VERSION = '0.9';
+
     const WATCHPAGE_FILENAME = __DIR__.'/resources/watch_pages.json';
 
     const EXIT_ON_CHECK_WATCHPAGE = false;
@@ -52,8 +53,6 @@ class WikiBotConfig
     const EDIT_LAPS_FLAGBOT = 8;
 
     public $taskName = 'Améliorations indéfinie';
-
-    public static $gitVersion;
 
     /**
      * @var DateTimeImmutable
@@ -79,31 +78,11 @@ class WikiBotConfig
     {
         return sprintf(
             '[%s] %s',
-            str_replace('v', '', self::getGitVersion()),
+            str_replace('v', '', self::VERSION),
             $this->taskName
         );
     }
 
-    /**
-     * Return last version (tag) from Git.
-     *
-     * @return string|null
-     */
-    public static function getGitVersion(): ?string
-    {
-        if (self::$gitVersion) {
-            return self::$gitVersion;
-        }
-        $git = new GitInfo();
-        $raw = $git->version();
-        if (preg_match('#^(v[0-9.a-e]+)#', $raw, $matches) > 0) {
-            self::$gitVersion = $matches[1];
-
-            return self::$gitVersion;
-        }
-
-        return null;
-    }
 
     /**
      * Throws Exception if "{{stop}}" or "STOP" on talk page.
