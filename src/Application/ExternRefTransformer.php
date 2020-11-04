@@ -200,7 +200,7 @@ class ExternRefTransformer implements TransformerInterface
     protected function isURLAuthorized(string $url): bool
     {
         if (!ExternHttpClient::isWebURL($url)) {
-            $this->log->debug('Skip : not a valid URL : '.$url);
+            $this->log->notice('Skip : not a valid URL : '.$url);
 
             return false;
         }

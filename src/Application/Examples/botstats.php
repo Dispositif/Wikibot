@@ -57,7 +57,8 @@ $data['edited citations 24H'] = (int)$monitor['n'];
 $monitor = $db->fetchRow('select count(distinct page) as n from page_ouvrages where edited > SUBDATE(NOW(),1)');
 $data['edited pages 24H'] = (int)$monitor['n'];
 
-$monitor = $db->fetchRow('SELECT count(distinct A.page) FROM page_ouvrages A
+$monitor = $db->fetchRow(
+    'SELECT count(distinct A.page) FROM page_ouvrages A
                 WHERE A.notcosmetic=1 AND A.opti IS NOT NULL
                 AND NOT EXISTS
                     (SELECT B.* FROM page_ouvrages B
@@ -71,18 +72,21 @@ $monitor = $db->fetchRow('SELECT count(distinct A.page) FROM page_ouvrages A
                         OR B.raw=""
                         )
                     AND A.page = B.page
-                    )');
+                    )'
+);
 $data['waiting pages'] = (int)$monitor['count(distinct A.page)'];
 
 $data['currentdate'] = DateUtil::dateEnglish2french((new DateTime())->format('j F Y \à H\:i').' (CEST)');
 
 // modifs récentes sur ouvrage édité
-$monitor = $db->fetchRowMany('select distinct page,edited,altered,version from page_ouvrages 
-where edited is not null and edited>"2019-11-26 06:00:00" and altered>0 ORDER BY edited DESC LIMIT 60');
+$monitor = $db->fetchRowMany(
+    'select distinct page,edited,altered,version from page_ouvrages 
+where edited is not null and edited>"2019-11-26 06:00:00" and altered>0 ORDER BY edited DESC LIMIT 60'
+);
 
 
 $monitWiki = '';
-if(!empty($monitor)) {
+if (!empty($monitor)) {
     foreach ($monitor as $monit) {
         // &#37; = "%"
         $edited = new DateTime($monit['edited']);
@@ -90,7 +94,7 @@ if(!empty($monitor)) {
             "<tr><td>%s &#37;</td><td>%s</td><td>[https://fr.wikipedia.org/w/index.php?title=%s&action=history histo]</td><td>[[%s]]</td><td>%s</td></tr>\n",
             $monit['altered'] ?? '?',
             $edited->format('d-m-Y'),
-            str_replace(' ','_', $monit['page']),
+            str_replace(' ', '_', $monit['page']),
             $monit['page'] ?? '??',
             $monit['version']
         );
@@ -127,15 +131,11 @@ de l'article</td><td style="text-align: center;">version<br>du bot</td>
 wiki;
 
 $wikiText = str_replace('#monitor#', $monitWiki, $wikiText);
-foreach($data as $key => $dat){
+foreach ($data as $key => $dat) {
     $wikiText = str_replace('#'.$key.'#', $dat, $wikiText);
 }
 
 echo LC_ALL;
-
-//Mise à jour : #currentdate#
-//dump('stop');die;
-
 
 echo "Edition ? \n";
 echo "sleep 20...\n";

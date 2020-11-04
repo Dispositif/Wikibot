@@ -1,8 +1,8 @@
 <?php
-/**
+/*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the license file.
+ * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 namespace App\Application\Examples;
@@ -49,6 +49,7 @@ $list = new CirrusSearch(
         'srsort' => 'last_edit_desc',
     ]
 );
+// TODO : https://www.google.com/books/edition/A_Wrinkle_in_Time/r119-dYq0mwC
 
 if (!empty($argv[1])) {
     $list = new PageList([trim($argv[1])]);

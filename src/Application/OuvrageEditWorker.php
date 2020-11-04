@@ -39,8 +39,8 @@ class OuvrageEditWorker
     const EDIT_SIGNALEMENT = true;
 
     const CITATION_LIMIT         = 150;
-    const DELAY_BOTFLAG_SECONDS    = 120;
-    const DELAY_NO_BOTFLAG_SECONDS = 120;
+    const DELAY_BOTFLAG_SECONDS    = 60;
+    const DELAY_NO_BOTFLAG_SECONDS = 60;
     const ERROR_MSG_TEMPLATE       = __DIR__.'/templates/message_errors.wiki';
 
     private $db;
@@ -91,7 +91,7 @@ class OuvrageEditWorker
     {
         while (true) {
             echo "\n-------------------------------------\n\n";
-            echo date("Y-m-d H:i")." ";
+            echo date("Y-m-d H:i:s")." ";
             $this->log->info($this->memory->getMemory(true));
             $this->pageProcess();
         }
@@ -112,7 +112,8 @@ class OuvrageEditWorker
         $data = json_decode($json, true);
 
         if (empty($data)) {
-            $this->log->alert("SKIP : no row to process\n");
+            $this->log->alert("SKIP : OuvrageEditWorker / getAllRowsToEdit() no row to process\n");
+            sleep(60);
             throw new Exception('no row to process');
         }
 

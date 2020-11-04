@@ -1,9 +1,9 @@
 <?php
 
-/**
+/*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the license file.
+ * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 declare(strict_types=1);
 
@@ -29,6 +29,7 @@ include __DIR__.'/../myBootstrap.php'; // Codex
 /** @noinspection PhpUnhandledExceptionInspection */
 $wiki = ServiceFactory::wikiApi();
 $logger = new Logger();
+//$logger->colorMode = true;
 //$logger->debug = true;
 $botConfig = new WikiBotConfig($logger);
 $botConfig->taskName = "🌐 Amélioration de références : URL ⇒ "; // 🐞 🌐  🔗

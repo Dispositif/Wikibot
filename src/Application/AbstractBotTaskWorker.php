@@ -1,8 +1,8 @@
 <?php
-/**
+/*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the license file.
+ * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -111,7 +111,7 @@ abstract class AbstractBotTaskWorker
     public function run()
     {
         $titles = $this->getTitles();
-        echo date('d-m-Y H:i')." *** NEW WORKER ***\n";
+        echo date('d-m-Y H:i:s')." *** NEW WORKER ***\n";
         foreach ($titles as $title) {
             $this->titleProcess($title);
             sleep(3);
@@ -140,7 +140,7 @@ abstract class AbstractBotTaskWorker
     protected function titleProcess(string $title): void
     {
         echo "---------------------\n";
-        echo date('d-m-Y H:i').' '.Color::BG_CYAN."  $title ".Color::NORMAL."\n";
+        echo date('d-m-Y H:i:s').' '.Color::BG_CYAN."  $title ".Color::NORMAL."\n";
         sleep(1);
 
         if (in_array($title, $this->pastAnalyzed)) {

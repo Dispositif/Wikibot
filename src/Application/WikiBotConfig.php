@@ -132,7 +132,7 @@ class WikiBotConfig
         $lastEditor = $pageAction->getLastEditor() ?? 'unknown';
 
         if (preg_match('#({{stop}}|{{Stop}}|STOP)#', $text) > 0) {
-            echo date('Y-m-d H:i');
+            echo date('Y-m-d H:i:s');
             echo sprintf(
                 "\n*** STOP ON TALK PAGE BY %s ***\n\n",
                 $lastEditor
