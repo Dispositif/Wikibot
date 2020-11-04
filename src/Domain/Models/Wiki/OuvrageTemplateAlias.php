@@ -1,9 +1,9 @@
 <?php
 
-/**
+/*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the license file.
+ * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 declare(strict_types=1);
 
@@ -175,6 +175,8 @@ abstract class OuvrageTemplateAlias extends AbstractWikiTemplate
             //            'nopp' =>  poubelle
             "url-access" => "accès url",
             "doi-access" => "accès doi",
-            'commentaire biblio' => 'commentaire'
+            'commentaire biblio' => 'commentaire',
+            'illustrations' => 'illustrateur',
+            'introduction' => 'préface',
         ];
 }

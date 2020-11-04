@@ -40,6 +40,10 @@ letemps.ch:
 lenouvelliste.ch:
     périodique: '[[Le Nouvelliste (Valais)|Le Nouvelliste]]'
     template: article
+lematin.ch:
+    périodique: '[[Le Matin (Suisse)|Le Matin]]'
+    stripfromauthor: ["lematin.ch"]
+    template: auto
 lefigaro.fr:
     template: auto
     articleDetectType: 'NewsArticle'
