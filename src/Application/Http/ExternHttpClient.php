@@ -114,12 +114,14 @@ class ExternHttpClient implements HttpClientInterface
             throw new DomainException('normalized html error and no charset found : '.$url);
         }
         try {
-            $html2 = iconv($charset ?? 'pouet', 'UTF-8//TRANSLIT', $html);
+            $html2 = iconv($charset, 'UTF-8//TRANSLIT', $html);
             $html2 = Normalizer::normalize($html2);
+            if (!is_string($html2)) {
+                return '';
+            }
         } catch (Throwable $e) {
             throw new DomainException("error converting : $charset to UTF-8".$url);
         }
-
 
         return $html2;
     }

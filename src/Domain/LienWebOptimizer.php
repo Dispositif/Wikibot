@@ -1,8 +1,8 @@
 <?php
-/**
+/*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the license file.
+ * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -62,11 +62,20 @@ class LienWebOptimizer extends AbstractTemplateOptimizer
         }
     }
 
+    /**
+     * Supprime nom du site présent dans le titre (doublon)
+     *
+     * @throws \Exception
+     * @todo testing
+     */
     private function siteNameInTitle()
     {
         // "Mali - Vidéo Dailymotion"
         // "bla - PubMed"
         $siteName = WikiTextUtil::unWikify($this->getParam('site') ?? '');
+        if (empty($siteName)) {
+            return;
+        }
         $newTitle = preg_replace('#[- ]*(vidéo|site de|site|sur) ?'.$siteName.'$#i', '', $this->getParam('titre'));
         $this->setParam('titre', trim($newTitle));
     }
