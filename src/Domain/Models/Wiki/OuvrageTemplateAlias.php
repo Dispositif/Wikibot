@@ -61,6 +61,7 @@ abstract class OuvrageTemplateAlias extends AbstractWikiTemplate
             'publi' => 'réimpression',
             'pages' => 'pages totales', // doc - mis temporairement en paramètre normal
             'page' => 'passage', // Doc - mis temporairement en paramètre normal
+            'pp' => 'passage', // enwiki
             //        'format' => 'format livre', //  ou 'format électronique' (pdf)
             'ISBN' => 'isbn',
             'isbn1' => 'isbn',
@@ -78,6 +79,7 @@ abstract class OuvrageTemplateAlias extends AbstractWikiTemplate
             'url résumé' => 'présentation en ligne',
             'url' => 'lire en ligne',
             'url texte' => 'lire en ligne',
+            'chapter-url' => 'lire en ligne',
             'accessdate' => 'consulté le',
             'access-date' => 'consulté le',
             'numéro' => 'numéro chapitre',
