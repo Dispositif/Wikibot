@@ -1,8 +1,8 @@
 <?php
-/**
+/*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the license file.
+ * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -149,6 +149,8 @@ class ExternPage
     }
 
     /**
+     * todo refactor
+     * todo optimize "https://www6.nhk.or.jp" => "nhk.or.jp"
      * test.com => test.com
      * bla.test.com => test.com
      * test.co.uk => test.co.uk (national commercial subdomain)
@@ -161,8 +163,9 @@ class ExternPage
     {
         $subDomain = $this->getSubDomain();
 
-        if (!strpos($subDomain, '.co.uk') && !strpos($subDomain, '.co.ma') && !strpos($subDomain, '.co.kr')
-            && !strpos($subDomain, 'site.google.')
+        if (!strpos($subDomain, '.uk') && !strpos($subDomain, '.jp') && !strpos($subDomain, '.ma')
+            && !strpos($subDomain, '.kr')
+            && strpos($subDomain, 'site.google.com') === false
         ) {
             // bla.test.com => Test.com
             if (preg_match('#\w+\.\w+$#', $subDomain, $matches)) {
@@ -174,6 +177,7 @@ class ExternPage
     }
 
     /**
+     * "http://www.bla.co.uk/fubar" => "bla.co.uk"
      * @return string|null
      * @throws Exception
      */
