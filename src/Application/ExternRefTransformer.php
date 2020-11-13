@@ -24,7 +24,6 @@ use App\Domain\Utils\WikiTextUtil;
 use App\Domain\WikiTemplateFactory;
 use App\Infrastructure\Logger;
 use Exception;
-use Normalizer;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Yaml\Yaml;
 use Throwable;
@@ -188,7 +187,12 @@ class ExternRefTransformer implements TransformerInterface
         $serialized = $templateOptimized->serialize(true);
         $this->log->info($serialized."\n");
 
-        return Normalizer::normalize($serialized);
+        //return Normalizer::normalize($serialized); // sometimes :bool
+        if(empty($serialized) || !is_string($serialized))  {
+            return $serialized;
+        }
+        return $url;
+
     }
 
     /**

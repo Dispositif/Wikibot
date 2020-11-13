@@ -60,6 +60,7 @@ $list = new CirrusSearch(
 if (!empty($argv[1])) {
     $list = new PageList([trim($argv[1])]);
 
+    // delete Title from edited.txt
     $file = __DIR__.'/../resources/article_externRef_edited.txt';
     $text = file_get_contents($file);
     $newText = str_replace(trim($argv[1])."\n", '', $text);
@@ -68,6 +69,15 @@ if (!empty($argv[1])) {
     }
 //    $botConfig->taskName = '🐞'.$botConfig->taskName;
 }
+
+// filter titles already in edited.txt
+$titles = $list->getPageTitles();
+unset($list);
+//echo count($titles)." titles\n";
+$edited = file(__DIR__.'/../resources/article_externRef_edited.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+$filtered = array_diff($titles, $edited);
+$list = new PageList( $filtered );
+echo ">".$list->count()." dans liste\n";
 
 new ExternRefWorker($botConfig, $wiki, $list);
 

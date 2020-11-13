@@ -31,6 +31,7 @@ abstract class AbstractBotTaskWorker
     const ARTICLE_ANALYZED_FILENAME           = __DIR__.'/resources/article_edited.txt';
     const SKIP_LASTEDIT_BY_BOT                = true;
     const SKIP_NOT_IN_MAIN_WIKISPACE          = true;
+    const SKIP_ADQ                            = true;
 
     /**
      * @var PageListInterface
@@ -153,7 +154,8 @@ abstract class AbstractBotTaskWorker
 
         $text = $this->getText($title);
         if (static::SKIP_LASTEDIT_BY_BOT && $this->pageAction->getLastEditor() === getenv('BOT_NAME')) {
-            echo "Skip : déjà édité par le bot\n";
+            echo "Skip : bot est le dernier éditeur\n";
+            $this->memorizeAndSaveAnalyzedPage($title);
 
             return;
         }
@@ -229,7 +231,7 @@ abstract class AbstractBotTaskWorker
 
             return false;
         }
-        if (preg_match('#{{ ?En-tête label ?\| ?AdQ#i', $text)) {
+        if (static::SKIP_ADQ && preg_match('#{{ ?En-tête label ?\| ?AdQ#i', $text)) {
             echo "SKIP : AdQ.\n"; // BA ??
 
             return false;

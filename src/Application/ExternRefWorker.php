@@ -1,9 +1,9 @@
 <?php
 
-/**
+/*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the license file.
+ * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 declare(strict_types=1);
 
@@ -24,6 +24,7 @@ class ExternRefWorker extends RefBotWorker
     const MINUTES_DELAY_AFTER_LAST_HUMAN_EDIT = 20; // minutes
     const CHECK_EDIT_CONFLICT                 = true;
     const ARTICLE_ANALYZED_FILENAME           = __DIR__.'/resources/article_externRef_edited.txt';
+    const SKIP_ADQ                            = false;
 
     protected $modeAuto = true;
     /**
