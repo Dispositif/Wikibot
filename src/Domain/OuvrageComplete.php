@@ -1,8 +1,8 @@
 <?php
-/**
- * This file is part of dispositif/wikibot application
- * 2019 : Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+/*
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -383,7 +383,10 @@ class OuvrageComplete
         }
 
         // compliqué : sous-titre inclus dans titre original => on copie titre/sous-titre de book
-        if ($this->charsFromBigTitle($this->origin) === $this->charsFromBigTitle($this->book)) {
+        // Exclusion wikification "titre=[[Fu : Bar]]" pour éviter => "titre=Fu|sous-titre=Bar"
+        if ($this->charsFromBigTitle($this->origin) === $this->charsFromBigTitle($this->book)
+            && !WikiTextUtil::isWikify($this->origin->getParam('titre'))
+        ) {
             if (!$this->origin->hasParamValue('sous-titre')) {
                 $this->origin->setParam('titre', $this->book->getParam('titre'));
                 $this->origin->setParam('sous-titre', $this->book->getParam('sous-titre'));
@@ -466,6 +469,7 @@ class OuvrageComplete
     }
 
     /**
+     * "L'élan & la Biche" => "lelanlabiche".
      * @param string $text
      *
      * @return string

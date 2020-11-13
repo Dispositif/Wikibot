@@ -1,8 +1,8 @@
 <?php
-/**
- * This file is part of dispositif/wikibot application
- * 2019 : Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+/*
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -153,12 +153,17 @@ class OuvrageCompleteTest extends TestCase
                 '{{Ouvrage|titre = Loiret Joli|sous-titre=Fubar}}',
                 '{{Ouvrage|titre=Loiret Joli|éditeur=|collection=Bla|année=|isbn=}}',
             ],
+            [
+                // Fix suppression wikification si titre:sous-titre sur BnF
+                '{{Ouvrage|titre=[[Loiret Joli : Ma vie rose]]}}',
+                '{{Ouvrage|titre= Loiret Joli|sous-titre=Ma vie rose}}',
+                '{{Ouvrage|titre=[[Loiret Joli : Ma vie rose]]|éditeur=|année=|isbn=}}',
+            ],
         ];
     }
 
     /**
      * @dataProvider provideAuthors
-     *
      * @throws Exception
      */
     public function testSameAuthors($originStr, $onlineStr, bool $same)
