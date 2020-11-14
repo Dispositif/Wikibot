@@ -1,8 +1,8 @@
 <?php
-/**
- * This file is part of dispositif/wikibot application
- * 2019 : Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+/*
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -54,6 +54,11 @@ class OuvrageOptimizeTest extends TestCase
                 ],
                 "{{Ouvrage|auteur1=Laurence|titre=Le cinéma italien|éditeur=[[Armand Colin]]|année=2013|numéro d'édition=3|isbn=978-2-200-27262-3}}",
             ],
+            //            [
+            //                // TODO : erreur : prénom1 mais auteur1 (incompatible)
+            //                ['prénom1'=>'Bob', 'auteur1'=>'Durand'],
+            //                '{{Ouvrage|auteur1=Durand|prénom1=Bob|titre=|éditeur=|année=|isbn=}}'
+            //            ],
             [
                 ['édition' => 'Bob Press'],
                 "{{Ouvrage|titre=|éditeur=Bob Press|année=|isbn=}}",
@@ -225,16 +230,6 @@ class OuvrageOptimizeTest extends TestCase
     public function provideProcessTitle()
     {
         return [
-            //            [
-            //                // tome/volume en romain
-            //                ['tome' => '4', 'volume' => '34'],
-            //                '{{Ouvrage|titre=|volume=34|tome=4|éditeur=|année=|isbn=}}',
-            //            ],
-            //            [
-            //                // tome/volume bizarre
-            //                ['tome' => '4c', 'volume' => 'E'],
-            //                '{{Ouvrage|titre=|volume=E|tome=4c|éditeur=|année=|isbn=}}',
-            //            ],
             [
                 // bug 17 nov [[titre:sous-titre]]
                 ['title' => '[[Fu:bar]]'],
