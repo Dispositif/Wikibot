@@ -498,3 +498,6 @@ Ah oui? Comment ça?
 Soit la communauté en a décidé ainsi explicitement un jour, soit c'est une implémentation de [[WP:ICR]]. Il n'y a donc pas de problème.
 Parfois, je pense qu'il est préférable de bloquer une situation une douzaine d'heure histoire de voir comment on peut la gérer au mieux pour la suite.
 Je suis dubitatif.
+Outre la disparité au sein des insertions, la méthode employée n'a pas trop de conséquence mais sur le principe de collaboration et pour la moindre surprise (avec ce contournement du fonctionnement du modèle, un wikicode plus long, résulte en moins d'éléments dans l'HTML généré), on pourrait respecter la documentation du modèle et éventuellement faire évoluer le fonctionnement de ce dernier après discussion.
+Tout cela parce qu'on n'a pas réussi à discuter ou à trouver un consensus sur un point d'une importance très minime.
+Tous les avis de contributeurs sont bienvenus sans exclusion.

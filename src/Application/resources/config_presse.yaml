@@ -146,6 +146,11 @@ fff.fr:
 #    site: '[[Sports Reference]]'
 structurae.net:
     site: '[[Structurae|structurae.net]]'
+# confusion avec "Silicon (journal)"
+silicon.fr:
+    site: '[[Silicon.fr]]'
+    template: 'lien web'
+    périodique: ''
 
 
 # === Portails revues science ===
