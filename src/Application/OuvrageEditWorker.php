@@ -38,10 +38,11 @@ class OuvrageEditWorker
      */
     const EDIT_SIGNALEMENT = true;
 
-    const CITATION_LIMIT         = 150;
-    const DELAY_BOTFLAG_SECONDS    = 60;
-    const DELAY_NO_BOTFLAG_SECONDS = 60;
-    const ERROR_MSG_TEMPLATE       = __DIR__.'/templates/message_errors.wiki';
+    const CITATION_LIMIT                 = 150;
+    const DELAY_BOTFLAG_SECONDS          = 60;
+    const DELAY_NO_BOTFLAG_SECONDS       = 60;
+    const DELAY_MINUTES_AFTER_HUMAN_EDIT = 10;
+    const ERROR_MSG_TEMPLATE             = __DIR__.'/templates/message_errors.wiki';
 
     private $db;
     private $bot;
@@ -94,6 +95,7 @@ class OuvrageEditWorker
             echo date("Y-m-d H:i:s")." ";
             $this->log->info($this->memory->getMemory(true));
             $this->pageProcess();
+            sleep(2); // précaution boucle infinie
         }
     }
 
@@ -129,7 +131,7 @@ class OuvrageEditWorker
         }
 
         // Page supprimée ?
-        if($page->getLastRevision() === null) {
+        if ($page->getLastRevision() === null) {
             $this->log->warning("SKIP : page supprimée !\n");
             $this->db->deleteArticle($title);
 
@@ -137,8 +139,8 @@ class OuvrageEditWorker
         }
 
         // HACK
-        if (in_array($page->getLastEditor(), [getenv('BOT_NAME'), getenv('BOT_OWNER')])) {
-            $this->log->notice("SKIP : édité recemment par bot/dresseur.\n");
+        if (in_array($page->getLastEditor(), [getenv('BOT_NAME')])) {
+            $this->log->notice("SKIP : édité recemment par bot.\n");
             $this->db->skipArticle($title);
 
             return false;
@@ -153,6 +155,8 @@ class OuvrageEditWorker
         $this->wikiText = $page->getText();
 
         if (empty($this->wikiText)) {
+            $this->log->warning("SKIP : this->wikitext vide\n");
+            $this->db->skipArticle($title);
             return false;
         }
 
@@ -171,18 +175,25 @@ class OuvrageEditWorker
         }
 
         if (WikiBotConfig::isEditionRestricted($this->wikiText)) {
+            // TODO Gestion d'une repasse dans X jours
             $this->log->info("SKIP : protection/3R/travaux.\n");
             $this->db->skipArticle($title);
 
             return false;
         }
 
-        if ($this->bot->minutesSinceLastEdit($title) < 20) {
-            $this->log->info("SKIP : édition humaine dans les dernières 20 minutes.\n");
+        if ($this->bot->minutesSinceLastEdit($title) < 10) {
+            // TODO Gestion d'une repasse dans X jours
+            $this->log->notice(
+                sprintf(
+                    "SKIP : édition humaine dans les dernières %s minutes.\n",
+                    self::DELAY_MINUTES_AFTER_HUMAN_EDIT
+                )
+            );
+            sleep(60 * self::DELAY_MINUTES_AFTER_HUMAN_EDIT); // hack: waiting cycles
 
             return false;
         }
-
 
 
         // GET all article lines from db
@@ -195,6 +206,7 @@ class OuvrageEditWorker
             if (empty($dat['opti']) || empty($dat['optidate']) || $dat['optidate'] < DbAdapter::OPTI_VALID_DATE) {
                 $this->log->notice("SKIP : Amélioration incomplet de l'article. sleep 10min");
                 sleep(600);
+
                 return false;
             }
             $success = $this->dataProcess($dat);
