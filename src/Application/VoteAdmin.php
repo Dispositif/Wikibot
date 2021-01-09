@@ -1,8 +1,8 @@
 <?php
-/**
+/*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the license file.
+ * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -16,13 +16,16 @@ use GuzzleHttp\Client;
 use Mediawiki\DataModel\EditInfo;
 
 /**
+ * Vote sur election administrateur, après analyse des edits (score admin) et des tendances du scrutin.
+ * Score admin : https://xtools.readthedocs.io/en/stable/tools/adminscore.html
+ *
  * See also https://github.com/enterprisey/AAdminScore/blob/master/js/aadminscore.js
  * https://fr.wikipedia.org/wiki/Cat%C3%A9gorie:%C3%89lection_administrateur_en_cours
  * Class VoteAdmin
  */
 class VoteAdmin
 {
-    const SUMMARY               = '/* Approbation :*/ 🗳️ 🕊';
+    const SUMMARY               = '/* Approbation */ 🗳️ ';
     const FILENAME_PHRASES_POUR = __DIR__.'/resources/phrases_voteAdmin_pour.txt';
     const FILENAME_BLACKLIST    = __DIR__.'/resources/blacklist.txt';
     const MIN_VALUE_POUR        = 0.65;
@@ -66,20 +69,23 @@ class VoteAdmin
             return false;
         }
 
+        echo "Check admin score... ";
         $adminScore = $this->getAdminScore();
         if ($adminScore !== null && $adminScore < self::MIN_ADMIN_SCORE) {
             echo "Admin score => false";
 
             return false;
         }
+        echo $adminScore."\n";
 
-        $this->comment .= ' – adminScore: '.$adminScore;
+        $this->comment .= ', Xtools AdminScore='.$adminScore;
 
         $this->voteText = sprintf("%s ~~~~\n", $this->selectVoteText());
 
         dump($this->comment);
         dump($this->voteText);
         sleep(5);
+        echo "sleep 5...\n";
 
         $insertResult = $this->generateVoteInsertionText();
         if (empty($insertResult)) {
@@ -87,8 +93,6 @@ class VoteAdmin
 
             return false;
         }
-
-        dump($insertResult);
 
         sleep(20);
 
@@ -122,11 +126,15 @@ class VoteAdmin
         }
 
         // insertion texte {{pour}}
-        if (!preg_match('/(# \{\{Pour\}\}[^#\n]+\n)\n*==== Opposition ====/im', $wikiText, $matches)) {
+        if (!preg_match('/(# \{\{Pour\}\}[^\n]+\n)\n*==== Opposition ====/im', $wikiText, $matches)) {
+            echo "Pattern non trouvée : {pour} ==== Opposition ====\n";
+
             return null;
         }
 
         if (empty($matches[1])) {
+            echo "Texte extrait du pattern vide / {pour} == Opposition";
+
             return null;
         }
 
@@ -151,7 +159,7 @@ class VoteAdmin
     {
         if (!empty($insertVote)) {
             $summary = sprintf(
-                '%s (%s)',
+                '%s %s',
                 self::SUMMARY,
                 $this->comment
             );
@@ -193,7 +201,7 @@ class VoteAdmin
         echo "Stat {pour} : $pour \n";
         echo 'Stat pour/contre+neutre : '.(100 * $stat)." % \n";
 
-        $this->comment .= $pour.';'.number_format($stat, 1).';false';
+        $this->comment .= 'seuil<'.$pour.', suiveur='.round($stat, 2).', rancune=0';
 
         if ($pour >= self::MIN_COUNT_POUR && $stat >= self::MIN_VALUE_POUR) {
             return true;

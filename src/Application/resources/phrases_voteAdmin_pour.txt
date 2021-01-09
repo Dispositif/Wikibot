@@ -32,7 +32,7 @@
 # {{pour}}. Excellente candidature.
 # {{pour}} Totalement favorable et pleine confiance.
 # {{pour}} Confiance.
-# {{pour}}. On s'est peu croisé (en tout cas, on a peu eu l'occasion de discuter de façon suivie), mais je n'ai jamais noté le moindre problème avec ce contributeur plus qu'expérimenté. Excellente candidature, pour autant que je puisse voir.
+# {{pour}}. On s'est peu croisé (en tout cas, on a peu eu l'occasion de discuter de façon suivie), mais je n'ai jamais noté le moindre problème avec ce contributeur plus qu'expérimenté.
 # {{Pour}} D'après ce que j’ai vu ici ou là, contributeur sérieux et pondéré.
 # {{pour}} Bien sûr.
 # {{Pour}} assurément.
