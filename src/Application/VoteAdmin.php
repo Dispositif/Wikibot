@@ -79,6 +79,7 @@ class VoteAdmin
         echo $adminScore."\n";
 
         $this->comment .= ', Xtools AdminScore='.$adminScore;
+        $this->comment .= ' ([[Utilisateur:CodexBot/Vote|info]])';
 
         $this->voteText = sprintf("%s ~~~~\n", $this->selectVoteText());
 
