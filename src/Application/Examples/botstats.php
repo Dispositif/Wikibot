@@ -76,7 +76,7 @@ $monitor = $db->fetchRow(
 );
 $data['waiting pages'] = (int)$monitor['count(distinct A.page)'];
 
-$data['currentdate'] = DateUtil::dateEnglish2french((new DateTime())->format('j F Y \à H\:i').' (CEST)');
+$data['currentdate'] = DateUtil::english2french((new DateTime())->format('j F Y \à H\:i').' (CEST)');
 
 // modifs récentes sur ouvrage édité
 $monitor = $db->fetchRowMany(
