@@ -10,37 +10,105 @@ declare(strict_types=1);
 
 namespace App\Application\Bazar;
 
+use App\Domain\Utils\DateUtil;
+use DateTime;
+
 /**
  * Représente un message utilisateur (en PD, bistro, etc).
  * Généré par parsing wikicode dans TalkPage.
  * Class TalkMessage
- *
- * @package App\Application\Bazar
  */
 class TalkMessage
 {
-    private $talkPage;
-    private $section; // todo sections de même nom :(
     private $order; // order in section
     private $raw;
     private $user;
-    private $date;
+    private $rawDate;
     private $indentation;
-
     /**
-     * TalkMessage constructor.
-     *
-     * @param $talkPage
-     * @param $section
-     * @param $order
-     * @param $raw
+     * @var DateTime
      */
-    public function __construct(string $talkPage, string $section, int $order, string $raw)
+    private $date;
+
+    public function __construct(int $order, string $raw)
     {
-        $this->talkPage = $talkPage;
-        $this->section = $section;
         $this->order = $order;
         $this->raw = $raw;
+    }
+
+    /**
+     * @return int
+     */
+    public function getOrder(): int
+    {
+        return $this->order;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRaw(): string
+    {
+        return $this->raw;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRawDate()
+    {
+        return $this->rawDate;
+    }
+
+    /**
+     * @return DateTime
+     */
+    public function getDate(): DateTime
+    {
+        return $this->date;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIndentation()
+    {
+        return $this->indentation;
+    }
+
+    /**
+     * @param mixed $user
+     */
+    public function setUser($user): void
+    {
+        $this->user = $user;
+    }
+
+    /**
+     * @param mixed $rawDate
+     *
+     * @throws \Exception
+     */
+    public function setRawDate($rawDate): void
+    {
+        $this->rawDate = $rawDate;
+        $this->date = DateUtil::fromWikiSignature($rawDate);
+    }
+
+    /**
+     * @param mixed $indentation
+     */
+    public function setIndentation($indentation): void
+    {
+        $this->indentation = $indentation;
     }
 
 }

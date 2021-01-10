@@ -14,12 +14,11 @@ use PHPUnit\Framework\TestCase;
 
 class TalkTest extends TestCase
 {
-    public $page;
 
-    public function setUp(): void
+    public function testPage()
     {
         $raw = <<<EOF
-{{prout}}
+{{plouf}}
 
 == [[Marbourg]] un drôle de drapeau ? ==
 
@@ -45,22 +44,25 @@ Coucou--[[Utilisateur:bob|bob]] ([[Discussion utilisateur:bob|discuter]]) 1 janv
 Coucou. --[[Utilisateur:tu|tu]] 1 janvier 2020 à 18:00 (CET)
 
 EOF;
-        $this->page = new TalkPage('test', $raw);
+
+        $page = new TalkPage('test', $raw);
+        $this::assertSame($page->getTitle(), 'test');
+
+        $sections = $page->getSections();
+        $this::assertCount(4, $sections);
+        $this::assertSame('', $sections[0]->getTitle());
+        $this::assertSame("== [[Marbourg]] un drôle de drapeau ? ==\n", $sections[1]->getTitle());
+
+        $messages = $sections[1]->getMessages();
+        $this::assertCount(8, $messages);
+
+        $mess = $messages[3];
+        $this::assertStringContainsString('le drapeau de Wikidata', $mess->getRaw());
+        $this::assertSame('TomT0m', $mess->getUser());
+        $this::assertSame(2, $mess->getIndentation());
+        $this::assertSame(3, $mess->getOrder());
+        $this::assertSame('9 janvier 2021 à 11:36 (CET)', $mess->getRawDate());
+        $this::assertEquals(new \DateTime('2021-01-09T11:36:00+01:00'), $mess->getDate());
     }
-
-
-    public function testPage()
-    {
-        $this->page->rawParse();
-
-        $this::markTestSkipped();
-    }
-
-    //    public function testParseNoSection()
-    //    {
-    //        $this->page = new TalkPage('test', "bla\n");
-    //        $this->page->rawParse();
-    //        $this::assertSame($this->page->getSections(), [ 0=> ['title'=>'', 'content'=>"bla\n"]]);
-    //    }
 
 }
