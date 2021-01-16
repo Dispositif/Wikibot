@@ -1,8 +1,8 @@
 <?php
-/**
- * This file is part of dispositif/wikibot application
- * 2019 : Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+/*
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -35,7 +35,7 @@ class TagParser
         $doc = new DOMDocument();
         $doc->strictErrorChecking = false;
         $doc->loadHTML(
-            mb_convert_encoding($data, 'HTML-ENTITIES', 'UTF-8')
+            (string) mb_convert_encoding($data, 'HTML-ENTITIES', 'UTF-8')
         );
         $this->xml = simplexml_import_dom($doc);
 

@@ -1,8 +1,8 @@
 <?php
-/**
- * This file is part of dispositif/wikibot application
- * 2019 : Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+/*
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -147,7 +147,7 @@ class TalkBotConfig extends WikiBotConfig
     private function getRandomSentence(): string
     {
         $sentences = file(self::BOT_TALK_FILE, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        if (!$sentences) {
+        if (empty($sentences)) {
             throw new ConfigException('Pas de phrases disponibles pour TalkBot');
         }
 

@@ -1,8 +1,8 @@
 <?php
-/**
- * This file is part of dispositif/wikibot application
- * 2019 : Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+/*
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -207,6 +207,7 @@ class OuvrageOptimize extends AbstractTemplateOptimizer
      */
     protected function processLang(?string $param = 'langue')
     {
+        $param = $param ?? 'langue';
         $lang = $this->getParam($param) ?? null;
 
         if ($lang) {
@@ -301,7 +302,7 @@ class OuvrageOptimize extends AbstractTemplateOptimizer
         }
 
         // titre>5 and sous-titre>5 and sous-titre<40
-        if (preg_match('#^(?<titre>[^:]{5,}):(?<st>.{5,40})$#', $this->getParam('titre'), $matches) > 0) {
+        if (preg_match('#^(?<titre>[^:]{5,}):(?<st>.{5,40})$#', $this->getParam('titre') ?? '', $matches) > 0) {
             $this->setParam('titre', trim($matches['titre']));
             $this->setParam('sous-titre', trim($matches['st']));
             $this->addSummaryLog('>sous-titre');

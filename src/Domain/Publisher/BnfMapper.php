@@ -1,8 +1,8 @@
 <?php
-/**
- * This file is part of dispositif/wikibot application
- * 2019 : Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+/*
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -139,7 +139,7 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
 
     private function extractISBN(): ?string
     {
-        $isbn = $this->xpath2string('//mxc:datafield[@tag="010"]/mxc:subfield[@code="a"][1]');
+        $isbn = $this->xpath2string('//mxc:datafield[@tag="010"]/mxc:subfield[@code="a"][1]') ?? '';
 
         // data pourrie fréquente :  "9789004232891, 9004232893"
         if (preg_match('#([0-9]{13})#', $isbn, $matches)) {

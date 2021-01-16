@@ -83,7 +83,6 @@ class WikiBotConfig
         );
     }
 
-
     /**
      * Throws Exception if "{{stop}}" or "STOP" on talk page.
      *

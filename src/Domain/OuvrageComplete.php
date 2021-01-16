@@ -179,7 +179,7 @@ class OuvrageComplete
         // WP:"Paul Durand" — Bnf "Paul Durand,..."
         if (!empty($bookAuteur1) && !empty($originAuteur1)
             && (mb_strtolower($bookAuteur1) === mb_strtolower($originAuteur1)
-                || strpos($originAuteur1, $this->book->getParam('nom1')) !== false)
+                || strpos($originAuteur1, $this->book->getParam('nom1') ?? '') !== false)
         ) {
             $this->origin->setParam('lien auteur1', $lienAuteur1);
             $this->log('+lien auteur1');
@@ -385,7 +385,7 @@ class OuvrageComplete
         // compliqué : sous-titre inclus dans titre original => on copie titre/sous-titre de book
         // Exclusion wikification "titre=[[Fu : Bar]]" pour éviter => "titre=Fu|sous-titre=Bar"
         if ($this->charsFromBigTitle($this->origin) === $this->charsFromBigTitle($this->book)
-            && !WikiTextUtil::isWikify($this->origin->getParam('titre'))
+            && !WikiTextUtil::isWikify($this->origin->getParam('titre') ?? '')
         ) {
             if (!$this->origin->hasParamValue('sous-titre')) {
                 $this->origin->setParam('titre', $this->book->getParam('titre'));

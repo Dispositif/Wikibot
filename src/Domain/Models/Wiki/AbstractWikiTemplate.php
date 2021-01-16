@@ -1,8 +1,8 @@
 <?php
-/**
- * This file is part of dispositif/wikibot application
- * 2019 : Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+/*
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -193,7 +193,7 @@ abstract class AbstractWikiTemplate extends AbstractStrictWikiTemplate implement
      */
     public function hydrateFromText(string $tplText): AbstractWikiTemplate
     {
-        $tplText = str_ireplace(static::COMMENT_STRIPPED, '', $tplText);
+        $tplText = (string) str_ireplace(static::COMMENT_STRIPPED, '', $tplText);
 
         if (WikiTextUtil::isCommented($tplText)) {
             throw new DomainException('HTML comment tag detected');
