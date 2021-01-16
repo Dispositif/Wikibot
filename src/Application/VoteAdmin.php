@@ -18,7 +18,6 @@ use Mediawiki\DataModel\EditInfo;
 /**
  * Vote sur election administrateur, après analyse des edits (score admin) et des tendances du scrutin.
  * Score admin : https://xtools.readthedocs.io/en/stable/tools/adminscore.html
- *
  * See also https://github.com/enterprisey/AAdminScore/blob/master/js/aadminscore.js
  * https://fr.wikipedia.org/wiki/Cat%C3%A9gorie:%C3%89lection_administrateur_en_cours
  * Class VoteAdmin
@@ -103,7 +102,7 @@ class VoteAdmin
     private function selectVoteText(): string
     {
         $sentences = file(self::FILENAME_PHRASES_POUR, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        if (!$sentences) {
+        if (!is_array($sentences) || empty($sentences)) {
             throw new ConfigException('Pas de phrases disponibles');
         }
 
@@ -193,10 +192,19 @@ class VoteAdmin
      */
     private function checkPourContre(): bool
     {
+        if (empty($this->getText())) {
+            echo "Empty wikicode\n";
+
+            return false;
+        }
         $lowerText = strtolower($this->getText());
         $pour = substr_count($lowerText, '{{pour}}');
         $contre = substr_count($lowerText, '{{contre}}');
         $neutre = substr_count($lowerText, '{{neutre}}');
+
+        if (0 === $pour + $contre + $neutre) {
+            return false;
+        }
         $stat = $pour / ($pour + $contre + $neutre);
 
         echo "Stat {pour} : $pour \n";
@@ -220,14 +228,12 @@ class VoteAdmin
 
     /**
      * TODO move
-     * TODO gérer espace "_"
      *
      * @return bool
      * @throws Exception
      */
     private function checkBlacklist(): bool
     {
-        // Wikipédia:Administrateur/Ariel_Provost
         $blacklist = $this->getBlacklist();
 
         $user = $this->getUsername();
@@ -262,6 +268,8 @@ class VoteAdmin
      * https://en.wikipedia.org/wiki/Wikipedia:WikiProject_Admin_Nominators/Nomination_checklist
      * Copy en JS : https://github.com/enterprisey/AAdminScore/blob/master/js/aadminscore.js
      * Class AdminScore
+     *
+     * @throws Exception
      */
     public function getAdminScore(): ?int
     {
