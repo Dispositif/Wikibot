@@ -144,7 +144,8 @@ class ExternHttpClient implements HttpClientInterface
             $charset = $matches[2] ?? $matches[1] ?? null;
         }
         if (empty($charset)) {
-            $encoding = mb_detect_encoding($html, mb_detect_order(), true);
+
+            $encoding = mb_detect_encoding($html, null, true);
             $charset = is_string($encoding) ? strtoupper($encoding) : null;
         }
 

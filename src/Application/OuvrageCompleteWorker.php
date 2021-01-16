@@ -323,7 +323,10 @@ class OuvrageCompleteWorker
 
     private function sendCompleted()
     {
-        $isbn13 = $this->ouvrage->getParam('isbn') ?? null;
+        $isbn13 = $this->ouvrage->getParam('isbn');
+        if(!empty($isbn)) {
+            $isbn13 = substr($isbn13, 0, 20);
+        }
 
         $finalData = [
             //    'page' =>
@@ -333,7 +336,7 @@ class OuvrageCompleteWorker
             'modifs' => mb_substr(implode(',', $this->getSummaryLog()), 0, 250),
             'notcosmetic' => ($this->notCosmetic) ? 1 : 0,
             'major' => ($this->major) ? 1 : 0,
-            'isbn' => substr($isbn13, 0, 20),
+            'isbn' => $isbn13,
             'version' => WikiBotConfig::VERSION ?? null,
         ];
         $this->log->info('finalData', $finalData);

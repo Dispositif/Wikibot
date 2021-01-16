@@ -51,7 +51,7 @@ class ExternRefTransformer implements TransformerInterface
     protected $log;
     private $config;
     /**
-     * @var string|string[]
+     * @var string
      */
     private $domain;
     /**
