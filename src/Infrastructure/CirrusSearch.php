@@ -1,8 +1,8 @@
 <?php
-/**
+/*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the license file.
+ * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -118,7 +118,7 @@ class CirrusSearch implements PageListInterface
             );
         }
         $json = $response->getBody()->getContents();
-        if (false === $json) {
+        if (empty($json)) {
             return [];
         }
         try {
