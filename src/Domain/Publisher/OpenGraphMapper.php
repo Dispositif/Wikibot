@@ -54,7 +54,7 @@ class OpenGraphMapper implements MapperInterface
             ),
             'consulté le' => date('d-m-Y'),
             'auteur' => $this->cleanAuthor(
-                $meta['og:article:author'] ?? $meta['article:author'] ?? $meta['citation_author'] ?? null
+                $meta['og:article:author'] ?? $meta['article:author'] ?? $meta['citation_author'] ?? $meta['article:author_name'] ?? null
             ),
             'format' => $this->convertOGtype2format($meta['og:type'] ?? null),
             'date' => $this->convertDate(
