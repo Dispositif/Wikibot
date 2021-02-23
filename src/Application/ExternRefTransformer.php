@@ -24,6 +24,7 @@ use App\Domain\Utils\WikiTextUtil;
 use App\Domain\WikiTemplateFactory;
 use App\Infrastructure\Logger;
 use Exception;
+use Normalizer;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Yaml\Yaml;
 use Throwable;
@@ -108,7 +109,7 @@ class ExternRefTransformer implements TransformerInterface
             sleep(self::HTTP_REQUEST_LOOP_DELAY);
             $this->externalPage = ExternPageFactory::fromURL($url, $this->log);
             $pageData = $this->externalPage->getData();
-            $this->log->debug('metaData', $this->externalPage->getData());
+            $this->log->debug('metaData', $pageData);
         } catch (Exception $e) {
             // "410 gone" => {lien brisé}
             if (preg_match('#410 Gone#i', $e->getMessage())) {
@@ -185,14 +186,17 @@ class ExternRefTransformer implements TransformerInterface
         $templateOptimized = $optimizer->getOptiTemplate();
 
         $serialized = $templateOptimized->serialize(true);
-        $this->log->info($serialized."\n");
+        $this->log->info('Serialized 444: '.$serialized."\n");
 
-        //return Normalizer::normalize($serialized); // sometimes :bool
-        if(empty($serialized) || !is_string($serialized))  {
+        $normalized = Normalizer::normalize($serialized); // sometimes :bool
+        if (!empty($normalized) && is_string($normalized)) {
+            return $normalized;
+        }
+        if (!empty($serialized) && is_string($serialized)) {
             return $serialized;
         }
-        return $url;
 
+        return $url;
     }
 
     /**
@@ -204,8 +208,7 @@ class ExternRefTransformer implements TransformerInterface
     protected function isURLAuthorized(string $url): bool
     {
         if (!ExternHttpClient::isWebURL($url)) {
-            $this->log->debug('Skip : not a valid URL : '.$url);
-
+            //            $this->log->debug('Skip : not a valid URL : '.$url);
             return false;
         }
 
@@ -236,7 +239,7 @@ class ExternRefTransformer implements TransformerInterface
         $this->config[$this->domain] = is_array($this->config[$this->domain]) ? $this->config[$this->domain] : [];
 
         if ($this->config[$this->domain] === 'deactivated' || isset($this->config[$this->domain]['deactivated'])) {
-            $this->log->info("Domain ".$this->domain." desactivé\n");
+            $this->log->info("Domain ".$this->domain." disabled\n");
 
             return false;
         }
@@ -244,6 +247,11 @@ class ExternRefTransformer implements TransformerInterface
         return true;
     }
 
+    /**
+     * @param array $mapData
+     *
+     * @throws Exception
+     */
     private function tagAndLog(array $mapData)
     {
         $this->log->debug('mapData', $mapData);
@@ -318,8 +326,14 @@ class ExternRefTransformer implements TransformerInterface
         if (!isset($templateName) || $this->config[$this->domain]['template'] === 'lien web') {
             $templateName = 'lien web';
         }
+
         // date obligatoire pour {article}
         if (!isset($mapData['date'])) {
+            $templateName = 'lien web';
+        }
+
+        // Par défaut : {lien web}
+        if (!isset($templateName)) {
             $templateName = 'lien web';
         }
 
@@ -419,7 +433,7 @@ class ExternRefTransformer implements TransformerInterface
     private function hasForbiddenFilenameExtension(string $url): bool
     {
         if (preg_match(
-            '#\.(pdf|jpg|jpeg|gif|png|xls|xlsx|xlr|xml|xlt|xlsx|txt|csv|js|docx|exe|gz|zip|ini|movie|mp3|mp4|ogg|raw|rss|tar|tgz|wma)$#i',
+            '#\.(pdf|jpg|jpeg|gif|png|xls|xlsx|xlr|xml|xlt|txt|csv|js|docx|exe|gz|zip|ini|movie|mp3|mp4|ogg|raw|rss|tar|tgz|wma)$#i',
             $url
         )
         ) {

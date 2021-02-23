@@ -25,6 +25,7 @@ class ExternRefWorker extends RefBotWorker
     const CHECK_EDIT_CONFLICT                 = true;
     const ARTICLE_ANALYZED_FILENAME           = __DIR__.'/resources/article_externRef_edited.txt';
     const SKIP_ADQ                            = false;
+    const SKIP_LASTEDIT_BY_BOT                = false;
 
     protected $modeAuto = true;
     /**
