@@ -1,8 +1,8 @@
 <?php
-/**
+/*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the license file.
+ * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -18,6 +18,11 @@ class OpenGraphMapper implements MapperInterface
     use ExternConverterTrait;
 
     /**
+     * Tenir compte du <title>bla</title> pour générer un {lien web} ?
+     */
+    public $htmlTitleAllowed = true;
+
+    /**
      * Mapping from Open Graph and Dublin Core meta tags
      * https://ogp.me/
      * https://www.dublincore.org/schemas/
@@ -30,16 +35,22 @@ class OpenGraphMapper implements MapperInterface
      */
     public function process($meta): array
     {
+        if (!$this->htmlTitleAllowed && isset($meta['html-title'])) {
+            unset($meta['html-title']);
+        }
+
         return [
             'DATA-TYPE' => 'Open Graph/Dublin Core',
             'DATA-ARTICLE' => $this->isAnArticle($meta['og:type'] ?? ''),
             'site' => $this->clean($meta['og:site_name'] ?? null),
-            'titre' => $this->clean($meta['og:title'] ?? $meta['twitter:title'] ?? $meta['DC.title'] ?? null),
-            'url' => $meta['og:url'] ?? $meta['URL'] ?? null,
+            'titre' => $this->clean(
+                $meta['og:title'] ?? $meta['twitter:title'] ?? $meta['DC.title'] ?? $meta['html-title'] ?? null
+            ),
+            'url' => $meta['og:url'] ?? $meta['URL'] ?? $meta['html-url'] ?? null,
             'langue' => $this->convertLangue(
-                $meta['og:locale'] ?? $meta['DC.language'] ??
-                $meta['citation_language'] ?? $meta['lang'] ?? $meta['language'] ?? $meta['content-language'] ??
-                $meta['Content-Language'] ?? $meta['html-lang'] ?? null
+                $meta['og:locale'] ?? $meta['DC.language'] ?? $meta['citation_language'] ?? $meta['lang'] ??
+                $meta['language'] ??
+                $meta['content-language'] ?? $meta['Content-Language'] ?? $meta['html-lang'] ?? null
             ),
             'consulté le' => date('d-m-Y'),
             'auteur' => $this->cleanAuthor(
@@ -60,7 +71,7 @@ class OpenGraphMapper implements MapperInterface
             ),
             'auteur1' => $this->wikifyPressAgency(
                 $this->cleanAuthor(
-                    $this->authorsEtAl($meta['citation_authors'] ?? $meta['DC.Contributor'] ?? null)
+                    $this->authorsEtAl($meta['citation_authors'] ?? $meta['DC.Contributor'] ?? $meta['Author'] ?? null)
                 )
             ),
             'volume' => $meta['citation_volume'] ?? null,

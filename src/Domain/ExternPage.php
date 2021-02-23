@@ -76,6 +76,7 @@ class ExternPage
 
         $meta['html-lang'] = $this->parseHtmlLang($this->html); // <html lang="en">
         $meta['html-title'] = $this->parseHtmlTitle($this->html);
+        $meta['html-url'] = $this->url;
 
         return ['JSON-LD' => $ld, 'meta' => $meta];
     }
