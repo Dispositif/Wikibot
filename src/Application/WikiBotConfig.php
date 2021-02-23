@@ -29,7 +29,7 @@ use Throwable;
  */
 class WikiBotConfig
 {
-    const VERSION = '0.9';
+    const VERSION = '1.0';
 
     const WATCHPAGE_FILENAME = __DIR__.'/resources/watch_pages.json';
 
