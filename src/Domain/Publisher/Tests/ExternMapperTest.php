@@ -1,8 +1,8 @@
 <?php
-/**
+/*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the license file.
+ * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -32,7 +32,7 @@ class ExternMapperTest extends TestCase
         $html = file_get_contents($filename);
 
         $page = new ExternPage('http://www.test.com', $html);
-        $mapper = new ExternMapper(new Logger());
+        $mapper = new ExternMapper(new Logger(), ['htmlTitleAllowed' => true]);
         $data = $mapper->process($page->getData());
 
         if (isset($data['consulté le'])) {
@@ -54,7 +54,7 @@ class ExternMapperTest extends TestCase
                     'url' => 'https://www.lemonde.fr/planete/article/2020/03/20/coronavirus-la-californie-placee-en-confinement_6033754_3244.html',
                     'date' => '20-03-2020',
                     'consulté le' => '11-04-2020',
-                    'accès url' => 'libre'
+                    'accès url' => 'libre',
                 ],
             ],
             [
@@ -123,7 +123,18 @@ class ExternMapperTest extends TestCase
                     'date' => '20-03-2020',
                     'auteur1' => 'Pierre-Henri Allain',
                     'consulté le' => '11-04-2020',
-                    'accès url' => 'payant'
+                    'accès url' => 'payant',
+                ],
+            ],
+            [
+                __DIR__.'/fixture_HTML_simple.html',
+                [
+                    'DATA-TYPE' => 'Open Graph/Dublin Core',
+                    'DATA-ARTICLE' => false,
+                    'titre' => 'Patrimoine de France. Hôtels à Cannes<!-- Vérifiez ce titre -->',
+                    'url' => 'http://www.test.com',
+                    'consulté le' => '11-04-2020',
+                    'note' => 'Vérifiez le titre!',
                 ],
             ],
 

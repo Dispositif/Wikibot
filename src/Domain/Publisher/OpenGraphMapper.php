@@ -20,9 +20,22 @@ class OpenGraphMapper implements MapperInterface
     /**
      * Tenir compte du <title>bla</title> pour générer un {lien web} ?
      */
-    public $htmlTitleAllowed = true;
+    protected $htmlTitleAllowed = false;
+
+    protected $titleFromHtmlState = false;
 
     /**
+     * @param array|null $options
+     */
+    public function __construct(?array $options = [])
+    {
+        if (!empty($options['htmlTitleAllowed']) && is_bool($options['htmlTitleAllowed'])) {
+            $this->htmlTitleAllowed = $options['htmlTitleAllowed'];
+        }
+    }
+
+    /**
+     * todo pretty ALLCAP UGLY TITLE
      * Mapping from Open Graph and Dublin Core meta tags
      * https://ogp.me/
      * https://www.dublincore.org/schemas/
@@ -35,8 +48,19 @@ class OpenGraphMapper implements MapperInterface
      */
     public function process($meta): array
     {
-        if (!$this->htmlTitleAllowed && isset($meta['html-title'])) {
+        // Mode "pas de titre html"
+        if (!$this->htmlTitleAllowed && !empty($meta['html-title'])) {
             unset($meta['html-title']);
+        }
+
+        // si usage <title> HTML
+        if ($this->htmlTitleAllowed
+            && empty($meta['og:title'])
+            && empty($meta['twitter:title'])
+            && empty($meta['DC.title'])
+            && !empty($meta['html-title'])
+        ) {
+            $this->titleFromHtmlState = true;
         }
 
         return [
@@ -54,7 +78,8 @@ class OpenGraphMapper implements MapperInterface
             ),
             'consulté le' => date('d-m-Y'),
             'auteur' => $this->cleanAuthor(
-                $meta['og:article:author'] ?? $meta['article:author'] ?? $meta['citation_author'] ?? $meta['article:author_name'] ?? null
+                $meta['og:article:author'] ??
+                $meta['article:author'] ?? $meta['citation_author'] ?? $meta['article:author_name'] ?? null
             ),
             'format' => $this->convertOGtype2format($meta['og:type'] ?? null),
             'date' => $this->convertDate(
@@ -83,6 +108,9 @@ class OpenGraphMapper implements MapperInterface
             'issn' => $meta["citation_issn"] ?? null,
             'isbn' => $meta["citation_isbn"] ?? null,
             // "prism.eIssn" => "2262-7197"
+
+            // WIKI
+            'note' => $this->addNote(),
         ];
     }
 }

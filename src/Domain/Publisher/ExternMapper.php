@@ -1,8 +1,8 @@
 <?php
-/**
+/*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the license file.
+ * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Domain\Publisher;
 
 use App\Domain\Utils\ArrayProcessTrait;
+use Exception;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -30,10 +31,15 @@ class ExternMapper implements MapperInterface
      * @var LoggerInterface
      */
     private $log;
+    /**
+     * @var array
+     */
+    private $options = [];
 
-    public function __construct(LoggerInterface $log)
+    public function __construct(LoggerInterface $log, ?array $options=[])
     {
         $this->log = $log;
+        $this->options = $options;
     }
 
     public function process($data): array
@@ -43,6 +49,12 @@ class ExternMapper implements MapperInterface
         return (!empty($dat)) ? $this->postProcess($dat) : [];
     }
 
+    /**
+     * @param $data
+     *
+     * @return array
+     * @throws Exception
+     */
     protected function processMapping($data): array
     {
         $mapJson = [];
@@ -51,7 +63,7 @@ class ExternMapper implements MapperInterface
             $mapJson = $this->processJsonLDMapping($data['JSON-LD']);
         }
         if (!empty($data['meta'])) {
-            $mapMeta = (new OpenGraphMapper())->process($data['meta']);
+            $mapMeta = (new OpenGraphMapper($this->options))->process($data['meta']);
         }
 
         // langue absente JSON-LD mais array_merge risqué (doublon)

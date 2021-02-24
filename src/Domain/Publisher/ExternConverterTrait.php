@@ -1,8 +1,8 @@
 <?php
-/**
+/*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the license file.
+ * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -214,6 +214,10 @@ trait ExternConverterTrait
         $str = html_entity_decode($str);
         $str = strip_tags($str);
 
+        if (strlen($str) >= 30 && isset($this->titleFromHtmlState) && $this->titleFromHtmlState) {
+            $str .= "<!-- Vérifiez ce titre -->";
+        }
+
         return $str;
     }
 
@@ -379,4 +383,11 @@ trait ExternConverterTrait
         return $str;
     }
 
+    /**
+     * Add "note=" parameter/value for human information.
+     */
+    private function addNote()
+    {
+        return null;
+    }
 }
