@@ -169,7 +169,9 @@ class ExternPage
             && strpos($subDomain, 'site.google.com') === false
         ) {
             // bla.test.com => Test.com
-            if (preg_match('#\w+\.\w+$#', $subDomain, $matches)) {
+            // Validate with "-" and unicode characters in domain name ?
+            // todo test domain .中国 arabic, etc
+            if (preg_match('#[^. /:]+\.\w+$#i', $subDomain, $matches)) {
                 return $matches[0];
             }
         }
