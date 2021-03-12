@@ -124,7 +124,7 @@ abstract class OuvrageTemplateAlias extends AbstractWikiTemplate
             //.org/wiki/Discussion_mod%C3%A8le:Ouvrage#Paramètre_"autres"
             'trans_title' => 'titre traduit',
             'type' => 'nature ouvrage',
-            //            'series' => '',
+            'series' => 'collection',
             'date' => 'date',
             'month' => 'mois',
             'language' => 'langue',
