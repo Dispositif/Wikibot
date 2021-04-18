@@ -31,12 +31,14 @@ class ExternPageTest extends TestCase
     public function provideTestResult()
     {
         return [
-            ['https://www.google.fr/bla', 'google.fr'],
             ['http://test.com', 'test.com'],
             ['http://bla.test.com', 'test.com'],
+            ['https://www.google.fr/bla', 'google.fr'],
             ['http://test.co.uk', 'test.co.uk'], // (national commercial subdomain)
             ['https://www6.nhk.or.jp/anime/topics/detail.html?i=10005', 'www6.nhk.or.jp'],
             ['http://site.google.com', 'site.google.com'], // (blog)
+            ['http://bla.free.fr', 'bla.free.fr'],
+            ['http://bla.gouv.fr', 'bla.gouv.fr'],
         ];
     }
 

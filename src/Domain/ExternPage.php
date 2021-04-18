@@ -165,7 +165,9 @@ class ExternPage
         $subDomain = $this->getSubDomain();
 
         if (!strpos($subDomain, '.uk') && !strpos($subDomain, '.jp') && !strpos($subDomain, '.ma')
-            && !strpos($subDomain, '.kr') && !strpos($subDomain, '.ca')
+            && !strpos($subDomain, '.kr') && !strpos($subDomain, '.ca') && !strpos($subDomain, '.name')
+            && !strpos($subDomain, 'free.fr')
+            && !strpos($subDomain, 'gouv.fr')
             && strpos($subDomain, 'site.google.com') === false
         ) {
             // bla.test.com => Test.com
