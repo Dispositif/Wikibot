@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace App\Domain;
 
 use App\Application\Http\ExternHttpClient;
+use App\Domain\Utils\TextUtil;
 use App\Infrastructure\TagParser;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -23,6 +24,22 @@ use Psr\Log\LoggerInterface;
  */
 class ExternPage
 {
+    const PRETTY_DOMAIN_EXCLUSION
+        = [
+            '.中国',
+            '.uk',
+            '.jp',
+            '.ma',
+            '.kr',
+            '.ca',
+            '.name',
+            '.gov',
+            '.free.fr',
+            '.gouv.fr',
+            '.com.cn',
+            'site.google.com',
+        ];
+
     /**
      * @var string
      */
@@ -150,8 +167,6 @@ class ExternPage
     }
 
     /**
-     * todo refactor
-     * todo optimize "https://www6.nhk.or.jp" => "nhk.or.jp"
      * test.com => test.com
      * bla.test.com => test.com
      * test.co.uk => test.co.uk (national commercial subdomain)
@@ -164,18 +179,17 @@ class ExternPage
     {
         $subDomain = $this->getSubDomain();
 
-        if (!strpos($subDomain, '.uk') && !strpos($subDomain, '.jp') && !strpos($subDomain, '.ma')
-            && !strpos($subDomain, '.kr') && !strpos($subDomain, '.ca') && !strpos($subDomain, '.name')
-            && !strpos($subDomain, 'free.fr')
-            && !strpos($subDomain, 'gouv.fr')
-            && strpos($subDomain, 'site.google.com') === false
-        ) {
-            // bla.test.com => Test.com
-            // Validate with "-" and unicode characters in domain name ?
-            // todo test domain .中国 arabic, etc
-            if (preg_match('#[^. /:]+\.\w+$#i', $subDomain, $matches)) {
-                return $matches[0];
+        foreach (self::PRETTY_DOMAIN_EXCLUSION as $end) {
+            if (TextUtil::str_ends_with($subDomain, $end)) {
+                return $subDomain;
             }
+        }
+
+        // bla.test.com => Test.com
+        // Validate with "-" and unicode characters in domain name ?
+        // todo test domain .中国 arabic, etc
+        if (preg_match('#[^. /:]+\.\w+$#i', $subDomain, $matches)) {
+            return $matches[0];
         }
 
         return $subDomain;

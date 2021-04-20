@@ -22,7 +22,7 @@ class ExternPageTest extends TestCase
      *
      * @throws \Exception
      */
-    public function testResult(string $url, ?string $expected)
+    public function testGetPrettyDomainName(string $url, ?string $expected)
     {
         $page = new ExternPage($url, 'bla');
         $this::assertSame($expected, $page->getPrettyDomainName());
