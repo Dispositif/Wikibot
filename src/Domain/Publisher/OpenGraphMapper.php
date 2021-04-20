@@ -20,7 +20,7 @@ class OpenGraphMapper implements MapperInterface
     /**
      * Tenir compte du <title>bla</title> pour générer un {lien web} ?
      */
-    protected $htmlTitleAllowed = false;
+    protected $htmlTitleAllowed = true;
 
     protected $titleFromHtmlState = false;
 
@@ -110,7 +110,7 @@ class OpenGraphMapper implements MapperInterface
             // "prism.eIssn" => "2262-7197"
 
             // WIKI
-            'note' => $this->addNote(),
+            //'note' => $this->addNote(),
         ];
     }
 }

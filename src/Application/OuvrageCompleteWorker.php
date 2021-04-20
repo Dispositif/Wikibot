@@ -325,7 +325,7 @@ class OuvrageCompleteWorker
     {
         $isbn13 = $this->ouvrage->getParam('isbn');
         if(!empty($isbn)) {
-            $isbn13 = substr($isbn13, 0, 20);
+            $isbn13 = substr($isbn13, 0, 19);
         }
 
         $finalData = [
@@ -336,7 +336,7 @@ class OuvrageCompleteWorker
             'modifs' => mb_substr(implode(',', $this->getSummaryLog()), 0, 250),
             'notcosmetic' => ($this->notCosmetic) ? 1 : 0,
             'major' => ($this->major) ? 1 : 0,
-            'isbn' => $isbn13,
+            'isbn' => substr($isbn13,0,19),
             'version' => WikiBotConfig::VERSION ?? null,
         ];
         $this->log->info('finalData', $finalData);

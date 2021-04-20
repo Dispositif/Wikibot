@@ -55,9 +55,8 @@ ISBN
 </small></div>
 <div style="text-align: center"><small>{{formatnum:##NUMBER##}} citations analysées sur {{formatnum:1064113}}
 </small></div>
-* 📘 Conversion liens bruts Google Books > {ouvrage} (juin—sept2000): {{Avancement|100}}
-* 🌐 [[Utilisateur:ZiziBot/Complétion liens web|Conversion lien brut > {article}/{lien web}]] (juin2020-jan2021) : 
-{{Avancement|63}}
+* 📘 Conversion liens bruts Google Books > {ouvrage} 
+* 🌐 [[Utilisateur:ZiziBot/Complétion liens web|Conversion lien brut > {article}/{lien web}]] (juin2020-)
 </div>
 EOF;
 

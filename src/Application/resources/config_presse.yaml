@@ -73,6 +73,7 @@ lesoir.be:
 strategies.fr:
     site: '[[Stratégies|strategies.fr]]'
 #ouest-france.fr: bot interdit (email) => bloqué
+#lanouvellerepublique.fr : données pourries => bloqué
 
 huffingtonpost.fr:
     template: 'lien web'
@@ -93,25 +94,25 @@ franceculture.fr:
 youtube.com:
     site: '[[YouTube]]'
 twitter.com:
-    site: '[[Twitter|twitter.com]]'
+    site: '[[Twitter]]'
 facebook.com:
-    site: '[[Facebook|facebook.com]]'
+    site: '[[Facebook]]'
 
 web.archive.org:
     # caca : URL proposée ne retient pas mot de recherche
     template: lien web
-    site: '[[Internet Archive|web.archive.org]]'
+    site: '[[Internet Archive]]'
 
 gallica.bnf.fr:
     # Gallica problème : URL permanente ≠ URL avec paramètre zoom/surlignage
     site: '[[Gallica]]'
 
 imdb.com:
-    site: '[[Internet Movie Database|imdb.com]]'
+    site: '[[Internet Movie Database]]'
 worldcat.org:
-    site: '[[WorldCat|worldcat.org]]'
+    site: '[[WorldCat]]'
 legifrance.gouv.fr:
-    site: '[[Légifrance|legifrance.gouv.fr]]'
+    site: '[[Légifrance]]'
 insee.fr:
     site: '[[Institut national de la statistique et des études économiques|insee.fr]]'
 interieur.gouv.fr:
@@ -126,13 +127,13 @@ eurosport.fr:
 iaaf.org:
     site: '[[World Athletics|iaaf.org]]'
 allocine.fr:
-    site: '[[Allociné|allocine.fr]]'
+    site: '[[Allociné]]'
 jeuxvideo.com:
     site: '[[jeuxvideo.com]]'
 universalis.fr:
     site: '[[Encyclopædia Universalis|universalis.fr]]'
 metacritic.com:
-    site: '[[Metacritic|metacritic.com]]'
+    site: '[[Metacritic]]'
 #societe.com: metadonnées pourries => skip domain
 recensement.insee.fr:
     site: '[[Institut national de la statistique et des études économiques|Insee]]'
@@ -145,12 +146,7 @@ fff.fr:
 # sports-reference.com: titre sale (redondant) car SEO => domaine bloqué
 #    site: '[[Sports Reference]]'
 structurae.net:
-    site: '[[Structurae|structurae.net]]'
-# confusion avec "Silicon (journal)"
-silicon.fr:
-    site: '[[Silicon.fr]]'
-    template: 'lien web'
-    périodique: ''
+    site: '[[Structurae]]'
 
 
 # === Portails revues science ===
@@ -168,13 +164,13 @@ journals.openedition.org:
 ncbi.nlm.nih.gov:
     site: '[[National Center for Biotechnology Information|ncbi.nlm.nih.gov]]'
 jstor.org:
-    site: '[[JSTOR|jstor.org]]'
+    site: '[[JSTOR]]'
 link.springer.com:
     site: '[[Springer Science+Business Media|link.springer.com]]'
 researchgate.net:
     site: '[[ResearchGate]]'
 hal.archives-ouvertes.fr:
-    site: '[[Hyper articles en ligne|hal.fr]]'
+    site: '[[Hyper articles en ligne]]'
 journals.plos.org:
     site: "[[Public Library of Science|journals.plos.org]]"
 minorplanetcenter.net:

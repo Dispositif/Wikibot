@@ -19,9 +19,9 @@ use Throwable;
  */
 class ExternRefWorker extends RefBotWorker
 {
-    const TASK_BOT_FLAG                       = true;
-    const SLEEP_AFTER_EDITION                 = 10; // sec
-    const MINUTES_DELAY_AFTER_LAST_HUMAN_EDIT = 20; // minutes
+    const TASK_BOT_FLAG                       = false;
+    const SLEEP_AFTER_EDITION                 = 120; // sec
+    const MINUTES_DELAY_AFTER_LAST_HUMAN_EDIT = 10; // minutes
     const CHECK_EDIT_CONFLICT                 = true;
     const ARTICLE_ANALYZED_FILENAME           = __DIR__.'/resources/article_externRef_edited.txt';
     const SKIP_ADQ                            = false;
