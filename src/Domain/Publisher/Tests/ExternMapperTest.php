@@ -134,7 +134,6 @@ class ExternMapperTest extends TestCase
                     'titre' => 'Patrimoine de France. Hôtels à Cannes<!-- Vérifiez ce titre -->',
                     'url' => 'http://www.test.com',
                     'consulté le' => '11-04-2020',
-                    'note' => 'Vérifiez le titre!',
                 ],
             ],
 
