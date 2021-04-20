@@ -1,8 +1,8 @@
 <?php
-/**
- * This file is part of dispositif/wikibot application
- * 2019 : Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+/*
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -52,6 +52,37 @@ class TextUtilTest extends TestCase
         $this::assertSame(
             'auteur',
             TextUtil::predictCorrectParam('autuer', ['auteur', 'bla', 'hautour'])
+        );
+    }
+
+    public function testStrEndsWith()
+    {
+        $this::assertSame(
+            true,
+            TextUtil::str_ends_with('testaà', 'aà')
+        );
+        $this::assertSame(
+            false,
+            TextUtil::str_ends_with('testaà', 'test')
+        );
+        $this::assertSame(
+            true,
+            TextUtil::str_ends_with('testaà', '')
+        );
+    }
+    public function testStrStqrtsWith()
+    {
+        $this::assertSame(
+            true,
+            TextUtil::str_starts_with('téstaà', 'tést')
+        );
+        $this::assertSame(
+            false,
+            TextUtil::str_starts_with('téstaa', 'aa')
+        );
+        $this::assertSame(
+            true,
+            TextUtil::str_starts_with('téstaa', '')
         );
     }
 }

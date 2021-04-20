@@ -1,8 +1,8 @@
 <?php
-/**
- * This file is part of dispositif/wikibot application
- * 2019 : Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+/*
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -88,7 +88,7 @@ abstract class TextUtil
     //    const TRADE = '™'; // &trade;
     //    const REG = '®'; // &reg;
     //    const COPY = '©'; // &copy;
-    const ALL_SPACES         = "\xE2\x80\xAF|\xC2\xAD|\xC2\xA0|\\s"; // Used in regexps. Better than \s
+    const ALL_SPACES = "\xE2\x80\xAF|\xC2\xAD|\xC2\xA0|\\s"; // Used in regexps. Better than \s
 
     /**
      * UTF8 first letter in upper case.
@@ -248,5 +248,38 @@ abstract class TextUtil
                 'aaaaaceeeeiiiinooooouuuuyyAAAAACEEEEIIIINOOOOOUUUUYoaaaeeeglioooooooruuuyæиαιυcszиyuaegAauwy'
             )
         );
+    }
+
+    /**
+     * Like PHP8 str_ends_with(). Multibytes ok.
+     *
+     * @param string $haystack
+     * @param string $needle
+     *
+     * @return bool
+     */
+    public static function str_ends_with(string $haystack, string $needle): bool
+    {
+        $len = mb_strlen($needle);
+        if ($len === 0) {
+            return true;
+        }
+
+        return (mb_substr($haystack, -$len) === $needle);
+    }
+
+    /**
+     * Like PHP8 str_starts_with().
+     *
+     * @param string $haystack
+     * @param string $needle
+     *
+     * @return bool
+     */
+    public static function str_starts_with(string $haystack, string $needle): bool
+    {
+        $len = mb_strlen($needle);
+
+        return (mb_substr($haystack, 0, $len) === $needle);
     }
 }
