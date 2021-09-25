@@ -1,9 +1,9 @@
 <?php
 
-/**
+/*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the license file.
+ * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 declare(strict_types=1);
 
@@ -14,11 +14,11 @@ use Mediawiki\DataModel\EditInfo;
 use Mediawiki\DataModel\Page;
 
 include __DIR__.'/../myBootstrap.php';
-//include __DIR__.'/../ZiziBot_Bootstrap.php';
+
 $botName = 'CodexBot';
-
 $taskName = 'bot : suppression de mon signalement 🍺'; // 👍 ♻♻ 🍺
-
+$templateTitle = 'Utilisateur:CodexBot/messageErreur';
+$categoryTitle = 'Catégorie:Signalement_'.$botName;
 $phrases = [
     'erreurs corrigées',
     "L'article « erreurs » n'existe pas sur ce wiki !",
@@ -41,7 +41,6 @@ $phrases = [
 ];
 
 
-
 // todo refac
 //$list = PageList::FromWikiCategory('Signalement_'.$botName);
 // todo $list->setOptions(['reverse'=>true]);
@@ -51,8 +50,8 @@ $phrases = [
  */
 
 $wiki = ServiceFactory::wikiApi();
-$pages = $wiki->newPageListGetter()->getPageListFromCategoryName('Catégorie:Signalement_'.$botName);
-$pages = $pages->toArray();
+$pages = $wiki->newPageListGetter()->getPageListFromCategoryName($categoryTitle);
+$pages = (array) $pages->toArray();
 arsort($pages); // ordre Z->A pour pages récentes en premier
 
 $res = [];
@@ -61,7 +60,9 @@ foreach ($pages as $page) {
      * @var $page Page
      */
     $title = $page->getPageIdentifier()->getTitle()->getText();
-    $res[] = $title;
+    if ($title !== $templateTitle) {
+        $res[] = $title;
+    }
 }
 
 
