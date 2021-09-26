@@ -117,6 +117,10 @@ insee.fr:
     site: '[[Institut national de la statistique et des études économiques|insee.fr]]'
 interieur.gouv.fr:
     site: "[[Ministère de l'Intérieur (France)|interieur.gouv.fr]]"
+leonore.archives-nationales.culture.gouv.fr:
+    site: '[[Base Léonore]]'
+enluminures.culture.fr:
+    site: '[[Base Enluminures]]'
 billboard.com:
     site: '[[Billboard|billboard.com]]'
 
@@ -147,7 +151,11 @@ fff.fr:
 #    site: '[[Sports Reference]]'
 structurae.net:
     site: '[[Structurae]]'
-
+# confusion avec "Silicon (journal)"
+silicon.fr:
+    site: '[[Silicon.fr]]'
+    template: 'lien web'
+    périodique: ''
 
 # === Portails revues science ===
 # Revues scientifique : wikification selon Wikidata par défaut

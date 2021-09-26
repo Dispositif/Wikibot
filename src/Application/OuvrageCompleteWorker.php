@@ -44,6 +44,7 @@ class OuvrageCompleteWorker
             '9782918758440', // Profils de lignes du réseau ferré français vol.2
             '9782918758341', // Profils de lignes du réseau ferré français vol.1
             '285608043X', // Dictionnaire encyclopédique d'électronique (langue erronée)
+            '9782021401196', // sous-titre erroné
         ];
     /**
      * @var QueueInterface
