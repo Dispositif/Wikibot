@@ -163,6 +163,11 @@ class ExternRefTransformer implements TransformerInterface
             return $url;
         }
 
+        // Pas de 'accès url=libre' # débat février 2021
+        if (isset($mapData['accès url']) && $mapData['accès url'] === 'libre') {
+            unset($mapData['accès url']);
+        }
+
         $this->tagAndLog($mapData);
         $this->addSummaryLog($mapData);
 
