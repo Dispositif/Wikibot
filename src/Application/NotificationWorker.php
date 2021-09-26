@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Application;
 
 use App\Infrastructure\ServiceFactory;
+use Exception;
 use Mediawiki\Api\MediawikiApi;
 use Mediawiki\Api\SimpleRequest;
 use Mediawiki\Api\UsageException;
@@ -32,9 +33,7 @@ class NotificationWorker
 {
     const DEFAULT_WIKIS             = 'frwiki';
     const DIFF_URL                  = 'https://fr.wikipedia.org/w/index.php?diff=';
-    const ARTICLE_ANALYZED_FILENAME = __DIR__.'/resources/article_externRef_edited.txt';
     const SUMMARY                   = '⚙ mise à jour notifications';
-    const PAGENAME_NOTIFICATION_LOG = 'Utilisateur:CodexBot/Notifications';
     const SKIP_BOTPAGES
                                     = [
             'Utilisateur:CodexBot',
@@ -46,21 +45,27 @@ class NotificationWorker
     /**
      * @var MediawikiApi
      */
-    private $api;
+    protected $api;
+    /**
+     * @var string
+     */
+    protected $notifPage;
     /**
      * @var array
      */
-    private $option;
+    protected $option;
 
     /**
      * NotificationWorker constructor.
      *
      * @param MediawikiApi $api
+     * @param string       $notifPage
      * @param array|null   $option
      */
-    public function __construct(MediawikiApi $api, ?array $option = null)
+    public function __construct(MediawikiApi $api, string $notifPage, ?array $option = null)
     {
         $this->api = $api;
+        $this->notifPage = $notifPage;
         $this->option = $option ?? [];
 
         $this->process();
@@ -135,7 +140,7 @@ class NotificationWorker
                     'notlimit' => '30', // max 50
                     //                   'notunreadfirst' => '1', // comment for false
                     //                   'notgroupbysection' => '1',
-                    'notsections' => 'alert', // alert|message
+                    'notsections' => 'alert', // alert|message ?? (minimum:alert)
                     'format' => 'php',
                 ]
             )
@@ -174,6 +179,7 @@ class NotificationWorker
      *
      * @return bool
      * @throws UsageException
+     * @throws Exception
      */
     private function editWikilog(array $wikilog): bool
     {
@@ -183,7 +189,7 @@ class NotificationWorker
         $text = implode("\n", $wikilog)."\n";
 
         $wiki = ServiceFactory::wikiApi();
-        $pageAction = new WikiPageAction($wiki, self::PAGENAME_NOTIFICATION_LOG);
+        $pageAction = new WikiPageAction($wiki, $this->notifPage);
 
         $success = $pageAction->addToTopOfThePage(
             $text,

@@ -22,6 +22,6 @@ require_once __DIR__.'/../myBootstrap.php';
  */
 
 echo date('Y-m-d H\:i:s')." Check notifications... \n";
-new CodexNotificationWorker(ServiceFactory::getMediawikiApi(), []);
+new CodexNotificationWorker(ServiceFactory::getMediawikiApi(), 'Utilisateur:CodexBot/Notifications', []);
 
 

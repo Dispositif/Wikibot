@@ -18,7 +18,7 @@ use App\Infrastructure\ServiceFactory;
 
 class CodexNotificationWorker extends NotificationWorker
 {
-    const PAGENAME_NOTIFICATION_LOG = 'Utilisateur:CodexBot/Notifications';
+    const ARTICLE_ANALYZED_FILENAME = __DIR__.'/resources/article_externRef_edited.txt';
     const PROCESS_TASKNAME          = '🔔🌐 Amélioration de références : URL ⇒ ';
 
     /**
