@@ -1,0 +1,416 @@
+#Royaume-Uni,
+Dover,Douvres
+Edinburgh,Édimbourg
+Lancaster,Lancastre
+London,Londres
+Newcastle upon Tyne,Newcastle
+Saint Helier,Saint-Hélier
+
+# Allemagne,
+Aachen,Aix-la-Chapelle
+Altenburg,Altenbourg
+Aschaffenburg,Aschaffenbourg
+Augsburg,Augsbourg
+Bernburg,Bernbourg
+Blieskastel,Bliescastel
+Brandenburg an der Havel,Brandebourg-sur-la-Havel
+Braunschweig,Brunswick
+Bremen,Brême
+Breisach am Rhein,Vieux-Brisach
+Burg bei Magdeburg,Bourg-lès-Magdebourg
+Coburg,Cobourg
+Dillingen,Dillange
+Donauwörth,Donauworth
+Dresden,Dresde
+Duisburg,Duisbourg
+Düsseldorf,Dusseldorf
+Erlangen,Erlangue
+Flensburg,Flensbourg
+Frankfurt am Main,Francfort-sur-le-Main
+Frankfurt an der Oder,Francfort-sur-l'Oder
+Freiburg im Breisgau,Fribourg-en-Brisgau
+Fulda,Fulde
+Fürstenberg,Furstemberg
+Geldern,Gueldre
+Göttingen,Gœttingue
+Günzburg,Guntzbourg
+Halle,Halle-sur-Saale
+Hamburg,Hambourg
+Hameln,Hamelin
+Hannover,Hanovre
+Heusweiler,Hoysviller
+Homburg,Hombourg
+Jena,Iéna
+Jülich,Juliers
+Kassel,Cassel
+Kleve,Clèves
+Koblenz,Coblence
+Köln,Cologne
+Konstanz,Constance
+Ludwigsburg,Ludwigsbourg
+Lüneburg,Lunebourg
+Lutherstadt Wittenberg
+Magdeburg,Magdebourg
+Marburg,Marbourg
+Mainz,Mayence
+Merseburg,Mersebourg
+Monschau,Montjoie
+München,Munich
+Naumburg an der Saale,Naumbourg
+Naumburg,Naumbourg
+Nürnberg,Nuremberg
+Offenburg,Offenbourg
+Oldenburg,Oldenbourg
+Quedlinburg,Quedlinbourg ou Quedlimbourg
+Ravensburg,Ravensbourg
+Regensburg,Ratisbonne
+Saarbrücken,Sarrebruck
+Saarlouis,Sarrelouis
+Sankt Andreasberg,Saint-Andréasberg
+Sankt-Ingbert,Saint-Ingbert
+Sankt-Wendel,Saint-Wendel
+Schwarzburg,Schwarzbourg
+Speyer,Spire
+Tecklenburg,Tecklembourg
+Trier,Trèves
+Wallerfangen,Vaudrevange
+Würzburg,Wurtzbourg
+Zweibrücken,Deux-Ponts
+
+# Danemark,
+Helsingør,Elseneur
+København,Copenhague
+
+# Belgique/flamand,
+Aalst,Alost
+Adinkerke,Adinkerque
+Aartrijke,Aertrycke
+Antwerpen,Anvers
+Ardooie,Ardoye
+Baarle-Hertog,Baerle-Duc
+Bever,Biévène
+Borglon,Looz
+Brugge,Bruges
+Büllingen,Bullange
+Dendermonde,Termonde
+Diets-Heur,Heure-le-Tixhe
+Diksmuide,Dixmude
+Drongen,Tronchiennes
+Dworp,Tourneppe
+Eliksem,Alincourt
+Galmaarden,Gammerages
+Gent,Gand
+Geraardsbergen,Grammont
+Herk-de-Stad,Herck-la-Ville
+Ieper,Ypres
+Kelmis,La Calamine
+Kortrijk,Courtrai
+Koksijde,Coxyde
+Lauw,Lowaige
+Leopoldsburg,Bourg-Léopold
+Leuven,Louvain
+Lier,Lierre
+Mechelen,Malines
+Menen,Menin
+Mesen,Messines
+Moelingen,Mouland
+Nieuwport,Nieuport
+Oostende,Ostende
+Oostduinkerke,Ostdunkerque
+Oosterweel,Austruweel
+Oudenaarde,Audenarde
+De Panne,La Panne
+Roeselare,Roulers
+Ronse,Renaix
+Sankt-Vith,Saint-Vith
+Scherpenheuvel-Zichem,Montaigu-Zichem
+Sint-Genesius-Rode,Rhode-Saint-Genèse
+Sint-Goriks-Oudenhove,Audenhove-Saint-Géry
+Sint-Maria-Oudenhove,Audenhove-Sainte-Marie
+Sint-Niklaas,Saint-Nicolas
+Sint-Truiden,Saint-Trond
+Spiere-Helkijn,Espierres-Helchin
+Temse,Tamise
+Tienen,Tirlemont
+Tongeren,Tongres
+Veurne,Furnes
+Vilvoorde,Vilvorde
+Voeren,Fourons
+Waasmont,Wamont
+Walshoutem,Houtain-l'Évêque
+Zeebrugge,Zeebruges
+Zoutleeuw,Léau
+
+# ESPAGNE : catalan/espagnol,
+A Coruña,La Corogne
+Alacant,Alicante
+Algeciras,Algésiras
+Almérie,Almería
+Asp,Aspe
+Badalona,Badalone
+Barcelona,Barcelone
+Bilbo,	Bilbao
+Cádiz,Cadix
+Cartagena,Carthagène
+Córdoba,Cordoue
+Figueres,Figuières
+Figueras,Figuières
+Fuenterrabía,Fontarrabie
+Hondarribia,Fontarrabie
+Gandía,Gandie
+Girona,Gérone
+Gerona,Gérone
+Granada,Grenade
+Jerez de la Frontera,Xéres
+Logroño,Logrogne
+Málaga,Malaga
+Murcia,Murcie
+Palma de Mallorca,Palma de Majorque
+Pamplona,Pampelune
+Iruña,Pampelune
+Iruñea,Pampelune
+Salamanca,Salamanque
+San Sebastián,Saint-Sébastien
+Donostia,Saint-Sébastien
+Santiago de Compostela,Saint-Jacques-de-Compostelle
+Segovia,Ségovie
+Sevilla,Séville
+Tarragona,Tarragone
+Toledo,Tolède
+Tortosa,Tortose
+Tudela,Tudèle
+València,Valence
+Valencia,Valence
+Zaragoza,Saragosse
+
+#Italie,
+Alessandria,Alexandrie
+Ancona,Ancône
+Aquileia,Aquilée
+Arborea,Arborée
+Ardea,Ardée
+Assisi,Assise
+Asti,Aste
+Avigliana,Veillane
+Balme,Barmes
+Bardonecchia,Bardonnèche
+Bellino,Bellin
+Benevento,Bénévent
+Bergamo,Bergame
+Biella,Bielle
+Bologna,Bologne
+Bussoleno,Bussolin
+Canavese,Canavais
+Cantoira,Cantoire
+Capua,Capoue
+Carema,Carême
+Carignano,Carignan
+Carrara,Carrare
+Caserta,Caserte
+Casteldelfino,Châteaudauphin
+Catania,Catane
+Cerignola,Cérignole
+Chialamberto,Chalambert
+Chianocco,Chanoux
+Chieri,Quiers
+Chiomonte,Chaumont
+Chiusa di San Michele,L'Écluse
+Collegno,Colègne
+Como,Côme
+Condove,Condoue
+Cortona,Cortone
+Cosenza,Cosence
+Cremona,Crémone
+Cuma,Cumes
+Cuneo,Coni
+Ferrara,Ferrare
+Firenze,Florence
+Fornovo di Taro,Fornoue
+Frassinetto,Frassinet
+Gaeta,Gaète
+Genova,Gênes
+Giaglione,Jaillons
+Gravere,Gravière
+Groscavallo,Groscaval
+Lanzo Torinese,Lans-l'Hermitage
+Livorno,Livourne
+Lucca,Lucques
+Mantova,Mantoue
+Mazàra del Vallo,Mazare
+Meana di Susa,Méans
+Messina,Messine
+Milano,Milan
+Modena,Modène
+Monastero di Lanzo,Moutiers
+Mompantero,Montpantier
+Moncenisio,Montcenis
+Monza,Monce
+Napoli,Naples
+Novalesa,Novalaise
+Novara,Novare
+Norcia ,Nurcie
+Otranto,Otrante
+Padova,Padoue
+Palermo,Palerme
+Parma,Parme
+Pavia,Pavie
+Perugia,Pérouse
+Pessinetto,Pessinet
+Piacenza,Plaisance
+Pinerolo,Pignerol
+Pisa,Pise
+Pont-Canavese,Pont-en-Canavais
+Pozzuoli,Pouzzoles
+Pragelato,Pragela
+Racconigi,Raconis
+Ragusa,Raguse
+Ravenna,Ravenne
+Reggio di Calabria,Reggio de Calabre
+Reggio nell’Emilia,Reggio d'Émilie
+Ribordone,Ribardon
+Roma,Rome
+Ronco Canavese,Ronc-en-Canavais ou Ronc
+Rubiana,Rubiane
+Salerno,Salerne
+Salice d'Ulzio,Sauze d'Oulx
+Saluzzo,Saluces
+Sant'Ambrogio di Torino,Saint-Ambroise
+Sant'Antonino di Susa,Saint-Antonin
+San Didero,Saint-Didier
+San Giorio di Susa,Saint-Joire
+Sarzana,Sarzane
+Savigliano,Savillan
+Savona,Savone
+Sestriere,Sestrières
+Siena,Sienne
+Siracusa,Syracuse
+Solferino,Solférino
+Sorrento,Sorrente
+Sparone,Esparon
+La Spezia,L’Épice
+Spoleto,Spolète
+Taormina,Taormine
+Taranto,Tarente
+Teramo,Térame
+Terracina,Terracine
+Türìn,Turin
+Torino,Turin
+Tortona,Tortone
+Traversella,Traverselle
+Traves,Travey
+Trento,Trente
+Treviso,Trévise
+Udin,Udine
+Urbino,Urbin
+Usseglio,Ussel
+Vaie,Vaye
+Valgioie,Valjoie
+Valprato Soana,Valpré
+Varese,Varèse
+Venaus,Vénaux
+Venezia,Venise
+Ventimiglia,Vintimille
+Vercelli,Verceil
+Verona,Vérone
+Vicenza,Vicence
+Viterbo,Viterbe
+
+#Portugal,
+Bragança,Bragance
+Lisboa,Lisbonne
+
+# Autriche,
+Bregenz,Brégence
+Greifenburg,Greifenbourg
+Salzburg,Salzbourg
+Wien,Vienne
+
+# Suisse TODO,
+Basel,Bâle
+Bern,Berne
+Zürich,Zurich
+
+
+# AUTRES,
+Città del Vaticano,Cité du Vatican
+İstambul,Istanbul
+İzmir,Izmir
+Antakya,Antioche
+Praha,Prague
+Beograd,Belgrade
+San-Marino,Saint-Marin
+Москва,Moscou
+Moscow,Moscou
+Moskva,Moscou
+Санкт-Петербу́рг,Saint-Pétersbourg
+Sankt-Peterbourg,Saint-Pétersbourg
+Αθήνα,Athènes
+Baile Átha Cliath,Dublin
+Rīga,Riga
+Il-Belt Valletta,La Valette
+Buenos-Aires,Buenos Aires
+Buenos-Ayres,Buenos Aires
+Belize City,	Bélize
+Recife,	Récife
+São Paulo,Sao Paulo
+Greater Sudbury,Grand Sudbury
+Regina,Régina
+Sault Ste. Marie,Sault-Sainte-Marie
+Saint John,Saint-Jean
+St. John's,Saint-Jean de Terre-Neuve
+Bogotá,Bogota
+Cartagena de Indias,Carthagène des Indes
+La Habana,La Havane
+Detroit,Détroit
+Dover,Douvres
+New-Orleans,La Nouvelle-Orléans
+Philadelphia,Philadelphie
+Saint George's,Saint-Georges
+Guatemala,Guatémala
+Nueva Guatemala de la Asunción,Guatémala
+Tegucigalpa,Tégucigalpa
+Ciudad de México,Mexico
+México,Mexico
+Asunción,Asuncion
+Panama City,Panama
+Santo Domingo de Guzmán,Saint-Domingue
+Santo Domingo,Saint-Domingue
+San Salvador,Saint-Sauveur
+Port of Spain,Port-d'Espagne
+Montevideo,Montévidéo
+
+#Noms anglais de ville du monde
+Athens,Athènes
+Baghdad,Bagdad
+Barcelona,Barcelone
+Beijing,Pékin
+Brussels,Bruxelle
+Bucharest,Bucarest
+Cairo,Le Caire
+Copenhagen,Copenhague
+Dubai,Dubaï
+Frankfurt,Francfort
+Geneva,Genève
+The Hague,La Haye
+Hanoi,Hanoï
+Jerusalem,Jérusalem
+Johannesburg,Johannesbourg
+Kabul,Kaboul
+Lisbon,Lisbonne
+Marrakesh,Marrakech
+Manila,Manille
+Mexico City,Mexico
+Montreal,Montréal
+Moscow,Moscou
+Mumbai,Bombay
+Bombay,Bombay
+Delhi,New Delhi
+Saint Petersburg,Saint-Pétersbourg
+Santiago de Chile,Santiago
+São Paulo,Sao Paulo
+Seoul,Séoul
+Singapore,Singapour
+Tehran,Téhéran
+Venice,Venise
+Vienna,Vienne
+Washington D.C.,Washington
