@@ -313,8 +313,8 @@ class OuvrageEditWorker
         $this->log->debug('modifs: '.$data['modifs']);
         $this->log->debug('version: '.$data['version']);
 
-        if (WikiTextUtil::isCommented($origin)) {
-            $this->log->notice("SKIP: template avec commentaire HTML.");
+        if (WikiTextUtil::isCommented($origin) || $this->isTextCreatingError($origin)) {
+            $this->log->notice("SKIP: template avec commentaire HTML ou modèle problématique.");
             $this->db->skipRow(intval($data['id']));
 
             return false;
@@ -440,6 +440,12 @@ class OuvrageEditWorker
         if (!isset($this->errorWarning[$page]) || !in_array($text, $this->errorWarning[$page])) {
             $this->errorWarning[$page][] = $text;
         }
+    }
+
+    private function isTextCreatingError(string $string): bool
+    {
+        // mauvaise Modèle:Sp
+        return (preg_match('#\{\{-?(sp|s|sap)-?\|#', $string) === 1);
     }
 
 }
