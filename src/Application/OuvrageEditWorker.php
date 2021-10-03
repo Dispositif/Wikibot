@@ -160,13 +160,11 @@ class OuvrageEditWorker
             return false;
         }
 
-        // Skip AdQ
+        // AdQ
         if (preg_match('#{{ ?En-tête label ?\| ?AdQ#i', $this->wikiText)) {
             $this->db->setLabel($title, 2);
-            $this->log->info("SKIP : AdQ.\n"); // BA ??
-            $this->db->skipArticle($title);
-
-            return false;
+            $this->log->warning("Article de Qualité !\n");
+            $this->botFlag = false;
         }
         if (preg_match('#{{ ?En-tête label ?\| ?BA#i', $this->wikiText)) {
             $this->db->setLabel($title, 1);
