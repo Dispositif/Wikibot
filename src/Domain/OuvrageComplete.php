@@ -315,10 +315,12 @@ class OuvrageComplete
             'nom4',
         ];
         foreach ($paramAuteurs as $param) {
-            $value = str_replace(['.', ','], '', $ouv->getParam($param));
-            // retire wikilien sur auteur
-            if (!empty($value)) {
-                $text .= WikiTextUtil::unWikify($value);
+            if (!empty($ouv->getParam($param))) {
+                $value = str_replace(['.', ','], '', $ouv->getParam($param));
+                // retire wikilien sur auteur
+                if (!empty($value)) {
+                    $text .= WikiTextUtil::unWikify($value);
+                }
             }
         }
 
