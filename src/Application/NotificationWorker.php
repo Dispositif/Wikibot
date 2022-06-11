@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * 2019-2022 © Philippe M./Irønie  <dispositif@gmail.com>
  * For the full copyright and MIT license information, view the license file.
  */
 
@@ -10,14 +10,17 @@ declare(strict_types=1);
 namespace App\Application;
 
 use App\Infrastructure\ServiceFactory;
+use DateTime;
 use Exception;
 use Mediawiki\Api\MediawikiApi;
 use Mediawiki\Api\SimpleRequest;
 use Mediawiki\Api\UsageException;
 use Mediawiki\DataModel\EditInfo;
+use Throwable;
 
 /**
- * todo internationalize (enwiki, etc)
+ * TODO internationalize (enwiki, etc)
+ *
  * Parsing last notifications to the bot (and set them read).
  * Doc API : https://www.mediawiki.org/wiki/Notifications/API
  * TYPES :
@@ -27,7 +30,6 @@ use Mediawiki\DataModel\EditInfo;
  * flowusertalk-post-reply (alerte,   "title": {
  * "full": "Discussion utilisateur:Ir\u00f8nie",
  * "namespace": "Discussion_utilisateur")
- * Class NotificationWorker
  */
 class NotificationWorker
 {
@@ -41,6 +43,7 @@ class NotificationWorker
             'Utilisateur:ZiziBot',
             'Discussion utilisateur:ZiziBot',
         ];
+    const PUBLISH_LOG_ON_WIKI = false;
 
     /**
      * @var MediawikiApi
@@ -93,7 +96,7 @@ class NotificationWorker
                 continue;
             }
 
-            $date = new \DateTime($notif['timestamp']['utciso8601']);
+            $date = new DateTime($notif['timestamp']['utciso8601']);
 
             if (isset($notif['title']) && in_array($notif['title']['namespace'], ['', 'Discussion'])) {
                 $icon = '🌼 '; // Article + Discussion
@@ -108,7 +111,6 @@ class NotificationWorker
                 $notif['revid'] ?? '',
                 $notif['agent']['name'] ?? '???'
             );
-            //            dump($notif);
 
             if (!isset($notif['read'])) {
                 $this->postNotifAsRead($notif['id']);
@@ -117,16 +119,18 @@ class NotificationWorker
             $this->processSpecialActions($notif);
         }
 
-        if(empty($wikilog)) {
+        if (empty($wikilog)) {
             echo "Nothing.";
             return;
         }
 
         dump($wikilog);
 
-        echo "Stop the script if you want to cancel the log edition on Wikipedia ! Waiting 30 seconds...\n";
-        sleep(30);
-        $this->editWikilog($wikilog);
+        if (self::PUBLISH_LOG_ON_WIKI) {
+            echo "Stop the script if you want to cancel the log edition on Wikipedia ! Waiting 30 seconds...\n";
+            sleep(30);
+            $this->editWikilog($wikilog);
+        }
     }
 
     private function requestNotifications(): ?array
@@ -165,11 +169,21 @@ class NotificationWorker
                     ]
                 )
             );
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return false;
         }
 
         return true;
+    }
+
+    /**
+     * Put there the special action to execute with each notification.
+     *
+     * @param $notif
+     */
+    protected function processSpecialActions($notif)
+    {
+        // optional for children
     }
 
     /**
@@ -191,24 +205,10 @@ class NotificationWorker
         $wiki = ServiceFactory::wikiApi();
         $pageAction = new WikiPageAction($wiki, $this->notifPage);
 
-        $success = $pageAction->addToTopOfThePage(
+        return $pageAction->addToTopOfThePage(
             $text,
             new EditInfo(self::SUMMARY, false, false)
         );
-
-        //        dump($success);
-
-        return $success;
-    }
-
-    /**
-     * Put there the special action to execute with each notification.
-     *
-     * @param $notif
-     */
-    protected function processSpecialActions($notif)
-    {
-        // optional for children
     }
 
 }
