@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b4335a421c1fb81a782e36d57de12d81",
+    "content-hash": "b0dac4ef962a6f5ea93fa39ea2c9a9c1",
     "packages": [
         {
             "name": "addwiki/mediawiki-api",
@@ -167,24 +167,24 @@
         },
         {
             "name": "biblys/isbn",
-            "version": "2.1.2",
+            "version": "2.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biblys/isbn.git",
-                "reference": "130d3e5a5cb8f43018504b16e9f23c067b4ebdd1"
+                "reference": "49de9e67628e54a0af39d3d0e99f5f55a98d7b30"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biblys/isbn/zipball/130d3e5a5cb8f43018504b16e9f23c067b4ebdd1",
-                "reference": "130d3e5a5cb8f43018504b16e9f23c067b4ebdd1",
+                "url": "https://api.github.com/repos/biblys/isbn/zipball/49de9e67628e54a0af39d3d0e99f5f55a98d7b30",
+                "reference": "49de9e67628e54a0af39d3d0e99f5f55a98d7b30",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.1.0"
+                "php": "^7.1"
             },
             "require-dev": {
                 "guzzlehttp/guzzle": "^6.2",
-                "phpunit/phpunit": "^7.1 || ^8.3"
+                "phpunit/phpunit": "^6 || ^7 || ^8"
             },
             "type": "library",
             "autoload": {
@@ -199,21 +199,22 @@
             "authors": [
                 {
                     "name": "Clement Bourgoin",
-                    "email": "cb@nokto.net"
+                    "email": "c@iwzr.fr"
                 }
             ],
-            "description": "A PHP library to convert and validate ISBNs & EANs",
+            "description": "A PHP library to convert and validate ISBNs",
             "homepage": "https://github.com/biblys/isbn",
             "keywords": [
                 "ISBN",
                 "book",
-                "ean"
+                "ean",
+                "gtin"
             ],
             "support": {
                 "issues": "https://github.com/biblys/isbn/issues",
-                "source": "https://github.com/biblys/isbn/tree/2.1.2"
+                "source": "https://github.com/biblys/isbn/tree/2.5.0"
             },
-            "time": "2019-10-13T00:00:00+00:00"
+            "time": "2022-01-10T00:00:00+00:00"
         },
         {
             "name": "codedungeon/php-cli-colors",
