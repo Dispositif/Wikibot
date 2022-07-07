@@ -1,6 +1,6 @@
 build:
     environment:
-        php: 7.2.13
+        php: 8.0
     #    dependencies:
     #        before:
     #            - composer require phpunit/phpunit:^7.0 --dev
@@ -26,7 +26,8 @@ build:
 checks:
     php: true
 before_commands:
-    - 'composer install --dev'
+    - 'composer install --dev --ignore-platform-reqs'
+# --ignore-platform-reqs is needed to ignore the iblis/isbn dependencies problem with PHP 8
 coding_style:
     php: {  }
 filter:

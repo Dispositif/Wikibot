@@ -2,6 +2,8 @@
 /build/logs
 /build/coverage
 .env
+.env.test
+.env.zizibot
 /gitignore
 **/log
 *.log
@@ -11,7 +13,5 @@ tests/build/
 /src/Application/resources/typo_patterns/
 
 # Config
-/.env.zizibot
 /src/Application/ZiziBot_Bootstrap.php
-
 /src/Application/resources/article_externRef_edited.txt
