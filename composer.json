@@ -10,6 +10,11 @@
     "CodexBot",
     "frwiki"
   ],
+  "config": {
+    "platform": {
+      "php": "7.3.29"
+    }
+  },
   "require": {
     "php": ">=7.2",
     "addwiki/mediawiki-api": "^0.7.3",
@@ -31,8 +36,7 @@
     "ext-readline": "*",
     "symfony/yaml": "4.*",
     "codedungeon/php-cli-colors": "~1.0",
-    "ext-iconv": "*",
-    "ext-http": "*"
+    "ext-iconv": "*"
   },
   "autoload": {
     "psr-4": {

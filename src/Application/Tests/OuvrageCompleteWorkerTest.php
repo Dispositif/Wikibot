@@ -25,7 +25,7 @@ class OuvrageCompleteWorkerTest extends TestCase
     protected function setUp(): void
     {
         // todo check ENV
-        //$this->markTestSkipped('all tests in this file are inactive for this server configuration!');
+        $this->markTestSkipped('Skip : Bug on Phpunit before upgrade php 8');
     }
 
     public function testRun()
