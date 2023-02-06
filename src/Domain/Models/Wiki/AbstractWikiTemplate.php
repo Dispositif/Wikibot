@@ -26,6 +26,7 @@ use Exception;
  */
 abstract class AbstractWikiTemplate extends AbstractStrictWikiTemplate implements WikiTemplateInterface
 {
+    public $parametersByOrder;
     use ArrayProcessTrait, InfoTrait;
 
     public $parametersErrorFromHydrate;
@@ -93,9 +94,8 @@ abstract class AbstractWikiTemplate extends AbstractStrictWikiTemplate implement
         if ($this->userSeparator && false !== strpos($this->userSeparator, "\n")) {
             $string .= "\n";
         }
-        $string .= '}}';
 
-        return $string;
+        return $string . '}}';
     }
 
     /**

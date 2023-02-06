@@ -18,7 +18,7 @@ include __DIR__.'/../Application/myBootstrap.php';
  */
 class QueueWorker extends AbstractQueueWorker
 {
-    const QUEUE_NAME = 'rabbit';
+    public const QUEUE_NAME = 'rabbit';
 
     /**
      * process with one of the queue message.

@@ -17,7 +17,7 @@ use Exception;
 
 abstract class RefBotWorker extends AbstractBotTaskWorker
 {
-    const TASK_BOT_FLAG = false;
+    public const TASK_BOT_FLAG = false;
 
     protected $warning = false;
 
@@ -44,7 +44,7 @@ abstract class RefBotWorker extends AbstractBotTaskWorker
     public function processText($text)
     {
         $refs = WikiTextUtil::extractRefsAndListOfLinks($text);
-        if (empty($refs)) {
+        if ($refs === []) {
             $this->log->debug('empty extractRefsAndListOfLinks');
 
             return $text;

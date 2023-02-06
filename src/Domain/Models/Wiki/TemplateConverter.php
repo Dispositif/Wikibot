@@ -22,7 +22,7 @@ use Throwable;
  */
 class TemplateConverter
 {
-    const PARAM_OUVRAGE_TO_ARTICLE
+    public const PARAM_OUVRAGE_TO_ARTICLE
         = [
             'tome' => 'volume',
             'numéro chapitre' => 'numéro',
@@ -96,8 +96,8 @@ class TemplateConverter
         foreach ($ouvrageData as $param => $value) {
             // Conversion du nom de paramètre
             // + esquive des doublons qui supprimeraient une value
-            if (key_exists($param, self::PARAM_OUVRAGE_TO_ARTICLE)
-                && !key_exists(self::PARAM_OUVRAGE_TO_ARTICLE[$param], $ouvrageData)
+            if (array_key_exists($param, self::PARAM_OUVRAGE_TO_ARTICLE)
+                && !array_key_exists(self::PARAM_OUVRAGE_TO_ARTICLE[$param], $ouvrageData)
             ) {
                 $data[self::PARAM_OUVRAGE_TO_ARTICLE[$param]] = $value;
                 continue;
@@ -106,9 +106,7 @@ class TemplateConverter
             $data[$param] = $value;
         }
 
-        $data = self::convertDateForArticle($data);
-
-        return $data;
+        return self::convertDateForArticle($data);
     }
 
     public static function convertDateForArticle(array $data): array

@@ -19,19 +19,19 @@ use App\Domain\Utils\TextUtil;
  */
 class LienBriseTemplate extends AbstractWikiTemplate implements ArticleOrLienBriseInterface
 {
-    const WIKITEMPLATE_NAME = 'lien brisé';
+    public const WIKITEMPLATE_NAME = 'lien brisé';
 
-    const MINIMUM_PARAMETERS
+    public const MINIMUM_PARAMETERS
         = [
             'url' => '',
             'titre' => '',
             'brisé le' => '',
         ];
 
-    const PARAM_ALIAS = ['lien' => 'url', 'adresse' => 'url'];
+    public const PARAM_ALIAS = ['lien' => 'url', 'adresse' => 'url'];
 
     // TODO
-    protected $parametersByOrder
+    public $parametersByOrder
         = [
             'url',
             'accès url',

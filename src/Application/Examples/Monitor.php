@@ -28,7 +28,7 @@ $process->run();
  */
 class Monitor
 {
-    const SLEEP_TIME = 60;
+    public const SLEEP_TIME = 60;
 
     private $db;
     private $lastTitle = '';
@@ -117,14 +117,14 @@ class Monitor
      */
     private function checkAltered(array $data, string $text): int
     {
-        if (count($data) === 0) {
+        if ($data === []) {
             return 99;
         }
         $found = 0;
         $count = 0;
         $text = mb_strtolower($text);
         foreach ($data as $dat) {
-            if (1 === intval($dat['skip']) || empty($dat['edited'])) {
+            if (1 === (int) $dat['skip'] || empty($dat['edited'])) {
                 continue;
             }
             $count++;

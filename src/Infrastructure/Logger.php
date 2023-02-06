@@ -42,7 +42,7 @@ class Logger extends AbstractLogger implements LoggerInterface
             case 'alert':
             case 'critical':
                 $this->echoColor("[$level] ".$date.' : '.$message."\n", Color::BG_RED.Color::WHITE);
-                if (!empty($context)) {
+                if ($context !== []) {
                     dump($context);
                 }
                 $this->logInFile($level, $message);
@@ -50,20 +50,20 @@ class Logger extends AbstractLogger implements LoggerInterface
             case 'error':
             case 'warning':
                 $this->echoColor("[$level] ".$date.' : '.$message."\n", Color::BG_YELLOW.Color::BLACK);
-                if (!empty($context)) {
+                if ($context !== []) {
                     dump($context);
                 }
                 break;
             case 'notice':
                 $this->echoColor("[$level] ".$message."\n");
-                if (!empty($context)) {
+                if ($context !== []) {
                     dump($context);
                 }
                 break;
             case 'info':
                 if ($this->verbose || $this->debug) {
                     $this->echoColor("[$level] ".$message."\n", Color::GRAY);
-                    if (!empty($context)) {
+                    if ($context !== []) {
                         dump($context);
                     }
                 }
@@ -71,7 +71,7 @@ class Logger extends AbstractLogger implements LoggerInterface
             case 'debug':
                 if ($this->debug) {
                     $this->echoColor("[$level] ".$message."\n", Color::GRAY);
-                    if (!empty($context)) {
+                    if ($context !== []) {
                         dump($context);
                     }
                 }

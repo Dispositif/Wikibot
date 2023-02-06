@@ -20,11 +20,11 @@ class OuvrageTemplate extends OuvrageTemplateAlias implements WikiTemplateInterf
 {
     use OuvrageTemplateParams, BiblioTemplateTrait;
 
-    const WIKITEMPLATE_NAME = 'Ouvrage';
+    public const WIKITEMPLATE_NAME = 'Ouvrage';
 
-    const REQUIRED_PARAMETERS = ['titre'];
+    public const REQUIRED_PARAMETERS = ['titre'];
 
-    const MINIMUM_PARAMETERS
+    public const MINIMUM_PARAMETERS
         = [
             //            'langue' => '', // inutile avec 'fr'
             //            'auteur1' => '', // duplicate with prénom1/nom1
@@ -99,9 +99,9 @@ class OuvrageTemplate extends OuvrageTemplateAlias implements WikiTemplateInterf
     private function stripIsbnBefore1970(string $serial): string
     {
         if (preg_match("#\|[\n ]*isbn=[\n ]*[|}]#", $serial) > 0
-            && preg_match("#\|[\n ]*année=([0-9]+)[}| \n]#", $serial, $matches) > 0
+            && preg_match("#\\|[\n ]*année=(\\d+)[}| \n]#", $serial, $matches) > 0
         ) {
-            $year = intval($matches[1]);
+            $year = (int) $matches[1];
             if ($year > 0 && $year < 1970) {
                 $serial = preg_replace("#\|[\n ]*isbn=[\n ]*#", '', $serial);
             }

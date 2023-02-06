@@ -32,7 +32,7 @@ use Throwable;
  */
 class GoogleTransformer
 {
-    const SLEEP_GOOGLE_API_INTERVAL = 5;
+    public const SLEEP_GOOGLE_API_INTERVAL = 5;
 
     /**
      * @var array OuvrageTemplate[]
@@ -67,12 +67,12 @@ class GoogleTransformer
         }
 
         $refsData = $this->extractAllGoogleRefs($text);
-        if (!empty($refsData)) {
+        if ($refsData !== []) {
             $text = $this->processRef($text, $refsData);
         }
 
         $links = $this->extractGoogleExternalBullets($text);
-        if (!empty($links)) {
+        if ($links !== []) {
             $text = $this->processExternLinks($text, $links);
         }
 
@@ -183,18 +183,14 @@ class GoogleTransformer
 
         // Google page => 'passage'
         if (!empty($gooDat['pg'])) {
-            if (preg_match('#(?:PA|PT)([0-9]+)$#', $gooDat['pg'], $matches)) {
-                // Exclusion de page=1, page=2 (vue par défaut sur Google Book)
-                if (intval($matches[1]) >= 3) {
-                    $page = $matches[1];
-                }
+            // Exclusion de page=1, page=2 (vue par défaut sur Google Book)
+            if (preg_match('#(?:PA|PT)(\d+)$#', $gooDat['pg'], $matches) && (int) $matches[1] >= 3) {
+                $page = $matches[1];
             }
             // conversion chiffres Romain pour PR
-            if (preg_match('#PR([0-9]+)$#', $gooDat['pg'], $matches)) {
-                // Exclusion de page=1, page=2 (vue par défaut sur Google Book)
-                if (intval($matches[1]) >= 3) {
-                    $page = NumberUtil::arab2roman(intval($matches[1]), true);
-                }
+            // Exclusion de page=1, page=2 (vue par défaut sur Google Book)
+            if (preg_match('#PR(\d+)$#', $gooDat['pg'], $matches) && (int) $matches[1] >= 3) {
+                $page = NumberUtil::arab2roman((int) $matches[1], true);
             }
 
             if (!empty($page)) {
@@ -229,11 +225,7 @@ class GoogleTransformer
 
         // Get Google data by ID ZvhBAAAAcAAJ
         $adapter = new GoogleBooksAdapter();
-        if ($isISBN === true) {
-            $volume = $adapter->getDataByIsbn($id);
-        } else {
-            $volume = $adapter->getDataByGoogleId($id);
-        }
+        $volume = $isISBN === true ? $adapter->getDataByIsbn($id) : $adapter->getDataByGoogleId($id);
 
         $mapper = new GoogleBookMapper();
         $mapper->mapLanguageData(true);

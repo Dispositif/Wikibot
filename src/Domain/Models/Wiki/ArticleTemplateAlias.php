@@ -17,7 +17,7 @@ namespace App\Domain\Models\Wiki;
  */
 abstract class ArticleTemplateAlias extends AbstractWikiTemplate
 {
-    const PARAM_ALIAS
+    public const PARAM_ALIAS
         = [
             'revue' => 'périodique',
             'journal' => 'périodique',

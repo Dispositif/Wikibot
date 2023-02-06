@@ -124,14 +124,12 @@ abstract class AbstractTemplateOptimizer implements TemplateOptimizerInterface
             }
 
             $predName = TextUtil::predictCorrectParam($name, $allParamsAndAlias, $maxDistance);
-            if ($predName && mb_strlen($name) >= 5) {
-                if (empty($this->getParam($predName))) {
-                    $predName = $this->optiTemplate->getAliasParam($predName);
-                    $this->setParam($predName, $value);
-                    $this->addSummaryLog(sprintf('%s⇒%s ?', $name, $predName));
-                    $this->notCosmetic = true;
-                    unset($this->optiTemplate->parametersErrorFromHydrate[$name]);
-                }
+            if ($predName && mb_strlen($name) >= 5 && empty($this->getParam($predName))) {
+                $predName = $this->optiTemplate->getAliasParam($predName);
+                $this->setParam($predName, $value);
+                $this->addSummaryLog(sprintf('%s⇒%s ?', $name, $predName));
+                $this->notCosmetic = true;
+                unset($this->optiTemplate->parametersErrorFromHydrate[$name]);
             }
         }
     }

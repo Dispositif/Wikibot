@@ -139,7 +139,7 @@ class Wikidata2Ouvrage
         if (!empty($this->data['articleBook']) && !empty($this->data['articleBook']['value'])
             && !empty($this->ouvrage->getParam('lien titre'))
             && $this->ouvrage->getParam('titre') !== null
-            && false === WikiTextUtil::isWikify($this->ouvrage->getParam('titre'))
+            && !WikiTextUtil::isWikify($this->ouvrage->getParam('titre'))
             && !empty($this->title)
         ) {
             // ajout wikilien titre

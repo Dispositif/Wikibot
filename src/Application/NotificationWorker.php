@@ -33,17 +33,17 @@ use Throwable;
  */
 class NotificationWorker
 {
-    const DEFAULT_WIKIS             = 'frwiki';
-    const DIFF_URL                  = 'https://fr.wikipedia.org/w/index.php?diff=';
-    const SUMMARY                   = '⚙ mise à jour notifications';
-    const SKIP_BOTPAGES
+    public const DEFAULT_WIKIS             = 'frwiki';
+    public const DIFF_URL                  = 'https://fr.wikipedia.org/w/index.php?diff=';
+    public const SUMMARY                   = '⚙ mise à jour notifications';
+    public const SKIP_BOTPAGES
                                     = [
             'Utilisateur:CodexBot',
             'Discussion utilisateur:CodexBot',
             'Utilisateur:ZiziBot',
             'Discussion utilisateur:ZiziBot',
         ];
-    const PUBLISH_LOG_ON_WIKI = false;
+    public const PUBLISH_LOG_ON_WIKI = false;
 
     /**
      * @var MediawikiApi
@@ -119,7 +119,7 @@ class NotificationWorker
             $this->processSpecialActions($notif);
         }
 
-        if (empty($wikilog)) {
+        if ($wikilog === []) {
             echo "Nothing.";
             return;
         }
@@ -197,7 +197,7 @@ class NotificationWorker
      */
     private function editWikilog(array $wikilog): bool
     {
-        if (empty($wikilog)) {
+        if ($wikilog === []) {
             return false;
         }
         $text = implode("\n", $wikilog)."\n";

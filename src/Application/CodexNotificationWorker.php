@@ -18,8 +18,8 @@ use App\Infrastructure\ServiceFactory;
 
 class CodexNotificationWorker extends NotificationWorker
 {
-    const ARTICLE_ANALYZED_FILENAME = __DIR__.'/resources/article_externRef_edited.txt';
-    const PROCESS_TASKNAME          = '🔔🌐 Amélioration de références : URL ⇒ ';
+    public const ARTICLE_ANALYZED_FILENAME = __DIR__.'/resources/article_externRef_edited.txt';
+    public const PROCESS_TASKNAME          = '🔔🌐 Amélioration de références : URL ⇒ ';
 
     /**
      * todo Refac that stupid idea :)

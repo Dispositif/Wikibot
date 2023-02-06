@@ -54,6 +54,7 @@ class ImportOuvrageFromApi
      */
     public function hydrateFromIsbn(string $isbn): OuvrageTemplate
     {
+        $e = null;
         $volume = $this->getDataByIsbn($isbn);
         /**
          * @var Volume
@@ -71,7 +72,7 @@ class ImportOuvrageFromApi
                 $this->ouvrage->setInfos($infos);
             }
         } catch (Throwable $e) {
-            throw new LogicException('Hydratation error '.$e->getMessage());
+            throw new LogicException('Hydratation error '.$e->getMessage(), $e->getCode(), $e);
         }
 
         return $this->ouvrage;

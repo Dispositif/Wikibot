@@ -32,17 +32,17 @@ class OuvrageEditWorker
 {
     use EditSummaryTrait, TalkPageEditTrait;
 
-    const TASK_NAME = '📗 Amélioration bibliographique'; // 📖📔📘📗
+    public const TASK_NAME = '📗 Amélioration bibliographique'; // 📖📔📘📗
     /**
      * poster ou pas le message en PD signalant les erreurs à résoudre
      */
-    const EDIT_SIGNALEMENT = true;
+    public const EDIT_SIGNALEMENT = true;
 
-    const CITATION_LIMIT                 = 150;
-    const DELAY_BOTFLAG_SECONDS          = 60;
-    const DELAY_NO_BOTFLAG_SECONDS       = 60;
-    const DELAY_MINUTES_AFTER_HUMAN_EDIT = 10;
-    const ERROR_MSG_TEMPLATE             = __DIR__.'/templates/message_errors.wiki';
+    public const CITATION_LIMIT                 = 150;
+    public const DELAY_BOTFLAG_SECONDS          = 60;
+    public const DELAY_NO_BOTFLAG_SECONDS       = 60;
+    public const DELAY_MINUTES_AFTER_HUMAN_EDIT = 10;
+    public const ERROR_MSG_TEMPLATE             = __DIR__.'/templates/message_errors.wiki';
 
     private $db;
     private $bot;
@@ -107,11 +107,12 @@ class OuvrageEditWorker
      */
     private function pageProcess()
     {
+        $e = null;
         $this->initialize();
 
         // get a random queue line
         $json = $this->db->getAllRowsToEdit(self::CITATION_LIMIT);
-        $data = json_decode($json, true);
+        $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
 
         if (empty($data)) {
             $this->log->alert("SKIP : OuvrageEditWorker / getAllRowsToEdit() no row to process\n");
@@ -139,7 +140,7 @@ class OuvrageEditWorker
         }
 
         // HACK
-        if (in_array($page->getLastEditor(), [getenv('BOT_NAME')])) {
+        if ($page->getLastEditor() == getenv('BOT_NAME')) {
             $this->log->notice("SKIP : édité recemment par bot.\n");
             $this->db->skipArticle($title);
 
@@ -195,7 +196,7 @@ class OuvrageEditWorker
 
 
         // GET all article lines from db
-        $this->log->info(sprintf("%s rows to process\n", count($data)));
+        $this->log->info(sprintf("%s rows to process\n", is_countable($data) ? count($data) : 0));
 
         // foreach line
         $changed = false;
@@ -218,7 +219,7 @@ class OuvrageEditWorker
         }
 
         // EDIT THE PAGE
-        if (!$this->wikiText) {
+        if ($this->wikiText === '' || $this->wikiText === '0') {
             return false;
         }
 
@@ -239,7 +240,7 @@ class OuvrageEditWorker
             // Invalid CSRF token.
             if (strpos($e->getMessage(), 'Invalid CSRF token') !== false) {
                 $this->log->alert("*** Invalid CSRF token \n");
-                throw new Exception('Invalid CSRF token');
+                throw new Exception('Invalid CSRF token', $e->getCode(), $e);
             } else {
                 $this->log->warning('Exception in editPage() '.$e->getMessage());
                 sleep(10);
@@ -313,7 +314,7 @@ class OuvrageEditWorker
 
         if (WikiTextUtil::isCommented($origin) || $this->isTextCreatingError($origin)) {
             $this->log->notice("SKIP: template avec commentaire HTML ou modèle problématique.");
-            $this->db->skipRow(intval($data['id']));
+            $this->db->skipRow((int) $data['id']);
 
             return false;
         }
@@ -321,7 +322,7 @@ class OuvrageEditWorker
         $find = mb_strpos($this->wikiText, $origin);
         if ($find === false) {
             $this->log->notice("String non trouvée.");
-            $this->db->skipRow(intval($data['id']));
+            $this->db->skipRow((int) $data['id']);
 
             return false;
         }
@@ -388,7 +389,7 @@ class OuvrageEditWorker
         // prédiction paramètre correct
         if (preg_match('#[^,]+(=>|⇒)[^,]+#', $data['modifs'], $matches) > 0) {
             $this->botFlag = false;
-            $this->addSummaryTag(sprintf('%s', $matches[0]));
+            $this->addSummaryTag($matches[0]);
         }
         if (preg_match('#\+\+sous-titre#', $data['modifs']) > 0) {
             $this->botFlag = false;

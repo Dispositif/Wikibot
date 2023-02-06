@@ -52,7 +52,7 @@ class ScanWiki2DB
     public function process():void
     {
         $titles = $this->pageList->getPageTitles();
-        if (empty($titles)) {
+        if ($titles === []) {
             echo "pageList vide.\n";
 
             return;
@@ -98,7 +98,7 @@ class ScanWiki2DB
             return false;
         }
 
-        if (empty($parsedTemplates)) {
+        if ($parsedTemplates === []) {
             return false;
         }
 

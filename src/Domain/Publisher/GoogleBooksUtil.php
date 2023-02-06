@@ -23,17 +23,17 @@ abstract class GoogleBooksUtil
 {
     use ArrayProcessTrait;
 
-    const DEFAULT_GOOGLEBOOKS_URL = 'https://books.google.com/books';
+    public const DEFAULT_GOOGLEBOOKS_URL = 'https://books.google.com/books';
     /**
      * todo refac regex with end of URL
      */
-    const GOOGLEBOOKS_START_URL_PATTERN = '(?:https?://(?:books|play)\.google\.[a-z\.]{2,6}/(?:books)?(?:books/[^\?]+\.html)?(?:/reader)?\?(?:[a-zA-Z=&]+&)?(?:[&=A-Z0-9-_%\+]+&)?(?:id|isbn)=|https://www\.google\.[a-z\.]{2,6}/books/edition/[^/]+/)';
+    public const GOOGLEBOOKS_START_URL_PATTERN = '(?:https?://(?:books|play)\.google\.[a-z\.]{2,6}/(?:books)?(?:books/[^\?]+\.html)?(?:/reader)?\?(?:[a-zA-Z=&]+&)?(?:[&=A-Z0-9-_%\+]+&)?(?:id|isbn)=|https://www\.google\.[a-z\.]{2,6}/books/edition/[^/]+/)';
 
-    const GOOGLEBOOKS_NEW_START_URL_PATTERN = 'https://www\.google\.[a-z.]{2,6}/books/edition/[^/]+/';
+    public const GOOGLEBOOKS_NEW_START_URL_PATTERN = 'https://www\.google\.[a-z.]{2,6}/books/edition/[^/]+/';
 
-    const GOOGLEBOOKS_ID_REGEX = '[0-9A-Za-z_\-]{12}';
+    public const GOOGLEBOOKS_ID_REGEX = '[0-9A-Za-z_\-]{12}';
 
-    const TRACKING_PARAMETERS
+    public const TRACKING_PARAMETERS
         = [
             'xtor',
             'ved',
@@ -50,7 +50,7 @@ abstract class GoogleBooksUtil
     public static function isTrackingUrl(string $url): bool
     {
         $data = self::parseGoogleBookQuery($url);
-        foreach ($data as $param => $value) {
+        foreach (array_keys($data) as $param) {
             if (in_array($param, self::TRACKING_PARAMETERS)) {
                 return true;
             }
@@ -171,11 +171,7 @@ abstract class GoogleBooksUtil
      */
     public static function isGoogleBookURL(string $text): bool
     {
-        if (preg_match('#^'.self::GOOGLEBOOKS_START_URL_PATTERN.'[^>\]} \n]+$#i', $text) > 0) {
-            return true;
-        }
-
-        return false;
+        return preg_match('#^'.self::GOOGLEBOOKS_START_URL_PATTERN.'[^>\]} \n]+$#i', $text) > 0;
     }
 
     /**
@@ -218,15 +214,10 @@ abstract class GoogleBooksUtil
      */
     private static function isNewGoogleBookUrl(string $url): bool
     {
-        if (preg_match(
+        return (bool) preg_match(
             '#^'.self::GOOGLEBOOKS_NEW_START_URL_PATTERN.self::GOOGLEBOOKS_ID_REGEX.'(?:&.+)?#',
             $url
-        )
-        ) {
-            return true;
-        }
-
-        return false;
+        );
     }
 
     private static function getIDFromNewGBurl(string $url): ?string

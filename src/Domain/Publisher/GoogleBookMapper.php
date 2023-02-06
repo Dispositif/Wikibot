@@ -25,12 +25,12 @@ use Scriptotek\GoogleBooks\Volume;
 class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
 {
     // raw URL or wiki-template ?
-    const MODE_RAW_URL = true;
+    public const MODE_RAW_URL = true;
 
-    const GOOGLE_URL_REPLACE = 'https://books.google.com/books?id=%s&printsec=frontcover';
+    public const GOOGLE_URL_REPLACE = 'https://books.google.com/books?id=%s&printsec=frontcover';
 
     // sous-titre non ajoutés :
-    const SUBTITLE_FILTER = ['roman', 'récit', 'poèmes', 'biographie'];
+    public const SUBTITLE_FILTER = ['roman', 'récit', 'poèmes', 'biographie'];
     /**
      * @var bool|null
      */
@@ -98,7 +98,7 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
         if (!isset($data)) {
             return null;
         }
-        if (preg_match('/[^0-9]?([12][0-9]{3})[^0-9]?/', $data, $matches) > 0) {
+        if (preg_match('/[^0-9]?([12]\d{3})[^0-9]?/', $data, $matches) > 0) {
             return (string)$matches[1];
         }
 
@@ -112,7 +112,7 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
      */
     private function convertIsbn(Volume $volume): ?string
     {
-        if (!isset($volume->industryIdentifiers)) {
+        if (!(property_exists($volume, 'industryIdentifiers') && $volume->industryIdentifiers !== null)) {
             return null;
         }
         // so isbn-13 replace isbn-10
@@ -138,7 +138,7 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
      */
     private function presentationEnLigne(Volume $volume): ?string
     {
-        if (empty($volume->id) || !in_array($volume->accessInfo->viewability, ['PARTIAL'])) {
+        if (empty($volume->id) || $volume->accessInfo->viewability != 'PARTIAL') {
             return null;
         }
 
@@ -152,7 +152,7 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
      */
     private function lireEnLigne(Volume $volume): ?string
     {
-        if (empty($volume->id) || !in_array($volume->accessInfo->viewability, ['ALL_PAGES'])) {
+        if (empty($volume->id) || $volume->accessInfo->viewability != 'ALL_PAGES') {
             return null;
         }
 

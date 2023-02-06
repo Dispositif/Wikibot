@@ -24,7 +24,7 @@ use Throwable;
 
 class WikiPageAction
 {
-    const SKIP_LANG_INDICATOR = 'fr'; // skip {{fr}} before template
+    public const SKIP_LANG_INDICATOR = 'fr'; // skip {{fr}} before template
 
     /**
      * @var Page
@@ -58,6 +58,7 @@ class WikiPageAction
      */
     public function __construct(MediawikiFactory $wiki, string $title)
     {
+        $e = null;
         $this->wiki = $wiki;
         $this->title = $title;
 
@@ -65,7 +66,7 @@ class WikiPageAction
             $this->page = $wiki->newPageGetter()->getFromTitle($title);
             $this->ns = $this->page->getPageIdentifier()->getTitle()->getNs();
         } catch (Throwable $e) {
-            throw new Exception('Erreur construct WikiPageAction '.$e->getMessage().$e->getFile().$e->getLine());
+            throw new Exception('Erreur construct WikiPageAction '.$e->getMessage().$e->getFile().$e->getLine(), $e->getCode(), $e);
         }
     }
 
@@ -182,14 +183,9 @@ class WikiPageAction
     {
         $updatedPage = $this->wiki->newPageGetter()->getFromTitle($this->title);
         $updatedLastRevision = $updatedPage->getRevisions()->getLatest();
-
         // Non-strict object equality comparison
         /** @noinspection PhpNonStrictObjectEqualityInspection */
-        if ($updatedLastRevision && $updatedLastRevision == $this->lastTextRevision) {
-            return false;
-        }
-
-        return true;
+        return !($updatedLastRevision && $updatedLastRevision == $this->lastTextRevision);
     }
 
     /**

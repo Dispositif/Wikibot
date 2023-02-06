@@ -20,7 +20,7 @@ use GuzzleHttp\Client;
  */
 class WstatImport implements PageListInterface
 {
-    const MAX_IMPORT = 50000;
+    public const MAX_IMPORT = 50000;
 
     private $params = [];
 
@@ -64,7 +64,7 @@ class WstatImport implements PageListInterface
         $data = [];
         while (true) {
             $json = $this->import($this->getUrl());
-            $raw = json_decode($json, true);
+            $raw = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
             if (empty($raw)) {
                 return [];
             }
@@ -75,7 +75,7 @@ class WstatImport implements PageListInterface
             }
 
             // next page initialisation
-            $this->params['start'] = (intval($this->params['start']) + $this->params['limit']);
+            $this->params['start'] = ((int) $this->params['start'] + $this->params['limit']);
             sleep(3);
         }
 
@@ -99,7 +99,7 @@ class WstatImport implements PageListInterface
             if ('<!-- + -->' === $line) {
                 continue;
             }
-            $this->max = ($this->max - 1);
+            $this->max -= 1;
 
             // validate and explode wstat data
             $pos = mb_strpos($line, '|', 0);

@@ -19,13 +19,13 @@ use Throwable;
  */
 class ExternRefWorker extends RefBotWorker
 {
-    const TASK_BOT_FLAG                       = false;
-    const SLEEP_AFTER_EDITION                 = 120; // sec
-    const MINUTES_DELAY_AFTER_LAST_HUMAN_EDIT = 10; // minutes
-    const CHECK_EDIT_CONFLICT                 = true;
-    const ARTICLE_ANALYZED_FILENAME           = __DIR__.'/resources/article_externRef_edited.txt';
-    const SKIP_ADQ                            = false;
-    const SKIP_LASTEDIT_BY_BOT                = false;
+    public const TASK_BOT_FLAG                       = false;
+    public const SLEEP_AFTER_EDITION                 = 120; // sec
+    public const MINUTES_DELAY_AFTER_LAST_HUMAN_EDIT = 10; // minutes
+    public const CHECK_EDIT_CONFLICT                 = true;
+    public const ARTICLE_ANALYZED_FILENAME           = __DIR__.'/resources/article_externRef_edited.txt';
+    public const SKIP_ADQ                            = false;
+    public const SKIP_LASTEDIT_BY_BOT                = false;
 
     protected $modeAuto = true;
     /**

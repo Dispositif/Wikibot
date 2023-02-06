@@ -33,10 +33,11 @@ abstract class TemplateParser extends WikiTextUtil
      */
     public static function parseAllTemplateByName(string $tplName, string $text): array
     {
+        $result = [];
         // Extract wikiText from that template
         $arrayTplText = self::findAllTemplatesByName($tplName, $text);
 
-        if (empty($arrayTplText) || empty($arrayTplText[0])) {
+        if ($arrayTplText === [] || empty($arrayTplText[0])) {
             return [];
         }
 
@@ -258,7 +259,7 @@ abstract class TemplateParser extends WikiTextUtil
             }
 
             // TODO : accept empty value ?
-            if (!isset($value) || 0 === strlen(trim($value))) {
+            if (!isset($value) || trim($value) === '') {
                 continue;
             }
             // reverse the sub-template pipe encoding
@@ -304,10 +305,6 @@ abstract class TemplateParser extends WikiTextUtil
     public static function isMultispacedTemplate(string $tplText): bool
     {
         // detect 4 spaces chars
-        if (preg_match('#{{[^}]+ {4}[^}]+}}#i', $tplText)) {
-            return true;
-        }
-
-        return false;
+        return (bool) preg_match('#{{[^}]+ {4}[^}]+}}#i', $tplText);
     }
 }

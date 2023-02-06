@@ -13,18 +13,18 @@ use Biblys\Isbn\Isbn;
 
 class IsbnFacade extends Isbn
 {
-    const ERROR_EMPTY = 'aucun code fourni';
+    public const ERROR_EMPTY = 'aucun code fourni';
 
-    const ERROR_INVALID_CHARACTERS = 'caractères invalides';
+    public const ERROR_INVALID_CHARACTERS = 'caractères invalides';
 
-    const ERROR_INVALID_LENGTH = 'trop court ou trop long';
+    public const ERROR_INVALID_LENGTH = 'trop court ou trop long';
 
-    const ERROR_INVALID_PRODUCT_CODE = 'code produit devrait être 978 ou 979';
+    public const ERROR_INVALID_PRODUCT_CODE = 'code produit devrait être 978 ou 979';
 
-    const ERROR_INVALID_COUNTRY_CODE = 'code pays inconnu';
+    public const ERROR_INVALID_COUNTRY_CODE = 'code pays inconnu';
 
     // TODO: complete array.
-    const ISBN_LANGUAGE_CODES
+    public const ISBN_LANGUAGE_CODES
         = [
             '0' => 'en',
             '1' => 'en',

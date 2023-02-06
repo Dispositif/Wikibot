@@ -24,13 +24,13 @@ use Mediawiki\DataModel\EditInfo;
  */
 class VoteAdmin
 {
-    const SUMMARY               = '/* Approbation */ 🗳️ ';
-    const FILENAME_PHRASES_POUR = __DIR__.'/resources/phrases_voteAdmin_pour.txt';
-    const FILENAME_BLACKLIST    = __DIR__.'/resources/blacklist.txt';
-    const MIN_VALUE_POUR        = 0.65;
-    const MIN_COUNT_POUR        = 7;
-    const MIN_ADMIN_SCORE       = 500;
-    const BOURRAGE_DETECT_REGEX = '#\[\[(?:User|Utilisateur|Utilisatrice):(Irønie|CodexBot|ZiziBot)#i';
+    public const SUMMARY               = '/* Approbation */ 🗳️ ';
+    public const FILENAME_PHRASES_POUR = __DIR__.'/resources/phrases_voteAdmin_pour.txt';
+    public const FILENAME_BLACKLIST    = __DIR__.'/resources/blacklist.txt';
+    public const MIN_VALUE_POUR        = 0.65;
+    public const MIN_COUNT_POUR        = 7;
+    public const MIN_ADMIN_SCORE       = 500;
+    public const BOURRAGE_DETECT_REGEX = '#\[\[(?:User|Utilisateur|Utilisatrice):(Irønie|CodexBot|ZiziBot)#i';
 
     /**
      * @var string
@@ -102,7 +102,7 @@ class VoteAdmin
     private function selectVoteText(): string
     {
         $sentences = file(self::FILENAME_PHRASES_POUR, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        if (!is_array($sentences) || empty($sentences)) {
+        if (!is_array($sentences) || $sentences === []) {
             throw new ConfigException('Pas de phrases disponibles');
         }
 
@@ -178,11 +178,7 @@ class VoteAdmin
 
             return false;
         }
-        if (!preg_match('#\{\{Élection administrateur en cours#i', $wikitext)) {
-            return false;
-        }
-
-        return true;
+        return (bool) preg_match('#\{\{Élection administrateur en cours#i', $wikitext);
     }
 
     /**
@@ -211,19 +207,14 @@ class VoteAdmin
         echo 'Stat pour/contre+neutre : '.(100 * $stat)." % \n";
 
         $this->comment .= 'seuil<'.$pour.', suiveur='.round($stat, 2).', rancune=0';
-
-        if ($pour >= self::MIN_COUNT_POUR && $stat >= self::MIN_VALUE_POUR) {
-            return true;
-        }
-
-        return false;
+        return $pour >= self::MIN_COUNT_POUR && $stat >= self::MIN_VALUE_POUR;
     }
 
     private function getBlacklist(): array
     {
         $list = file(self::FILENAME_BLACKLIST, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
-        return $list ? $list : [];
+        return $list ?: [];
     }
 
     /**
@@ -275,7 +266,7 @@ class VoteAdmin
     {
         $html = $this->getAdminScoreHtml();
 
-        if (!empty($html) && preg_match('#<th>Total</th>[^<]*<th>([0-9]+)</th>#', $html, $matches)) {
+        if (!empty($html) && preg_match('#<th>Total</th>[^<]*<th>(\d+)</th>#', $html, $matches)) {
             return (int)$matches[1];
         }
 

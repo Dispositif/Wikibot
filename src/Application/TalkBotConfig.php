@@ -22,10 +22,10 @@ use Mediawiki\DataModel\EditInfo;
  */
 class TalkBotConfig extends WikiBotConfig
 {
-    const BOT_TALK_SUMMARY = 'Réponse artificielle';
+    public const BOT_TALK_SUMMARY = 'Réponse artificielle';
 
-    const BOT_TALK_FILE       = __DIR__.'/resources/phrases_zizibot.txt';
-    const TALKCONFIG_FILENAME = __DIR__.'/resources/botTalk_config.json';
+    public const BOT_TALK_FILE       = __DIR__.'/resources/phrases_zizibot.txt';
+    public const TALKCONFIG_FILENAME = __DIR__.'/resources/botTalk_config.json';
 
     /**
      * Add a freaky response in the bottom of the talk page.
@@ -49,7 +49,7 @@ class TalkBotConfig extends WikiBotConfig
 
         // No response if the last edition from bot or bot owner
         if (!$last->getUser() || 'Flow talk page manager' === $last->getUser()
-            || in_array($last->getUser(), [getenv('BOT_NAME')])
+            || $last->getUser() == getenv('BOT_NAME')
         ) {
             return false;
         }
@@ -60,14 +60,14 @@ class TalkBotConfig extends WikiBotConfig
         }
 
         // No response if time < 24h since last bot owner response
-        if (in_array($last->getUser(), [getenv('BOT_OWNER')])) {
-            $talkConfig['owner_last_time'] = intval(strtotime($last->getTimestamp()));
-            file_put_contents(self::TALKCONFIG_FILENAME, json_encode($talkConfig));
+        if ($last->getUser() == getenv('BOT_OWNER')) {
+            $talkConfig['owner_last_time'] = (int) strtotime($last->getTimestamp());
+            file_put_contents(self::TALKCONFIG_FILENAME, json_encode($talkConfig, JSON_THROW_ON_ERROR));
 
             return false;
         }
         // No response if time < 24h since last owner response
-        if (isset($talkConfig['owner_last_time']) && intval($talkConfig['owner_last_time']) > (time() - 60 * 60 * 48)) {
+        if (isset($talkConfig['owner_last_time']) && (int) $talkConfig['owner_last_time'] > (time() - 60 * 60 * 48)) {
             echo "No response if time < 24h after last owner response\n";
 
             return false;
@@ -93,14 +93,14 @@ class TalkBotConfig extends WikiBotConfig
      * @return string
      * @throws Exception
      */
-    private function generateTalkText(?string $toEditor = null, ?string $identation = ':')
+    private function generateTalkText(?string $toEditor = null, ?string $identation = ':'): string
     {
         if ($toEditor === 'Flow talk page manager') {
             $toEditor = null;
         }
         $to = ($toEditor) ? sprintf('@[[User:%s|%s]] : ', $toEditor, $toEditor) : ''; // {{notif}}
         $sentence = TextUtil::mb_ucfirst($this->getRandomSentence());
-        if (!$sentence) {
+        if ($sentence === '') {
             throw new Exception('no sentence');
         }
 
@@ -120,20 +120,18 @@ class TalkBotConfig extends WikiBotConfig
         // extract last line
         $lines = explode("\n", trim($text));
         $lastLine = $lines[count($lines) - 1];
-        if (preg_match('#^(:*).+#', $lastLine, $matches)) {
-            if (!empty($matches[1])) {
-                $nextIdent = $matches[1].':';
-                if (empty($author)) {
-                    return $nextIdent;
-                }
-                // search author signature link to check that he wrote on the page bottom
-                if (preg_match(
-                    '#\[\[(?:User|Utilisateur|Utilisatrice):'.preg_quote($author).'[|\]]#i',
-                    $matches[0]
-                )
-                ) {
-                    return $nextIdent;
-                }
+        if (preg_match('#^(:*).+#', $lastLine, $matches) && !empty($matches[1])) {
+            $nextIdent = $matches[1].':';
+            if (empty($author)) {
+                return $nextIdent;
+            }
+            // search author signature link to check that he wrote on the page bottom
+            if (preg_match(
+                '#\[\[(?:User|Utilisateur|Utilisatrice):'.preg_quote($author, '#').'[|\]]#i',
+                $matches[0]
+            )
+            ) {
+                return $nextIdent;
             }
         }
 
@@ -172,7 +170,7 @@ class TalkBotConfig extends WikiBotConfig
         try {
             $text = file_get_contents(self::TALKCONFIG_FILENAME);
 
-            return json_decode($text, true);
+            return json_decode($text, true, 512, JSON_THROW_ON_ERROR);
         } catch (\Throwable $e) {
             return [];
         }

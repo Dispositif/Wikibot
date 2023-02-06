@@ -64,7 +64,7 @@ class ExternHttpClient implements HttpClientInterface
 
         if (200 !== $response->getStatusCode()) {
             echo 'HTTP error '.$response->getStatusCode();
-            if ($this->log) {
+            if ($this->log !== null) {
                 $this->log->error('HTTP error '.$response->getStatusCode().' '.$response->getReasonPhrase());
             }
 
@@ -81,11 +81,7 @@ class ExternHttpClient implements HttpClientInterface
         //$url = filter_var($url, FILTER_SANITIZE_URL); // strip "é" !!!
         // FILTER_VALIDATE_URL restreint à caractères ASCII : renvoie false avec "é" dans URL / not multibyte capable
         // !filter_var($url, FILTER_VALIDATE_URL)
-        if (!preg_match('#^https?://[^ ]+$#i', $url)) {
-            return false;
-        }
-
-        return true;
+        return (bool) preg_match('#^https?://[^ ]+$#i', $url);
     }
 
     /**
@@ -98,6 +94,7 @@ class ExternHttpClient implements HttpClientInterface
      */
     private function normalizeHtml(string $html, ?string $url = ''): ?string
     {
+        $e = null;
         if (empty($html)) {
             return $html;
         }
@@ -120,7 +117,7 @@ class ExternHttpClient implements HttpClientInterface
                 return '';
             }
         } catch (Throwable $e) {
-            throw new DomainException("error converting : $charset to UTF-8".$url);
+            throw new DomainException("error converting : $charset to UTF-8".$url, $e->getCode(), $e);
         }
 
         return $html2;

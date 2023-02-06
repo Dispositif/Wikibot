@@ -130,7 +130,7 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
             }
         }
 
-        if (!empty($res)) {
+        if ($res !== []) {
             return implode($glue, $res);
         }
 
@@ -142,10 +142,10 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
         $isbn = $this->xpath2string('//mxc:datafield[@tag="010"]/mxc:subfield[@code="a"][1]') ?? '';
 
         // data pourrie fréquente :  "9789004232891, 9004232893"
-        if (preg_match('#([0-9]{13})#', $isbn, $matches)) {
+        if (preg_match('#(\d{13})#', $isbn, $matches)) {
             return $matches[1];
         }
-        if (preg_match('#([0-9]{10})#', $isbn, $matches)) {
+        if (preg_match('#(\d{10})#', $isbn, $matches)) {
             return $matches[1];
         }
         // ISBN avec tiret
@@ -161,11 +161,11 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
         if (!$raw) {
             return null;
         }
-        if (preg_match('#^0000(000[0-4])([0-9]{4})([0-9]{3}[0-9X])$#', $raw, $matches) > 0) {
+        if (preg_match('#^0000(000[0-4])(\d{4})(\d{3}[0-9X])$#', $raw, $matches) > 0) {
             return $raw;
         }
         // BnF curious format of ISNI
-        if (preg_match('#^ISNI0000(000[0-4])([0-9]{4})([0-9]{3}[0-9X])$#', $raw, $matches) > 0) {
+        if (preg_match('#^ISNI0000(000[0-4])(\d{4})(\d{3}[0-9X])$#', $raw, $matches) > 0) {
             return sprintf('0000 %s %s %s', $matches[1], $matches[2], $matches[3]);
         }
 
@@ -193,7 +193,7 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
     private function convertPages(): ?string
     {
         $raw = $this->xpath2string('//mxc:datafield[@tag="215"]/mxc:subfield[@code="a"]');
-        if (!empty($raw) && preg_match('#([0-9]{2,}) p\.#', $raw, $matches) > 0) {
+        if (!empty($raw) && preg_match('#(\d{2,}) p\.#', $raw, $matches) > 0) {
             return (string)$matches[1];
         }
 
@@ -284,7 +284,7 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
     {
         $raw = $this->xpath2string('//srw:extraRecordData[1]/ixm:attr[@name="LastModificationDate"][1]');
         // 20190922
-        if ($raw && preg_match('#^([0-9]{4})[0-9]{4}$#', $raw, $matches) > 0) {
+        if ($raw && preg_match('#^(\d{4})\d{4}$#', $raw, $matches) > 0) {
             return sprintf('BnF:%s', $matches[1]);
         }
 

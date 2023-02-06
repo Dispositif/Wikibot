@@ -24,7 +24,7 @@ use Throwable;
  */
 class DbAdapter implements QueueInterface
 {
-    const OPTI_VALID_DATE = '2020-04-05 00:00:00'; // v0.77
+    public const OPTI_VALID_DATE = '2020-04-05 00:00:00'; // v0.77
     protected $db;
     protected $pdoConn; // v.34 sous-titre sans maj
 
@@ -122,6 +122,7 @@ class DbAdapter implements QueueInterface
      */
     public function getAllRowsToEdit(?int $limit = 100): ?string
     {
+        $e = null;
         try {
             $pageInfo = $this->pdoConn->query(
                 '
@@ -158,9 +159,9 @@ class DbAdapter implements QueueInterface
                 'SELECT * FROM page_ouvrages WHERE page=:page ORDER BY optidate DESC',
                 ['page' => $page]
             );
-            $json = json_encode($data);
+            $json = json_encode($data, JSON_THROW_ON_ERROR);
         } catch (Throwable $e) {
-            throw new Exception('SQL : No more queue to process');
+            throw new Exception('SQL : No more queue to process', $e->getCode(), $e);
         }
 
         return $json;

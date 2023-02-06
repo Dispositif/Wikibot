@@ -36,7 +36,7 @@ class PageList implements PageListInterface
 
     public function count():int
     {
-        return count($this->titles);
+        return is_countable($this->titles) ? count($this->titles) : 0;
     }
 
     /**

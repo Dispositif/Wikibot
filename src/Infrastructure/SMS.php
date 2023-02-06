@@ -54,10 +54,7 @@ class SMS
         $url = getenv('FREE_SMS_URL').urlencode($message);
 
         $response = $this->client->get($url, ['timeout' => 120]);
-        if (200 === $response->getStatusCode()) {
-            return true;
-        }
 
-        return false;
+        return 200 === $response->getStatusCode();
     }
 }

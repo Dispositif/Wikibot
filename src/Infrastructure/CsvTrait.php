@@ -77,6 +77,7 @@ trait CsvTrait
      */
     public function deleteFirstLineCsv(string $filename): void
     {
+        $data = [];
         if (!file_exists($filename)) {
             throw new Exception('no file '.$filename);
         }

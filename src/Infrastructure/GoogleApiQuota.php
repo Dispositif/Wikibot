@@ -27,10 +27,10 @@ use Throwable;
 class GoogleApiQuota
 {
     /** {"date":"2020-03-23T00:19:56-07:00","count":43}  */
-    const JSON_FILENAME   = __DIR__.'/resources/google_quota.json';
-    const REBOOT_TIMEZONE = 'America/Los_Angeles';
-    const REBOOT_HOUR     = 0;
-    const DAILY_QUOTA     = 1000;
+    public const JSON_FILENAME   = __DIR__.'/resources/google_quota.json';
+    public const REBOOT_TIMEZONE = 'America/Los_Angeles';
+    public const REBOOT_HOUR     = 0;
+    public const DAILY_QUOTA     = 1000;
 
     /**
      * @var DateTime
@@ -76,7 +76,7 @@ class GoogleApiQuota
 
         try {
             $json = file_get_contents(static::JSON_FILENAME);
-            $array = (array)json_decode($json, true);
+            $array = (array)json_decode($json, true, 512, JSON_THROW_ON_ERROR);
         } catch (Throwable $e) {
             throw new ConfigException('Error on Google Quota file : reading or JSON malformed.');
         }
@@ -118,7 +118,7 @@ class GoogleApiQuota
             'date' => $this->lastDate->format('c'),
             'count' => $this->count,
         ];
-        $result = file_put_contents(static::JSON_FILENAME, json_encode($data));
+        $result = file_put_contents(static::JSON_FILENAME, json_encode($data, JSON_THROW_ON_ERROR));
         if ($result === false) {
             throw new ConfigException("Can't write on Google Quota file.");
         }
@@ -137,12 +137,7 @@ class GoogleApiQuota
     public function isQuotaReached(): bool
     {
         $this->checkNewReboot();
-
-        if ($this->count >= static::DAILY_QUOTA) {
-            return true;
-        }
-
-        return false;
+        return $this->count >= static::DAILY_QUOTA;
     }
 
     /**
@@ -151,7 +146,7 @@ class GoogleApiQuota
     public function increment(): void
     {
         $this->checkNewReboot();
-        $this->count = $this->count + 1;
+        $this->count += 1;
         $this->saveDateInFile();
     }
 }

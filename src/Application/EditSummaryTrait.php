@@ -39,7 +39,7 @@ trait EditSummaryTrait
         // Start summary with "WikiBotConfig" when using botFlag, else "*"
         $prefix = ($this->botFlag) ? 'bot ' : ''; //🧐 🤖
         // add "/!\" when errorWarning
-        $prefix .= (!empty($this->errorWarning)) ? ' ⚠️' : '';
+        $prefix .= (empty($this->errorWarning)) ? '' : ' ⚠️';
 
         // basic modifs
         $citeSummary = implode(' ', $this->citationSummary);

@@ -23,7 +23,7 @@ use HttpException;
  */
 class CirrusSearch implements PageListInterface
 {
-    const BASE_URL = 'https://fr.wikipedia.org/w/api.php';
+    public const BASE_URL = 'https://fr.wikipedia.org/w/api.php';
 
     private $params;
     private $options;
@@ -104,7 +104,8 @@ class CirrusSearch implements PageListInterface
      */
     private function httpRequest(): array
     {
-        if (!$this->getURL()) {
+        $e = null;
+        if ($this->getURL() === '' || $this->getURL() === '0') {
             throw new ConfigException('CirrusSearch null URL');
         }
 
@@ -122,9 +123,9 @@ class CirrusSearch implements PageListInterface
             return [];
         }
         try {
-            $array = json_decode($json, true);
+            $array = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
         } catch (\Throwable $e) {
-            throw new \Exception($e->getMessage());
+            throw new \Exception($e->getMessage(), $e->getCode(), $e);
         }
 
         return $array;

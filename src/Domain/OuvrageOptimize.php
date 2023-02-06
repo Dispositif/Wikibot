@@ -29,11 +29,11 @@ class OuvrageOptimize extends AbstractTemplateOptimizer
 {
     use OptimizeISBNTrait;
 
-    const CONVERT_GOOGLEBOOK_TEMPLATE = false; // change OuvrageOptimizeTest !!
+    public const CONVERT_GOOGLEBOOK_TEMPLATE = false; // change OuvrageOptimizeTest !!
 
-    const WIKI_LANGUAGE = 'fr';
+    public const WIKI_LANGUAGE = 'fr';
 
-    const PUBLISHER_FRWIKI_FILENAME = __DIR__.'/resources/data_editors_wiki.json';
+    public const PUBLISHER_FRWIKI_FILENAME = __DIR__.'/resources/data_editors_wiki.json';
 
     public $notCosmetic = false;
 
@@ -99,7 +99,7 @@ class OuvrageOptimize extends AbstractTemplateOptimizer
         // translation : "London"->"Londres"
         $manager = new FileManager();
         $row = $manager->findCSVline(__DIR__.'/resources/traduction_ville.csv', $location);
-        if (!empty($row) && !empty($row[1])) {
+        if ($row !== [] && !empty($row[1])) {
             $this->setParam('lieu', $row[1]);
             $this->addSummaryLog('lieu francisé');
             $this->notCosmetic = true;
@@ -174,12 +174,12 @@ class OuvrageOptimize extends AbstractTemplateOptimizer
         $machine = new PredictAuthors();
         $res = $machine->predictAuthorNames($auteur1);
 
-        if (1 === count($res)) {
+        if (1 === count((array) $res)) {
             // auteurs->auteur?
             return;
         }
         // Many authors... and empty "auteur2"
-        if (count($res) >= 2 && empty($auteur2)) {
+        if (count((array) $res) >= 2 && empty($auteur2)) {
             // delete author-params
             array_map(
                 function ($param) {
@@ -188,7 +188,7 @@ class OuvrageOptimize extends AbstractTemplateOptimizer
                 ['auteur', 'auteurs', 'prénom1', 'nom1']
             );
             // iterate and edit new values
-            $count = count($res);
+            $count = count((array) $res);
             for ($i = 0; $i < $count; ++$i) {
                 $this->setParam(sprintf('auteur%s', $i + 1), $res[$i]);
             }
@@ -240,11 +240,11 @@ class OuvrageOptimize extends AbstractTemplateOptimizer
     {
         $annee = $this->getParam('année');
         if (!empty($annee) && is_numeric($annee)) {
-            return intval($annee);
+            return (int) $annee;
         }
         $date = $this->getParam('date');
-        if ($date && preg_match('#[^0-9]?([12][0-9][0-9][0-9])[^0-9]?#', $date, $matches) > 0) {
-            return intval($matches[1]);
+        if ($date && preg_match('#[^0-9]?([12]\d\d\d)[^0-9]?#', $date, $matches) > 0) {
+            return (int) $matches[1];
         }
 
         return null;
@@ -279,11 +279,7 @@ class OuvrageOptimize extends AbstractTemplateOptimizer
     protected function detectColon($param): bool
     {
         // > 0 don't count a starting colon ":bla"
-        if ($this->hasParamValue($param) && mb_strrpos($this->getParam('titre'), ':') > 0) {
-            return true;
-        }
-
-        return false;
+        return $this->hasParamValue($param) && mb_strrpos($this->getParam('titre'), ':') > 0;
     }
 
     protected function extractSubTitle(): void
@@ -328,7 +324,7 @@ class OuvrageOptimize extends AbstractTemplateOptimizer
 
         if (self::CONVERT_GOOGLEBOOK_TEMPLATE) {
             $template = GoogleLivresTemplate::createFromURL($url);
-            if ($template) {
+            if ($template !== null) {
                 $this->setParam($param, $template->serialize());
                 $this->addSummaryLog('{Google}');
                 $this->notCosmetic = true;
@@ -582,12 +578,10 @@ class OuvrageOptimize extends AbstractTemplateOptimizer
     protected function moveDate2Year()
     {
         $date = $this->getParam('date') ?? false;
-        if ($date) {
-            if (preg_match('#^-?[12][0-9][0-9][0-9]$#', $date)) {
-                $this->setParam('année', $date);
-                $this->unsetParam('date');
-                //$this->log('>année');
-            }
+        if ($date && preg_match('#^-?[12]\d\d\d$#', $date)) {
+            $this->setParam('année', $date);
+            $this->unsetParam('date');
+            //$this->log('>année');
         }
     }
 
@@ -606,7 +600,7 @@ class OuvrageOptimize extends AbstractTemplateOptimizer
             //                return;
             //            }
             if (preg_match(
-                    '#(ill\.|couv\.|in-[0-9]|in-fol|poche|broché|relié|{{unité|{{Dunité|[0-9]{2} ?cm|\|cm}}|vol\.|A4)#i',
+                    '#(ill\.|couv\.|in-\d|in-fol|poche|broché|relié|{{unité|{{Dunité|\d{2} ?cm|\|cm}}|vol\.|A4)#i',
                     $value
                 ) > 0
             ) {
@@ -697,8 +691,9 @@ class OuvrageOptimize extends AbstractTemplateOptimizer
      */
     public function predictPublisherWikiTitle(string $publisherName): ?string
     {
+        $data = [];
         try {
-            $data = json_decode(file_get_contents(self::PUBLISHER_FRWIKI_FILENAME), true);
+            $data = json_decode(file_get_contents(self::PUBLISHER_FRWIKI_FILENAME), true, 512, JSON_THROW_ON_ERROR);
         } catch (\Throwable $e) {
             $this->log->error('Catch EDITOR_TITLES_FILENAME import '.$e->getMessage());
         }
@@ -724,7 +719,7 @@ class OuvrageOptimize extends AbstractTemplateOptimizer
             $numeroEdition = $this->getParam("numéro d'édition");
             if (empty($this->getParam('éditeur'))
                 && $this->getEditionOrdinalNumber($numeroEdition) === null
-                && $this->isEditionYear($numeroEdition) === false
+                && !$this->isEditionYear($numeroEdition)
             ) {
                 $this->setParam('éditeur', $numeroEdition);
                 $this->unsetParam("numéro d'édition");
@@ -765,12 +760,12 @@ class OuvrageOptimize extends AbstractTemplateOptimizer
             return null;
         }
         // {{5e}}
-        if (preg_match('#^\{\{([0-9]+)e\}\}$#', $str, $matches)) {
+        if (preg_match('#^\{\{(\d+)e\}\}$#', $str, $matches)) {
             return $matches[1];
         }
         // "1st ed."
         if (preg_match(
-            '#^([0-9]+) ?(st|nd|rd|th|e|ème)? ?(ed|ed\.|edition|reprint|published|publication)?$#i',
+            '#^(\d+) ?(st|nd|rd|th|e|ème)? ?(ed|ed\.|edition|reprint|published|publication)?$#i',
             $str,
             $matches
         )
@@ -783,10 +778,6 @@ class OuvrageOptimize extends AbstractTemplateOptimizer
 
     private function isEditionYear(string $str): bool
     {
-        if (preg_match('#^[0-9]{4}$#', $str) && intval($str) > 1700 && intval($str) < 2025) {
-            return true;
-        }
-
-        return false;
+        return preg_match('#^\d{4}$#', $str) && (int) $str > 1700 && (int) $str < 2025;
     }
 }

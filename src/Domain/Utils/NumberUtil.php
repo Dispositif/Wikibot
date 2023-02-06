@@ -12,7 +12,7 @@ namespace App\Domain\Utils;
 class NumberUtil
 {
     // tome et volume en romain
-    const ROMAN_GLYPH
+    public const ROMAN_GLYPH
         = [
             1000 => 'M',
             900 => 'CM',

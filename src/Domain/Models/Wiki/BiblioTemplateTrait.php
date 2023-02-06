@@ -50,9 +50,8 @@ trait BiblioTemplateTrait
         for ($i = 1; $i < 4; ++$i) {
             $id .= ($this->getParam('nom'.$i)) ?? $this->getParam('auteur'.$i) ?? '';
         }
-        $id .= $this->getParam('année') ?? '';
 
-        return $id;
+        return $id . ($this->getParam('année') ?? '');
     }
 
 }

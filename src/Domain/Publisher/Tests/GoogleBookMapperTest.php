@@ -18,7 +18,7 @@ class GoogleBookMapperTest extends TestCase
     public function setUp(): void
     {
         $text = file_get_contents(__DIR__.'/googleBook.json');
-        $json = json_decode($text);
+        $json = json_decode($text, null, 512, JSON_THROW_ON_ERROR);
 
         $volumeInfo = $json->items[0]->volumeInfo;
         $this->volume = new Volume('bla', $volumeInfo);

@@ -24,14 +24,14 @@ use Throwable;
 
 abstract class AbstractBotTaskWorker
 {
-    const TASK_BOT_FLAG                       = false;
-    const SLEEP_AFTER_EDITION                 = 60;
-    const MINUTES_DELAY_AFTER_LAST_HUMAN_EDIT = 15;
-    const CHECK_EDIT_CONFLICT                 = true;
-    const ARTICLE_ANALYZED_FILENAME           = __DIR__.'/resources/article_edited.txt';
-    const SKIP_LASTEDIT_BY_BOT                = true;
-    const SKIP_NOT_IN_MAIN_WIKISPACE          = true;
-    const SKIP_ADQ                            = true;
+    public const TASK_BOT_FLAG                       = false;
+    public const SLEEP_AFTER_EDITION                 = 60;
+    public const MINUTES_DELAY_AFTER_LAST_HUMAN_EDIT = 15;
+    public const CHECK_EDIT_CONFLICT                 = true;
+    public const ARTICLE_ANALYZED_FILENAME           = __DIR__.'/resources/article_edited.txt';
+    public const SKIP_LASTEDIT_BY_BOT                = true;
+    public const SKIP_NOT_IN_MAIN_WIKISPACE          = true;
+    public const SKIP_ADQ                            = true;
 
     /**
      * @var PageListInterface
@@ -80,7 +80,7 @@ abstract class AbstractBotTaskWorker
         $this->log = $bot->log;
         $this->wiki = $wiki;
         $this->bot = $bot;
-        if ($pagesGen) {
+        if ($pagesGen !== null) {
             $this->pageListGenerator = $pagesGen;
         }
         $this->setUpInConstructor();
@@ -252,6 +252,7 @@ abstract class AbstractBotTaskWorker
 
     protected function doEdition(string $newText): void
     {
+        $e = null;
         $summaryText = $this->generateSummaryText();
 
         try {
@@ -262,7 +263,7 @@ abstract class AbstractBotTaskWorker
             );
         } catch (Throwable $e) {
             if (preg_match('#Invalid CSRF token#', $e->getMessage())) {
-                throw new \Exception('Invalid CSRF token');
+                throw new \Exception('Invalid CSRF token', $e->getCode(), $e);
             }
 
             // If not a critical edition error

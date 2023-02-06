@@ -25,7 +25,7 @@ use Psr\Log\NullLogger;
  */
 class OuvrageComplete
 {
-    const WIKI_LANGUAGE = 'fr';
+    public const WIKI_LANGUAGE = 'fr';
 
     /**
      * @var OuvrageTemplate
@@ -73,7 +73,7 @@ class OuvrageComplete
      * @return bool
      * @throws Exception
      */
-    private function complete()
+    private function complete(): bool
     {
         // si livre suspect, on stoppe
         $sameBook = $this->predictSameBook();
@@ -250,16 +250,12 @@ class OuvrageComplete
      * @return bool
      * @throws Exception
      */
-    private function predictSameBook()
+    private function predictSameBook(): bool
     {
         if ($this->hasSameISBN() && ($this->hasSameBookTitles() || $this->hasSameAuthors())) {
             return true;
         }
-        if ($this->hasSameBookTitles() && $this->hasSameAuthors()) {
-            return true;
-        }
-
-        return false;
+        return $this->hasSameBookTitles() && $this->hasSameAuthors();
     }
 
     /**
@@ -278,13 +274,8 @@ class OuvrageComplete
 
             return true;
         }
-
         // Si auteur manquant sur wikipedia
-        if (empty($this->authorsFromBook($this->origin))) {
-            return true;
-        }
-
-        return false;
+        return empty($this->authorsFromBook($this->origin));
     }
 
     /**
@@ -339,12 +330,7 @@ class OuvrageComplete
         // TODO replace with calcul isbn13
         $isbn1 = IsbnFacade::isbn2ean($this->origin->getParam('isbn'));
         $isbn2 = IsbnFacade::isbn2ean($this->book->getParam('isbn'));
-
-        if ($isbn1 === $isbn2) {
-            return true;
-        }
-
-        return false;
+        return $isbn1 === $isbn2;
     }
 
     /**
@@ -372,28 +358,23 @@ class OuvrageComplete
         }
 
         // simple : titres identiques mais sous-titre manquant
-        if ($this->stripAll($this->origin->getParam('titre')) === $this->stripAll($this->book->getParam('titre'))) {
-            // même titre mais sous-titre manquant
-            if (!$this->origin->hasParamValue('sous-titre')) {
-                $this->origin->setParam('sous-titre', $this->book->getParam('sous-titre'));
-                $this->log('++sous-titre');
-                $this->major = true;
-                $this->notCosmetic = true;
+        // même titre mais sous-titre manquant
+        if ($this->stripAll($this->origin->getParam('titre')) === $this->stripAll($this->book->getParam('titre')) && !$this->origin->hasParamValue('sous-titre')) {
+            $this->origin->setParam('sous-titre', $this->book->getParam('sous-titre'));
+            $this->log('++sous-titre');
+            $this->major = true;
+            $this->notCosmetic = true;
 
-                return;
-            }
+            return;
         }
 
         // compliqué : sous-titre inclus dans titre original => on copie titre/sous-titre de book
         // Exclusion wikification "titre=[[Fu : Bar]]" pour éviter => "titre=Fu|sous-titre=Bar"
         if ($this->charsFromBigTitle($this->origin) === $this->charsFromBigTitle($this->book)
-            && !WikiTextUtil::isWikify($this->origin->getParam('titre') ?? '')
-        ) {
-            if (!$this->origin->hasParamValue('sous-titre')) {
-                $this->origin->setParam('titre', $this->book->getParam('titre'));
-                $this->origin->setParam('sous-titre', $this->book->getParam('sous-titre'));
-                $this->log('>sous-titre');
-            }
+            && !WikiTextUtil::isWikify($this->origin->getParam('titre') ?? '') && !$this->origin->hasParamValue('sous-titre')) {
+            $this->origin->setParam('titre', $this->book->getParam('titre'));
+            $this->origin->setParam('sous-titre', $this->book->getParam('sous-titre'));
+            $this->log('>sous-titre');
         }
     }
 
@@ -434,11 +415,7 @@ class OuvrageComplete
             return true;
         }
         // titre manquant sur wiki
-        if (empty($originBigTitle)) {
-            return true;
-        }
-
-        return false;
+        return empty($originBigTitle);
     }
 
     /**
@@ -480,8 +457,7 @@ class OuvrageComplete
     {
         $text = str_replace([' and ', ' et ', '&'], '', $text);
         $text = str_replace(' ', '', $text);
-        $text = mb_strtolower(TextUtil::stripPunctuation(TextUtil::stripAccents($text)));
 
-        return $text;
+        return mb_strtolower(TextUtil::stripPunctuation(TextUtil::stripAccents($text)));
     }
 }

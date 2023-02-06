@@ -21,13 +21,13 @@ use Exception;
  */
 class GoogleLivresTemplate extends AbstractWikiTemplate
 {
-    const WIKITEMPLATE_NAME = 'Google Livres';
+    public const WIKITEMPLATE_NAME = 'Google Livres';
 
-    const REQUIRED_PARAMETERS = ['id'];
+    public const REQUIRED_PARAMETERS = ['id'];
 
-    const MINIMUM_PARAMETERS = ['id' => ''];
+    public const MINIMUM_PARAMETERS = ['id' => ''];
 
-    const PARAM_ALIAS
+    public const PARAM_ALIAS
         = [
             '1' => 'id',
             '2' => 'titre',
@@ -95,12 +95,12 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
             $data['page autre'] = $gooData['pg'];
 
             //  pg=PAx => "page=x"
-            if (preg_match('/^PA([0-9]+)$/', $gooData['pg'], $matches) > 0) {
+            if (preg_match('/^PA(\d+)$/', $gooData['pg'], $matches) > 0) {
                 $data['page'] = $matches[1];
                 unset($data['page autre']);
             }
             //  pg=PRx => "page=x|romain=1"
-            if (preg_match('/^PR([0-9]+)$/', $gooData['pg'], $matches) > 0) {
+            if (preg_match('/^PR(\d+)$/', $gooData['pg'], $matches) > 0) {
                 $data['page'] = $matches[1];
                 $data['romain'] = '1';
                 unset($data['page autre']);
@@ -125,14 +125,10 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
      */
     public static function isGoogleBookValue(string $text): bool
     {
-        if (true === GoogleBooksUtil::isGoogleBookURL($text)) {
+        if (GoogleBooksUtil::isGoogleBookURL($text)) {
             return true;
         }
-        if (preg_match('#^{{[ \n]*Google (Livres|Books)[^}]+}}$#i', $text) > 0) {
-            return true;
-        }
-
-        return false;
+        return preg_match('#^{{[ \n]*Google (Livres|Books)[^}]+}}$#i', $text) > 0;
     }
 
     /**

@@ -20,7 +20,7 @@ abstract class OuvrageTemplateAlias extends AbstractWikiTemplate
     /**
      * update 18 sept 2019.
      */
-    const PARAM_ALIAS
+    public const PARAM_ALIAS
         = [
             'mr' => 'math reviews', // alias non documenté
             'vol' => 'volume',

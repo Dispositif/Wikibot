@@ -223,11 +223,8 @@ class PredictAuthors
     {
         $author = WikiTextUtil::unWikify($author);
         $chars = count_chars(trim($author));
-        // todo : "et" + "and" ?
-        if ($chars[ord('&')] > 0 || $chars[ord(';')] > 0 || $chars[ord(' ')] >= 3 || $chars[ord(',')] > 1) {
-            return true;
-        }
 
-        return false;
+        // todo : "et" + "and" ?
+        return $chars[ord('&')] > 0 || $chars[ord(';')] > 0 || $chars[ord(' ')] >= 3 || $chars[ord(',')] > 1;
     }
 }

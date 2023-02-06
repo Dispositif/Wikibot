@@ -80,7 +80,7 @@ class OpenLibraryMapper extends AbstractBookMapper implements MapperInterface
         if (!isset($details['publish_date'])) {
             return null;
         }
-        if (preg_match('/[^0-9]?([12][0-9]{3})[^0-9]?/', $details['publish_date'], $matches) > 0) {
+        if (preg_match('/[^0-9]?([12]\d{3})[^0-9]?/', $details['publish_date'], $matches) > 0) {
             return (string) $matches[1];
         }
 
@@ -89,6 +89,6 @@ class OpenLibraryMapper extends AbstractBookMapper implements MapperInterface
 
     private function nbPages($details)
     {
-        return (isset($details['number_of_pages'])) ? (intval($details['number_of_pages'])) : null;
+        return (isset($details['number_of_pages'])) ? ((int) $details['number_of_pages']) : null;
     }
 }

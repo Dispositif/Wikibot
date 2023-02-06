@@ -24,7 +24,7 @@ use Psr\Log\LoggerInterface;
  */
 class ExternPage
 {
-    const PRETTY_DOMAIN_EXCLUSION
+    public const PRETTY_DOMAIN_EXCLUSION
         = [
             '.中国',
             '.uk',
@@ -117,10 +117,10 @@ class ExternPage
         foreach ($results as $result) {
             $json = trim($result);
             // filtrage empty value (todo?)
-            if (0 === strlen($json)) {
+            if ($json === '') {
                 continue;
             }
-            $data = json_decode($json, true);
+            $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
             if (!is_array($data)
                 || (isset($data['@type']) && is_string($data['@type']) && preg_match('#Breadcrumb#i', $data['@type']))
             ) {
@@ -160,7 +160,7 @@ class ExternPage
         if (preg_match_all($pattern, $str, $out)) {
             $combine = array_combine($out[1], $out[2]);
 
-            return $combine ? $combine : [];
+            return $combine ?: [];
         }
 
         return [];
@@ -202,13 +202,14 @@ class ExternPage
      */
     public function getSubDomain(): string
     {
+        $e = null;
         try {
             return ExternDomains::extractSubDomain($this->url);
         } catch (Exception $e) {
-            if ($this->log) {
+            if ($this->log !== null) {
                 $this->log->warning('ExternDomains::extractSubDomain NULL '.$this->url);
             }
-            throw new Exception('ExternDomains::extractSubDomain NULL');
+            throw new Exception('ExternDomains::extractSubDomain NULL', $e->getCode(), $e);
         }
     }
 

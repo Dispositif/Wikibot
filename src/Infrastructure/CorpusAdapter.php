@@ -37,11 +37,7 @@ class CorpusAdapter extends FileManager implements CorpusInterface
         // corpus as array variable
         if (isset($this->storage[$corpusName])) {
             $corpData = $this->storage[$corpusName];
-            if (is_array($corpData) && in_array($element, $corpData)) {
-                return true;
-            }
-
-            return false;
+            return is_array($corpData) && in_array($element, $corpData);
         }
 
         // corpus as text
@@ -124,7 +120,7 @@ class CorpusAdapter extends FileManager implements CorpusInterface
             FILE_APPEND | LOCK_EX
         );
 
-        return ($write) ? true : false;
+        return (bool) $write;
     }
 
     private function addNewElementToMemoryCorpus(string $corpusName, string $element): bool

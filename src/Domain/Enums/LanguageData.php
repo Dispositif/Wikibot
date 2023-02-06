@@ -1343,7 +1343,7 @@ abstract class LanguageData
 //            'zu' => 'zoulou',
 //        ];
 
-    const FRENCH_TO_FRWIKI
+    public const FRENCH_TO_FRWIKI
         = [
             'abkhaze' => 'ab',
             'aceh' => 'ace',

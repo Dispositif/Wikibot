@@ -14,13 +14,13 @@ namespace App\Domain\Utils;
  */
 abstract class TextUtil
 {
-    const SKIP_PREDICT_PARAM = ['issue'];
+    public const SKIP_PREDICT_PARAM = ['issue'];
 
-    const NO_BREAK_SPACE = "\xC2\xA0"; // &#160;
+    public const NO_BREAK_SPACE = "\xC2\xA0"; // &#160;
 
-    const NO_BREAK_THIN_SPACE = "\xE2\x80\xAF";
+    public const NO_BREAK_THIN_SPACE = "\xE2\x80\xAF";
 
-    const ALL_PUNCTUATION
+    public const ALL_PUNCTUATION
         = [
             '!',
             '"',
@@ -88,7 +88,7 @@ abstract class TextUtil
     //    const TRADE = '™'; // &trade;
     //    const REG = '®'; // &reg;
     //    const COPY = '©'; // &copy;
-    const ALL_SPACES = "\xE2\x80\xAF|\xC2\xAD|\xC2\xA0|\\s"; // Used in regexps. Better than \s
+    public const ALL_SPACES = "\xE2\x80\xAF|\xC2\xAD|\xC2\xA0|\\s"; // Used in regexps. Better than \s
 
     /**
      * UTF8 first letter in upper case.
@@ -204,9 +204,8 @@ abstract class TextUtil
     private static function sanitizeParamForPredict(string $str): string
     {
         $sanitized = mb_strtolower(self::stripPunctuation(self::stripAccents($str)));
-        $sanitized = trim(preg_replace('#[^a-z0-9 ]#', '', $sanitized));
 
-        return $sanitized;
+        return trim(preg_replace('#[^a-z0-9 ]#', '', $sanitized));
     }
 
     /**

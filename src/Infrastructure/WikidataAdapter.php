@@ -137,12 +137,12 @@ WHERE {
         }
         $json = Normalizer::normalize($json);
 
-        $array = json_decode($json, true) ?? null;
+        $array = json_decode($json, true, 512, JSON_THROW_ON_ERROR) ?? null;
 
         // return first result only
         if ($array && isset($array['results']) && isset($array['results'])
             && isset($array['results']['bindings'])
-            && count($array['results']['bindings']) === 1
+            && (is_countable($array['results']['bindings']) ? count($array['results']['bindings']) : 0) === 1
         ) {
             return $array['results']['bindings'][0];
         }
@@ -159,6 +159,6 @@ WHERE {
      */
     private function ISNIvalide(string $isni): bool
     {
-        return (!preg_match('#^0000(000[0-4])([0-9]{4})([0-9]{3}[0-9X])$#', $isni)) ? false : true;
+        return (bool) preg_match('#^0000(000[0-4])(\d{4})(\d{3}[0-9X])$#', $isni);
     }
 }

@@ -19,7 +19,7 @@ use PhpAmqpLib\Message\AMQPMessage;
  */
 abstract class AbstractQueueWorker
 {
-    const QUEUE_NAME = 'AbstractQueueWorker';
+    public const QUEUE_NAME = 'AbstractQueueWorker';
 
     /**
      * Connect and obtain the messages from queue.
@@ -35,7 +35,10 @@ abstract class AbstractQueueWorker
         // qos : one message to a worker at a time (next one after acknowledge)
         $channel->basic_qos(null, 1, null);
         // callback to $this->msgProcess().
-        $channel->basic_consume(static::QUEUE_NAME, '', false, false, false, false, [$this, 'msgProcess']);
+        // TODO check Rector refac
+        $channel->basic_consume(static::QUEUE_NAME, '', false, false, false, false, function (\PhpAmqpLib\Message\AMQPMessage $msg) : void {
+            $this->msgProcess($msg);
+        });
 
         while ($channel->is_consuming()) {
             $channel->wait();

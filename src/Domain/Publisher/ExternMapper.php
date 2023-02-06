@@ -46,7 +46,7 @@ class ExternMapper implements MapperInterface
     {
         $dat = $this->processMapping($data);
 
-        return (!empty($dat)) ? $this->postProcess($dat) : [];
+        return ($dat === []) ? [] : $this->postProcess($dat);
     }
 
     /**
@@ -67,7 +67,7 @@ class ExternMapper implements MapperInterface
         }
 
         // langue absente JSON-LD mais array_merge risqué (doublon)
-        if (!empty($mapJson)) {
+        if ($mapJson !== []) {
             if (!isset($mapJson['langue']) && isset($mapMeta['langue'])) {
                 $mapJson['langue'] = $mapMeta['langue'];
                 $mapJson['DATA-TYPE'] = 'JSON-LD+META';

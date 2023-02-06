@@ -68,18 +68,12 @@ class WikiTextUtil extends TextUtil
         // {{Lien|Jeffrey Robinson}} => Jeffrey Robinson
         $text = preg_replace('#{{ ?lien ?\| ?([^|}]+) ?}}#i', '${1}', $text);
 
-        $text = strip_tags($text, '<sup><sub>');
-
-        return $text;
+        return strip_tags($text, '<sup><sub>');
     }
 
     public static function isWikify(string $text): bool
     {
-        if (self::unWikify($text) !== $text) {
-            return true;
-        }
-
-        return false;
+        return self::unWikify($text) !== $text;
     }
 
     /**
@@ -162,7 +156,7 @@ class WikiTextUtil extends TextUtil
         $text = str_replace('<!-- Paramètre obligatoire -->', '', $text);
 
         //ou preg_match('#<\!--(?!-->).*-->#s', '', $text); // plus lourd mais précis
-        return (preg_match('#<!--[^>]*-->#', $text) > 0) ? true : false;
+        return preg_match('#<!--[^>]*-->#', $text) > 0;
     }
 
     /**

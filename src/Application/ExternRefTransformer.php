@@ -37,9 +37,9 @@ use Throwable;
  */
 class ExternRefTransformer implements TransformerInterface
 {
-    const HTTP_REQUEST_LOOP_DELAY = 10;
-    const LOG_REQUEST_ERROR       = __DIR__.'/resources/external_request_error.log';
-    const SKIP_DOMAIN_FILENAME    = __DIR__.'/resources/config_skip_domain.txt';
+    public const HTTP_REQUEST_LOOP_DELAY = 10;
+    public const LOG_REQUEST_ERROR       = __DIR__.'/resources/external_request_error.log';
+    public const SKIP_DOMAIN_FILENAME    = __DIR__.'/resources/config_skip_domain.txt';
 
     public $skipUnauthorised = true;
     /**
@@ -98,6 +98,7 @@ class ExternRefTransformer implements TransformerInterface
      */
     public function process(string $url, Summary $summary): string
     {
+        $pageData = [];
         $this->summary = $summary;
         if (!$this->isURLAuthorized($url)) {
             return $url;
@@ -139,7 +140,7 @@ class ExternRefTransformer implements TransformerInterface
             }
         }
 
-        if (empty($pageData)
+        if ($pageData === []
             || (empty($pageData['JSON-LD']) && empty($pageData['meta']))
         ) {
             $this->log->notice('SKIP no metadata : '.$url);
@@ -157,7 +158,7 @@ class ExternRefTransformer implements TransformerInterface
 
         // check dataValide
         // Pas de skip domaine car s'agit peut-être d'un 404 ou erreur juste sur cette URL
-        if (empty($mapData) || empty($mapData['url']) || empty($mapData['titre'])) {
+        if ($mapData === [] || empty($mapData['url']) || empty($mapData['titre'])) {
             $this->log->info('Mapping incomplet : '.$url);
 
             return $url;
@@ -291,11 +292,7 @@ class ExternRefTransformer implements TransformerInterface
         if (isset($this->data['scientific domain'][$this->domain])) {
             return true;
         }
-        if (strpos('.revues.org', $this->domain) > 0) {
-            return true;
-        }
-
-        return false;
+        return strpos('.revues.org', $this->domain) > 0;
     }
 
     private function addSummaryLog(array $mapData)
@@ -437,15 +434,10 @@ class ExternRefTransformer implements TransformerInterface
      */
     private function hasForbiddenFilenameExtension(string $url): bool
     {
-        if (preg_match(
+        return (bool) preg_match(
             '#\.(pdf|jpg|jpeg|gif|png|xls|xlsx|xlr|xml|xlt|txt|csv|js|docx|exe|gz|zip|ini|movie|mp3|mp4|ogg|raw|rss|tar|tgz|wma)$#i',
             $url
-        )
-        ) {
-            return true;
-        }
-
-        return false;
+        );
     }
 
     protected function importConfigAndData(): void
@@ -456,16 +448,20 @@ class ExternRefTransformer implements TransformerInterface
             self::SKIP_DOMAIN_FILENAME,
             FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES
         );
-        $this->skip_domain = ($skipFromFile) ? $skipFromFile : [];
+        $this->skip_domain = $skipFromFile ?: [];
 
-        $this->data['newspaper'] = json_decode(file_get_contents(__DIR__.'/resources/data_newspapers.json'), true);
+        $this->data['newspaper'] = json_decode(file_get_contents(__DIR__.'/resources/data_newspapers.json'), true, 512, JSON_THROW_ON_ERROR);
         $this->data['scientific domain'] = json_decode(
             file_get_contents(__DIR__.'/resources/data_scientific_domain.json'),
-            true
+            true,
+            512,
+            JSON_THROW_ON_ERROR
         );
         $this->data['scientific wiki'] = json_decode(
             file_get_contents(__DIR__.'/resources/data_scientific_wiki.json'),
-            true
+            true,
+            512,
+            JSON_THROW_ON_ERROR
         );
     }
 

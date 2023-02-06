@@ -16,28 +16,30 @@ use Throwable;
 abstract class AbstractStrictWikiTemplate extends AbstractParametersObject implements WikiTemplateInterface
 {
     use ArrayProcessTrait, InfoTrait;
+
     /**
      * Name of the wiki-template
      */
-    const WIKITEMPLATE_NAME = 'NO NAME';
+    public const WIKITEMPLATE_NAME = 'NO NAME';
 
     /**
      * Error in wiki parsing without those required params.
      */
-    const REQUIRED_PARAMETERS = [];
+    public const REQUIRED_PARAMETERS = [];
     /**
      * The minimum parameters for pretty wiki-template.
      */
-    const MINIMUM_PARAMETERS = [];
+    public const MINIMUM_PARAMETERS = [];
     /*
      * Alias names of true parameter names
      */
-    const PARAM_ALIAS = [];
+    public const PARAM_ALIAS = [];
 
     /* commented to allow inherit from Interface in OuvrageTemplate
-       const PARAM_ALIAS = []; */
+   const PARAM_ALIAS = []; */
+    public const COMMENT_STRIPPED = '<!-- Paramètre obligatoire -->';
 
-    const COMMENT_STRIPPED = '<!-- Paramètre obligatoire -->';
+    public $parametersByOrder;
 
     public $log = [];
 
@@ -49,7 +51,7 @@ abstract class AbstractStrictWikiTemplate extends AbstractParametersObject imple
     public function __construct()
     {
         if (empty(static::MINIMUM_PARAMETERS)) {
-            throw new Exception(sprintf('DEFAULT_PARAMETERS not configured in "%s"', get_called_class()));
+            throw new Exception(sprintf('DEFAULT_PARAMETERS not configured in "%s"', static::class));
         }
         $this->parametersValues = static::MINIMUM_PARAMETERS;
 
@@ -157,15 +159,9 @@ abstract class AbstractStrictWikiTemplate extends AbstractParametersObject imple
         if (is_int($name)) {
             $name = (string)$name;
         }
-
         // that parameter exists in template ?
-        if (in_array($name, $this->parametersByOrder)
-            || array_key_exists($name, static::PARAM_ALIAS)
-        ) {
-            return true;
-        }
-
-        return false;
+        return in_array($name, $this->parametersByOrder)
+            || array_key_exists($name, static::PARAM_ALIAS);
     }
 
     /**
@@ -177,7 +173,7 @@ abstract class AbstractStrictWikiTemplate extends AbstractParametersObject imple
     public function unsetParam(string $name)
     {
         if (!$this->isValidParamName($name)) {
-            throw new Exception(sprintf('no parameter "%s" in template "%s"', $name, get_called_class()));
+            throw new Exception(sprintf('no parameter "%s" in template "%s"', $name, static::class));
         }
         $name = $this->getAliasParam($name);
         unset($this->parametersValues[$name]);
@@ -197,7 +193,7 @@ abstract class AbstractStrictWikiTemplate extends AbstractParametersObject imple
     public function setParam(string $name, string $value): AbstractParametersObject
     {
         if (!$this->isValidParamName($name)) {
-            $this->log[] = sprintf('no parameter "%s" in AbstractParametersObject "%s"', $name, get_called_class());
+            $this->log[] = sprintf('no parameter "%s" in AbstractParametersObject "%s"', $name, static::class);
 
             return $this;
         }

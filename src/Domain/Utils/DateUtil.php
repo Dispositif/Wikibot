@@ -44,7 +44,7 @@ class DateUtil
 
     public function cleanDate(string $date)
     {
-        return $this->english2french($date);
+        return static::english2french($date);
     }
 
     public static function english2french(string $date)

@@ -21,8 +21,8 @@ use Scriptotek\GoogleBooks\Volume;
  */
 class GoogleBooksAdapter extends AbstractBookApiAdapter implements BookApiInterface
 {
-    const SCRIPT_GOOGLE_QUOTA   = 900;
-    const SCRIPT_GOOGLE_COUNTRY = 'US';
+    public const SCRIPT_GOOGLE_QUOTA   = 900;
+    public const SCRIPT_GOOGLE_COUNTRY = 'US';
 
     protected $api;
 

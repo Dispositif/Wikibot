@@ -37,6 +37,7 @@ class TypoTokenizer
      */
     public function typoPatternFromAuthor(string $text): array
     {
+        $res = [];
         $res['string'] = $text;
         $modText = TextUtil::replaceNonBreakingSpaces($text);
 
@@ -81,13 +82,13 @@ class TypoTokenizer
                 }
                 //"J. R . R." => INITIAL (1 seule fois)
                 // $res = str_replace('INITIAL INITIAL', 'INITIAL', $res);
-            } elseif (preg_match('#^[0-9]+$#', $tok) > 0) {
+            } elseif (preg_match('#^\d+$#', $tok) > 0) {
                 $res['pattern'] .= ' ALLNUMBER';
                 $res['value'][] = $tok;
             } elseif (preg_match('#^[0-9\-]+$#', $tok) > 0) {
                 $res['pattern'] .= ' DASHNUMBER';
                 $res['value'][] = $tok;
-            } elseif (preg_match('#[0-9]#', $tok) > 0) {
+            } elseif (preg_match('#\d#', $tok) > 0) {
                 $res['pattern'] .= ' WITHNUMBER';
                 $res['value'][] = $tok;
             } elseif (mb_strtolower($tok, 'UTF-8') === $tok) {
@@ -125,10 +126,10 @@ class TypoTokenizer
      */
     private function preprocessTypoPattern(string $modText): string
     {
-        $modText = preg_replace_callback_array(
+        return preg_replace_callback_array(
             [
                 // URL
-                '#\bhttps?://[^ \]]+#i' => function ($match) {
+                '#\bhttps?://[^ \]]+#i' => function ($match): string {
                     // '#https?\:\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+\#]*[\w\-\@?^=%&amp;/~\+#])?#'
                     $this->tokenValue['URL'][] = $match[0];
 
@@ -136,26 +137,26 @@ class TypoTokenizer
                 },
                 // BIBABREV : "dir.", "trad.", "(dir.)", "[dir.]", etc.
                 // TODO: regex flaw : "(" not evaluated in BIBABREV. Example : "(dir.)"
-                '#\b[(\[]?(collectif|coll\.|dir\.|trad\.|coord\.|ill\.)[)\]]?#i' => function ($match) {
+                '#\b[(\[]?(collectif|coll\.|dir\.|trad\.|coord\.|ill\.)[)\]]?#i' => function ($match): string {
                     $this->tokenValue['BIBABREV'][] = $match[0]; // [1] = dir
 
                     return ' PATTERNBIBABREV ';
                 },
                 // AND
-                '# (et|and|&|with|avec|e) #i' => function ($match) {
+                '# (et|and|&|with|avec|e) #i' => function ($match): string {
                     $this->tokenValue['AND'][] = $match[0];
 
                     return ' PATTERNAND ';
                 },
                 // COMMA
-                '#,#' => function () {
+                '#,#' => function (): string {
                     return ' PATTERNCOMMA ';
                 },
                 // INITIAL : 2) convert letter ("A.") or junior ("Jr.") or senior ("Sr.")
                 // extract initial before "." converted in PUNCTUATION
                 // Note : \b word boundary match between "L" and "'Amour" in "L'Amour"  (for [A-Z]\b)
                 // \b([A-Z]\. |[A-Z] |JR|Jr\.|Jr\b|Sr\.|Sr\b)+ for grouping "A. B." in same INITIAL ?
-                "#\b([A-Z]\.|[A-Z] |JR|Jr\.|Jr\b|Sr\.|Sr\b)#" => function ($match) {
+                "#\b([A-Z]\.|[A-Z] |JR|Jr\.|Jr\b|Sr\.|Sr\b)#" => function ($match): string {
                     $this->tokenValue['INITIAL'][] = $match[0];
 
                     return ' PATTERNINITIAL ';
@@ -164,7 +165,5 @@ class TypoTokenizer
             $modText,
             40
         );
-
-        return $modText;
     }
 }

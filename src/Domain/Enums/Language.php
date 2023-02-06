@@ -44,10 +44,8 @@ abstract class Language
             return $dat;
         }
 
-        if ($dat = self::html2iso639($lang)) {
-            if (self::isWikiLang($dat)) {
-                return $dat;
-            }
+        if (($dat = self::html2iso639($lang)) && self::isWikiLang($dat)) {
+            return $dat;
         }
 
         return null;
@@ -63,11 +61,7 @@ abstract class Language
         /*
          * @var $liste_frlang []
          */
-        if (LanguageData::LANG_FRWIKI && in_array($lang, LanguageData::LANG_FRWIKI)) {
-            return true;
-        }
-
-        return false;
+        return LanguageData::LANG_FRWIKI && in_array($lang, LanguageData::LANG_FRWIKI);
     }
 
     /**
@@ -85,10 +79,8 @@ abstract class Language
     public static function iso2b2wiki(string $lang): ?string
     {
         $lang = strtolower($lang);
-        if (LanguageData::ISO2B_TO_FRENCH && array_key_exists($lang, LanguageData::ISO2B_TO_FRENCH)) {
-            if (!empty(LanguageData::ISO2B_TO_FRENCH[$lang])) {
-                return self::longFrench2wiki(LanguageData::ISO2B_TO_FRENCH[$lang]);
-            }
+        if (LanguageData::ISO2B_TO_FRENCH && array_key_exists($lang, LanguageData::ISO2B_TO_FRENCH) && !empty(LanguageData::ISO2B_TO_FRENCH[$lang])) {
+            return self::longFrench2wiki(LanguageData::ISO2B_TO_FRENCH[$lang]);
         }
 
         return null;

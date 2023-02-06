@@ -29,28 +29,28 @@ use Throwable;
  */
 class WikiBotConfig
 {
-    const VERSION = '1.0';
+    public const VERSION = '1.0';
 
-    const WATCHPAGE_FILENAME = __DIR__.'/resources/watch_pages.json';
+    public const WATCHPAGE_FILENAME = __DIR__.'/resources/watch_pages.json';
 
-    const EXIT_ON_CHECK_WATCHPAGE = false;
+    public const EXIT_ON_CHECK_WATCHPAGE = false;
 
     // do not stop if they play with {stop} on bot talk page
-    const BLACKLIST_EDITOR = ['OrlodrimBot'];
+    public const BLACKLIST_EDITOR = ['OrlodrimBot'];
 
-    const BOT_FLAG = false;
+    public const BOT_FLAG = false;
 
-    const MODE_AUTO = false;
+    public const MODE_AUTO = false;
 
-    const EXIT_ON_WIKIMESSAGE = true;
+    public const EXIT_ON_WIKIMESSAGE = true;
 
-    const EDIT_LAPS = 20;
+    public const EDIT_LAPS = 20;
 
-    const EDIT_LAPS_MANUAL = 20;
+    public const EDIT_LAPS_MANUAL = 20;
 
-    const EDIT_LAPS_AUTOBOT = 60;
+    public const EDIT_LAPS_AUTOBOT = 60;
 
-    const EDIT_LAPS_FLAGBOT = 8;
+    public const EDIT_LAPS_FLAGBOT = 8;
 
     public $taskName = 'Améliorations indéfinie';
 
@@ -65,7 +65,7 @@ class WikiBotConfig
 
     public function __construct(?LoggerInterface $logger = null)
     {
-        $this->log = ($logger) ? $logger : new Logger();
+        $this->log = $logger ?: new Logger();
         ini_set('user_agent', getenv('USER_AGENT'));
     }
 
@@ -181,7 +181,7 @@ class WikiBotConfig
 
         try {
             $json = file_get_contents(static::WATCHPAGE_FILENAME);
-            $array = json_decode($json, true);
+            $array = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
         } catch (Throwable $e) {
             throw new ConfigException('Watchpage file malformed.');
         }
@@ -223,15 +223,10 @@ class WikiBotConfig
     private static function isNoBotTag(string $text, ?string $botName = null): bool
     {
         $text = WikiTextUtil::removeHTMLcomments($text);
-        $botName = ($botName) ? $botName : getenv('BOT_NAME');
-        $denyReg = (!empty($botName)) ? '|\{\{bots ?\| ?(optout|deny)\=[^\}]*'.preg_quote($botName, '#').'[^\}]*\}\}' :
-            '';
-
-        if (preg_match('#({{nobots}}|{{bots ?\| ?(optout|deny) ?= ?all ?}}'.$denyReg.')#i', $text) > 0) {
-            return true;
-        }
-
-        return false;
+        $botName = $botName ?: getenv('BOT_NAME');
+        $denyReg = (empty($botName)) ? '' :
+            '|\{\{bots ?\| ?(optout|deny)\=[^\}]*'.preg_quote($botName, '#').'[^\}]*\}\}';
+        return preg_match('#({{nobots}}|{{bots ?\| ?(optout|deny) ?= ?all ?}}'.$denyReg.')#i', $text) > 0;
     }
 
     /**
@@ -245,13 +240,8 @@ class WikiBotConfig
     public static function isEditionRestricted(string $text, ?string $botName = null): bool
     {
         // travaux|en travaux| ??
-        if (preg_match('#{{Protection#i', $text) > 0
+        return preg_match('#{{Protection#i', $text) > 0
             || preg_match('#\{\{(R3R|Règle des 3 révocations|travaux|en travaux|en cours|formation)#i', $text) > 0
-            || self::isNoBotTag($text, $botName)
-        ) {
-            return true;
-        }
-
-        return false;
+            || self::isNoBotTag($text, $botName);
     }
 }

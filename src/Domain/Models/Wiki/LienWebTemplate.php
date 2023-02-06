@@ -16,11 +16,11 @@ use App\Domain\Utils\TextUtil;
  */
 class LienWebTemplate extends AbstractWikiTemplate
 {
-    const WIKITEMPLATE_NAME = 'lien web';
+    public const WIKITEMPLATE_NAME = 'lien web';
 
-    const REQUIRED_PARAMETERS = ['titre', 'url'];
+    public const REQUIRED_PARAMETERS = ['titre', 'url'];
 
-    const MINIMUM_PARAMETERS
+    public const MINIMUM_PARAMETERS
         = [
             //            'langue' => '', // suggéré
             'titre' => '', // required
@@ -31,7 +31,7 @@ class LienWebTemplate extends AbstractWikiTemplate
         ];
 
     // TODO  https://fr.wikipedia.org/wiki/Mod%C3%A8le:Lien_web#TemplateData
-    const PARAM_ALIAS
+    public const PARAM_ALIAS
         = [
             'lang' => 'langue',
             "url-access" => "accès url",
@@ -45,7 +45,7 @@ class LienWebTemplate extends AbstractWikiTemplate
             'Langue' => 'langue'
         ]; // test purpose
 
-    protected $parametersByOrder
+    public $parametersByOrder
         = [
             'langue',
             'auteur',

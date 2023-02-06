@@ -20,11 +20,11 @@ class ArticleTemplate extends ArticleTemplateAlias implements ArticleOrLienBrise
 {
     use ArticleTemplateParams, BiblioTemplateTrait;
 
-    const WIKITEMPLATE_NAME = 'Article';
+    public const WIKITEMPLATE_NAME = 'Article';
 
-    const REQUIRED_PARAMETERS = ['titre', 'périodique', 'date'];
+    public const REQUIRED_PARAMETERS = ['titre', 'périodique', 'date'];
 
-    const MINIMUM_PARAMETERS
+    public const MINIMUM_PARAMETERS
         = [
             //            'langue' => '',
             'auteur1' => '',
@@ -59,7 +59,7 @@ class ArticleTemplate extends ArticleTemplateAlias implements ArticleOrLienBrise
     {
         // Style "auto1234"
         if (empty($this->getParam('périodique') || empty($this->getParam('date')))) {
-            return 'auto'.(string)rand(1000, 9999);
+            return 'auto'.(string)random_int(1000, 9999);
         }
         // Style "LeMonde15022017"
         $periodique = str_replace(

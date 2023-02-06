@@ -18,11 +18,7 @@ trait ExternConverterTrait
 {
     protected function isAnArticle(?string $str): bool
     {
-        if (in_array($str, ['article', 'journalArticle'])) {
-            return true;
-        }
-
-        return false;
+        return in_array($str, ['article', 'journalArticle']);
     }
 
     /**
@@ -53,29 +49,24 @@ trait ExternConverterTrait
             return ($this->sameAsTrue($data['isAccessibleForFree'])) ? 'libre' : 'payant';
         }
 
-        if (isset($data['DC.rights'])) {
-            if (in_array(strtolower($data['DC.rights']), ['free', 'public domain', 'domaine public'])) {
-                return 'libre';
-            }
+        if (isset($data['DC.rights']) && in_array(strtolower($data['DC.rights']), ['free', 'public domain', 'domaine public'])) {
+            return 'libre';
         }
 
         // TODO : https://terms.tdwg.org/wiki/dcterms:accessRights
         // "	Information about who access the resource or an indication of its security status."
         // Values are a mystery...
-        if (isset($data['DC.accessRights'])) {
-            if (in_array(
-                strtolower($data['DC.accessRights']),
-                [
-                    'free',
-                    'public domain',
-                    'public',
-                    'domaine public',
-                    'available',
-                ]
-            )
-            ) {
-                return 'libre';
-            }
+        if (isset($data['DC.accessRights']) && in_array(
+            strtolower($data['DC.accessRights']),
+            [
+                'free',
+                'public domain',
+                'public',
+                'domaine public',
+                'available',
+            ]
+        )) {
+            return 'libre';
         }
 
         return null;
@@ -90,11 +81,7 @@ trait ExternConverterTrait
             return $str;
         }
         $str = strtolower($str);
-        if (in_array($str, ['true', '1', 'yes', 'oui', 'ok'])) {
-            return true;
-        }
-
-        return false;
+        return in_array($str, ['true', '1', 'yes', 'oui', 'ok']);
     }
 
     /**
@@ -265,7 +252,7 @@ trait ExternConverterTrait
         return Language::all2wiki($lang);
     }
 
-    protected function convertAuteur($data, $indice)
+    protected function convertAuteur($data, $indice): ?string
     {
         // author=Bob
         if (isset($data['author']) && is_string($data['author']) && $indice === 1) {
@@ -304,7 +291,7 @@ trait ExternConverterTrait
         return null;
     }
 
-    protected function convertInstitutionnel($data)
+    protected function convertInstitutionnel($data): ?string
     {
         if (isset($data['author']) && isset($data['author'][0]) && isset($data['author'][0]['@type'])
             && 'Person' !== $data['author'][0]['@type']
@@ -332,11 +319,11 @@ trait ExternConverterTrait
         $str = str_replace('/', '-', $str);
 
         // "2012"
-        if (preg_match('#^[12][0-9]{3}$#', $str)) {
+        if (preg_match('#^[12]\d{3}$#', $str)) {
             return $str;
         }
         // "1775-1783" (Gallica)
-        if (preg_match('#^[12][0-9]{3}-[12][0-9]{3}$#', $str)) {
+        if (preg_match('#^[12]\d{3}-[12]\d{3}$#', $str)) {
             return $str;
         }
 
@@ -378,9 +365,8 @@ trait ExternConverterTrait
         $str = preg_replace('#\b(AP)\b#', '[[Associated Press|AP]]', $str);
         $str = str_replace('Xinhua', '[[Xinhua]]', $str);
         $str = preg_replace('#\b(ATS)\b#', '[[Agence télégraphique suisse|ATS]]', $str);
-        $str = preg_replace('#\b(PC|CP)\b#', '[[La Presse canadienne|PC]]', $str);
 
-        return $str;
+        return preg_replace('#\b(PC|CP)\b#', '[[La Presse canadienne|PC]]', $str);
     }
 
     /**

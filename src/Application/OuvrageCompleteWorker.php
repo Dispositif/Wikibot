@@ -39,7 +39,7 @@ class OuvrageCompleteWorker
      * Exclusion requête BnF/Google/etc
      * Format EAN ou ISBN10 sans tiret.
      */
-    const ISBN_EAN_SKIP
+    public const ISBN_EAN_SKIP
         = [
             '9782918758440', // Profils de lignes du réseau ferré français vol.2
             '9782918758341', // Profils de lignes du réseau ferré français vol.1
@@ -73,7 +73,7 @@ class OuvrageCompleteWorker
         $this->log = $log ?? new NullLogger();
     }
 
-    public function run(?int $limit = 10000)
+    public function run(?int $limit = 10000): bool
     {
         $memory = new Memory();
         while ($limit > 0) {
@@ -112,7 +112,7 @@ class OuvrageCompleteWorker
                         $this->raw
                     )
                 );;
-                $this->queueAdapter->skipRow(intval($row['id']));
+                $this->queueAdapter->skipRow((int) $row['id']);
                 sleep(10);
                 continue;
             }
@@ -125,7 +125,7 @@ class OuvrageCompleteWorker
                         $this->raw
                     )
                 );
-                $this->queueAdapter->skipRow(intval($row['id']));
+                $this->queueAdapter->skipRow((int) $row['id']);
                 sleep(10);
                 continue;
             }
@@ -183,14 +183,9 @@ class OuvrageCompleteWorker
      */
     private function isIsbnSkipped(string $isbn, ?string $isbn10 = null): bool
     {
-        if (in_array(str_replace('-', '', $isbn), self::ISBN_EAN_SKIP)
+        return in_array(str_replace('-', '', $isbn), self::ISBN_EAN_SKIP)
             || ($isbn10 !== null
-                && in_array(str_replace('-', '', $isbn10), self::ISBN_EAN_SKIP))
-        ) {
-            return true;
-        }
-
-        return false;
+                && in_array(str_replace('-', '', $isbn10), self::ISBN_EAN_SKIP));
     }
 
     private function onlineIsbnSearch(string $isbn, ?string $isbn10 = null)
@@ -217,7 +212,7 @@ class OuvrageCompleteWorker
             if (!$isbn10 || empty($bnfOuvrage) || empty($bnfOuvrage->getParam('titre'))) {
                 $bnfOuvrage = OuvrageFactory::BnfFromIsbn($isbn);
             }
-            if (isset($bnfOuvrage) and $bnfOuvrage instanceof OuvrageTemplate) {
+            if (isset($bnfOuvrage) && $bnfOuvrage instanceof OuvrageTemplate) {
                 $this->completeOuvrage($bnfOuvrage);
 
                 // Wikidata requests from $infos (ISBN/ISNI)
@@ -369,14 +364,9 @@ class OuvrageCompleteWorker
 
     private function skipGoogle($bnfOuvrage): bool
     {
-        if ($bnfOuvrage instanceof OuvrageTemplate
+        return $bnfOuvrage instanceof OuvrageTemplate
             && $bnfOuvrage->hasParamValue('titre')
             && ($this->ouvrage->hasParamValue('lire en ligne')
-                || $this->ouvrage->hasParamValue('présentation en ligne'))
-        ) {
-            return true;
-        }
-
-        return false;
+                || $this->ouvrage->hasParamValue('présentation en ligne'));
     }
 }
