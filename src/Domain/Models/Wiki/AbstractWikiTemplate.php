@@ -26,7 +26,6 @@ use Exception;
  */
 abstract class AbstractWikiTemplate extends AbstractStrictWikiTemplate implements WikiTemplateInterface
 {
-    public $parametersByOrder;
     use ArrayProcessTrait, InfoTrait;
 
     public $parametersErrorFromHydrate;

@@ -39,8 +39,6 @@ abstract class AbstractStrictWikiTemplate extends AbstractParametersObject imple
    const PARAM_ALIAS = []; */
     public const COMMENT_STRIPPED = '<!-- Paramètre obligatoire -->';
 
-    public $parametersByOrder;
-
     public $log = [];
 
     /**
