@@ -11,10 +11,10 @@
     "frwiki"
   ],
   "require": {
-    "php": ">=8.0",
+    "php": ">=7.2",
     "addwiki/mediawiki-api": "^0.7.3",
     "symfony/dotenv": "^4.3",
-    "symfony/console": "*",
+    "symfony/console": "4.4.7",
     "guzzlehttp/guzzle": "~6.0",
     "php-amqplib/php-amqplib": "^2.10",
     "yooper/php-text-analysis": "^1.5",
@@ -23,7 +23,7 @@
     "ext-dom": "*",
     "scriptotek/google-books": "^0.2.4",
     "simplon/mysql": "^2.2",
-    "biblys/isbn": "^2.5.0",
+    "biblys/isbn": "^2.1.1",
     "ext-libxml": "*",
     "hnhdigital-os/laravel-git-info": "^1.0",
     "ext-intl": "*",
@@ -32,7 +32,7 @@
     "symfony/yaml": "4.*",
     "codedungeon/php-cli-colors": "~1.0",
     "ext-iconv": "*",
-    "ext-curl": "*"
+    "ext-http": "*"
   },
   "autoload": {
     "psr-4": {
