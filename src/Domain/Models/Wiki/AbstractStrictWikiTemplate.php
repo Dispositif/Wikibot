@@ -31,12 +31,11 @@ abstract class AbstractStrictWikiTemplate extends AbstractParametersObject imple
      */
     public const MINIMUM_PARAMETERS = [];
     /*
+     * TODO check if allowing inherit from OuvrageTemplateAlias or interface in OuvrageTemplate
      * Alias names of true parameter names
      */
     public const PARAM_ALIAS = [];
 
-    /* commented to allow inherit from Interface in OuvrageTemplate
-   const PARAM_ALIAS = []; */
     public const COMMENT_STRIPPED = '<!-- Paramètre obligatoire -->';
 
     public $log = [];

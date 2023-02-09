@@ -112,7 +112,7 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
      */
     private function convertIsbn(Volume $volume): ?string
     {
-        if (!(property_exists($volume, 'industryIdentifiers') && $volume->industryIdentifiers !== null)) {
+        if (!isset($volume->industryIdentifiers)) {
             return null;
         }
         // so isbn-13 replace isbn-10
@@ -120,7 +120,7 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
         $isbn = null;
         $ids = (array)$volume->industryIdentifiers;
         foreach ($ids as $id) {
-            if (!isset($isbn) && in_array($id->type, ['ISBN_10', 'ISBN_13'])) {
+            if (!$isbn && in_array($id->type, ['ISBN_10', 'ISBN_13'])) {
                 $isbn = $id->identifier;
             }
             if ('ISBN_13' === $id->type) {
