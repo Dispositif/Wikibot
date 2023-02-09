@@ -19,6 +19,7 @@ use App\Infrastructure\GoogleBooksAdapter;
 use App\Infrastructure\Logger;
 use DomainException;
 use Exception;
+use Scriptotek\GoogleBooks\Volume;
 use Throwable;
 
 /**
@@ -226,6 +227,9 @@ class GoogleTransformer
         // Get Google data by ID ZvhBAAAAcAAJ
         $adapter = new GoogleBooksAdapter();
         $volume = $isISBN === true ? $adapter->getDataByIsbn($id) : $adapter->getDataByGoogleId($id);
+        if (!$volume instanceof Volume) {
+            throw new DomainException('googleBooks Volume not found for that GB-id/isbn');
+        }
 
         $mapper = new GoogleBookMapper();
         $mapper->mapLanguageData(true);

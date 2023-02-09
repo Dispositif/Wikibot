@@ -12,8 +12,7 @@ namespace App\Domain\Models\Wiki;
 use App\Domain\Utils\ArrayProcessTrait;
 
 /**
- * @notused todo inutile ?
- * Class AbstractParametersObject
+ * @notused
  */
 abstract class AbstractParametersObject
 {
@@ -21,22 +20,8 @@ abstract class AbstractParametersObject
 
     protected $parametersValues;
 
-    //    public function generateSetterMethodList()
-    //    {
-    //        $list = '';
-    //        foreach ($this->parametersByOrder as $name) {
-    //            $method = $this->setterMethodName($name);
-    //            $list .= 'private function '.$method."() { }\n";
-    //        }
-    //        echo "<pre>$list</pre>";
-    //    }
-
     /**
      * Magic param setter.
-     *
-     * @param $name
-     *
-     * @return string
      */
     protected function setterMethodName(string $name): string
     {
@@ -56,7 +41,7 @@ abstract class AbstractParametersObject
     }
 
     /**
-     * Compare param/value datas. Empty value ignored. Params order ignored.
+     * Compare param/value data. Empty value ignored. Params order ignored.
      *
      * @param AbstractParametersObject $object
      *

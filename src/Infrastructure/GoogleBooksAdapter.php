@@ -49,12 +49,7 @@ class GoogleBooksAdapter extends AbstractBookApiAdapter implements BookApiInterf
         $this->quotaCounter = new GoogleApiQuota();
     }
 
-    /**
-     * @param string $isbn
-     *
-     * @return mixed
-     */
-    public function getDataByIsbn(string $isbn)
+    public function getDataByIsbn(string $isbn): ?Volume
     {
         $this->checkGoogleQuota();
         $res = $this->api->volumes->byIsbn($isbn);

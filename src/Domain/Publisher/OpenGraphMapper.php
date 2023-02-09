@@ -67,8 +67,9 @@ class OpenGraphMapper implements MapperInterface
             'DATA-TYPE' => 'Open Graph/Dublin Core',
             'DATA-ARTICLE' => $this->isAnArticle($meta['og:type'] ?? ''),
             'site' => $this->clean($meta['og:site_name'] ?? null),
-            'titre' => $this->clean(
-                $meta['og:title'] ?? $meta['twitter:title'] ?? $meta['DC.title'] ?? $meta['html-title'] ?? null
+            'titre' => $this->cleanSEOTitle(
+                $meta['og:title'] ?? $meta['twitter:title'] ?? $meta['DC.title'] ?? $meta['html-title'] ?? null,
+                $meta['html-url']
             ),
             'url' => $meta['og:url'] ?? $meta['URL'] ?? $meta['html-url'] ?? null,
             'langue' => $this->convertLangue(

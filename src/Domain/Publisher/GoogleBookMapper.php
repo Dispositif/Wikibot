@@ -37,21 +37,23 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
     private $mapLanguageData = false;
 
     /**
-     * @param           $volume Volume
-     *
-     * @return array
+     * @param Volume|null $volume
      */
     public function process($volume): array
     {
+        if (!$volume instanceof Volume) {
+            throw new \DomainException('dataObject to process is not a googleBook Volume');
+        }
+
         return [
             // language : data not accurate !
             'langue' => $this->langFilterByIsbn($volume),
-            'auteur1' => $volume->authors[0],
+            'auteur1' => $volume->authors[0] ?? null,
             'auteur2' => $volume->authors[1] ?? null,
             'auteur3' => $volume->authors[2] ?? null,
             'titre' => $volume->title,
             'sous-titre' => $this->filterSubtitle($volume),
-            'année' => $this->convertDate2Year($volume->publishedDate),
+            'année' => $this->convertDate2Year($volume->publishedDate ?? null),
             'pages totales' => (string)$volume->pageCount ?? null,
             'isbn' => $this->convertIsbn($volume),
             'présentation en ligne' => $this->presentationEnLigne($volume),
@@ -88,18 +90,13 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
         return $volume->subtitle;
     }
 
-    /**
-     * @param $data
-     *
-     * @return string|null
-     */
-    private function convertDate2Year($data)
+    private function convertDate2Year(?string $data): ?string
     {
-        if (!isset($data)) {
+        if (null === $data) {
             return null;
         }
         if (preg_match('/[^0-9]?([12]\d{3})[^0-9]?/', $data, $matches) > 0) {
-            return (string)$matches[1];
+            return $matches[1];
         }
 
         return null;
@@ -202,7 +199,7 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
 //            echo "(no ISBN lang)\n";
 //        }
 
-        $gooLang = $volume->language;
+        $gooLang = $volume->language ?? null;
         // filtering lang because seems inconsistant
 //        if (isset($isbnLang) && !empty($gooLang) && $gooLang !== $isbnLang) {
 //            echo sprintf(

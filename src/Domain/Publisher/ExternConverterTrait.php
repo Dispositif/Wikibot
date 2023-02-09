@@ -88,13 +88,8 @@ trait ExternConverterTrait
      * Réduit le nombre d'auteurs si > 3.
      * En $modeEtAll=true vérification pour "et al.=oui".
      * TODO : wikifyPressAgency()
-     *
-     * @param string|null $authors
-     * @param bool        $modeEtAl
-     *
-     * @return string|null
      */
-    protected function authorsEtAl(?string $authors, $modeEtAl = false): ?string
+    protected function authorsEtAl(?string $authors, bool $modeEtAl = false): ?string
     {
         if (empty($authors)) {
             return null;
@@ -201,11 +196,19 @@ trait ExternConverterTrait
         $str = html_entity_decode($str);
         $str = strip_tags($str);
 
-        if (strlen($str) >= 30 && isset($this->titleFromHtmlState) && $this->titleFromHtmlState) {
-            $str .= "<!-- Vérifiez ce titre -->";
+        return trim($str);
+    }
+
+    public function cleanSEOTitle(?string $title = null, $url = null): ?string
+    {
+        $cleanTitle = $this->clean($title);
+
+        // TODO {titre à vérifier} + checkSEOTitle()
+        if (strlen($cleanTitle) >= 30 && isset($this->titleFromHtmlState) && $this->titleFromHtmlState) {
+            $cleanTitle .= "<!-- Vérifiez ce titre -->";
         }
 
-        return $str;
+        return $cleanTitle;
     }
 
     public function stripEmailAdress(?string $str = null): ?string
@@ -305,9 +308,6 @@ trait ExternConverterTrait
     /**
      * todo move to generalize as utility
      *
-     * @param string $str
-     *
-     * @return string
      * @throws Exception
      */
     protected function convertDate(?string $str): ?string
@@ -344,10 +344,6 @@ trait ExternConverterTrait
     /**
      * Wikification des noms/acronymes d'agences de presse.
      * Note : utiliser APRES clean() et cleanAuthor() sinon bug "|"
-     *
-     * @param string $str
-     *
-     * @return string
      */
     protected function wikifyPressAgency(?string $str): ?string
     {

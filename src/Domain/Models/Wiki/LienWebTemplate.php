@@ -33,7 +33,6 @@ class LienWebTemplate extends AbstractWikiTemplate
     // TODO  https://fr.wikipedia.org/wiki/Mod%C3%A8le:Lien_web#TemplateData
     public const PARAM_ALIAS
         = [
-            'lang' => 'langue',
             "url-access" => "accès url",
             "doi-access" => "accès doi",
             'access-date' => 'consulté le', // enwiki
@@ -107,6 +106,7 @@ class LienWebTemplate extends AbstractWikiTemplate
             'champ libre',
             'titre', // obligatoire
             'sous-titre',
+            'titre à vérifier',
             'traduction titre',
             'description', // obligatoire
             'url',
