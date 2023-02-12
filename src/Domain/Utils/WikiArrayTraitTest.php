@@ -11,9 +11,9 @@ namespace App\Domain\Utils;
 
 use PHPUnit\Framework\TestCase;
 
-class ArrayProcessTraitTest extends TestCase
+class WikiArrayTraitTest extends TestCase
 {
-    use ArrayProcessTrait;
+    use WikiArrayTrait;
 
     public function testCompleteFantasyOrder()
     {

@@ -11,6 +11,7 @@ namespace App\Domain\Models\Wiki;
 
 use App\Domain\Utils\ArrayProcessTrait;
 use App\Domain\Utils\TemplateParser;
+use App\Domain\Utils\WikiArrayTrait;
 use App\Domain\Utils\WikiTextUtil;
 use DomainException;
 use Exception;
@@ -26,7 +27,7 @@ use Exception;
  */
 abstract class AbstractWikiTemplate extends AbstractStrictWikiTemplate implements WikiTemplateInterface
 {
-    use ArrayProcessTrait, InfoTrait;
+    use ArrayProcessTrait, WikiArrayTrait, InfoTrait;
 
     public $parametersErrorFromHydrate;
 

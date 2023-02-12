@@ -15,9 +15,8 @@ use Exception;
 
 /**
  * Static methods for Google Books URL parsing.
- * Class GoogleBooksUtil
- *
- * @package App\Domain\Publisher
+ * TODO : https://www.google.fr/books/edition/Les_grandes_orgues_et_les_organistes_de/43cIAQAAMAAJ?hl=fr&gbpv=1&bsq=orgues+basilique+saint+quentin&dq=orgues+basilique+saint+quentin&printsec=frontcover
+ * identique à https://www.google.fr/books/edition/_/43cIAQAAMAAJ?gbpv=1&dq=orgues+basilique+saint+quentin
  */
 abstract class GoogleBooksUtil
 {
@@ -33,55 +32,52 @@ abstract class GoogleBooksUtil
 
     public const GOOGLEBOOKS_ID_REGEX = '[0-9A-Za-z_\-]{12}';
 
-    public const TRACKING_PARAMETERS
-        = [
-            'xtor',
-            'ved',
-            'ots',
-            'sig',
-            'source',
-            'utm_source',
-            'utm_medium',
-            'utm_campaign',
-            'utm_term',
-            'utm_content',
-        ];
+    /**
+     * todo : add frontcover ?
+     * q : keywords search (may be empty) / dq : quoted phrase search
+     */
+    public const GOOGLEBOOKS_KEEP_PARAMETERS = ['id', 'isbn', 'pg', 'printsec', 'q', 'dq'];
 
+    public const TRACKING_PARAMETERS = [
+        'xtor',
+        'ved',
+        'ots',
+        'sig',
+        'source',
+        'utm_source',
+        'utm_medium',
+        'utm_campaign',
+        'utm_term',
+        'utm_content',
+    ];
+
+    /**
+     * Check if URL contains tracking parameters.
+     */
     public static function isTrackingUrl(string $url): bool
     {
-        $data = self::parseGoogleBookQuery($url);
-        foreach (array_keys($data) as $param) {
-            if (in_array($param, self::TRACKING_PARAMETERS)) {
-                return true;
-            }
-        }
+        $urlData = self::parseGoogleBookQuery($url);
 
-        return false;
+        return !empty(array_intersect_key(array_flip(self::TRACKING_PARAMETERS), $urlData));
     }
 
     /**
      * Parse URL argument from ?query and #fragment.
-     *
-     * @param string $url
-     *
-     * @return array
+     * Do not remove empty values.
      */
     public static function parseGoogleBookQuery(string $url): array
     {
-        // Note : Also datas in URL after the '#' !!! (URL fragment)
         $queryData = parse_url($url, PHP_URL_QUERY); // after ?
         $fragmentData = parse_url($url, PHP_URL_FRAGMENT); // after #
         // queryData precedence over fragmentData
-        parse_str(implode('&', [$fragmentData, $queryData]), $val);
+        parse_str(implode('&', [$fragmentData, $queryData]), $urlData);
 
-        return self::arrayKeysToLower($val);
+        return self::arrayKeysToLower($urlData);
     }
 
     /**
+     * TODO Refac + return also new URL format.
      * Clean the google book URL from optional&tracking data.
-     *
-     * @param string $url
-     *
      * @return string URL
      * @throws Exception
      */
@@ -92,10 +88,10 @@ abstract class GoogleBooksUtil
             throw new Exception('not a Google Book URL');
         }
 
-
         $gooDat = self::parseGoogleBookQuery($url);
 
         // New format https://www.google.fr/books/edition/_/U4NmPwAACAAJ?hl=en
+        // todo move to self::parseGoogleBookQuery()
         if (self::isNewGoogleBookUrl($url) && self::getIDFromNewGBurl($url)) {
             $gooDat['id'] = self::getIDFromNewGBurl($url);
         }
@@ -103,7 +99,7 @@ abstract class GoogleBooksUtil
         if (empty($gooDat['id']) && empty($gooDat['isbn'])) {
             throw new DomainException("no GoogleBook 'id' or 'isbn' in URL");
         }
-        if (isset($gooDat['id']) && !preg_match('#'.self::GOOGLEBOOKS_ID_REGEX.'#', $gooDat['id'])) {
+        if (isset($gooDat['id']) && !self::validateGoogleBooksId($gooDat['id'])) {
             throw new DomainException("GoogleBook 'id' malformed");
         }
 
@@ -111,8 +107,7 @@ abstract class GoogleBooksUtil
         // keep only a few parameters (+'q' ?)
         // q : keywords search / dq : quoted phrase search
         // q can be empty !!!!
-        $keeps = ['id', 'isbn', 'pg', 'printsec', 'q', 'dq'];
-        foreach ($keeps as $keep) {
+        foreach (self::GOOGLEBOOKS_KEEP_PARAMETERS as $keep) {
             if (isset($gooDat[$keep])) {
                 $dat[$keep] = $gooDat[$keep];
             }
@@ -151,6 +146,7 @@ abstract class GoogleBooksUtil
 
         $googleURL = self::DEFAULT_GOOGLEBOOKS_URL;
 
+        // todo Move that
         // domain .com .fr
         $gooDomain = self::parseGoogleDomain($url);
         if ($gooDomain) {
@@ -159,27 +155,20 @@ abstract class GoogleBooksUtil
 
         // todo verify http_build_query() enc_type parameter
         // todo http_build_query() process an urlencode, but a not encoded q= value ("fu+bar") is beautiful
-        return $googleURL.'?'.http_build_query($dat);
+        return $googleURL . '?' . http_build_query($dat);
     }
 
     /**
      * Check google URL pattern.
-     *
-     * @param string $text
-     *
-     * @return bool
      */
     public static function isGoogleBookURL(string $text): bool
     {
-        return preg_match('#^'.self::GOOGLEBOOKS_START_URL_PATTERN.'[^>\]} \n]+$#i', $text) > 0;
+        return preg_match('#^' . self::GOOGLEBOOKS_START_URL_PATTERN . '[^>\]} \n]+$#i', $text) > 0;
     }
 
     /**
-     * return '.fr' or '.com'.
-     *
-     * @param string $url
-     *
-     * @return string|null
+     * Extract domain from google URL.
+     * return '.fr', '.com,'.co.uk', '.co.ma' or null
      */
     private static function parseGoogleDomain(string $url): ?string
     {
@@ -193,11 +182,7 @@ abstract class GoogleBooksUtil
     }
 
     /**
-     * Instead of url_encode(). No UTF-8 encoding.
-     *
-     * @param string $str
-     *
-     * @return string
+     * Google style url_encode(). No UTF-8 encoding.
      */
     public static function googleUrlEncode(string $str): string
     {
@@ -207,23 +192,23 @@ abstract class GoogleBooksUtil
     /**
      * New Google Books format (nov 2019).
      * Example : https://www.google.fr/books/edition/_/U4NmPwAACAAJ?hl=en
-     *
-     * @param string $url
-     *
-     * @return bool
      */
     private static function isNewGoogleBookUrl(string $url): bool
     {
-        return (bool) preg_match(
-            '#^'.self::GOOGLEBOOKS_NEW_START_URL_PATTERN.self::GOOGLEBOOKS_ID_REGEX.'(?:&.+)?#',
+        return (bool)preg_match(
+            '#^' . self::GOOGLEBOOKS_NEW_START_URL_PATTERN . self::GOOGLEBOOKS_ID_REGEX . '(?:&.+)?#',
             $url
         );
     }
 
+    /**
+     * Extract ID from new Google Books URL.
+     * https://www.google.fr/books/edition/_/U4NmPwAACAAJ?hl=en => U4NmPwAACAAJ
+     */
     private static function getIDFromNewGBurl(string $url): ?string
     {
         if (preg_match(
-            '#^'.self::GOOGLEBOOKS_NEW_START_URL_PATTERN.'('.self::GOOGLEBOOKS_ID_REGEX.')(?:&.+)?#',
+            '#^' . self::GOOGLEBOOKS_NEW_START_URL_PATTERN . '(' . self::GOOGLEBOOKS_ID_REGEX . ')(?:&.+)?#',
             $url,
             $matches
         )
@@ -232,5 +217,10 @@ abstract class GoogleBooksUtil
         }
 
         return null;
+    }
+
+    protected static function validateGoogleBooksId(string $id): bool
+    {
+        return preg_match('#' . self::GOOGLEBOOKS_ID_REGEX . '#', $id) > 0;
     }
 }

@@ -1,20 +1,16 @@
-<?php /**
+<?php
+/**
  * This file is part of dispositif/wikibot application (@github)
  * 2019/2020 © Philippe M. <dispositif@gmail.com>
  * For the full copyright and MIT license information, please view the license file.
  */ /** @noinspection PhpUndefinedFieldInspection */
-
-/**
- * This file is part of dispositif/wikibot application
- * 2019 : Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
- */
 
 declare(strict_types=1);
 
 namespace App\Domain\Publisher;
 
 use App\Domain\Enums\Language;
+use DomainException;
 use Scriptotek\GoogleBooks\Volume;
 
 /**
@@ -38,15 +34,16 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
 
     /**
      * @param Volume|null $volume
+     *
+     * @noinspection PhpParameterNameChangedDuringInheritanceInspection
      */
     public function process($volume): array
     {
         if (!$volume instanceof Volume) {
-            throw new \DomainException('dataObject to process is not a googleBook Volume');
+            throw new DomainException('dataObject to process is not a googleBook Volume');
         }
 
         return [
-            // language : data not accurate !
             'langue' => $this->langFilterByIsbn($volume),
             'auteur1' => $volume->authors[0] ?? null,
             'auteur2' => $volume->authors[1] ?? null,
