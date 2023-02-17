@@ -1,6 +1,6 @@
 {
   "name": "dispositif/wikibot",
-  "version": "1",
+  "version": "1.1",
   "type": "project",
   "license": "MIT",
   "description": "",
@@ -12,7 +12,7 @@
   ],
   "config": {
     "platform": {
-      "php": "7.3.29"
+      "php": "7.4"
     }
   },
   "require": {
