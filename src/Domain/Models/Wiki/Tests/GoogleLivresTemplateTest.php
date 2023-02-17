@@ -1,8 +1,8 @@
 <?php
-/**
- * This file is part of dispositif/wikibot application
- * 2019 : Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+/*
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -38,7 +38,7 @@ class GoogleLivresTemplateTest extends TestCase
      *
      * @throws Exception
      */
-    public function testSimplyGoogleBookUrl($url, $expected)
+    public function testSimplifyGoogleBookUrl($url, $expected)
     {
         $this::assertEquals(
             $expected,
@@ -46,18 +46,34 @@ class GoogleLivresTemplateTest extends TestCase
         );
     }
 
-    public function provideSimplify()
+    /**
+     * @dataProvider provideExceptionURL
+     */
+    public function testSimplifyGoogleBookUrlException(string $url)
+    {
+        $this::expectExceptionMessage("no GoogleBook 'id' or 'isbn' in URL");
+        GoogleBooksUtil::simplifyGoogleUrl($url);
+    }
+
+    public function provideExceptionURL(): array
+    {
+        return [
+            ['https://www.google.fr/books/edition/_/sfd'],
+        ];
+    }
+
+    public function provideSimplify(): array
     {
         return [
             [
                 // new Google Book format (nov 2019)
                 'https://www.google.fr/books/edition/_/U4NmPwAACAAJ?hl=en',
-                'https://books.google.fr/books?id=U4NmPwAACAAJ'
+                'https://www.google.fr/books/edition/_/U4NmPwAACAAJ?hl=en',
             ],
             [
                 // new Google Book format (nov 2019)
                 'https://www.google.com/books/edition/A_Wrinkle_in_Time/r119-dYq0mwC',
-                'https://books.google.com/books?id=r119-dYq0mwC'
+                'https://www.google.com/books/edition/A_Wrinkle_in_Time/r119-dYq0mwC',
             ],
             [
               // no 'id' but 'isbn' parameter

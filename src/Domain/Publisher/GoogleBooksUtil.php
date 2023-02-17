@@ -1,8 +1,8 @@
 <?php
-/**
+/*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the license file.
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -15,7 +15,6 @@ use Exception;
 
 /**
  * Static methods for Google Books URL parsing.
- * TODO : https://www.google.fr/books/edition/Les_grandes_orgues_et_les_organistes_de/43cIAQAAMAAJ?hl=fr&gbpv=1&bsq=orgues+basilique+saint+quentin&dq=orgues+basilique+saint+quentin&printsec=frontcover
  * identique à https://www.google.fr/books/edition/_/43cIAQAAMAAJ?gbpv=1&dq=orgues+basilique+saint+quentin
  */
 abstract class GoogleBooksUtil
@@ -36,7 +35,7 @@ abstract class GoogleBooksUtil
      * todo : add frontcover ?
      * q : keywords search (may be empty) / dq : quoted phrase search
      */
-    public const GOOGLEBOOKS_KEEP_PARAMETERS = ['id', 'isbn', 'pg', 'printsec', 'q', 'dq'];
+    public const GOOGLEBOOKS_KEEP_PARAMETERS = ['id', 'isbn', 'pg', 'printsec', 'q', 'dq', 'gbpv'];
 
     public const TRACKING_PARAMETERS = [
         'xtor',
@@ -76,9 +75,12 @@ abstract class GoogleBooksUtil
     }
 
     /**
-     * TODO Refac + return also new URL format.
-     * Clean the google book URL from optional&tracking data.
-     * @return string URL
+     * TODO refac (responsability).
+     *
+     * Clean the google book old URL : delete tracking and user optional params,
+     * also redondat search query params.
+     * Skip the process for new URL 2019 format.
+     *
      * @throws Exception
      */
     public static function simplifyGoogleUrl(string $url): string
@@ -88,13 +90,15 @@ abstract class GoogleBooksUtil
             throw new Exception('not a Google Book URL');
         }
 
-        $gooDat = self::parseGoogleBookQuery($url);
+        if (self::isNewGoogleBookUrl($url)) {
+            if (!self::getIDFromNewGBurl($url)) {
+                throw new DomainException('no Google Book ID in URL');
+            }
 
-        // New format https://www.google.fr/books/edition/_/U4NmPwAACAAJ?hl=en
-        // todo move to self::parseGoogleBookQuery()
-        if (self::isNewGoogleBookUrl($url) && self::getIDFromNewGBurl($url)) {
-            $gooDat['id'] = self::getIDFromNewGBurl($url);
+            return $url;
         }
+
+        $gooDat = self::parseGoogleBookQuery($url);
 
         if (empty($gooDat['id']) && empty($gooDat['isbn'])) {
             throw new DomainException("no GoogleBook 'id' or 'isbn' in URL");
@@ -103,55 +107,8 @@ abstract class GoogleBooksUtil
             throw new DomainException("GoogleBook 'id' malformed");
         }
 
-        $dat = [];
-        // keep only a few parameters (+'q' ?)
-        // q : keywords search / dq : quoted phrase search
-        // q can be empty !!!!
-        foreach (self::GOOGLEBOOKS_KEEP_PARAMETERS as $keep) {
-            if (isset($gooDat[$keep])) {
-                $dat[$keep] = $gooDat[$keep];
-            }
-        }
-
-        // 1 exemple : https://fr.wikipedia.org/w/index.php?title=Foudre_de_Catatumbo&diff=next&oldid=168721836&diffmode=source
-        // 1. mettre URL &dq= pour final
-        //
-        // 2. si q!=dq (changement ultérieur formulaire recherche) alors q= prévaut pour résultat final
-        // 2. mettre URL &q pour final
-        //
-        // 3. Recherche global sur http://books.google.fr => pg= dq= (#q= avec q==dq)
-        // 3. dans ce cas (q==dq), url final avec seulement dq= donne résultat OK
-        //
-        // 4 . if you use a url without &redir_esc=y#v=onepage for a book with "Preview" available,
-        // usually &dq shows the highlighted text in full page view whereas &q shows the snippet view (so you have to
-        // click on the snippet to see the full page).
-        // &dq allows highlighting in books where there is "Preview" available and &pg=PTx is in the URL
-        //
-        // #v=onepage ou #v=snippet
-        if (isset($dat['q']) && isset($dat['dq'])) {
-            // si q==dq alors dq prévaut pour affichage (sinon affichage différent avec url seulement q=)
-            if ($dat['q'] === $dat['dq']) {
-                unset($dat['q']);
-            } // si q!=dq (exemple : nouveaux mots clés dans formulaire recherche) alors q= prévaut pour résultat final
-            else {
-                unset($dat['dq']);
-            }
-        }
-        if (empty($dat['q'])) {
-            unset($dat['q']);
-        }
-        if (empty($dat['dq'])) {
-            unset($dat['dq']);
-        }
-
-        $googleURL = self::DEFAULT_GOOGLEBOOKS_URL;
-
-        // todo Move that
-        // domain .com .fr
-        $gooDomain = self::parseGoogleDomain($url);
-        if ($gooDomain) {
-            $googleURL = str_replace('.com', $gooDomain, $googleURL);
-        }
+        $dat = self::parseAndCleanParams($gooDat);
+        $googleURL = self::modifyGoogleDomainURL($url);
 
         // todo verify http_build_query() enc_type parameter
         // todo http_build_query() process an urlencode, but a not encoded q= value ("fu+bar") is beautiful
@@ -199,6 +156,72 @@ abstract class GoogleBooksUtil
             '#^' . self::GOOGLEBOOKS_NEW_START_URL_PATTERN . self::GOOGLEBOOKS_ID_REGEX . '(?:&.+)?#',
             $url
         );
+    }
+
+    /**
+     * @param string[] $gooDat
+     *
+     * @return string[]
+     */
+    protected static function parseAndCleanParams(array $gooDat): array
+    {
+        $dat = [];
+        // keep only a few parameters (+'q' ?)
+        // q : keywords search / dq : quoted phrase search
+        // q can be empty !!!!
+        foreach (self::GOOGLEBOOKS_KEEP_PARAMETERS as $keep) {
+            if (isset($gooDat[$keep])) {
+                $dat[$keep] = $gooDat[$keep];
+            }
+        }
+
+        // 1 exemple : https://fr.wikipedia.org/w/index.php?title=Foudre_de_Catatumbo&diff=next&oldid=168721836&diffmode=source
+        // 1. mettre URL &dq= pour final
+        //
+        // 2. si q!=dq (changement ultérieur formulaire recherche) alors q= prévaut pour résultat final
+        // 2. mettre URL &q pour final
+        //
+        // 3. Recherche global sur http://books.google.fr => pg= dq= (#q= avec q==dq)
+        // 3. dans ce cas (q==dq), url final avec seulement dq= donne résultat OK
+        //
+        // 4 . if you use a url without &redir_esc=y#v=onepage for a book with "Preview" available,
+        // usually &dq shows the highlighted text in full page view whereas &q shows the snippet view (so you have to
+        // click on the snippet to see the full page).
+        // &dq allows highlighting in books where there is "Preview" available and &pg=PTx is in the URL
+        //
+        // #v=onepage ou #v=snippet
+        if (isset($dat['q']) && isset($dat['dq'])) {
+            // si q==dq alors dq prévaut pour affichage (sinon affichage différent avec url seulement q=)
+            if ($dat['q'] === $dat['dq']) {
+                unset($dat['q']);
+            } // si q!=dq (exemple : nouveaux mots clés dans formulaire recherche) alors q= prévaut pour résultat final
+            else {
+                unset($dat['dq']);
+            }
+        }
+        if (empty($dat['q'])) {
+            unset($dat['q']);
+        }
+        if (empty($dat['dq'])) {
+            unset($dat['dq']);
+        }
+
+        return $dat;
+    }
+
+    /**
+     * Naive replacement of Google domain name.
+     */
+    protected static function modifyGoogleDomainURL(string $url): string
+    {
+        $defaultGoogleDomainURL = self::DEFAULT_GOOGLEBOOKS_URL;
+
+        // domain .com .fr
+        $gooDomain = self::parseGoogleDomain($url);
+        if ($gooDomain) {
+            $defaultGoogleDomainURL = str_replace('.com', $gooDomain, $defaultGoogleDomainURL);
+        }
+        return $defaultGoogleDomainURL;
     }
 
     /**
