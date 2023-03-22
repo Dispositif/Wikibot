@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
  * For the full copyright and MIT license information, view the license file.
  */
 
@@ -12,6 +12,7 @@ namespace App\Domain;
 
 use App\Application\Http\ExternHttpClient;
 use App\Domain\Utils\TextUtil;
+use App\Infrastructure\InternetDomainParser;
 use App\Infrastructure\TagParser;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -24,15 +25,10 @@ use Psr\Log\LoggerInterface;
  */
 class ExternPage
 {
-    public const PRETTY_DOMAIN_EXCLUSION
+    // todo move to config
+    protected const PRETTY_DOMAIN_EXCLUSION
         = [
             '.中国',
-            '.uk',
-            '.jp',
-            '.ma',
-            '.kr',
-            '.ca',
-            '.name',
             '.gov',
             '.free.fr',
             '.gouv.fr',
@@ -66,7 +62,7 @@ class ExternPage
      */
     public function __construct(string $url, string $html, ?LoggerInterface $log = null)
     {
-        if (!ExternHttpClient::isWebURL($url)) {
+        if (!ExternHttpClient::isHttpURL($url)) {
             throw new Exception('string is not an URL '.$url);
         }
         $this->url = $url;
@@ -171,45 +167,41 @@ class ExternPage
      * bla.test.com => test.com
      * test.co.uk => test.co.uk (national commercial subdomain)
      * site.google.com => site.google.com (blog)
+     * bla.site.google.com => site.google.com (blog)
      *
-     * @return string
      * @throws Exception
      */
     public function getPrettyDomainName(): string
     {
-        $subDomain = $this->getSubDomain();
-
+        // Parse custom exceptions (free.fr, gouv.fr, etc)
+        $rawDomain = InternetDomainParser::extractSubdomainString($this->url);
         foreach (self::PRETTY_DOMAIN_EXCLUSION as $end) {
-            if (TextUtil::str_ends_with($subDomain, $end)) {
-                return $subDomain;
+            if (TextUtil::str_ends_with($rawDomain, $end)) {
+                return $this->sanitizeSubDomain($rawDomain);
             }
         }
 
-        // bla.test.com => Test.com
-        // Validate with "-" and unicode characters in domain name ?
-        // todo test domain .中国 arabic, etc
-        if (preg_match('#[^. /:]+\.\w+$#i', $subDomain, $matches)) {
-            return $matches[0];
-        }
-
-        return $subDomain;
+        // Parse using InternetDomainParser library
+        return $this->sanitizeSubDomain($this->getRegistrableSubDomain());
     }
 
     /**
      * "http://www.bla.co.uk/fubar" => "bla.co.uk"
-     * @return string|null
      * @throws Exception
      */
-    public function getSubDomain(): string
+    public function getRegistrableSubDomain(): string
     {
-        $e = null;
         try {
-            return ExternDomains::extractSubDomain($this->url);
+            if (!ExternHttpClient::isHttpURL($this->url)) {
+                throw new \Exception('string is not an URL '.$this->url);
+            }
+
+            return InternetDomainParser::getRegistrableDomainFromURL($this->url);
         } catch (Exception $e) {
             if ($this->log !== null) {
-                $this->log->warning('ExternDomains::extractSubDomain NULL '.$this->url);
+                $this->log->warning('InternetDomainParser::getRegistrableDomainFromURL NULL '.$this->url);
             }
-            throw new Exception('ExternDomains::extractSubDomain NULL', $e->getCode(), $e);
+            throw new Exception('InternetDomainParser::getRegistrableDomainFromURL NULL', $e->getCode(), $e);
         }
     }
 
@@ -244,5 +236,16 @@ class ExternPage
         }
 
         return null;
+    }
+
+    /**
+     * TODO strip not unicode characters ?
+     * TODO add initial capital letter ?
+     * This method is used to sanitize subdomain name.
+     * WTF ?!?!?!
+     */
+    protected function sanitizeSubDomain(string $subDomain): string
+    {
+        return str_replace('www.', '', $subDomain);
     }
 }

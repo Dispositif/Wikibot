@@ -2,7 +2,7 @@
 
 /*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
  * For the full copyright and MIT license information, view the license file.
  */
 declare(strict_types=1);
@@ -57,7 +57,7 @@ class ExternHttpClient implements HttpClientInterface
         // idn_to_ascii($url);
         // idn_to_ascii('teßt.com',IDNA_NONTRANSITIONAL_TO_ASCII,INTL_IDNA_VARIANT_UTS46)
         // checkdnsrr($string, "A") // check DNS record
-        if (!self::isWebURL($url)) {
+        if (!self::isHttpURL($url)) {
             throw new DomainException('URL not compatible : '.$url);
         }
         $response = $this->client->get($url);
@@ -76,7 +76,7 @@ class ExternHttpClient implements HttpClientInterface
         return ($normalized) ? $this->normalizeHtml($html, $url) : $html;
     }
 
-    public static function isWebURL(string $url): bool
+    public static function isHttpURL(string $url): bool
     {
         //$url = filter_var($url, FILTER_SANITIZE_URL); // strip "é" !!!
         // FILTER_VALIDATE_URL restreint à caractères ASCII : renvoie false avec "é" dans URL / not multibyte capable

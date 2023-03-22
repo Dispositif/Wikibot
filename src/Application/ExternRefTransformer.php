@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
  * For the full copyright and MIT license information, view the license file.
  */
 
@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace App\Application;
 
 use App\Application\Http\ExternHttpClient;
-use App\Domain\ExternDomains;
 use App\Domain\ExternPage;
 use App\Domain\ExternPageFactory;
 use App\Domain\Models\Summary;
@@ -22,6 +21,7 @@ use App\Domain\OptimizerFactory;
 use App\Domain\Publisher\ExternMapper;
 use App\Domain\Utils\WikiTextUtil;
 use App\Domain\WikiTemplateFactory;
+use App\Infrastructure\InternetDomainParser;
 use App\Infrastructure\Logger;
 use Exception;
 use Normalizer;
@@ -205,15 +205,9 @@ class ExternRefTransformer implements TransformerInterface
         return $url;
     }
 
-    /**
-     * @param string $url
-     *
-     * @return bool
-     * @throws Exception
-     */
     protected function isURLAuthorized(string $url): bool
     {
-        if (!ExternHttpClient::isWebURL($url)) {
+        if (!ExternHttpClient::isHttpURL($url)) {
             //            $this->log->debug('Skip : not a valid URL : '.$url);
             return false;
         }
@@ -223,7 +217,16 @@ class ExternRefTransformer implements TransformerInterface
         }
 
         $this->url = $url;
-        $this->domain = ExternDomains::extractSubDomain($this->url);
+        if (!ExternHttpClient::isHttpURL($url)) {
+            throw new \Exception('string is not an URL '.$url);
+        }
+        try {
+            $this->domain = InternetDomainParser::getRegistrableDomainFromURL($url);
+        } catch (Exception $e) {
+            $this->log->warning('Skip : not a valid URL : '.$url);
+
+            return false;
+        }
 
         if (in_array($this->domain, $this->skip_domain)) {
             $this->log->notice("Skip domain ".$this->domain);
