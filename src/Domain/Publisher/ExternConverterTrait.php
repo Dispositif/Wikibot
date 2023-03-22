@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
  * For the full copyright and MIT license information, view the license file.
  */
 
@@ -199,12 +199,19 @@ trait ExternConverterTrait
         return trim($str);
     }
 
-    public function cleanSEOTitle(?string $title = null, $url = null): ?string
+    /**
+     * Naive check for SEO title.
+     */
+    public function cleanSEOTitle(?string $title, $url = null): ?string
     {
         $cleanTitle = $this->clean($title);
 
         // TODO {titre à vérifier} + checkSEOTitle()
-        if (strlen($cleanTitle) >= 30 && isset($this->titleFromHtmlState) && $this->titleFromHtmlState) {
+        if (
+            null !== $cleanTitle
+            && strlen($cleanTitle) >= 30
+            && isset($this->titleFromHtmlState) && $this->titleFromHtmlState
+        ) {
             $cleanTitle .= "<!-- Vérifiez ce titre -->";
         }
 

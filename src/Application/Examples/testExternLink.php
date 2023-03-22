@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
  * For the full copyright and MIT license information, view the license file.
  */
 
@@ -28,7 +28,7 @@ $log->debug = true;
 $log->verbose = true;
 $summary = new Summary('test');
 $trans = new ExternRefTransformer($log);
-$trans->skipUnauthorised = false;
+$trans->skipUnauthorised = true;
 try {
     $result = $trans->process($url, $summary);
 } catch (\Exception $e) {
