@@ -34,6 +34,8 @@ class ExternPage
             '.gouv.fr',
             '.com.cn',
             'site.google.com',
+            'wordpress.com',
+            'blogspot.com',
         ];
 
     /**

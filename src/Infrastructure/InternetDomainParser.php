@@ -20,6 +20,7 @@ use Pdp\Rules;
  */
 class InternetDomainParser
 {
+    // todo inject/config ?
     private const PATH_CACHE_PUBLIC_SUFFIX_LIST = __DIR__ . '/resources/public_suffix_list.dat';
 
     /**
@@ -53,9 +54,9 @@ class InternetDomainParser
             throw new Exception('Public suffix list not found');
         }
 
-        $publicSuffixList = Rules::fromPath(self::PATH_CACHE_PUBLIC_SUFFIX_LIST);
+        $publicSuffixRules = Rules::fromPath(self::PATH_CACHE_PUBLIC_SUFFIX_LIST);
         $domain = Domain::fromIDNA2008(parse_url($httpURL, PHP_URL_HOST));
 
-        return $publicSuffixList->resolve($domain);
+        return $publicSuffixRules->resolve($domain);
     }
 }

@@ -21,14 +21,14 @@ class ExternHttpClientTest extends TestCase
         $this::assertTrue(ExternHttpClient::isHttpURL('https://www.youtube.com/watch?v=2zIW8qDPhos'));
         $this::assertTrue(ExternHttpClient::isHttpURL('https://www.larousse.fr/dictionnaires/francais/île/41521'));
 
+        $this::assertTrue(ExternHttpClient::isHttpURL('https://中国.中国'));
         $this::assertTrue(
             ExternHttpClient::isHttpURL(
                 'https://fr.wikisource.org/wiki/Dictionnaire_raisonné_de_l’architecture_française_du_XIe_au_XVIe_siècle/Baée,_Bée'
             )
         );
         $this::assertFalse(ExternHttpClient::isHttpURL('ftp://test.com:88'));
-        $this::assertfalse(ExternHttpClient::isHttpURL('http://test.com bla'));
+        $this::assertFalse(ExternHttpClient::isHttpURL('http://test.com bla'));
         $this::assertFalse(ExternHttpClient::isHttpURL('bla'));
     }
-
 }

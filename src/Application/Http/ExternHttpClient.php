@@ -15,6 +15,9 @@ use Normalizer;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
+/**
+ * Http client (Guzzle) configured for web crawling.
+ */
 class ExternHttpClient implements HttpClientInterface
 {
     /**
@@ -35,7 +38,7 @@ class ExternHttpClient implements HttpClientInterface
                 'allow_redirects' => true,
                 'headers' => ['User-Agent' => getenv('USER_AGENT')],
                 'verify' => false, // CURLOPT_SSL_VERIFYHOST
-                //                'proxy'           => '192.168.16.1:10',
+                //                'proxy'           => '192.192.192.192:10',
             ]
         );
     }
@@ -44,7 +47,7 @@ class ExternHttpClient implements HttpClientInterface
      * import source from URL with Guzzle.
      * todo abstract + refac async request
      *
-     * @param string    $url
+     * @param string $url
      * @param bool|null $normalized
      *
      * @return string|null
@@ -58,14 +61,14 @@ class ExternHttpClient implements HttpClientInterface
         // idn_to_ascii('teßt.com',IDNA_NONTRANSITIONAL_TO_ASCII,INTL_IDNA_VARIANT_UTS46)
         // checkdnsrr($string, "A") // check DNS record
         if (!self::isHttpURL($url)) {
-            throw new DomainException('URL not compatible : '.$url);
+            throw new DomainException('URL not compatible : ' . $url);
         }
         $response = $this->client->get($url);
 
         if (200 !== $response->getStatusCode()) {
-            echo 'HTTP error '.$response->getStatusCode();
+            echo 'HTTP error ' . $response->getStatusCode();
             if ($this->log !== null) {
-                $this->log->error('HTTP error '.$response->getStatusCode().' '.$response->getReasonPhrase());
+                $this->log->error('HTTP error ' . $response->getStatusCode() . ' ' . $response->getReasonPhrase());
             }
 
             return null;
@@ -76,18 +79,19 @@ class ExternHttpClient implements HttpClientInterface
         return ($normalized) ? $this->normalizeHtml($html, $url) : $html;
     }
 
+    /**
+     * Better than filter_var($url, FILTER_VALIDATE_URL) because it's not multibyte capable.
+     * See for example .中国 domain name
+     */
     public static function isHttpURL(string $url): bool
     {
-        //$url = filter_var($url, FILTER_SANITIZE_URL); // strip "é" !!!
-        // FILTER_VALIDATE_URL restreint à caractères ASCII : renvoie false avec "é" dans URL / not multibyte capable
-        // !filter_var($url, FILTER_VALIDATE_URL)
-        return (bool) preg_match('#^https?://[^ ]+$#i', $url);
+        return (bool)preg_match('#^https?://[^ ]+$#i', $url);
     }
 
     /**
      * Normalize and converting to UTF-8 encoding
      *
-     * @param string      $html
+     * @param string $html
      * @param string|null $url
      *
      * @return string|null
@@ -108,7 +112,7 @@ class ExternHttpClient implements HttpClientInterface
         $charset = $this->extractCharset($html) ?? 'WINDOWS-1252';
 
         if (empty($charset)) {
-            throw new DomainException('normalized html error and no charset found : '.$url);
+            throw new DomainException('normalized html error and no charset found : ' . $url);
         }
         try {
             $html2 = iconv($charset, 'UTF-8//TRANSLIT', $html);
@@ -117,7 +121,7 @@ class ExternHttpClient implements HttpClientInterface
                 return '';
             }
         } catch (Throwable $e) {
-            throw new DomainException("error converting : $charset to UTF-8".$url, $e->getCode(), $e);
+            throw new DomainException("error converting : $charset to UTF-8" . $url, $e->getCode(), $e);
         }
 
         return $html2;
@@ -148,5 +152,4 @@ class ExternHttpClient implements HttpClientInterface
 
         return $charset;
     }
-
 }

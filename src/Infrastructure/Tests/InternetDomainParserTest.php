@@ -30,6 +30,7 @@ class InternetDomainParserTest extends TestCase
             ['https://www.google.fr', 'google.fr'],
             ['http://fu.bar.co.uk', 'bar.co.uk'],
             ['http://fu.free.fr', 'free.fr'],
+            ['https://bla.blogspot.com', 'bla.blogspot.com'],
         ];
     }
 }
