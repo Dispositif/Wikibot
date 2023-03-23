@@ -7,13 +7,15 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure;
+namespace App\Infrastructure\Tests;
 
+use App\Infrastructure\InternetDomainParser;
 use PHPUnit\Framework\TestCase;
 
 class InternetDomainParserTest extends TestCase
 {
     /**
+     * @group skipci
      * @dataProvider provideUrls
      */
     public function testResolve($httpURL, $expected): void

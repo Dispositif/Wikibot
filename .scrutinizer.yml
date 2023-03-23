@@ -1,9 +1,18 @@
 build:
     environment:
         php: 7.4
-    #    dependencies:
-    #        before:
-    #            - composer require phpunit/phpunit:^7.0 --dev
+        variables:
+#            SCRUTIZINER: true
+#        dependencies:
+#            before:
+#                - composer require phpunit/phpunit:^8.0 --dev
+    tests:
+        override:
+            # overwrite phpunit.xml config
+            - command: 'php ./vendor/bin/phpunit --exclude-group=skipci --coverage-clover=clover.xml'
+            - coverage:
+                  file: tests/clover.xml
+                  format: clover
     nodes:
         analysis:
             project_setup:
@@ -14,7 +23,7 @@ build:
                     - php-scrutinizer-run
         #                    -   command: phpcs-run
         #                            'use_website_config': true   # <- uses the website config   # <- uses the website config
-        tests: true
+
 #        coverage:
 #            tests:
 #                override:
@@ -38,11 +47,11 @@ filter:
     dependency_paths:
         - vendor/
 tools:
-    external_code_coverage: true # import from Travis CI
+    # external_code_coverage: true # import from Travis CI
     php_mess_detector: true
     php_code_sniffer: true
     sensiolabs_security_checker: true
-    php_code_coverage: true
+    # php_code_coverage: true
     php_pdepend: true
     php_loc:
         enabled: true

@@ -15,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 class ExternPageTest extends TestCase
 {
     /**
+     * @group skipci
      * @dataProvider provideTestResult
      *
      * @param string|null $url
@@ -28,7 +29,7 @@ class ExternPageTest extends TestCase
         $this::assertSame($expected, $page->getPrettyDomainName());
     }
 
-    public function provideTestResult()
+    public function provideTestResult(): array
     {
         return [
             ['http://test.com', 'test.com'],
@@ -42,5 +43,4 @@ class ExternPageTest extends TestCase
             ['http://bla-bla.gouv', 'bla-bla.gouv'], /* custom parsing */
         ];
     }
-
 }

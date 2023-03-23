@@ -34,7 +34,7 @@ matrix:
 # Define an environment variable
 env:
     global:
-        - WIKIBOT_VERSION="1" DB=msql
+        - WIKIBOT_VERSION="1.1" DB=msql
         - CC_TEST_REPORTER_ID=25d4303381ccd84d954db71d8266c613d4de417dfa543b123e508d0f2bd48d63
         - GIT_COMMITTED_AT=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then git log -1 --pretty=format:%ct; else git log -1 --skip 1 --pretty=format:%ct; fi)
 

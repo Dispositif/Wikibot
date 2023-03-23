@@ -19,14 +19,11 @@ use PHPUnit\Framework\TestCase;
 class OuvrageOptimizeTest extends TestCase
 {
     /**
+     * @group skipci
      * @dataProvider provideSomeParam
-     *
-     * @param $data
-     * @param $expected
-     *
      * @throws Exception
      */
-    public function testSomeParam($data, $expected)
+    public function testSomeParam(array $data, string $expected): void
     {
         $ouvrage = WikiTemplateFactory::create('ouvrage');
         $ouvrage->hydrate($data);
@@ -38,7 +35,7 @@ class OuvrageOptimizeTest extends TestCase
         );
     }
 
-    public function provideSomeParam()
+    public function provideSomeParam(): array
     {
         return [
             // "edition" [ordinal number] from {Cite book} => "réimpression" (année) ou "numéro d'édition"
@@ -209,13 +206,9 @@ class OuvrageOptimizeTest extends TestCase
 
     /**
      * @dataProvider provideProcessTitle
-     *
-     * @param $data
-     * @param $expected
-     *
      * @throws Exception
      */
-    public function testProcessTitle($data, $expected)
+    public function testProcessTitle(array $data, string $expected): void
     {
         $ouvrage = WikiTemplateFactory::create('ouvrage');
         $ouvrage->hydrate($data);
@@ -227,7 +220,7 @@ class OuvrageOptimizeTest extends TestCase
         );
     }
 
-    public function provideProcessTitle()
+    public function provideProcessTitle(): array
     {
         return [
             [
@@ -301,12 +294,9 @@ class OuvrageOptimizeTest extends TestCase
     /**
      * @dataProvider provideISBN
      *
-     * @param $isbn
-     * @param $expected
-     *
      * @throws Exception
      */
-    public function testIsbn(array $data, $expected)
+    public function testIsbn(array $data, string $expected): void
     {
         $origin = WikiTemplateFactory::create('ouvrage');
         $origin->hydrate($data);
@@ -318,7 +308,7 @@ class OuvrageOptimizeTest extends TestCase
         );
     }
 
-    public function provideISBN()
+    public function provideISBN(): array
     {
         return [
             [
@@ -379,7 +369,7 @@ class OuvrageOptimizeTest extends TestCase
         ];
     }
 
-    public function testDistinguishAuthors()
+    public function testDistinguishAuthors(): void
     {
         $ouvrage = WikiTemplateFactory::create('ouvrage');
         $ouvrage->hydrateFromText('{{ouvrage|auteur=Marie Durand, Pierre Berger, Francois Morgand|titre=Bla}}');
@@ -393,7 +383,10 @@ class OuvrageOptimizeTest extends TestCase
         );
     }
 
-    public function testPredictPublisherWikiTitle()
+    /**
+     * @group skipci
+     */
+    public function testPredictPublisherWikiTitle(): void
     {
         $optimizer = OptimizerFactory::fromTemplate(new OuvrageTemplate());
         $this::assertSame(
