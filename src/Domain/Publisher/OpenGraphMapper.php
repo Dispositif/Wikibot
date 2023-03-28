@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
  * For the full copyright and MIT license information, view the license file.
  */
 
@@ -109,9 +109,6 @@ class OpenGraphMapper implements MapperInterface
             'issn' => $meta["citation_issn"] ?? null,
             'isbn' => $meta["citation_isbn"] ?? null,
             // "prism.eIssn" => "2262-7197"
-
-            // WIKI
-            //'note' => $this->addNote(),
         ];
     }
 }

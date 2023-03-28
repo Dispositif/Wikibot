@@ -2,7 +2,7 @@
 
 /*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
  * For the full copyright and MIT license information, view the license file.
  */
 declare(strict_types=1);
@@ -136,7 +136,6 @@ abstract class OuvrageTemplateAlias extends AbstractWikiTemplate
             'author-link' => 'lien auteur1',
             'première édition' => 'année première édition',
             'citation' => 'extrait',
-            'chapter-url' => 'lire en ligne',
             'p' => 'passage',
             'год' => 'année',
             // RUSSE

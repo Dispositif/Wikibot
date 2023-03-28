@@ -1,8 +1,8 @@
 <?php
-/**
+/*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the license file.
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -16,7 +16,9 @@ namespace App\Domain\Models\Wiki;
 trait ArticleTemplateParams
 {
     // memo : no constant in trait (use rather interface or static $var)
-
+    // Si un trait définit une propriété, alors la classe ne peut pas définir une propriété de même nom
+    // sauf si elle est compatible (même visibilité, type, modificateur readonly, VALEUR INITIALE),
+    // sinon une erreur fatale est émise.
     protected $parametersByOrder
         = [
             'langue',

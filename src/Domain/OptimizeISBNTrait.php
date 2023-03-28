@@ -79,8 +79,7 @@ trait OptimizeISBNTrait
         }
 
         // Si $isbn13 et 'isbn2' correspond à ISBN-13 => suppression
-        if (isset($isbn13)
-            && $this->hasParamValue('isbn2')
+        if ($this->hasParamValue('isbn2')
             && $this->stripIsbn($this->getParam('isbn2')) === $this->stripIsbn($isbn13)
         ) {
             $this->unsetParam('isbn2');

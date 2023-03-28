@@ -7,7 +7,6 @@
 
 declare(strict_types=1);
 
-
 namespace App\Domain\Publisher;
 
 use App\Domain\Enums\Language;
@@ -57,15 +56,15 @@ trait ExternConverterTrait
         // "	Information about who access the resource or an indication of its security status."
         // Values are a mystery...
         if (isset($data['DC.accessRights']) && in_array(
-            strtolower($data['DC.accessRights']),
-            [
-                'free',
-                'public domain',
-                'public',
-                'domaine public',
-                'available',
-            ]
-        )) {
+                strtolower($data['DC.accessRights']),
+                [
+                    'free',
+                    'public domain',
+                    'public',
+                    'domaine public',
+                    'available',
+                ]
+            )) {
             return 'libre';
         }
 
@@ -112,7 +111,7 @@ trait ExternConverterTrait
         if (isset($meta['citation_firstpage'])) {
             $page = $meta['citation_firstpage'];
             if (isset($meta['citation_lastpage'])) {
-                $page .= '–'.$meta['citation_lastpage'];
+                $page .= '–' . $meta['citation_lastpage'];
             }
 
             return (string)$page;
@@ -202,7 +201,7 @@ trait ExternConverterTrait
     /**
      * Naive check for SEO title.
      */
-    public function cleanSEOTitle(?string $title, $url = null): ?string
+    public function cleanSEOTitle(?string $title, ?string $url = null): ?string
     {
         $cleanTitle = $this->clean($title);
 
@@ -314,7 +313,6 @@ trait ExternConverterTrait
 
     /**
      * todo move to generalize as utility
-     *
      * @throws Exception
      */
     protected function convertDate(?string $str): ?string
@@ -338,11 +336,11 @@ trait ExternConverterTrait
             $date = new DateTime($str);
         } catch (Exception $e) {
             // 23/11/2015 00:00:00
-            if (isset($this) && isset($this->log) && method_exists($this->log, 'notice')) {
+            if (isset($this->log) && method_exists($this->log, 'notice')) {
                 $this->log->notice('EXCEPTION DATE');
             }
 
-            return '<!-- '.$str.' -->';
+            return '<!-- ' . $str . ' -->';
         }
 
         return $date->format('d-m-Y');
@@ -370,13 +368,5 @@ trait ExternConverterTrait
         $str = preg_replace('#\b(ATS)\b#', '[[Agence télégraphique suisse|ATS]]', $str);
 
         return preg_replace('#\b(PC|CP)\b#', '[[La Presse canadienne|PC]]', $str);
-    }
-
-    /**
-     * Add "note=" parameter/value for human information.
-     */
-    private function addNote()
-    {
-        return null;
     }
 }

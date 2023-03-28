@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
  * For the full copyright and MIT license information, view the license file.
  */
 
@@ -111,7 +111,7 @@ class OuvrageCompleteWorker
                         $row['id'],
                         $this->raw
                     )
-                );;
+                );
                 $this->queueAdapter->skipRow((int) $row['id']);
                 sleep(10);
                 continue;
@@ -209,10 +209,10 @@ class OuvrageCompleteWorker
                 $bnfOuvrage = OuvrageFactory::BnfFromIsbn($isbn10);
                 sleep(2);
             }
-            if (!$isbn10 || empty($bnfOuvrage) || empty($bnfOuvrage->getParam('titre'))) {
+            if (!$isbn10 || null === $bnfOuvrage || empty($bnfOuvrage->getParam('titre'))) {
                 $bnfOuvrage = OuvrageFactory::BnfFromIsbn($isbn);
             }
-            if (isset($bnfOuvrage) && $bnfOuvrage instanceof OuvrageTemplate) {
+            if ($bnfOuvrage instanceof OuvrageTemplate) {
                 $this->completeOuvrage($bnfOuvrage);
 
                 // Wikidata requests from $infos (ISBN/ISNI)
@@ -319,11 +319,7 @@ class OuvrageCompleteWorker
 
     private function sendCompleted()
     {
-        $isbn13 = $this->ouvrage->getParam('isbn');
-        if(!empty($isbn)) {
-            $isbn13 = substr($isbn13, 0, 19);
-        }
-
+        $isbn = $this->ouvrage->getParam('isbn');
         $finalData = [
             //    'page' =>
             'raw' => $this->raw,
@@ -332,7 +328,7 @@ class OuvrageCompleteWorker
             'modifs' => mb_substr(implode(',', $this->getSummaryLog()), 0, 250),
             'notcosmetic' => ($this->notCosmetic) ? 1 : 0,
             'major' => ($this->major) ? 1 : 0,
-            'isbn' => substr($isbn13,0,19),
+            'isbn' => substr($isbn,0,19),
             'version' => WikiBotConfig::VERSION ?? null,
         ];
         $this->log->info('finalData', $finalData);
@@ -344,8 +340,6 @@ class OuvrageCompleteWorker
 
     /**
      * Final serialization of the completed OuvrageTemplate.
-     *
-     * @return string
      */
     private function serializeFinalOpti(): string
     {
@@ -356,7 +350,7 @@ class OuvrageCompleteWorker
         $finalOpti = $this->ouvrage->serialize(true);
         $finalOpti = Normalizer::normalize($finalOpti);
         if (empty($finalOpti) || !is_string($finalOpti)) {
-            throw new \Exception('normalized $finalOpti serialize in OuvrageComplete is not a string');
+            throw new Exception('normalized $finalOpti serialize in OuvrageComplete is not a string');
         }
 
         return $finalOpti;

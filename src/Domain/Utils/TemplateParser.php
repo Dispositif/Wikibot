@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
  * For the full copyright and MIT license information, view the license file.
  */
 
@@ -49,9 +49,6 @@ abstract class TemplateParser extends WikiTextUtil
             $result[$tplName][$inc] = ['raw' => $tplText];
 
             // create an object of the template
-            /**
-             * @var AbstractWikiTemplate
-             */
             try {
                 $tplObject = WikiTemplateFactory::create($tplName);
             } catch (Throwable $e) {
@@ -79,9 +76,6 @@ abstract class TemplateParser extends WikiTextUtil
      * Example :
      * {{Infobox |pays={{pays|France}} }}
      * retourne array {{modèle|...}}.
-     *
-     * @param $templateName
-     * @param $text
      *
      * @return array [ 0=>{{bla|...}}, 1=>{{bla|...}} ]
      */
@@ -243,6 +237,7 @@ abstract class TemplateParser extends WikiTextUtil
 
             // $line : fu = bar (OK : fu=bar=coco)
             $pos = strpos($line, '=');
+            $param = null;
             if (is_int($pos) && $pos >= 0) {
                 $param = mb_strtolower(substr($line, 0, $pos), 'UTF-8');
                 $value = substr($line, $pos + 1);
@@ -254,12 +249,12 @@ abstract class TemplateParser extends WikiTextUtil
                 ++$keyNum;
             }
 
-            if (!isset($param) || empty($param) || !isset($value)) {
+            if (empty($param) || !isset($value)) {
                 throw new LogicException('param/value variable not defined');
             }
 
             // TODO : accept empty value ?
-            if (!isset($value) || trim($value) === '') {
+            if (trim($value) === '') {
                 continue;
             }
             // reverse the sub-template pipe encoding

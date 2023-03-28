@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
  * For the full copyright and MIT license information, view the license file.
  */
 
@@ -53,13 +53,13 @@ abstract class AbstractStrictWikiTemplate extends AbstractParametersObject imple
         $this->parametersValues = static::MINIMUM_PARAMETERS;
 
         if (empty($this->parametersByOrder)) {
-            $this->parametersByOrder = static::MINIMUM_PARAMETERS;
+            $this->parametersByOrder = static::MINIMUM_PARAMETERS; /* @phpstan-ignore-line */
         }
     }
 
     public function getParamsAndAlias(): array
     {
-        return array_merge($this->parametersByOrder, array_keys(static::PARAM_ALIAS));
+        return array_merge($this->parametersByOrder, array_keys(static::PARAM_ALIAS)); /* @phpstan-ignore-line */
     }
 
     /**
@@ -117,6 +117,7 @@ abstract class AbstractStrictWikiTemplate extends AbstractParametersObject imple
         $renderParams = [];
 
         // default order
+        // @phpstan-ignore-next-line
         foreach ($this->parametersByOrder as $order => $paramName) {
             if (isset($this->parametersValues[$paramName])) {
                 $renderParams[$paramName] = $this->parametersValues[$paramName];
@@ -157,6 +158,7 @@ abstract class AbstractStrictWikiTemplate extends AbstractParametersObject imple
             $name = (string)$name;
         }
         // that parameter exists in template ?
+        // @phpstan-ignore-next-line
         return in_array($name, $this->parametersByOrder)
             || array_key_exists($name, static::PARAM_ALIAS);
     }

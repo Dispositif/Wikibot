@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
  * For the full copyright and MIT license information, view the license file.
  */
 
@@ -41,8 +41,6 @@ abstract class AbstractWikiTemplate extends AbstractStrictWikiTemplate implement
      * Commented so it can be inherit from trait in OuvrageTemplate (bad design)
      */
     //protected $parametersByOrder = [];
-
-    protected $paramOrderByUser = [];
 
     /**
      * TODO : DONE
@@ -113,7 +111,7 @@ abstract class AbstractWikiTemplate extends AbstractStrictWikiTemplate implement
         if (!empty($this->paramOrderByUser) && !$cleanOrder) {
             $completeFantasyOrder = $this->completeFantasyOrder(
                 $this->paramOrderByUser,
-                $this->parametersByOrder
+                $this->parametersByOrder /* @phpstan-ignore-line */
             );
 
             foreach ($completeFantasyOrder as $paramName) {
@@ -253,7 +251,7 @@ abstract class AbstractWikiTemplate extends AbstractStrictWikiTemplate implement
             $name = $this->getAliasParam($name);
             $validParams[] = $name;
         }
-        $this->paramOrderByUser = $validParams;
+        $this->paramOrderByUser = $validParams; /* @phpstan-ignore-line */
     }
 
     /**

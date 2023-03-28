@@ -76,7 +76,7 @@ class ExternRefTransformer implements TransformerInterface
      */
     private $externalPage;
     /**
-     * @var Summary
+     * @var Summary|null
      */
     private $summary;
 
@@ -90,10 +90,6 @@ class ExternRefTransformer implements TransformerInterface
     }
 
     /**
-     * @param string       $url
-     * @param Summary|null $summary
-     *
-     * @return string
      * @throws Exception
      */
     public function process(string $url, Summary $summary): string
@@ -218,7 +214,7 @@ class ExternRefTransformer implements TransformerInterface
 
         $this->url = $url;
         if (!ExternHttpClient::isHttpURL($url)) {
-            throw new \Exception('string is not an URL '.$url);
+            throw new Exception('string is not an URL '.$url);
         }
         try {
             $this->domain = InternetDomainParser::getRegistrableDomainFromURL($url);
@@ -338,7 +334,7 @@ class ExternRefTransformer implements TransformerInterface
         }
 
         // Par défaut : {lien web}
-        if (!isset($templateName)) {
+        if (null === $templateName) {
             $templateName = 'lien web';
         }
 
