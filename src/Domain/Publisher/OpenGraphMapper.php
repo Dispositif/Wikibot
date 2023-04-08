@@ -13,12 +13,16 @@ namespace App\Domain\Publisher;
 
 use Exception;
 
+/**
+ * Parsing/mapping Open Graph and Dublin Core meta data, and HTML meta tags
+ * Currently only used by ExternMapper (mixed with JSON-LD mapping) for ExternRefWorker.
+ */
 class OpenGraphMapper implements MapperInterface
 {
     use ExternConverterTrait;
 
     /**
-     * Tenir compte du <title>bla</title> pour générer un {lien web} ?
+     * Allowing use of HTML <title> or <h1> to predict web page title ?
      */
     protected $htmlTitleAllowed = true;
 
@@ -35,7 +39,6 @@ class OpenGraphMapper implements MapperInterface
     }
 
     /**
-     * todo pretty ALLCAP UGLY TITLE
      * Mapping from Open Graph and Dublin Core meta tags
      * https://ogp.me/
      * https://www.dublincore.org/schemas/
@@ -48,28 +51,15 @@ class OpenGraphMapper implements MapperInterface
      */
     public function process($meta): array
     {
-        // Mode "pas de titre html"
-        if (!$this->htmlTitleAllowed && !empty($meta['html-title'])) {
-            unset($meta['html-title']);
-        }
-
-        // si usage <title> HTML
-        if ($this->htmlTitleAllowed
-            && empty($meta['og:title'])
-            && empty($meta['twitter:title'])
-            && empty($meta['DC.title'])
-            && !empty($meta['html-title'])
-        ) {
-            $this->titleFromHtmlState = true;
-        }
+        $seoSanitizer = new SeoSanitizer();
 
         return [
             'DATA-TYPE' => 'Open Graph/Dublin Core',
             'DATA-ARTICLE' => $this->isAnArticle($meta['og:type'] ?? ''),
             'site' => $this->clean($meta['og:site_name'] ?? null),
-            'titre' => $this->cleanSEOTitle(
-                $meta['og:title'] ?? $meta['twitter:title'] ?? $meta['DC.title'] ?? $meta['html-title'] ?? null,
-                $meta['html-url']
+            'titre' => $seoSanitizer->cleanSEOTitle(
+                $meta['prettyDomainName'],
+                $this->predictBestTitle($meta)
             ),
             'url' => $meta['og:url'] ?? $meta['URL'] ?? $meta['html-url'] ?? null,
             'langue' => $this->convertLangue(
@@ -110,5 +100,74 @@ class OpenGraphMapper implements MapperInterface
             'isbn' => $meta["citation_isbn"] ?? null,
             // "prism.eIssn" => "2262-7197"
         ];
+    }
+
+    public function isTitleFromHtmlState(): bool
+    {
+        return $this->titleFromHtmlState;
+    }
+
+    /**
+     * Todo extraire cette logique to ExternConverterTrait or ExternPageTitlePredictor ?
+     */
+    private function predictBestTitle(array $meta): ?string
+    {
+        // Mode "pas de titre html"
+        if (!$this->htmlTitleAllowed) {
+            return $this->getBestTitleFromMetadata($meta);
+        }
+
+        if (null === $this->getBestTitleFromMetadata($meta)
+            && !empty($meta['html-title'])
+        ) {
+            $this->titleFromHtmlState = true;
+        }
+
+        // Responsibility ?!! sanitize title here conflicts with ExternMapper:postprocess()
+        return $this->chooseBestTitle(
+            $this->getBestTitleFromMetadata($meta),
+            $meta['html-title'],
+            $meta['html-h1']
+        );
+    }
+
+    /**
+     * Choose page's title from OpenGrap or Dublin core.
+     */
+    private function getBestTitleFromMetadata(array $meta): ?string
+    {
+        if (!empty($meta['og:title'])) {
+            return $meta['og:title'];
+        }
+        if (!empty($meta['twitter:title'])) {
+            return $meta['twitter:title'];
+        }
+        if (!empty($meta['DC.title'])) {
+            return $meta['DC.title'];
+        }
+
+        return null;
+    }
+
+    /**
+     * Choose best title from meta-title, html-title and html-h1.
+     * Title is sanitized in ExternMapper::postprocess()
+     */
+    public function chooseBestTitle(?string $metaTitle, ?string $htmlTitle, ?string $htmlH1): ?string
+    {
+        // clean all titles
+        $metaTitle = $this->clean($metaTitle);
+        $htmlTitle = $this->clean($htmlTitle);
+        $htmlH1 = $this->clean($htmlH1);
+
+        // check if htmlh1 included in htmltitle, if yes use htmlh1
+        if (!empty($metaTitle)) {
+            return $metaTitle;
+        }
+        if (!empty($htmlH1) && !empty($htmlTitle) && strpos($htmlTitle, $htmlH1) !== false) {
+            return $htmlH1;
+        }
+
+        return $htmlTitle ?? $htmlH1 ?? null;
     }
 }

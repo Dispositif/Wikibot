@@ -198,25 +198,6 @@ trait ExternConverterTrait
         return trim($str);
     }
 
-    /**
-     * Naive check for SEO title.
-     */
-    public function cleanSEOTitle(?string $title, ?string $url = null): ?string
-    {
-        $cleanTitle = $this->clean($title);
-
-        // TODO {titre à vérifier} + checkSEOTitle()
-        if (
-            null !== $cleanTitle
-            && strlen($cleanTitle) >= 30
-            && isset($this->titleFromHtmlState) && $this->titleFromHtmlState
-        ) {
-            $cleanTitle .= "<!-- Vérifiez ce titre -->";
-        }
-
-        return $cleanTitle;
-    }
-
     public function stripEmailAdress(?string $str = null): ?string
     {
         if ($str === null) {

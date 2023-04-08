@@ -56,10 +56,6 @@ class ExternPage
     /**
      * ExternPage constructor.
      *
-     * @param string               $url
-     * @param string               $html
-     * @param LoggerInterface|null $log
-     *
      * @throws Exception
      */
     public function __construct(string $url, string $html, ?LoggerInterface $log = null)
@@ -72,18 +68,11 @@ class ExternPage
         $this->log = $log;
     }
 
-    /**
-     * @return string
-     */
     public function getUrl(): string
     {
         return $this->url;
     }
 
-    /**
-     * @return array
-     * @throws Exception
-     */
     public function getData(): array
     {
         $ld = $this->parseLdJson($this->html);
@@ -91,7 +80,9 @@ class ExternPage
 
         $meta['html-lang'] = $this->parseHtmlLang($this->html); // <html lang="en">
         $meta['html-title'] = $this->parseHtmlTitle($this->html);
+        $meta['html-h1'] = $this->parseHtmlFirstH1($this->html);
         $meta['html-url'] = $this->url;
+        $meta['prettyDomainName'] = $this->getPrettyDomainName();
 
         return ['JSON-LD' => $ld, 'meta' => $meta];
     }
@@ -99,10 +90,6 @@ class ExternPage
     /**
      * extract LD-JSON metadata from <script type="application/ld+json">.
      *
-     * @param string $html
-     *
-     * @return array
-     * @throws Exception
      * @throws Exception
      */
     private function parseLdJson(string $html): array
@@ -133,10 +120,6 @@ class ExternPage
 
     /**
      * todo move? /refac/delete?
-     *
-     * @param string $str
-     *
-     * @return array
      */
     private function parseMetaTags(string $str): array
     {
@@ -170,8 +153,6 @@ class ExternPage
      * test.co.uk => test.co.uk (national commercial subdomain)
      * site.google.com => site.google.com (blog)
      * bla.site.google.com => site.google.com (blog)
-     *
-     * @throws Exception
      */
     public function getPrettyDomainName(): string
     {
@@ -195,7 +176,7 @@ class ExternPage
     {
         try {
             if (!ExternHttpClient::isHttpURL($this->url)) {
-                throw new \Exception('string is not an URL '.$this->url);
+                throw new Exception('string is not an URL '.$this->url);
             }
 
             return InternetDomainParser::getRegistrableDomainFromURL($this->url);
@@ -209,10 +190,6 @@ class ExternPage
 
     /**
      * Extract language from <html lang="en-us"> tag.
-     *
-     * @param string $html
-     *
-     * @return string|null
      */
     private function parseHtmlLang(string $html): ?string
     {
@@ -226,14 +203,22 @@ class ExternPage
     /**
      * Extract webpage title from HTML <title>
      * not foolproof : example <!-- <title>bla</title> -->
-     *
-     * @param string $html
-     *
-     * @return string|null
      */
     private function parseHtmlTitle(string $html): ?string
     {
         if (preg_match('#<title>([^<]+)</title>#i', $html, $matches)) {
+            return trim(strip_tags($matches[1]));
+        }
+
+        return null;
+    }
+
+    /**
+     * Extract first <h1> from HTML.
+     */
+    private function parseHtmlFirstH1(string $html): ?string
+    {
+        if (preg_match('#<h1[^>]*>([^<]+)</h1>#i', $html, $matches)) {
             return trim(strip_tags($matches[1]));
         }
 

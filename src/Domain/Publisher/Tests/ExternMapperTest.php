@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
  * For the full copyright and MIT license information, view the license file.
  */
 
@@ -12,7 +12,6 @@ namespace App\Domain\Publisher\Tests;
 use App\Domain\ExternPage;
 use App\Domain\Publisher\ExternMapper;
 use App\Infrastructure\Logger;
-use Exception;
 use PHPUnit\Framework\TestCase;
 
 class ExternMapperTest extends TestCase
@@ -20,12 +19,6 @@ class ExternMapperTest extends TestCase
 
     /**
      * @dataProvider provideMappingFromFile
-     *
-     * @param       $filename
-     * @param array $expected
-     *
-     * @return void
-     * @throws Exception
      */
     public function testMappingProcess($filename, array $expected): void
     {
@@ -41,7 +34,7 @@ class ExternMapperTest extends TestCase
         $this::assertSame($expected, $data);
     }
 
-    public function provideMappingFromFile()
+    public function provideMappingFromFile(): array
     {
         return [
             [
@@ -83,7 +76,7 @@ class ExternMapperTest extends TestCase
                     'DATA-TYPE' => 'Open Graph/Dublin Core',
                     'DATA-ARTICLE' => true,
                     'site' => 'PubMed Central (PMC)',
-                    'titre' => 'The Diesel Exhaust in Miners Study: A Nested Case–Control Study of Lung Cancer and Diesel Exhaust',
+                    'titre' => 'The Diesel Exhaust in Miners Study: A Nested Case-Control Study of Lung Cancer and Diesel Exhaust',
                     'url' => 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3369553/',
                     'langue' => 'en',
                     'consulté le' => '11-04-2020',

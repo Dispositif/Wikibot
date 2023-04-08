@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
  * For the full copyright and MIT license information, view the license file.
  */
 
@@ -70,7 +70,8 @@ class TextUtilTest extends TestCase
             TextUtil::str_ends_with('testaà', '')
         );
     }
-    public function testStrStqrtsWith()
+
+    public function testStr_starts_with()
     {
         $this::assertSame(
             true,
@@ -84,5 +85,15 @@ class TextUtilTest extends TestCase
             true,
             TextUtil::str_starts_with('téstaa', '')
         );
+    }
+
+    public function testCutTextOnSpace()
+    {
+        $this::assertSame('bla bla…', TextUtil::cutTextOnSpace('bla bla bla', 8));
+    }
+
+    public function testCountAllCapsWords()
+    {
+        $this::assertSame(2, TextUtil::countAllCapsWords('Bla BLA Bla BLA'));
     }
 }

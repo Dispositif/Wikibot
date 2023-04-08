@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
  * For the full copyright and MIT license information, view the license file.
  */
 
@@ -14,12 +14,15 @@ namespace App\Domain\Utils;
  */
 abstract class TextUtil
 {
+    public const SYMBOL_TEXT_CUT = '…';
+
     public const SKIP_PREDICT_PARAM = ['issue'];
 
     public const NO_BREAK_SPACE = "\xC2\xA0"; // &#160;
 
     public const NO_BREAK_THIN_SPACE = "\xE2\x80\xAF";
 
+    /** TODO ? add '-' and '.' ???  */
     public const ALL_PUNCTUATION
         = [
             '!',
@@ -93,11 +96,6 @@ abstract class TextUtil
     /**
      * UTF8 first letter in upper case.
      * "économie" => "Économie".
-     *
-     * @param string      $str
-     * @param string|null $e
-     *
-     * @return string
      */
     public static function mb_ucfirst(string $str, ?string $e = 'UTF-8'): string
     {
@@ -124,24 +122,15 @@ abstract class TextUtil
         return $first.$rest;
     }
 
-    /**
-     * @param string $text
-     *
-     * @return mixed
-     */
-    public static function replaceNonBreakingSpaces(string $text)
+    public static function replaceNonBreakingSpaces(string $text): string
     {
         return str_replace([self::NO_BREAK_SPACE, self::NO_BREAK_THIN_SPACE], ' ', $text);
     }
 
     /**
      * Trim also non-breaking space and carriage return.
-     *
-     * @param string $string
-     *
-     * @return string
      */
-    public static function trim(string $string)
+    public static function trim(string $string): string
     {
         return trim($string, self::NO_BREAK_SPACE.self::NO_BREAK_THIN_SPACE."\n\t\r");
     }
@@ -213,12 +202,8 @@ abstract class TextUtil
      * UTF-8 compatible ??
      * Note : can't use str_split() which cut on 1 byte length
      * See http://fr.wikipedia.org/wiki/Ponctuation.
-     *
-     * @param string $str
-     *
-     * @return string
      */
-    public static function stripPunctuation(string $str)
+    public static function stripPunctuation(string $str): string
     {
         return str_replace(
             self::ALL_PUNCTUATION,
@@ -280,5 +265,32 @@ abstract class TextUtil
         $len = mb_strlen($needle);
 
         return (mb_substr($haystack, 0, $len) === $needle);
+    }
+
+    /**
+     * Cut string at position of last space before Xth character.
+     */
+    public static function cutTextOnSpace(string $text, int $maxLength = 70): string
+    {
+        if (mb_strlen($text) > $maxLength) {
+            $spacePos = mb_strrpos(mb_substr($text, 0, $maxLength), ' ');
+            $spacePos = ($spacePos > ($maxLength - 12)) ? $spacePos : $maxLength;
+            $text = trim(mb_substr($text, 0, $spacePos)) . self::SYMBOL_TEXT_CUT;
+        }
+
+        return $text;
+    }
+
+    public static function countAllCapsWords(string $text): int
+    {
+        $words = explode(' ', $text);
+        $count = 0;
+        foreach ($words as $word) {
+            if (mb_strlen($word) > 2 && mb_strtoupper($word) === $word) {
+                ++$count;
+            }
+        }
+
+        return $count;
     }
 }

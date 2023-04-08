@@ -233,9 +233,6 @@ class ExternRefTransformer implements TransformerInterface
 
         if (!isset($this->config[$this->domain])) {
             $this->log->debug("Domain ".$this->domain." non configuré");
-            if ($this->skipUnauthorised) {
-                return false;
-            }
         } else {
             $this->log->debug("Domain ".$this->domain." configuré");
         }

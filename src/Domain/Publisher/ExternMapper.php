@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
  * For the full copyright and MIT license information, view the license file.
  */
 
@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace App\Domain\Publisher;
 
 use App\Domain\Utils\ArrayProcessTrait;
-use Exception;
+use App\Domain\Utils\TextUtil;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -19,24 +19,21 @@ use Psr\Log\LoggerInterface;
  * Generic mapper for web pages URL to wiki-template references.
  * Converting to {article}, {lien web} or {lien brisé}
  * Using JSON-LD, Open Graph and Dublin Core meta extracted from HTML.
- * Class ExternMapper
- *
- * @package App\Domain\Publisher
  */
 class ExternMapper implements MapperInterface
 {
     use ArrayProcessTrait, ExternConverterTrait;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $log;
-    /**
-     * @var array
-     */
-    private $options = [];
+    public const TITLE_TO_VERIFY_COMMENT = '<!-- Vérifiez ce titre -->';
 
-    public function __construct(LoggerInterface $log, ?array $options=[])
+    /** @var LoggerInterface */
+    private $log;
+    /** @var array */
+    private $options = [];
+    /** @var bool */
+    private $titleFromHtmlState = false;
+
+    public function __construct(LoggerInterface $log, ?array $options = [])
     {
         $this->log = $log;
         $this->options = $options;
@@ -44,26 +41,24 @@ class ExternMapper implements MapperInterface
 
     public function process($data): array
     {
-        $dat = $this->processMapping($data);
+        $parsedData = $this->processMapping($data);
 
-        return ($dat === []) ? [] : $this->postProcess($dat);
+        return ($parsedData === []) ? [] : $this->postProcess($parsedData);
     }
 
-    /**
-     * @param $data
-     *
-     * @return array
-     * @throws Exception
-     */
     protected function processMapping($data): array
     {
         $mapJson = [];
         $mapMeta = [];
+        $this->titleFromHtmlState = false;
+
         if (!empty($data['JSON-LD'])) {
             $mapJson = $this->processJsonLDMapping($data['JSON-LD']);
         }
         if (!empty($data['meta'])) {
-            $mapMeta = (new OpenGraphMapper($this->options))->process($data['meta']);
+            $openGraphMapper = new OpenGraphMapper($this->options); // todo inject/extract to reduce instanciationS ?
+            $mapMeta = $openGraphMapper->process($data['meta']);
+            $this->titleFromHtmlState = $openGraphMapper->isTitleFromHtmlState();
         }
 
         // langue absente JSON-LD mais array_merge risqué (doublon)
@@ -73,7 +68,7 @@ class ExternMapper implements MapperInterface
                 $mapJson['DATA-TYPE'] = 'JSON-LD+META';
             }
             // récupère "accès url" de OpenGraph (prévaut sur JSON:'isAccessibleForFree'
-            if(isset($mapMeta['accès url']) ){
+            if (isset($mapMeta['accès url'])) {
                 $mapJson['accès url'] = $mapMeta['accès url'];
                 $mapJson['DATA-TYPE'] = 'JSON-LD+META';
             }
@@ -86,10 +81,6 @@ class ExternMapper implements MapperInterface
 
     /**
      * todo move to mapper ?
-     *
-     * @param array $LDdata
-     *
-     * @return array
      */
     private function processJsonLDMapping(array $LDdata): array
     {
@@ -112,25 +103,61 @@ class ExternMapper implements MapperInterface
     }
 
     /**
-     * todo Refac/move domain special mapping
+     * Data sanitization.
      * todo Config parameter for post-process
-     *
-     * @param array $dat
-     *
-     * @return array
      */
-    protected function postProcess(array $dat): array
+    protected function postProcess(array $data): array
     {
-        $dat = $this->deleteEmptyValueArray($dat);
-        if (isset($dat['langue']) && 'fr' === $dat['langue']) {
-            unset($dat['langue']);
+        $this->log->debug('call ExternMapper::postProcess()');
+        $data = $this->deleteEmptyValueArray($data);
+        if (isset($data['langue']) && 'fr' === $data['langue']) {
+            unset($data['langue']);
         }
 
         // Ça m'énerve ! Gallica met "vidéo" pour livre numérisé
-        if (isset($dat['site']) && $dat['site'] === 'Gallica') {
-            unset($dat['format']);
+        if (isset($data['site']) && $data['site'] === 'Gallica') {
+            unset($data['format']);
+        }
+        if (isset($data['site']) && TextUtil::countAllCapsWords($data['site']) >= 3) {
+            $this->log->debug('lowercase site name');
+            $data['site'] = TextUtil::mb_ucfirst(mb_strtolower($data['site']));
         }
 
-        return $dat;
+        // lowercase title if too many ALLCAPS words
+        if (isset($data['titre']) && TextUtil::countAllCapsWords($data['titre']) >= 4) {
+            $this->log->debug('lowercase title');
+            $data['titre'] = TextUtil::mb_ucfirst(mb_strtolower($data['titre']));
+        }
+
+        // SEO : cut site name if too long if no domain.name and no wiki link
+        if (isset($data['site']) && false === mb_strpos($data['site'], '.') && false === mb_strpos($data['site'], '[[')) {
+            $data['site'] = TextUtil::cutTextOnSpace($data['site'], 40);
+        }
+
+        // title has 150 chars max, or is cut with "…" at the end
+        if (isset($data['titre'])) {
+            $data['titre'] = TextUtil::cutTextOnSpace($data['titre'], 150);
+            $data['titre'] = $this->addVerifyCommentIfNecessary($data['titre']);
+        }
+
+        return $data;
+    }
+
+    /**
+     * todo Créer un modèle {titre à vérifier} ?
+     */
+    private function addVerifyCommentIfNecessary(?string $title): ?string
+    {
+        if (
+            !empty($title)
+            && strlen($title) >= 30
+            && true === $this->titleFromHtmlState
+        ) {
+            /** @noinspection PhpRedundantOptionalArgumentInspection */
+            $title = TextUtil::cutTextOnSpace($title, 70);
+            $title .= self::TITLE_TO_VERIFY_COMMENT;
+        }
+
+        return $title;
     }
 }
