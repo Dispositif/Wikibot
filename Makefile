@@ -1,5 +1,6 @@
 # Description: Makefile for the project
 
+# php ./vendor/bin/phpstan analyse -c phpstan.neon -l 4 src/Domain/Publisher/SeoSanitizer.php
 .PHONY: phpstan # Launch local phpstan
 phpstan:
 	php -d memory_limit=1G ./vendor/bin/phpstan

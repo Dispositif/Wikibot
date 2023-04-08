@@ -1,15 +1,15 @@
 <?php
 /*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
  * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
 
-
 namespace App\Application;
 
+use DateTime;
 
 trait EditSummaryTrait
 {
@@ -31,7 +31,6 @@ trait EditSummaryTrait
     /**
      * todo extract
      * Generate wiki edition summary.
-     *
      * @return string
      */
     public function generateSummary(): string
@@ -40,6 +39,7 @@ trait EditSummaryTrait
         $prefix = ($this->botFlag) ? 'bot ' : ''; //🧐 🤖
         // add "/!\" when errorWarning
         $prefix .= (empty($this->errorWarning)) ? '' : ' ⚠️';
+        $prefix .= (empty($this->featured_article)) ? '' : ' ☆'; // AdQ, BA
 
         // basic modifs
         $citeSummary = implode(' ', $this->citationSummary);
@@ -50,9 +50,9 @@ trait EditSummaryTrait
 
         $summary = sprintf(
             '%s [%s] %s %sx : %s',
-            $prefix,
+            trim($prefix),
             str_replace('v', '', $this->citationVersion),
-            self::TASK_NAME,
+            trim(self::TASK_NAME),
             $this->nbRows,
             $citeSummary
         );
@@ -66,6 +66,12 @@ trait EditSummaryTrait
             $length = strlen($summary);
             $summary = mb_substr($summary, 0, 80);
             $summary .= ($length > strlen($summary)) ? '…' : '';
+        }
+
+        // Luck message
+        if (!$this->luckyState && (new DateTime())->format('H:i') === '11:11') {
+            $this->luckyState = true;
+            $summary .= self::LUCKY_MESSAGE;
         }
 
         return $summary;

@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
  * For the full copyright and MIT license information, view the license file.
  */
 
@@ -19,13 +19,11 @@ use App\Infrastructure\ServiceFactory;
 class CodexNotificationWorker extends NotificationWorker
 {
     public const ARTICLE_ANALYZED_FILENAME = __DIR__.'/resources/article_externRef_edited.txt';
-    public const PROCESS_TASKNAME          = '🔔🌐 Amélioration de références : URL ⇒ ';
+    public const PROCESS_TASKNAME          = '🔔 Amélioration de références : URL ⇒ ';
 
     /**
      * todo Refac that stupid idea :)
      * Delete article title in the log text file.
-     *
-     * @param $title
      */
     private function deleteEditedArticleFile(string $title): void
     {

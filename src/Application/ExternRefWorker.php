@@ -2,7 +2,7 @@
 
 /*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
  * For the full copyright and MIT license information, view the license file.
  */
 declare(strict_types=1);
@@ -19,13 +19,14 @@ use Throwable;
  */
 class ExternRefWorker extends RefBotWorker
 {
-    public const TASK_BOT_FLAG                       = false;
-    public const SLEEP_AFTER_EDITION                 = 120; // sec
+    public const TASK_BOT_FLAG                       = true;
+    public const SLEEP_AFTER_EDITION                 = 10; // sec
     public const MINUTES_DELAY_AFTER_LAST_HUMAN_EDIT = 10; // minutes
     public const CHECK_EDIT_CONFLICT                 = true;
     public const ARTICLE_ANALYZED_FILENAME           = __DIR__.'/resources/article_externRef_edited.txt';
     public const SKIP_ADQ                            = false;
     public const SKIP_LASTEDIT_BY_BOT                = false;
+    public const CITATION_NUMBER_ON_FIRE             = 10;
 
     protected $modeAuto = true;
     /**
@@ -91,7 +92,7 @@ class ExternRefWorker extends RefBotWorker
             $this->summary->memo['count lien brisé'] = 1 + ($this->summary->memo['count lien brisé'] ?? 0);
             $this->summary->setBotFlag(false);
         }
-        if ($this->summary->citationNumber >= 8) {
+        if ($this->summary->citationNumber >= self::CITATION_NUMBER_ON_FIRE) {
             $this->summary->setBotFlag(false);
         }
 
@@ -131,7 +132,7 @@ class ExternRefWorker extends RefBotWorker
             $suffix .= ' 🔒';
         }
 
-        if ($this->summary->citationNumber >= 10) {
+        if ($this->summary->citationNumber >= self::CITATION_NUMBER_ON_FIRE) {
             $suffix .= ' 🔥';
         }
 

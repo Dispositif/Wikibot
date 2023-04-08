@@ -13,6 +13,7 @@ use App\Application\ExternRefTransformer;
 use App\Domain\Models\Summary;
 use App\Infrastructure\Logger;
 use Codedungeon\PHPCliColors\Color;
+use Exception;
 
 require_once __DIR__.'/../myBootstrap.php';
 
@@ -30,8 +31,9 @@ $summary = new Summary('test');
 $trans = new ExternRefTransformer($log);
 $trans->skipUnauthorised = true;
 try {
+    // Attention : pas de post-processing (sanitize title, etc.)
     $result = $trans->process($url, $summary);
-} catch (\Exception $e) {
+} catch (Exception $e) {
     echo "EXCEPTION ". $e->getMessage().$e->getFile().$e->getLine();
 }
 

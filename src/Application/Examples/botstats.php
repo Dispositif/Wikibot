@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
  * For the full copyright and MIT license information, view the license file.
  */
 
@@ -102,7 +102,7 @@ if (!empty($monitor)) {
 }
 
 dump($monitor);
-dump($data);
+//dump($data);
 
 //== Statistiques ==
 //Depuis 12 novembre :
@@ -132,14 +132,14 @@ wiki;
 
 $wikiText = str_replace('#monitor#', $monitWiki, $wikiText);
 foreach ($data as $key => $dat) {
-    $wikiText = str_replace('#'.$key.'#', $dat, $wikiText);
+    $wikiText = str_replace('#'.$key.'#', (string) $dat, $wikiText);
 }
 
 echo LC_ALL;
 
 echo "Edition ? \n";
 echo "sleep 20...\n";
-sleep(20);
+sleep(10);
 
 $wiki = ServiceFactory::wikiApi();
 $pageAction = new WikiPageAction($wiki, $monitoringPage);

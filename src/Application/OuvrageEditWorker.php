@@ -2,7 +2,7 @@
 
 /*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
  * For the full copyright and MIT license information, view the license file.
  */
 
@@ -33,6 +33,7 @@ class OuvrageEditWorker
     use EditSummaryTrait, TalkPageEditTrait;
 
     public const TASK_NAME = '📗 Amélioration bibliographique'; // 📖📔📘📗
+    public const LUCKY_MESSAGE = ' 🇺🇦'; // ☘️
     /**
      * poster ou pas le message en PD signalant les erreurs à résoudre
      */
@@ -72,6 +73,15 @@ class OuvrageEditWorker
      * @var mixed
      */
     private $citationVersion;
+    /**
+     * Featured/Good article (AdQ/BA)
+     * @var bool
+     */
+    private $featured_article = false;
+    /**
+     * @var bool
+     */
+    private $luckyState = false;
 
     public function __construct(
         DbAdapter $dbAdapter,
@@ -100,12 +110,10 @@ class OuvrageEditWorker
     }
 
     /**
-     * @return bool
      * @throws UsageException
      * @throws Exception
-     * @throws Exception
      */
-    private function pageProcess()
+    private function pageProcess(): bool
     {
         $e = null;
         $this->initialize();
@@ -161,15 +169,17 @@ class OuvrageEditWorker
             return false;
         }
 
-        // AdQ
+        // Featured/Good article (AdQ/BA)
         if (preg_match('#{{ ?En-tête label ?\| ?AdQ#i', $this->wikiText)) {
             $this->db->setLabel($title, 2);
             $this->log->warning("Article de Qualité !\n");
             $this->botFlag = false;
+            $this->featured_article = true; // to add star in edit summary
         }
         if (preg_match('#{{ ?En-tête label ?\| ?BA#i', $this->wikiText)) {
             $this->db->setLabel($title, 1);
             $this->botFlag = false;
+            $this->featured_article = true; // to add star in edit summary
             $this->log->warning("Bon article !!\n");
         }
 
@@ -287,6 +297,7 @@ class OuvrageEditWorker
         // initialisation vars
         $this->botFlag = true;
         $this->errorWarning = [];
+        $this->featured_article = false;
         $this->wikiText = null;
         $this->citationSummary = [];
         $this->importantSummary = [];

@@ -24,11 +24,21 @@ class ExternMapper implements MapperInterface
 {
     use ArrayProcessTrait, ExternConverterTrait;
 
+    // Added if title extracted from HTML <title> or <h1>
     public const TITLE_TO_VERIFY_COMMENT = '<!-- Vérifiez ce titre -->';
+    // if title extracted from json-ld, or anything else
+    public const TITLE_VERY_MAX_LENGTH = 150;
+    // if title extracted from HTML <title> or <h1> is too long, it's probably SEO
+    public const TITLE_HTML_MAX_LENGTH = 70;
+    // if title contains too many all-caps words, it's probably SEO
+    public const TITLE_MAX_ALLCAPS = 2;
+    // if site name extracted for meta data is too long, it's probably SEO
+    public const SITE_MAX_LENGTH = 40;
+    public const SITE_MAX_ALLCAPS = 1;
 
     /** @var LoggerInterface */
     private $log;
-    /** @var array */
+    /** @var mixed[] */
     private $options = [];
     /** @var bool */
     private $titleFromHtmlState = false;
@@ -118,25 +128,28 @@ class ExternMapper implements MapperInterface
         if (isset($data['site']) && $data['site'] === 'Gallica') {
             unset($data['format']);
         }
-        if (isset($data['site']) && TextUtil::countAllCapsWords($data['site']) >= 3) {
+        if (isset($data['site']) && TextUtil::countAllCapsWords($data['site']) > self::SITE_MAX_ALLCAPS) {
             $this->log->debug('lowercase site name');
             $data['site'] = TextUtil::mb_ucfirst(mb_strtolower($data['site']));
         }
 
         // lowercase title if too many ALLCAPS words
-        if (isset($data['titre']) && TextUtil::countAllCapsWords($data['titre']) >= 4) {
+        if (isset($data['titre']) && TextUtil::countAllCapsWords($data['titre']) > self::TITLE_MAX_ALLCAPS) {
             $this->log->debug('lowercase title');
             $data['titre'] = TextUtil::mb_ucfirst(mb_strtolower($data['titre']));
         }
 
         // SEO : cut site name if too long if no domain.name and no wiki link
-        if (isset($data['site']) && false === mb_strpos($data['site'], '.') && false === mb_strpos($data['site'], '[[')) {
-            $data['site'] = TextUtil::cutTextOnSpace($data['site'], 40);
+        if (
+            isset($data['site'])
+            && false === mb_strpos($data['site'], '.')
+            && false === mb_strpos($data['site'], '[[')) {
+            $data['site'] = TextUtil::cutTextOnSpace($data['site'], self::SITE_MAX_LENGTH);
         }
 
         // title has 150 chars max, or is cut with "…" at the end
         if (isset($data['titre'])) {
-            $data['titre'] = TextUtil::cutTextOnSpace($data['titre'], 150);
+            $data['titre'] = TextUtil::cutTextOnSpace($data['titre'], self::TITLE_VERY_MAX_LENGTH);
             $data['titre'] = $this->addVerifyCommentIfNecessary($data['titre']);
         }
 
@@ -150,11 +163,11 @@ class ExternMapper implements MapperInterface
     {
         if (
             !empty($title)
-            && strlen($title) >= 30
+            && mb_strlen($title) >= 30
             && true === $this->titleFromHtmlState
         ) {
             /** @noinspection PhpRedundantOptionalArgumentInspection */
-            $title = TextUtil::cutTextOnSpace($title, 70);
+            $title = TextUtil::cutTextOnSpace($title, self::TITLE_HTML_MAX_LENGTH);
             $title .= self::TITLE_TO_VERIFY_COMMENT;
         }
 
