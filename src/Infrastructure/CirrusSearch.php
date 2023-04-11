@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
  * For the full copyright and MIT license information, view the license file.
  */
 
@@ -16,6 +16,8 @@ use HttpException;
 
 /**
  * https://fr.wikipedia.org/w/api.php?action=help&modules=query%2Bsearch
+ * https://www.mediawiki.org/wiki/Help:CirrusSearch#Insource
+ * raw https://fr.wikipedia.org/w/api.php?action=query&list=search&srsearch=%22https://books.google%22%20insource:/\%3Cref\%3Ehttps\:\/\/books\.google/&formatversion=2&format=json
  * Dirty.
  * Class CirrusSearch
  *
