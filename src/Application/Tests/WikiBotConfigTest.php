@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
  * For the full copyright and MIT license information, view the license file.
  */
 
@@ -23,7 +23,7 @@ class WikiBotConfigTest extends TestCase
      */
     public function testIsEditionRestricted($bool, $text, $botName = null)
     {
-        $this::assertSame($bool, WikiBotConfig::isEditionRestricted($text, $botName));
+        $this::assertSame($bool, WikiBotConfig::isEditionTemporaryRestrictedOnWiki($text, $botName));
     }
 
     public function provideEditionRestricted()

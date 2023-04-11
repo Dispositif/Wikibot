@@ -16,6 +16,7 @@ use App\Infrastructure\Logger;
 use App\Infrastructure\ServiceFactory;
 use App\Infrastructure\SMS;
 use DateInterval;
+use DateTime;
 use DateTimeImmutable;
 use DomainException;
 use Exception;
@@ -53,12 +54,16 @@ class WikiBotConfig
 
     public const EDIT_LAPS_FLAGBOT = 8;
 
+    public const TALK_STOP_CHECK_INTERVAL = 'PT2M';
+
+    public const TALK_PAGE_PREFIX = 'Discussion_utilisateur:';
+
     public $taskName = 'Améliorations indéfinie';
 
     /**
      * @var DateTimeImmutable
      */
-    private $lastCheckStopDate;
+    protected $lastCheckStopDate;
     /**
      * @var LoggerInterface
      */
@@ -72,60 +77,33 @@ class WikiBotConfig
 
     /**
      * Throws Exception if "{{stop}}" or "STOP" on talk page.
-     *
-     * @throws UsageException
+     * @throws StopActionException|UsageException
      */
     public function checkStopOnTalkpage(?bool $botTalk = false): void
     {
-        $title = 'Discussion_utilisateur:' . $this::getBotName();
-
-        if ($this->lastCheckStopDate
-            && new DateTimeImmutable() < $this->lastCheckStopDate->add(
-                new DateInterval('PT2M')
-            )
-        ) {
+        if ($this->isLastCheckStopDateRecent()) {
             return;
         }
-        $this->lastCheckStopDate = new DateTimeImmutable();
 
         // don't catch Exception (stop process if error)
-        $wiki = ServiceFactory::wikiApi();
-        $pageAction = new WikiPageAction($wiki, $title);
+        $pageAction = $this->getWikiBotPageAction();
         $text = $pageAction->getText() ?? '';
         $lastEditor = $pageAction->getLastEditor() ?? 'unknown';
 
         if (preg_match('#({{stop}}|{{Stop}}|STOP)#', $text) > 0) {
-            echo date('Y-m-d H:i:s');
-            echo sprintf(
-                "\n*** STOP ON TALK PAGE BY %s ***\n\n",
-                $lastEditor
-            );
-            if (in_array($lastEditor, static::BLACKLIST_EDITOR)) {
-                return;
-            }
+            echo date('Y-m-d H:i');
+            echo sprintf("\n*** STOP ON TALK PAGE BY %s ***\n\n", $lastEditor);
 
-            if (class_exists(SMS::class)) {
-                try {
-                    new SMS('WikiBotConfig stop by ' . $lastEditor);
-                } catch (Exception $smsException) {
-                    unset($smsException);
-                }
-            }
-            if ($botTalk && class_exists(TalkBotConfig::class)) {
-                try {
-                    (new TalkBotConfig())->botTalk();
-                } catch (Throwable $botTalkException) {
-                    unset($botTalkException);
-                }
-            }
+            $this->sendSMSandFunnyTalk($lastEditor, $botTalk);
 
             throw new StopActionException();
         }
+
+        $this->lastCheckStopDate = new DateTimeImmutable;
     }
 
     /**
      * Is there a new message on the discussion page of the bot (or owner) ?
-     * Stop on new message ?
      * @throws ConfigException
      */
     public function checkWatchPages()
@@ -135,20 +113,12 @@ class WikiBotConfig
 
             // the page has been edited since last check ?
             if (!$pageTime || $pageTime !== $lastTime) {
-                echo sprintf(
-                    "WATCHPAGE '%s' has been edited since %s.\n",
-                    $title,
-                    $lastTime
-                );
+                echo sprintf("WATCHPAGE '%s' has been edited since %s.\n", $title, $lastTime);
 
                 // Ask? Mettre à jour $watchPages ?
                 echo "Replace with $title => '$pageTime'";
 
-                if (static::EXIT_ON_CHECK_WATCHPAGE) {
-                    echo "EXIT_ON_CHECK_WATCHPAGE\n";
-
-                    throw new DomainException('exit from check watchpages');
-                }
+                $this->checkExitOnWatchPage();
             }
         }
     }
@@ -172,7 +142,7 @@ class WikiBotConfig
         return $array;
     }
 
-    private function getTimestamp(string $title): ?string
+    protected function getTimestamp(string $title): ?string
     {
         $wiki = ServiceFactory::wikiApi();
         $page = new WikiPageAction($wiki, $title);
@@ -195,7 +165,7 @@ class WikiBotConfig
      * Detect {{nobots}}, {{bots|deny=all}}, {{bots|deny=MyBot,BobBot}}.
      * Relevant out of the "main" wiki-namespace (talk pages, etc).
      */
-    private static function isNoBotTag(string $text, ?string $botName = null): bool
+    protected static function isNoBotTag(string $text, ?string $botName = null): bool
     {
         $text = WikiTextUtil::removeHTMLcomments($text);
         $botName = $botName ?: self::getBotName();
@@ -207,7 +177,7 @@ class WikiBotConfig
     /**
      * Detect wiki-templates restricting the edition on a frwiki page.
      */
-    public static function isEditionRestricted(string $text, ?string $botName = null): bool
+    public static function isEditionTemporaryRestrictedOnWiki(string $text, ?string $botName = null): bool
     {
         // travaux|en travaux| ??
         return preg_match('#{{Protection#i', $text) > 0
@@ -215,13 +185,75 @@ class WikiBotConfig
             || self::isNoBotTag($text, $botName);
     }
 
+    /**
+     * @throws ConfigException
+     */
     protected static function getBotName(): string
     {
+        if (empty(getenv('BOT_NAME'))) {
+            throw new ConfigException('BOT_NAME is not defined.');
+        }
         return getenv('BOT_NAME') ?? '';
     }
 
     protected static function getBotOwner()
     {
         return getenv('BOT_OWNER');
+    }
+
+    protected function isLastCheckStopDateRecent(): bool
+    {
+        $now = new DateTimeImmutable();
+        $stopInterval = new DateInterval(self::TALK_STOP_CHECK_INTERVAL);
+        if (
+            $this->lastCheckStopDate instanceof DateTimeImmutable
+            && $now < DateTime::createFromImmutable($this->lastCheckStopDate)->add($stopInterval)
+        ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @throws UsageException
+     */
+    protected function getWikiBotPageAction(): WikiPageAction
+    {
+        $wiki = ServiceFactory::wikiApi();
+
+        return new WikiPageAction($wiki, $this->getBotTalkPageTitle());
+    }
+
+    protected function getBotTalkPageTitle(): string
+    {
+        return self::TALK_PAGE_PREFIX . $this::getBotName();
+    }
+
+    protected function sendSMSandFunnyTalk(string $lastEditor, ?bool $botTalk): void
+    {
+        if (class_exists(SMS::class)) {
+            try {
+                new SMS($this::getBotName() . ' {stop} by ' . $lastEditor);
+            } catch (Exception $smsException) {
+                unset($smsException);
+            }
+        }
+        if ($botTalk && class_exists(TalkBotConfig::class)) {
+            try {
+                (new TalkBotConfig())->botTalk();
+            } catch (Throwable $botTalkException) {
+                unset($botTalkException);
+            }
+        }
+    }
+
+    protected function checkExitOnWatchPage(): void
+    {
+        if (static::EXIT_ON_CHECK_WATCHPAGE) {
+            echo "EXIT_ON_CHECK_WATCHPAGE\n";
+
+            throw new DomainException('exit from check watchpages');
+        }
     }
 }

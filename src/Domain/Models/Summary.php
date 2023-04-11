@@ -1,8 +1,8 @@
 <?php
-/**
+/*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the license file.
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -32,7 +32,7 @@ class Summary
         $this->taskName = $taskName;
     }
 
-    public function serialize(): string
+    public function serializePrefixAndTaskname(): string
     {
         $prefixSummary = ($this->botFlag) ? 'bot: ' : '';
 

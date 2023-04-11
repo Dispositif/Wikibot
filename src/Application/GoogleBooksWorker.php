@@ -2,7 +2,7 @@
 
 /*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
  * For the full copyright and MIT license information, view the license file.
  */
 declare(strict_types=1);
@@ -36,7 +36,7 @@ class GoogleBooksWorker extends AbstractBotTaskWorker
      * @return string|null
      * @throws Throwable
      */
-    protected function processDomain(string $title, string $text): ?string
+    protected function processWithDomainWorker(string $title, string $text): ?string
     {
         $ref = new GoogleTransformer();
 

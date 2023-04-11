@@ -9,22 +9,25 @@ declare(strict_types=1);
 
 namespace App\Application;
 
+use App\Application\Traits\BotWorkerTrait;
+use App\Application\Traits\WorkerAnalyzedTitlesTrait;
+use App\Application\Traits\WorkerCLITrait;
 use App\Domain\Exceptions\ConfigException;
 use App\Domain\Exceptions\StopActionException;
 use App\Domain\Models\Summary;
 use App\Infrastructure\Logger;
 use App\Infrastructure\PageListInterface;
 use App\Infrastructure\ServiceFactory;
-use Codedungeon\PHPCliColors\Color;
 use Exception;
 use Mediawiki\Api\MediawikiFactory;
-use Mediawiki\Api\UsageException;
 use Mediawiki\DataModel\EditInfo;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
 abstract class AbstractBotTaskWorker
 {
+    use WorkerCLITrait, BotWorkerTrait, WorkerAnalyzedTitlesTrait;
+
     public const TASK_BOT_FLAG = false;
     public const SLEEP_AFTER_EDITION = 60;
     public const MINUTES_DELAY_AFTER_LAST_HUMAN_EDIT = 15;
@@ -33,7 +36,7 @@ abstract class AbstractBotTaskWorker
     public const SKIP_LASTEDIT_BY_BOT = true;
     public const SKIP_NOT_IN_MAIN_WIKISPACE = true;
     public const SKIP_ADQ = true;
-    public const THROTTLE_DELAY_AFTER_EACH_TITLE = 3; //secs
+    public const THROTTLE_DELAY_AFTER_EACH_TITLE = 1; //secs
 
     /**
      * @var PageListInterface
@@ -53,8 +56,6 @@ abstract class AbstractBotTaskWorker
     protected $pageAction;
     protected $defaultTaskname;
     protected $titleTaskname;
-
-    // todo move (modeAuto, maxLag) to BotConfig
     protected $modeAuto = false;
     protected $maxLag = 5;
     /**
@@ -62,9 +63,9 @@ abstract class AbstractBotTaskWorker
      */
     protected $log;
     /**
-     * array des articles déjà anal
+     * @var array titles previously processed
      */
-    protected $pastAnalyzed;
+    protected $pastAnalyzed = [];
     /**
      * @var Summary
      */
@@ -82,13 +83,7 @@ abstract class AbstractBotTaskWorker
 
         $this->defaultTaskname = $bot->taskName;
 
-        try {
-            $analyzed = file(static::ARTICLE_ANALYZED_FILENAME, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        } catch (\Throwable $e) {
-            $this->log->critical("Can't parse ARTICLE_ANALYZED_FILENAME : " . $e->getMessage());
-            $analyzed = [];
-        }
-        $this->pastAnalyzed = ($analyzed !== false) ? $analyzed : [];
+        $this->initializePastAnalyzedTitles();
 
         // @throw exception on "Invalid CSRF token"
         $this->run();//todo delete that and use (Worker)->run($duration) or process management
@@ -102,10 +97,9 @@ abstract class AbstractBotTaskWorker
     /**
      * @throws ConfigException
      * @throws Throwable
-     * @throws UsageException
      * @throws StopActionException
      */
-    public function run(): void
+    final public function run(): void
     {
         echo date('d-m-Y H:i:s') . " *** NEW WORKER ***\n";
         foreach ($this->getTitles() as $title) {
@@ -122,7 +116,6 @@ abstract class AbstractBotTaskWorker
                 throw $exception;
             }
 
-            $this->titleProcess($title);
             sleep(self::THROTTLE_DELAY_AFTER_EACH_TITLE);
         }
     }
@@ -141,52 +134,29 @@ abstract class AbstractBotTaskWorker
 
     protected function titleProcess(string $title): void
     {
-        echo "---------------------\n";
-        echo date('d-m-Y H:i:s') . ' ' . Color::BG_CYAN . "  $title " . Color::NORMAL . "\n";
-        sleep(1);
+        $this->titleTaskname = $this->defaultTaskname;
+        $this->printTitle($title);
 
-        if (in_array($title, $this->pastAnalyzed)) {
+        // move up ?
+        if ($this->checkAlreadyAnalyzed($title)) {
             echo "Skip : déjà analysé\n";
 
             return;
         }
 
-        $this->titleTaskname = $this->defaultTaskname;
-
-        $text = $this->getText($title);
-        if (static::SKIP_LASTEDIT_BY_BOT && $this->pageAction->getLastEditor() === getenv('BOT_NAME')) {
-            echo "Skip : bot est le dernier éditeur\n";
-            $this->memorizeAndSaveAnalyzedPage($title);
-
-            return;
-        }
-        if (empty($text) || !$this->checkAllowedEdition($title, $text)) {
+        $text = $this->getTextFromWikiAction($title);
+        if (!$this->canProcessTitleArticle($title, $text)) {
             return;
         }
 
         $this->summary = new Summary($this->defaultTaskname);
         $this->summary->setBotFlag(static::TASK_BOT_FLAG);
+        $newText = $this->processWithDomainWorker($title, $text);
+        $this->memorizeAndSaveAnalyzedTitle($title); // improve : optionnal ?
 
-        $newText = $this->processDomain($title, $text);
-
-        $this->memorizeAndSaveAnalyzedPage($title);
-
-        if (empty($newText) || $newText === $text) {
-            echo "Skip identique ou vide\n";
-
-            return;
+        if ($this->isSomethingToChange($text, $newText) && $this->autoOrYesConfirmation()) {
+            $this->doEdition($newText);
         }
-
-        if (!$this->modeAuto) {
-            $ask = readline(Color::LIGHT_MAGENTA . "*** ÉDITION ? [y/n/auto]" . Color::NORMAL);
-            if ('auto' === $ask) {
-                $this->modeAuto = true;
-            } elseif ('y' !== $ask) {
-                return;
-            }
-        }
-
-        $this->doEdition($newText);
     }
 
     /**
@@ -194,7 +164,7 @@ abstract class AbstractBotTaskWorker
      * @throws Exception
      * @throws Exception
      */
-    protected function getText(string $title): ?string
+    protected function getTextFromWikiAction(string $title): ?string
     {
         $this->pageAction = ServiceFactory::wikiPageAction($title);
         if (static::SKIP_NOT_IN_MAIN_WIKISPACE && $this->pageAction->getNs() !== 0) {
@@ -205,47 +175,24 @@ abstract class AbstractBotTaskWorker
     }
 
     /**
-     * todo distinguer 2 methodes : ban temporaire et permanent (=> logAnalyzed)
-     * Controle droit d'edition.
-     * @throws UsageException
-     */
-    protected function checkAllowedEdition(string $title, string $text): bool
-    {
-        $this->bot->checkStopOnTalkpage(true);
-
-        if (WikiBotConfig::isEditionRestricted($text)) {
-            echo "SKIP : protection/3R/travaux.\n";
-
-            return false;
-        }
-        if ($this->bot->minutesSinceLastEdit($title) < static::MINUTES_DELAY_AFTER_LAST_HUMAN_EDIT) {
-            echo "SKIP : édition humaine dans les dernières " . static::MINUTES_DELAY_AFTER_LAST_HUMAN_EDIT . " minutes.\n";
-
-            return false;
-        }
-        if (static::SKIP_ADQ && preg_match('#{{ ?En-tête label ?\| ?AdQ#i', $text)) {
-            echo "SKIP : AdQ.\n"; // BA ??
-
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
      * return $newText for editing
      */
-    abstract protected function processDomain(string $title, string $text): ?string;
+    abstract protected function processWithDomainWorker(string $title, string $text): ?string;
 
+    /**
+     * @throws Exception
+     */
     protected function doEdition(string $newText): void
     {
-        $e = null;
-        $summaryText = $this->generateSummaryText();
-
         try {
             $result = $this->pageAction->editPage(
                 $newText,
-                new EditInfo($summaryText, $this->summary->isMinorFlag(), $this->summary->isBotFlag(), $this->maxLag),
+                new EditInfo(
+                    $this->generateSummaryText(),
+                    $this->summary->isMinorFlag(),
+                    $this->summary->isBotFlag(),
+                    $this->maxLag
+                ),
                 static::CHECK_EDIT_CONFLICT
             );
         } catch (Throwable $e) {
@@ -255,6 +202,7 @@ abstract class AbstractBotTaskWorker
 
             // If not a critical edition error
             // example : Wiki Conflict : Page has been edited after getText()
+            echo "Error : " . $e->getMessage() . "\n";
             $this->log->warning($e->getMessage());
 
             return;
@@ -265,17 +213,12 @@ abstract class AbstractBotTaskWorker
         sleep(static::SLEEP_AFTER_EDITION);
     }
 
-    private function memorizeAndSaveAnalyzedPage(string $title): void
-    {
-        if (!in_array($title, $this->pastAnalyzed)) {
-            $this->pastAnalyzed[] = $title;
-            @file_put_contents(static::ARTICLE_ANALYZED_FILENAME, $title . PHP_EOL, FILE_APPEND);
-            sleep(1);
-        }
-    }
-
+    /**
+     * Minimalist summary as "bot: taskname".
+     * ACHTUNG ! rewriting by some workers (ex: ExternRefWorker).
+     */
     protected function generateSummaryText(): string
     {
-        return $this->summary->serialize();
+        return $this->summary->serializePrefixAndTaskname();
     }
 }

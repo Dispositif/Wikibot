@@ -78,14 +78,8 @@ class ExternRefWorker extends RefBotWorker
             echo Color::BG_LIGHT_RED."--".Color::NORMAL." ".$refContent."\n";
             echo Color::BG_LIGHT_GREEN."++".Color::NORMAL." $result \n\n";
 
-            if (!$this->modeAuto) {
-                $ask = readline(Color::LIGHT_MAGENTA."*** Conserver cette modif ? [y/n/auto]".Color::NORMAL);
-                if ($ask === 'auto') {
-                    $this->modeAuto = true;
-                }
-                if ($ask !== 'y' && $ask !== 'auto') {
-                    return $refContent;
-                }
+            if (!$this->autoOrYesConfirmation('Conserver cette modif ?')) {
+                return $refContent;
             }
         }
         if (preg_match('#{{lien brisé#i', $result)) {

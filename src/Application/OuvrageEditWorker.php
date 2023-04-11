@@ -24,13 +24,11 @@ use Psr\Log\NullLogger;
 use Throwable;
 
 /**
- * Class OuvrageEditWorker
  *
- * @package App\Application\Examples
  */
 class OuvrageEditWorker
 {
-    use EditSummaryTrait, TalkPageEditTrait;
+    use OuvrageEditSummaryTrait, TalkPageEditTrait;
 
     public const TASK_NAME = '📗 Amélioration bibliographique'; // 📖📔📘📗
     public const LUCKY_MESSAGE = ' 🇺🇦'; // ☘️
@@ -183,7 +181,7 @@ class OuvrageEditWorker
             $this->log->warning("Bon article !!\n");
         }
 
-        if (WikiBotConfig::isEditionRestricted($this->wikiText)) {
+        if (WikiBotConfig::isEditionTemporaryRestrictedOnWiki($this->wikiText)) {
             // TODO Gestion d'une repasse dans X jours
             $this->log->info("SKIP : protection/3R/travaux.\n");
             $this->db->skipArticle($title);
@@ -457,5 +455,4 @@ class OuvrageEditWorker
         // mauvaise Modèle:Sp
         return (preg_match('#\{\{-?(sp|s|sap)-?\|#', $string) === 1);
     }
-
 }
