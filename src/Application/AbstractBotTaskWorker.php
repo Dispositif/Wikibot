@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
  * For the full copyright and MIT license information, view the license file.
  */
 
@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Application;
 
 use App\Domain\Exceptions\ConfigException;
+use App\Domain\Exceptions\StopActionException;
 use App\Domain\Models\Summary;
 use App\Infrastructure\Logger;
 use App\Infrastructure\PageListInterface;
@@ -24,14 +25,15 @@ use Throwable;
 
 abstract class AbstractBotTaskWorker
 {
-    public const TASK_BOT_FLAG                       = false;
-    public const SLEEP_AFTER_EDITION                 = 60;
+    public const TASK_BOT_FLAG = false;
+    public const SLEEP_AFTER_EDITION = 60;
     public const MINUTES_DELAY_AFTER_LAST_HUMAN_EDIT = 15;
-    public const CHECK_EDIT_CONFLICT                 = true;
-    public const ARTICLE_ANALYZED_FILENAME           = __DIR__.'/resources/article_edited.txt';
-    public const SKIP_LASTEDIT_BY_BOT                = true;
-    public const SKIP_NOT_IN_MAIN_WIKISPACE          = true;
-    public const SKIP_ADQ                            = true;
+    public const CHECK_EDIT_CONFLICT = true;
+    public const ARTICLE_ANALYZED_FILENAME = __DIR__ . '/resources/article_edited.txt';
+    public const SKIP_LASTEDIT_BY_BOT = true;
+    public const SKIP_NOT_IN_MAIN_WIKISPACE = true;
+    public const SKIP_ADQ = true;
+    public const THROTTLE_DELAY_AFTER_EACH_TITLE = 3; //secs
 
     /**
      * @var PageListInterface
@@ -68,13 +70,6 @@ abstract class AbstractBotTaskWorker
      */
     protected $summary;
 
-    /**
-     * Goo2ouvrageWorker constructor.
-     *
-     * @param WikiBotConfig     $bot
-     * @param MediawikiFactory  $wiki
-     * @param PageListInterface $pagesGen
-     */
     public function __construct(WikiBotConfig $bot, MediawikiFactory $wiki, ?PageListInterface $pagesGen = null)
     {
         $this->log = $bot->log;
@@ -90,7 +85,7 @@ abstract class AbstractBotTaskWorker
         try {
             $analyzed = file(static::ARTICLE_ANALYZED_FILENAME, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
         } catch (\Throwable $e) {
-            $this->log->critical("Can't parse ARTICLE_ANALYZED_FILENAME : ".$e->getMessage());
+            $this->log->critical("Can't parse ARTICLE_ANALYZED_FILENAME : " . $e->getMessage());
             $analyzed = [];
         }
         $this->pastAnalyzed = ($analyzed !== false) ? $analyzed : [];
@@ -108,19 +103,31 @@ abstract class AbstractBotTaskWorker
      * @throws ConfigException
      * @throws Throwable
      * @throws UsageException
+     * @throws StopActionException
      */
-    public function run()
+    public function run(): void
     {
-        $titles = $this->getTitles();
-        echo date('d-m-Y H:i:s')." *** NEW WORKER ***\n";
-        foreach ($titles as $title) {
+        echo date('d-m-Y H:i:s') . " *** NEW WORKER ***\n";
+        foreach ($this->getTitles() as $title) {
+            try {
+                $this->titleProcess($title);
+            } catch (Exception $exception) {
+                $this->log->error($exception->getMessage());
+                if ($exception instanceof StopActionException) {
+
+                    // just stop without fatal error, when "stop" action from talk page
+                    return;
+                }
+
+                throw $exception;
+            }
+
             $this->titleProcess($title);
-            sleep(3);
+            sleep(self::THROTTLE_DELAY_AFTER_EACH_TITLE);
         }
     }
 
     /**
-     * @return array
      * @throws ConfigException
      */
     protected function getTitles(): array
@@ -132,16 +139,10 @@ abstract class AbstractBotTaskWorker
         return $this->pageListGenerator->getPageTitles();
     }
 
-    /**
-     * @param string $title
-     *
-     * @throws UsageException
-     * @throws Throwable
-     */
     protected function titleProcess(string $title): void
     {
         echo "---------------------\n";
-        echo date('d-m-Y H:i:s').' '.Color::BG_CYAN."  $title ".Color::NORMAL."\n";
+        echo date('d-m-Y H:i:s') . ' ' . Color::BG_CYAN . "  $title " . Color::NORMAL . "\n";
         sleep(1);
 
         if (in_array($title, $this->pastAnalyzed)) {
@@ -177,7 +178,7 @@ abstract class AbstractBotTaskWorker
         }
 
         if (!$this->modeAuto) {
-            $ask = readline(Color::LIGHT_MAGENTA."*** ÉDITION ? [y/n/auto]".Color::NORMAL);
+            $ask = readline(Color::LIGHT_MAGENTA . "*** ÉDITION ? [y/n/auto]" . Color::NORMAL);
             if ('auto' === $ask) {
                 $this->modeAuto = true;
             } elseif ('y' !== $ask) {
@@ -190,10 +191,6 @@ abstract class AbstractBotTaskWorker
 
     /**
      * todo DI
-     *
-     * @param string $title
-     *
-     * @return string|null
      * @throws Exception
      * @throws Exception
      */
@@ -210,11 +207,6 @@ abstract class AbstractBotTaskWorker
     /**
      * todo distinguer 2 methodes : ban temporaire et permanent (=> logAnalyzed)
      * Controle droit d'edition.
-     *
-     * @param string $title
-     * @param string $text
-     *
-     * @return bool
      * @throws UsageException
      */
     protected function checkAllowedEdition(string $title, string $text): bool
@@ -227,7 +219,7 @@ abstract class AbstractBotTaskWorker
             return false;
         }
         if ($this->bot->minutesSinceLastEdit($title) < static::MINUTES_DELAY_AFTER_LAST_HUMAN_EDIT) {
-            echo "SKIP : édition humaine dans les dernières ".static::MINUTES_DELAY_AFTER_LAST_HUMAN_EDIT." minutes.\n";
+            echo "SKIP : édition humaine dans les dernières " . static::MINUTES_DELAY_AFTER_LAST_HUMAN_EDIT . " minutes.\n";
 
             return false;
         }
@@ -242,11 +234,6 @@ abstract class AbstractBotTaskWorker
 
     /**
      * return $newText for editing
-     *
-     * @param string $title
-     * @param string $text
-     *
-     * @return string|null
      */
     abstract protected function processDomain(string $title, string $text): ?string;
 
@@ -263,7 +250,7 @@ abstract class AbstractBotTaskWorker
             );
         } catch (Throwable $e) {
             if (preg_match('#Invalid CSRF token#', $e->getMessage())) {
-                throw new \Exception('Invalid CSRF token', $e->getCode(), $e);
+                throw new Exception('Invalid CSRF token', $e->getCode(), $e);
             }
 
             // If not a critical edition error
@@ -274,25 +261,19 @@ abstract class AbstractBotTaskWorker
         }
 
         dump($result);
-        echo "Sleep ".(string)static::SLEEP_AFTER_EDITION."\n";
+        echo "Sleep " . static::SLEEP_AFTER_EDITION . "\n";
         sleep(static::SLEEP_AFTER_EDITION);
     }
 
-    /**
-     * @param string $title
-     */
     private function memorizeAndSaveAnalyzedPage(string $title): void
     {
         if (!in_array($title, $this->pastAnalyzed)) {
             $this->pastAnalyzed[] = $title;
-            @file_put_contents(static::ARTICLE_ANALYZED_FILENAME, $title.PHP_EOL, FILE_APPEND);
+            @file_put_contents(static::ARTICLE_ANALYZED_FILENAME, $title . PHP_EOL, FILE_APPEND);
             sleep(1);
         }
     }
 
-    /**
-     * @return string
-     */
     protected function generateSummaryText(): string
     {
         return $this->summary->serialize();

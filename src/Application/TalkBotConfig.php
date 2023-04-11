@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
  * For the full copyright and MIT license information, view the license file.
  */
 
@@ -23,16 +23,11 @@ use Mediawiki\DataModel\EditInfo;
 class TalkBotConfig extends WikiBotConfig
 {
     public const BOT_TALK_SUMMARY = 'Réponse artificielle';
-
-    public const BOT_TALK_FILE       = __DIR__.'/resources/phrases_zizibot.txt';
-    public const TALKCONFIG_FILENAME = __DIR__.'/resources/botTalk_config.json';
+    public const BOT_TALK_FILE = __DIR__ . '/resources/phrases_zizibot.txt';
+    public const TALKCONFIG_FILENAME = __DIR__ . '/resources/botTalk_config.json';
 
     /**
      * Add a freaky response in the bottom of the talk page.
-     *
-     * @param string|null $pageTitle
-     *
-     * @return bool
      * @throws UsageException
      */
     public function botTalk(?string $pageTitle = null): bool
@@ -42,14 +37,15 @@ class TalkBotConfig extends WikiBotConfig
         // ugly dependency
         $wiki = ServiceFactory::wikiApi();
         if (!$pageTitle) {
-            $pageTitle = 'Discussion utilisateur:'.getenv('BOT_NAME');
+            $pageTitle = 'Discussion utilisateur:' . $this::getBotName();
         }
         $page = new WikiPageAction($wiki, $pageTitle);
         $last = $page->page->getRevisions()->getLatest();
 
         // No response if the last edition from bot or bot owner
         if (!$last->getUser() || 'Flow talk page manager' === $last->getUser()
-            || $last->getUser() == getenv('BOT_NAME')
+            || $last->getUser() == $this::getBotName()
+            || $last->getUser() == $this::getBotOwner()
         ) {
             return false;
         }
@@ -60,14 +56,14 @@ class TalkBotConfig extends WikiBotConfig
         }
 
         // No response if time < 24h since last bot owner response
-        if ($last->getUser() == getenv('BOT_OWNER')) {
-            $talkConfig['owner_last_time'] = (int) strtotime($last->getTimestamp());
+        if ($last->getUser() == self::getBotOwner()) {
+            $talkConfig['owner_last_time'] = (int)strtotime($last->getTimestamp());
             file_put_contents(self::TALKCONFIG_FILENAME, json_encode($talkConfig, JSON_THROW_ON_ERROR));
 
             return false;
         }
         // No response if time < 24h since last owner response
-        if (isset($talkConfig['owner_last_time']) && (int) $talkConfig['owner_last_time'] > (time() - 60 * 60 * 48)) {
+        if (isset($talkConfig['owner_last_time']) && (int)$talkConfig['owner_last_time'] > (time() - 60 * 60 * 48)) {
             echo "No response if time < 24h after last owner response\n";
 
             return false;
@@ -87,10 +83,6 @@ class TalkBotConfig extends WikiBotConfig
     }
 
     /**
-     * @param string|null $toEditor
-     * @param string|null $identation
-     *
-     * @return string
      * @throws Exception
      */
     private function generateTalkText(?string $toEditor = null, ?string $identation = ':'): string
@@ -110,9 +102,6 @@ class TalkBotConfig extends WikiBotConfig
     /**
      * Stupid ":::" talk page indentation prediction.
      *
-     * @param string $text
-     * @param string $author
-     *
      * @return string ":::"
      */
     private function predictTalkIndentation(string $text, ?string $author = null): string
@@ -121,13 +110,13 @@ class TalkBotConfig extends WikiBotConfig
         $lines = explode("\n", trim($text));
         $lastLine = $lines[count($lines) - 1];
         if (preg_match('#^(:*).+#', $lastLine, $matches) && !empty($matches[1])) {
-            $nextIdent = $matches[1].':';
+            $nextIdent = $matches[1] . ':';
             if (empty($author)) {
                 return $nextIdent;
             }
             // search author signature link to check that he wrote on the page bottom
             if (preg_match(
-                '#\[\[(?:User|Utilisateur|Utilisatrice):'.preg_quote($author, '#').'[|\]]#i',
+                '#\[\[(?:User|Utilisateur|Utilisatrice):' . preg_quote($author, '#') . '[|\]]#i',
                 $matches[0]
             )
             ) {
@@ -139,7 +128,6 @@ class TalkBotConfig extends WikiBotConfig
     }
 
     /**
-     * @return string|null
      * @throws ConfigException
      */
     private function getRandomSentence(): string
@@ -159,8 +147,8 @@ class TalkBotConfig extends WikiBotConfig
     public function botContribs(): string
     {
         $url
-            = 'https://fr.wikipedia.org/w/api.php?action=query&list=usercontribs&ucuser='.getenv('BOT_NAME')
-            .'&ucnamespace=0&uclimit=40&ucprop=title|timestamp|comment&format=json';
+            = 'https://fr.wikipedia.org/w/api.php?action=query&list=usercontribs&ucuser=' . $this::getBotName()
+            . '&ucnamespace=0&uclimit=40&ucprop=title|timestamp|comment&format=json';
 
         return file_get_contents($url);
     }

@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
  * For the full copyright and MIT license information, view the license file.
  */
 
@@ -39,7 +39,6 @@ class WikiPageAction
     private $title;
     /**
      * Wiki namespace
-     *
      * @var int
      */
     private $ns;
@@ -50,9 +49,6 @@ class WikiPageAction
 
     /**
      * WikiPageAction constructor.
-     *
-     * @param MediawikiFactory $wiki
-     * @param string           $title
      *
      * @throws Exception
      */
@@ -66,14 +62,12 @@ class WikiPageAction
             $this->page = $wiki->newPageGetter()->getFromTitle($title);
             $this->ns = $this->page->getPageIdentifier()->getTitle()->getNs();
         } catch (Throwable $e) {
-            throw new Exception('Erreur construct WikiPageAction '.$e->getMessage().$e->getFile().$e->getLine(), $e->getCode(), $e);
+            throw new Exception('Erreur construct WikiPageAction ' . $e->getMessage() . $e->getFile() . $e->getLine(), $e->getCode(), $e);
         }
     }
 
     /**
      * Get wiki text from the page.
-     *
-     * @return string|null
      */
     public function getText(): ?string
     {
@@ -116,8 +110,6 @@ class WikiPageAction
 
     /**
      * Check if a frwiki disambiguation page.
-     *
-     * @return bool
      */
     public function isPageHomonymie(): bool
     {
@@ -126,8 +118,6 @@ class WikiPageAction
 
     /**
      * Is it page with a redirection link ?
-     *
-     * @return bool
      */
     public function isRedirect(): bool
     {
@@ -136,8 +126,6 @@ class WikiPageAction
 
     /**
      * Get redirection page title or null.
-     *
-     * @return string|null
      */
     public function getRedirect(): ?string
     {
@@ -151,12 +139,6 @@ class WikiPageAction
     /**
      * Edit the page with new text.
      * Opti : EditInfo optional param ?
-     *
-     * @param string    $newText
-     * @param EditInfo  $editInfo
-     * @param bool|null $checkConflict
-     *
-     * @return bool
      */
     public function editPage(string $newText, EditInfo $editInfo, ?bool $checkConflict = false): bool
     {
@@ -171,13 +153,19 @@ class WikiPageAction
         $revision = new Revision($content, $revision);
 
         // TODO try/catch UsageExceptions badtoken
-        return $this->wiki->newRevisionSaver()->save($revision, $editInfo);
+        // captchaId=12345&captchaWord=MediaWikiIsCool
+        $revisionSaver = $this->wiki->newRevisionSaver();
+        $result = $revisionSaver->save($revision, $editInfo);
+        if (false === $result) {
+            echo "Error editPage\n";
+            var_dump($revisionSaver->getErrors());
+        }
+
+        return $result;
     }
 
     /**
      * Check if wiki has been edited by someone since bot's getText().
-     *
-     * @return bool
      */
     private function isPageEditedAfterGetText(): bool
     {
@@ -191,10 +179,6 @@ class WikiPageAction
     /**
      * Create a new page.
      *
-     * @param string        $text
-     * @param EditInfo|null $editInfo
-     *
-     * @return bool
      * @throws Exception
      */
     public function createPage(string $text, ?EditInfo $editInfo = null): bool
@@ -213,9 +197,6 @@ class WikiPageAction
     }
 
     /**
-     * @param string   $addText
-     * @param EditInfo $editInfo
-     *
      * @return bool success
      * @throws Exception
      */
@@ -231,9 +212,6 @@ class WikiPageAction
     /**
      * Add text to the bottom of the article.
      *
-     * @param string   $addText
-     * @param EditInfo $editInfo
-     *
      * @return bool success
      * @throws Exception
      */
@@ -243,16 +221,13 @@ class WikiPageAction
             throw new Exception('That page does not exist');
         }
         $oldText = $this->getText();
-        $newText = $oldText."\n".$addText;
+        $newText = $oldText . "\n" . $addText;
 
         return $this->editPage($newText, $editInfo);
     }
 
     /**
      * Add text to the top of the page.
-     *
-     * @param string   $addText
-     * @param EditInfo $editInfo
      *
      * @return bool success
      * @throws Exception
@@ -263,7 +238,7 @@ class WikiPageAction
             throw new Exception('That page does not exist');
         }
         $oldText = $this->getText();
-        $newText = $addText.$oldText;
+        $newText = $addText . $oldText;
 
         return $this->editPage($newText, $editInfo);
     }
@@ -272,19 +247,13 @@ class WikiPageAction
      * todo Move to WikiTextUtil ?
      * Replace serialized template and manage {{en}} prefix.
      * Don't delete {{fr}} on frwiki.
-     *
-     * @param string $text       wikitext of the page
-     * @param string $tplOrigin  template text to replace
-     * @param string $tplReplace new template text
-     *
-     * @return string|null
      */
-    public static function replaceTemplateInText(string $text, string $tplOrigin, string $tplReplace): string
+    public static function replaceTemplateInText(string $text, string $tplOrigin, string $tplReplace): ?string
     {
         // "{{en}} {{zh}} {{ouvrage...}}"
         // todo test U
         if (preg_match_all(
-            '#(?<langTemp>{{[a-z][a-z]}} ?{{[a-z][a-z]}}) ?'.preg_quote($tplOrigin, '#').'#i',
+            '#(?<langTemp>{{[a-z][a-z]}} ?{{[a-z][a-z]}}) ?' . preg_quote($tplOrigin, '#') . '#i',
             $text,
             $matches
         )
@@ -298,7 +267,7 @@ class WikiPageAction
         // hack // todo: autres patterns {{en}} ?
         // OK : {{en}} \n {{ouvrage}}
         if (preg_match_all(
-                "#(?<langTemp>{{(?<lang>[a-z][a-z])}} *\n?)?".preg_quote($tplOrigin, '#').'#i',
+                "#(?<langTemp>{{(?<lang>[a-z][a-z])}} *\n?)?" . preg_quote($tplOrigin, '#') . '#i',
                 $text,
                 $matches
             ) > 0
@@ -313,7 +282,7 @@ class WikiPageAction
                 // example : {{en}} {{template|lang=ru}}
                 if (!empty($lang) && self::SKIP_LANG_INDICATOR !== $lang
                     && preg_match('#langue *=#', $tplReplace)
-                    && !preg_match('#langue *= ?'.$lang.'#i', $tplReplace)
+                    && !preg_match('#langue *= ?' . $lang . '#i', $tplReplace)
                     && !preg_match('#\| ?langue *= ?\n?\|#', $tplReplace)
                 ) {
                     echo sprintf(
@@ -336,7 +305,7 @@ class WikiPageAction
                 // FIX dirty : {{en}} mais langue= avec value non définie sur new template...
                 if (!empty($lang) && preg_match('#\| ?(langue *=) ?\n? ?\|#', $tplReplace, $matchLangue) > 0) {
                     $previousTpl = $tplReplace;
-                    $tplReplace = str_replace($matchLangue[1], 'langue='.$lang, $tplReplace);
+                    $tplReplace = str_replace($matchLangue[1], 'langue=' . $lang, $tplReplace);
                     //dump('origin', $tplOrigin);
                     $text = str_replace($previousTpl, $tplReplace, $text);
                 }
@@ -351,7 +320,7 @@ class WikiPageAction
                 // replace {template} and {{lang}} {template}
                 $text = str_replace($mention, $tplReplace, $text);
                 $text = str_replace(
-                    $matches['langTemp'][$num].$tplReplace,
+                    $matches['langTemp'][$num] . $tplReplace,
                     $tplReplace,
                     $text
                 ); // si 1er replace global sans
@@ -364,10 +333,6 @@ class WikiPageAction
 
     /**
      * Extract <ref> data from text.
-     *
-     * @param $text string
-     *
-     * @return array
      * @throws Exception
      */
     public function extractRefFromText(string $text): ?array
@@ -382,10 +347,6 @@ class WikiPageAction
      * TODO $url parameter
      * TODO? refactor with : parse_str() + parse_url($url, PHP_URL_QUERY)
      * check if any ref contains a targeted website/URL.
-     *
-     * @param array $refs
-     *
-     * @return array
      */
     public function filterRefByURL(array $refs): array
     {
