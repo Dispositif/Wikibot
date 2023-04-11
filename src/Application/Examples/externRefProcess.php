@@ -54,6 +54,7 @@ $list = new CirrusSearch(
         'srsearch' => '"http" insource:/\<ref[^\>]*\> ?https?\:\/\/[^\<\ ]+ *\<\/ref/',
         'srlimit' => '5000',
         'srsort' => 'random',
+        'srqiprofile' => 'popular_inclinks_pv', /* Notation basée principalement sur le nombre de vues de la page */
     ]
 );
 
@@ -81,4 +82,5 @@ echo ">".$list->count()." dans liste\n";
 
 new ExternRefWorker($botConfig, $wiki, $list);
 
-sleep(600);
+echo "END of process\n";
+sleep(60);

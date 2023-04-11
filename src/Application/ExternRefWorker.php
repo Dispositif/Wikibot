@@ -20,13 +20,15 @@ use Throwable;
 class ExternRefWorker extends RefBotWorker
 {
     public const TASK_BOT_FLAG                       = true;
-    public const SLEEP_AFTER_EDITION                 = 10; // sec
+    public const SLEEP_AFTER_EDITION                 = 5; // sec
     public const MINUTES_DELAY_AFTER_LAST_HUMAN_EDIT = 10; // minutes
     public const CHECK_EDIT_CONFLICT                 = true;
     public const ARTICLE_ANALYZED_FILENAME           = __DIR__.'/resources/article_externRef_edited.txt';
     public const SKIP_ADQ                            = false;
     public const SKIP_LASTEDIT_BY_BOT                = false;
-    public const CITATION_NUMBER_ON_FIRE             = 10;
+    public const CITATION_NUMBER_ON_FIRE             = 15;
+    public const CITATION_NUMBER_NO_BOTFLAG          = 20;
+    public const DEAD_LINK_NO_BOTFLAG                = 5;
 
     protected $modeAuto = true;
     /**
@@ -84,9 +86,14 @@ class ExternRefWorker extends RefBotWorker
         }
         if (preg_match('#{{lien brisé#i', $result)) {
             $this->summary->memo['count lien brisé'] = 1 + ($this->summary->memo['count lien brisé'] ?? 0);
-            $this->summary->setBotFlag(false);
+            if ($this->summary->memo['count lien brisé'] >= self::DEAD_LINK_NO_BOTFLAG) {
+                $this->summary->setBotFlag(false);
+            }
         }
         if ($this->summary->citationNumber >= self::CITATION_NUMBER_ON_FIRE) {
+            //$this->summary->setBotFlag(false);
+        }
+        if ($this->summary->citationNumber >= self::CITATION_NUMBER_NO_BOTFLAG) {
             $this->summary->setBotFlag(false);
         }
 

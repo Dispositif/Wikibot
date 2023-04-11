@@ -22,7 +22,7 @@ class SeoSanitizer
      */
     public function cleanSEOTitle(string $prettyDomainName, ?string $title): ?string
     {
-        if (empty(trim($title))) {
+        if (empty($title) || empty(trim($title))) {
             return null;
         }
         $title = str_replace(['–', '—', '\\'], ['-', '-', '/'], $title); // replace em dash with hyphen
@@ -79,9 +79,9 @@ class SeoSanitizer
         if (strpos($title, ' - ') !== false) {
             return ' - ';
         }
-        if (strpos($title, ' : ') !== false) {
-            return ' : ';
-        }
+//        if (strpos($title, ' : ') !== false) {
+//            return ' : ';
+//        }
 
         return null;
     }

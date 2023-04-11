@@ -14,7 +14,7 @@ PHP CLI app for Wikipedia robot.
 Lots of data cleaning and post-processing, because bibliographic data is sooo serious and inconsistent. See https://fr.wikipedia.org/wiki/Utilisateur:CodexBot 
 
 
-- Completion of "external links" of the world wild web : the bot acts like a web crawler and transforms the 
+- Completion of "external links" from the World Wide Web : the bot acts like a web crawler and transforms the 
 raw links (http://...) into detailed references with page's title, author, site name, date, etc. It uses metadata from 
 OpenGraph, JSON-LD, DublinCore, TwitterCard or naive prediction from HTML. Not a lot of data postprocessing, because web data is rather consistent (SEO) and cool. It manages also dead links (404, DNS, etc.) and redirects.
 

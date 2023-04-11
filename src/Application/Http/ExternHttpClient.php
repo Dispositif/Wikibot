@@ -121,7 +121,7 @@ class ExternHttpClient implements HttpClientInterface
                 return '';
             }
         } catch (Throwable $e) {
-            throw new DomainException("error converting : $charset to UTF-8" . $url, $e->getCode(), $e);
+            throw new DomainException("error converting : $charset to UTF-8 on " . $url, $e->getCode(), $e);
         }
 
         return $html2;
