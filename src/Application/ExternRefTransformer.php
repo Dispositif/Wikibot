@@ -30,16 +30,14 @@ use Symfony\Component\Yaml\Yaml;
 use Throwable;
 
 /**
- * todo move Domain
- * Class ExternRefTransformer
- *
- * @package App\Application
+ * todo move Domain ?
  */
 class ExternRefTransformer implements TransformerInterface
 {
     public const HTTP_REQUEST_LOOP_DELAY = 10;
-    public const LOG_REQUEST_ERROR       = __DIR__.'/resources/external_request_error.log';
-    public const SKIP_DOMAIN_FILENAME    = __DIR__.'/resources/config_skip_domain.txt';
+    public const LOG_REQUEST_ERROR = __DIR__ . '/resources/external_request_error.log';
+    public const SKIP_DOMAIN_FILENAME = __DIR__ . '/resources/config_skip_domain.txt';
+    public const REPLACE_404 = true;
 
     public $skipUnauthorised = true;
     /**
@@ -94,159 +92,65 @@ class ExternRefTransformer implements TransformerInterface
      */
     public function process(string $url, Summary $summary): string
     {
-        $pageData = [];
-        $this->summary = $summary;
         if (!$this->isURLAuthorized($url)) {
             return $url;
         }
-
-        $url = WikiTextUtil::normalizeUrlForTemplate($url);
-
         try {
-            sleep(self::HTTP_REQUEST_LOOP_DELAY);
-            $this->externalPage = ExternPageFactory::fromURL($url, $this->log);
-            $pageData = $this->externalPage->getData();
-            $this->log->debug('metaData', $pageData);
-        } catch (Exception $e) {
-            // "410 gone" => {lien brisé}
-            if (preg_match('#410 Gone#i', $e->getMessage())) {
-                $this->log->notice('410 page disparue : '.$url);
-
-                return sprintf(
-                    '{{Lien brisé |url= %s |titre=%s |brisé le=%s}}',
-                    $url,
-                    $this->url2TextStyleTitle($url),
-                    date('d-m-Y')
-                );
-            } // 403
-            elseif (preg_match('#403 Forbidden#i', $e->getMessage())) {
-                $this->log->warning('403 Forbidden : '.$url);
-                file_put_contents(self::LOG_REQUEST_ERROR, '403 Forbidden : '.$this->domain."\n", FILE_APPEND);
-            } elseif (preg_match('#404 Not Found#i', $e->getMessage())) {
-                $this->log->notice('404 Not Found : '.$url);
-
-                return $url;
-            } else {
-                //  autre : ne pas générer de {lien brisé}, car peut-être 404 temporaire
-                $this->log->warning('erreur sur extractWebData '.$e->getMessage());
-
-                //file_put_contents(self::LOG_REQUEST_ERROR, $this->domain."\n", FILE_APPEND);
-
-                return $url;
-            }
+            $url = WikiTextUtil::normalizeUrlForTemplate($url);
+            $pageData = $this->extractPageDataFromUrl($url);
+        } catch (Exception $exception) {
+            return $this->manageHttpErrors($exception, $url);
         }
-
-        if ($pageData === []
-            || (empty($pageData['JSON-LD']) && empty($pageData['meta']))
-        ) {
-            $this->log->notice('SKIP no metadata : '.$url);
-
-            return $url;
-        }
-
-        if (isset($pageData['robots']) && strpos($pageData['robots'], 'noindex') !== false) {
-            $this->log->notice('SKIP robots: noindex : '.$url);
-
+        if ($this->emptyPageData($pageData, $url) || $this->robotNoIndex($pageData, $url)) {
             return $url;
         }
 
         $mapData = $this->mapper->process($pageData);
-
-        // check dataValide
-        // Pas de skip domaine car s'agit peut-être d'un 404 ou erreur juste sur cette URL
-        if ($mapData === [] || empty($mapData['url']) || empty($mapData['titre'])) {
-            $this->log->info('Mapping incomplet : '.$url);
-
+        if ($this->emptyMapData($mapData, $url)) {
             return $url;
         }
+        $mapData = $this->unsetAccesLibre($mapData);
 
-        // Pas de 'accès url=libre' # débat février 2021
-        if (isset($mapData['accès url']) && $mapData['accès url'] === 'libre') {
-            unset($mapData['accès url']);
-        }
-
+        $this->addSummaryLog($mapData, $summary);
         $this->tagAndLog($mapData);
-        $this->addSummaryLog($mapData);
 
         $template = $this->chooseTemplateByData($mapData);
 
-        $mapData = $this->replaceSitenameByConfig($mapData, $template);
-        $mapData = $this->replaceURLbyOriginal($mapData);
-
-
-        if ($template instanceof ArticleTemplate) {
-            unset($mapData['site']);
-        }
-        unset($mapData['DATA-TYPE']); // ugly
-        unset($mapData['DATA-ARTICLE']); // ugly
-        unset($mapData['url-access']);
-
-        $template->hydrate($mapData);
-
-        $optimizer = OptimizerFactory::fromTemplate($template);
-        $optimizer->doTasks();
-        $templateOptimized = $optimizer->getOptiTemplate();
-
-        $serialized = $templateOptimized->serialize(true);
-        $this->log->info('Serialized 444: '.$serialized."\n");
-
+        $mapData = $this->replaceSomeData($mapData, $template);
+        $serialized = $this->optimizeAndSerialize($template, $mapData);
         $normalized = Normalizer::normalize($serialized); // sometimes :bool
         if (!empty($normalized) && is_string($normalized)) {
             return $normalized;
         }
-        if (!empty($serialized) && is_string($serialized)) {
+        if (!empty($serialized)) {
             return $serialized;
         }
 
-        return $url;
+        return $url; // error fallback
     }
 
     protected function isURLAuthorized(string $url): bool
     {
+        $this->url = $url;
         if (!ExternHttpClient::isHttpURL($url)) {
-            //            $this->log->debug('Skip : not a valid URL : '.$url);
+            $this->log->debug('Skip : not a valid URL : ' . $url);
             return false;
         }
 
         if ($this->hasForbiddenFilenameExtension($url)) {
             return false;
         }
-
-        $this->url = $url;
         if (!ExternHttpClient::isHttpURL($url)) {
-            throw new Exception('string is not an URL '.$url);
+            throw new Exception('string is not an URL ' . $url);
         }
         try {
             $this->domain = InternetDomainParser::getRegistrableDomainFromURL($url);
         } catch (Exception $e) {
-            $this->log->warning('Skip : not a valid URL : '.$url);
-
+            $this->log->warning('Skip : not a valid URL : ' . $url);
             return false;
         }
 
-        if (in_array($this->domain, $this->skip_domain)) {
-            $this->log->notice("Skip domain ".$this->domain);
-            if ($this->skipUnauthorised) {
-                return false;
-            }
-        }
-
-        if (!isset($this->config[$this->domain])) {
-            $this->log->debug("Domain ".$this->domain." non configuré");
-        } else {
-            $this->log->debug("Domain ".$this->domain." configuré");
-        }
-
-        $this->config[$this->domain] = $this->config[$this->domain] ?? [];
-        $this->config[$this->domain] = is_array($this->config[$this->domain]) ? $this->config[$this->domain] : [];
-
-        if ($this->config[$this->domain] === 'deactivated' || isset($this->config[$this->domain]['deactivated'])) {
-            $this->log->info("Domain ".$this->domain." disabled\n");
-
-            return false;
-        }
-
-        return true;
+        return $this->validateConfigWebDomain();
     }
 
     /**
@@ -257,6 +161,7 @@ class ExternRefTransformer implements TransformerInterface
     private function tagAndLog(array $mapData)
     {
         $this->log->debug('mapData', $mapData);
+        $this->summary->citationNumber = $this->summary->citationNumber ?? 0;
         $this->summary->citationNumber++;
 
         if (isset($mapData['DATA-ARTICLE']) && $mapData['DATA-ARTICLE']) {
@@ -276,7 +181,7 @@ class ExternRefTransformer implements TransformerInterface
             $this->summary->memo['sites'][] = $this->externalPage->getPrettyDomainName();
         }
         if (isset($mapData['accès url'])) {
-            $this->log->notice('accès 🔒 '.$mapData['accès url']);
+            $this->log->notice('accès 🔒 ' . $mapData['accès url']);
             if ($mapData['accès url'] !== 'libre') {
                 $this->summary->memo['accès url non libre'] = true;
             }
@@ -291,8 +196,9 @@ class ExternRefTransformer implements TransformerInterface
         return strpos('.revues.org', $this->domain) > 0;
     }
 
-    private function addSummaryLog(array $mapData)
+    private function addSummaryLog(array $mapData, Summary $summary)
     {
+        $this->summary = $summary;
         $this->summaryLog[] = $mapData['site'] ?? $mapData['périodique'] ?? '?';
     }
 
@@ -330,14 +236,9 @@ class ExternRefTransformer implements TransformerInterface
             $templateName = 'lien web';
         }
 
-        // Par défaut : {lien web}
-        if (null === $templateName) {
-            $templateName = 'lien web';
-        }
-
         $template = WikiTemplateFactory::create($templateName);
         $template->userSeparator = " |";
-        $this->summary->memo['count '.$templateName] = 1 + ($this->summary->memo['count '.$templateName] ?? 0);
+        $this->summary->memo['count ' . $templateName] = 1 + ($this->summary->memo['count ' . $templateName] ?? 0);
 
         return $template;
     }
@@ -403,18 +304,14 @@ class ExternRefTransformer implements TransformerInterface
     }
 
     /**
-     * todo move ?
+     * todo move + prettyDomainName
      * URL => "parismatch.com/People/bla…"
-     *
-     * @param string $url
-     *
-     * @return string
      */
-    public function url2TextStyleTitle(string $url): string
+    public function generateTitleFromURLText(string $url): string
     {
         $text = str_replace(['https://', 'http://', 'www.'], '', $url);
         if (strlen($text) > 30) {
-            $text = substr($text, 0, 30).'…';
+            $text = substr($text, 0, 30) . '…';
         }
 
         return $text;
@@ -430,35 +327,215 @@ class ExternRefTransformer implements TransformerInterface
      */
     private function hasForbiddenFilenameExtension(string $url): bool
     {
-        return (bool) preg_match(
+        return (bool)preg_match(
             '#\.(pdf|jpg|jpeg|gif|png|xls|xlsx|xlr|xml|xlt|txt|csv|js|docx|exe|gz|zip|ini|movie|mp3|mp4|ogg|raw|rss|tar|tgz|wma)$#i',
             $url
         );
     }
 
+    // todo inject
     protected function importConfigAndData(): void
     {
         // todo REFAC DataObject[]
-        $this->config = Yaml::parseFile(__DIR__.'/resources/config_presse.yaml');
+        $this->config = Yaml::parseFile(__DIR__ . '/resources/config_presse.yaml');
         $skipFromFile = file(
             self::SKIP_DOMAIN_FILENAME,
             FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES
         );
         $this->skip_domain = $skipFromFile ?: [];
 
-        $this->data['newspaper'] = json_decode(file_get_contents(__DIR__.'/resources/data_newspapers.json'), true, 512, JSON_THROW_ON_ERROR);
+        $this->data['newspaper'] = json_decode(file_get_contents(__DIR__ . '/resources/data_newspapers.json'), true, 512, JSON_THROW_ON_ERROR);
         $this->data['scientific domain'] = json_decode(
-            file_get_contents(__DIR__.'/resources/data_scientific_domain.json'),
+            file_get_contents(__DIR__ . '/resources/data_scientific_domain.json'),
             true,
             512,
             JSON_THROW_ON_ERROR
         );
         $this->data['scientific wiki'] = json_decode(
-            file_get_contents(__DIR__.'/resources/data_scientific_wiki.json'),
+            file_get_contents(__DIR__ . '/resources/data_scientific_wiki.json'),
             true,
             512,
             JSON_THROW_ON_ERROR
         );
     }
 
+    protected function extractPageDataFromUrl(string $url): array
+    {
+        sleep(self::HTTP_REQUEST_LOOP_DELAY);
+        $this->externalPage = ExternPageFactory::fromURL($url, $this->log);
+        $pageData = $this->externalPage->getData();
+        $this->log->debug('metaData', $pageData);
+
+        return $pageData;
+    }
+
+    protected function formatLienBrise(string $url): string
+    {
+        return sprintf(
+            '{{Lien brisé |url= %s |titre=%s |brisé le=%s}}',
+            $url,
+            $this->generateTitleFromURLText($url),
+            date('d-m-Y')
+        );
+    }
+
+    protected function log403(string $url): void
+    {
+        $this->log->warning('403 Forbidden : ' . $url);
+        file_put_contents(self::LOG_REQUEST_ERROR, '403 Forbidden : ' . $this->domain . "\n", FILE_APPEND);
+    }
+
+    protected function manageHttpErrors(Exception $e, string $url): string
+    {
+        // "410 gone" => {lien brisé}
+        if (preg_match('#410 Gone#i', $e->getMessage())) {
+            $this->log->notice('410 page disparue : ' . $url);
+
+            return $this->formatLienBrise($url);
+        } // 403
+        elseif (preg_match('#403 Forbidden#i', $e->getMessage())) {
+            $this->log403($url);
+
+            return $url;
+        } elseif (preg_match('#404 Not Found#i', $e->getMessage())) {
+            $this->log->notice('404 Not Found : ' . $url);
+
+            if (self::REPLACE_404) {
+                return $this->formatLienBrise($url);
+            }
+            return $url;
+        } else {
+            //  autre : ne pas générer de {lien brisé}, car peut-être 404 temporaire
+            $this->log->warning('erreur sur extractWebData ' . $e->getMessage());
+
+            //file_put_contents(self::LOG_REQUEST_ERROR, $this->domain."\n", FILE_APPEND);
+
+            return $url;
+        }
+    }
+
+    private function emptyPageData(array $pageData, string $url): bool
+    {
+        if (empty($pageData)
+            || (empty($pageData['JSON-LD']) && empty($pageData['meta']))
+        ) {
+            $this->log->notice('SKIP no metadata : ' . $url);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    private function robotNoIndex(array $pageData, string $url): bool
+    {
+        if (isset($pageData['robots']) && strpos($pageData['robots'], 'noindex') !== false) {
+            $this->log->notice('SKIP robots: noindex : ' . $url);
+
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Pas de 'accès url=libre' # débat février 2021
+     */
+    protected function unsetAccesLibre(array $mapData): array
+    {
+        if (isset($mapData['accès url']) && $mapData['accès url'] === 'libre') {
+            unset($mapData['accès url']);
+        }
+        return $mapData;
+    }
+
+    /**
+     * check dataValide
+     * Pas de skip domaine car s'agit peut-être d'un 404 ou erreur juste sur cette URL
+     */
+    private function emptyMapData(array $mapData, string $url): bool
+    {
+        if ($mapData === [] || empty($mapData['url']) || empty($mapData['titre'])) {
+            $this->log->info('Mapping incomplet : ' . $url);
+
+            return true;
+        }
+        return false;
+    }
+
+    protected function replaceSomeData(array $mapData, AbstractWikiTemplate $template): array
+    {
+        $mapData = $this->replaceSitenameByConfig($mapData, $template);
+        $mapData = $this->replaceURLbyOriginal($mapData);
+
+        if ($template instanceof ArticleTemplate) {
+            unset($mapData['site']);
+        }
+        unset($mapData['DATA-TYPE']); // ugly
+        unset($mapData['DATA-ARTICLE']); // ugly
+        unset($mapData['url-access']);
+
+        return $mapData;
+    }
+
+    /**
+     * @param AbstractWikiTemplate $template
+     * @param array $mapData
+     *
+     * @return string
+     * @throws Exception
+     */
+    protected function optimizeAndSerialize(AbstractWikiTemplate $template, array $mapData): string
+    {
+        $template->hydrate($mapData);
+        $optimizer = OptimizerFactory::fromTemplate($template);
+        $optimizer->doTasks();
+        $templateOptimized = $optimizer->getOptiTemplate();
+
+        $serialized = $templateOptimized->serialize(true);
+        $this->log->info('Serialized 444: ' . $serialized . "\n");
+        return $serialized;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function validateConfigWebDomain(): bool
+    {
+        if ($this->isSiteBlackListed()) {
+            return false;
+        }
+        $this->logDebugConfigWebDomain();
+
+        $this->config[$this->domain] = $this->config[$this->domain] ?? [];
+        $this->config[$this->domain] = is_array($this->config[$this->domain]) ? $this->config[$this->domain] : [];
+
+        if ($this->config[$this->domain] === 'deactivated' || isset($this->config[$this->domain]['deactivated'])) {
+            $this->log->info("Domain " . $this->domain . " disabled\n");
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @return void
+     */
+    protected function logDebugConfigWebDomain(): void
+    {
+        if (!isset($this->config[$this->domain])) {
+            $this->log->debug("Domain " . $this->domain . " non configuré");
+        } else {
+            $this->log->debug("Domain " . $this->domain . " configuré");
+        }
+    }
+
+    protected function isSiteBlackListed(): bool
+    {
+        if ($this->skipUnauthorised && in_array($this->domain, $this->skip_domain)) {
+            $this->log->notice("Skip web site " . $this->domain);
+            return true;
+        }
+        return false;
+    }
 }
