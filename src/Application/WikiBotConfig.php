@@ -144,7 +144,7 @@ class WikiBotConfig
 
     protected function getTimestamp(string $title): ?string
     {
-        $wiki = ServiceFactory::wikiApi();
+        $wiki = ServiceFactory::getMediawikiFactory();
         $page = new WikiPageAction($wiki, $title);
 
         return $page->page->getRevisions()->getLatest()->getTimestamp();
@@ -220,7 +220,7 @@ class WikiBotConfig
      */
     protected function getWikiBotPageAction(): WikiPageAction
     {
-        $wiki = ServiceFactory::wikiApi();
+        $wiki = ServiceFactory::getMediawikiFactory();
 
         return new WikiPageAction($wiki, $this->getBotTalkPageTitle());
     }

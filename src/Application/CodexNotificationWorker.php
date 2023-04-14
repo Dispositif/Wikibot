@@ -43,7 +43,7 @@ class CodexNotificationWorker extends NotificationWorker
     private function processExternLinks(string $article, ?string $username = '')
     {
         try {
-            $wiki = ServiceFactory::wikiApi();
+            $wiki = ServiceFactory::getMediawikiFactory();
             $logger = new Logger();
             //$logger->debug = true;
             $botConfig = new WikiBotConfig($logger);
@@ -65,7 +65,7 @@ class CodexNotificationWorker extends NotificationWorker
     private function processWikiscanForOuvrage(string $article): void
     {
         try {
-            $wiki = ServiceFactory::wikiApi();
+            $wiki = ServiceFactory::getMediawikiFactory();
             $list = new PageList([$article]);
             new ScanWiki2DB($wiki, new DbAdapter(), new WikiBotConfig(), $list, 15);
         } catch (\Throwable $e) {

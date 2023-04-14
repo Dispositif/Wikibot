@@ -122,7 +122,7 @@ class ServiceFactory
      * @return MediawikiFactory
      * @throws UsageException
      */
-    public static function wikiApi(?bool $forceLogin = false): MediawikiFactory
+    public static function getMediawikiFactory(?bool $forceLogin = false): MediawikiFactory
     {
         if (isset(self::$wikiApi) && !$forceLogin) {
             return self::$wikiApi;
@@ -145,7 +145,7 @@ class ServiceFactory
      */
     public static function wikiPageAction(string $title, $forceLogin = false): WikiPageAction
     {
-        $wiki = self::wikiApi($forceLogin);
+        $wiki = self::getMediawikiFactory($forceLogin);
 
         return new WikiPageAction($wiki, $title);
     }

@@ -1,8 +1,8 @@
 <?php
-/**
- * This file is part of dispositif/wikibot application
- * 2019 : Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+/*
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -22,7 +22,7 @@ include __DIR__.'/../myBootstrap.php';
  * From a titles list, scan the wiki and add the {ouvrage} citations into the DB
  */
 
-$wiki = ServiceFactory::wikiApi();
+$wiki = ServiceFactory::getMediawikiFactory();
 
 // import manuel : > php wikiScanProcess.php "Bla"
 if (!empty($argv[1])) {

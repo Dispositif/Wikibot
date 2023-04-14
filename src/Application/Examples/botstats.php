@@ -141,7 +141,7 @@ echo "Edition ? \n";
 echo "sleep 20...\n";
 sleep(10);
 
-$wiki = ServiceFactory::wikiApi();
+$wiki = ServiceFactory::getMediawikiFactory();
 $pageAction = new WikiPageAction($wiki, $monitoringPage);
 
 $success = $pageAction->editPage($wikiText, new EditInfo($summary, false, true));

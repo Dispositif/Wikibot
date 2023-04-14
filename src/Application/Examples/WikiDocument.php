@@ -1,8 +1,8 @@
 <?php
-/**
- * This file is part of dispositif/wikibot application
- * 2019 : Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+/*
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -35,7 +35,7 @@ try{
 $title = 'Utilisateur:ZiziBot/features';
 $summary = 'bot : Update from Github';
 
-$wiki = ServiceFactory::wikiApi();
+$wiki = ServiceFactory::getMediawikiFactory();
 
 try {
     $page = new WikiPageAction($wiki, $title);

@@ -19,7 +19,7 @@ use App\Infrastructure\ServiceFactory;
 
 require_once __DIR__.'/../Ironie_Bootstrap.php'; // human account
 
-$wiki = ServiceFactory::wikiApi();
+$wiki = ServiceFactory::getMediawikiFactory();
 
 $list = PageList::FromWikiCategory('Élection administrateur en cours');
 

@@ -27,7 +27,7 @@ include __DIR__.'/../myBootstrap.php'; // Codex
 // todo VOIR EN BAS
 
 /** @noinspection PhpUnhandledExceptionInspection */
-$wiki = ServiceFactory::wikiApi();
+$wiki = ServiceFactory::getMediawikiFactory();
 $logger = new Logger();
 //$logger->colorMode = true;
 //$logger->debug = true;

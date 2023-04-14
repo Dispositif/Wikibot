@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
  * For the full copyright and MIT license information, view the license file.
  */
 
@@ -60,8 +60,8 @@ ISBN
 </div>
 EOF;
 
-$newText = str_replace('##NUMBER##', $number, $newText);
-$newText = str_replace('##PAGEEDITED##', $pageNb, $newText);
+$newText = str_replace('##NUMBER##', (string) $number, $newText);
+$newText = str_replace('##PAGEEDITED##', (string) $pageNb, $newText);
 
 // Put content on wiki
 $title = 'Utilisateur:ZiziBot/task';
@@ -71,7 +71,7 @@ echo "Mise à jour avancement ?\n";
 echo "sleep 20...\n";
 sleep(20);
 
-$wiki = ServiceFactory::wikiApi();
+$wiki = ServiceFactory::getMediawikiFactory();
 $page = new WikiPageAction($wiki, $title);
 
 $success = $page->editPage($newText, new EditInfo($summary, true, true));

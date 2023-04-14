@@ -2,7 +2,7 @@
 
 /*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
  * For the full copyright and MIT license information, view the license file.
  */
 declare(strict_types=1);
@@ -49,7 +49,7 @@ $phrases = [
  * Chopper les noms de page discussion de la cat
  */
 
-$wiki = ServiceFactory::wikiApi();
+$wiki = ServiceFactory::getMediawikiFactory();
 $pages = $wiki->newPageListGetter()->getPageListFromCategoryName($categoryTitle);
 $pages = (array) $pages->toArray();
 arsort($pages); // ordre Z->A pour pages récentes en premier

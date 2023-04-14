@@ -202,7 +202,7 @@ class NotificationWorker
         }
         $text = implode("\n", $wikilog)."\n";
 
-        $wiki = ServiceFactory::wikiApi();
+        $wiki = ServiceFactory::getMediawikiFactory();
         $pageAction = new WikiPageAction($wiki, $this->notifPage);
 
         return $pageAction->addToTopOfThePage(

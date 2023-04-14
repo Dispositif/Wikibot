@@ -35,7 +35,7 @@ class TalkBotConfig extends WikiBotConfig
         $talkConfig = $this->getTalkConfig();
 
         // ugly dependency
-        $wiki = ServiceFactory::wikiApi();
+        $wiki = ServiceFactory::getMediawikiFactory();
         if (!$pageTitle) {
             $pageTitle = 'Discussion utilisateur:' . $this::getBotName();
         }
