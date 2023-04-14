@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Application;
 
 use App\Domain\Enums\Language;
+use App\Infrastructure\Mediawiki\ExtendedMediawikiFactory;
 use App\Infrastructure\TagParser;
 use DomainException;
 use Exception;
@@ -78,7 +79,7 @@ class WikiPageAction
             return null;
         }
 
-        return ($latest) ? $latest->getContent()->getData() : null;
+        return $latest->getContent()->getData();
     }
 
     public function getNs(): ?int
@@ -154,11 +155,11 @@ class WikiPageAction
 
         // TODO try/catch UsageExceptions badtoken
         // captchaId=12345&captchaWord=MediaWikiIsCool
-        $revisionSaver = $this->wiki->newRevisionSaver();
+        $revisionSaver = ExtendedMediawikiFactory::newRevisionSaverExtended();
         $result = $revisionSaver->save($revision, $editInfo);
         if (false === $result) {
             echo "Error editPage\n";
-            var_dump($revisionSaver->getErrors());
+            print_r($revisionSaver->getErrors());
         }
 
         return $result;
@@ -340,7 +341,7 @@ class WikiPageAction
         $parser = new TagParser(); // todo ParserFactory
         $refs = $parser->importHtml($text)->getRefValues(); // []
 
-        return (array)$refs;
+        return $refs;
     }
 
     /**
