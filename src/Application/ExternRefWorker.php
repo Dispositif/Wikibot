@@ -20,7 +20,7 @@ use Throwable;
 class ExternRefWorker extends RefBotWorker
 {
     public const TASK_BOT_FLAG                       = true;
-    public const SLEEP_AFTER_EDITION                 = 5; // sec
+    public const SLEEP_AFTER_EDITION                 = 15; // sec
     public const MINUTES_DELAY_AFTER_LAST_HUMAN_EDIT = 10; // minutes
     public const CHECK_EDIT_CONFLICT                 = true;
     public const ARTICLE_ANALYZED_FILENAME           = __DIR__.'/resources/article_externRef_edited.txt';

@@ -389,7 +389,7 @@ class ExternRefTransformer implements TransformerInterface
     {
         // "410 gone" => {lien brisé}
         if (preg_match('#410 Gone#i', $e->getMessage())) {
-            $this->log->notice('410 page disparue : ' . $url);
+            $this->log->notice('410 Gone');
 
             return $this->formatLienBrise($url);
         } // 403
@@ -398,13 +398,17 @@ class ExternRefTransformer implements TransformerInterface
 
             return $url;
         } elseif (preg_match('#404 Not Found#i', $e->getMessage())) {
-            $this->log->notice('404 Not Found : ' . $url);
+            $this->log->notice('404 Not Found');
 
             if (self::REPLACE_404) {
                 return $this->formatLienBrise($url);
             }
             return $url;
-        } else {
+        }elseif (preg_match('#401 Unauthorized#i', $e->getMessage())) {
+            $this->log->notice('401 Unauthorized : skip ' . $url);
+
+            return $url;
+        }else {
             //  autre : ne pas générer de {lien brisé}, car peut-être 404 temporaire
             $this->log->warning('erreur sur extractWebData ' . $e->getMessage());
 
