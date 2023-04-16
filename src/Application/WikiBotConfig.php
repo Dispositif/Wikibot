@@ -205,14 +205,9 @@ class WikiBotConfig
     {
         $now = new DateTimeImmutable();
         $stopInterval = new DateInterval(self::TALK_STOP_CHECK_INTERVAL);
-        if (
-            $this->lastCheckStopDate instanceof DateTimeImmutable
-            && $now < DateTime::createFromImmutable($this->lastCheckStopDate)->add($stopInterval)
-        ) {
-            return true;
-        }
 
-        return false;
+        return $this->lastCheckStopDate instanceof DateTimeImmutable
+        && $now < DateTime::createFromImmutable($this->lastCheckStopDate)->add($stopInterval);
     }
 
     /**

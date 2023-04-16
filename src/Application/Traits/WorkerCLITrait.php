@@ -29,10 +29,7 @@ trait WorkerCLITrait
 
             return true;
         }
-        if ('y' === $ask) {
-            return true;
-        }
 
-        return false;
+        return 'y' === $ask;
     }
 }

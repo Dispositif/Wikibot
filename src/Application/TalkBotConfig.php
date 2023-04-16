@@ -44,7 +44,7 @@ class TalkBotConfig extends WikiBotConfig
 
         // No response if the last edition from bot or bot owner
         if (!$last->getUser() || 'Flow talk page manager' === $last->getUser()
-            || $last->getUser() == $this::getBotName()
+            || $last->getUser() === $this::getBotName()
             || $last->getUser() == $this::getBotOwner()
         ) {
             return false;

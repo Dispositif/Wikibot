@@ -33,7 +33,7 @@ class SeoSanitizer
             return $title;
         }
         $seoSegmentsFiltered = $this->deleteSegmentsContainingSitename($prettyDomainName, $seoSegments);
-        if (count($seoSegmentsFiltered) === 0) {
+        if ($seoSegmentsFiltered === []) {
             return trim($seoSegments[0]);
         }
 

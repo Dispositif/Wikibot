@@ -437,7 +437,7 @@ class ExternRefTransformer implements ExternRefTransformerInterface
 
     private function emptyPageData(array $pageData, string $url): bool
     {
-        if (empty($pageData)
+        if ($pageData === []
             || (empty($pageData['JSON-LD']) && empty($pageData['meta']))
         ) {
             $this->log->notice('No metadata : ' . $url);
@@ -458,8 +458,8 @@ class ExternRefTransformer implements ExternRefTransformerInterface
         if (
             !empty($robots)
             && (
-                strpos(strtolower($robots), 'noindex') !== false
-                || strpos(strtolower($robots), 'none') !== false
+                stripos($robots, 'noindex') !== false
+                || stripos($robots, 'none') !== false
             )
         ) {
             $this->log->notice('robots NOINDEX : ' . $url);
