@@ -27,6 +27,13 @@
         <whitelist>
             <directory suffix=".php">src</directory>
             <exclude>
+                <directory>src/Application/Bazar</directory>
+                <directory>src/Application/Examples</directory>
+                <file>src/Application/QueueWorker.php</file>
+                <file>src/Application/myBootstrap.php</file>
+                <file>src/Application/ScanWiki2DB.php</file>
+                <file>src/Application/WstatWorker.php</file>
+                <file>src/Infrastructure/WstatImport.php</file>
             </exclude>
         </whitelist>
     </filter>
