@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace App\Application\Http;
 
-use App\Domain\ExternLink\ExternHttpClientInterface;
+use App\Domain\Interfaces\ExternHttpClientInterface;
 use DomainException;
 use GuzzleHttp\Client;
 use Normalizer;
@@ -48,8 +48,6 @@ class ExternHttpClient implements ExternHttpClientInterface
     /**
      * import source from URL with Guzzle.
      * todo abstract + refac async request
-     *
-     * @return string|null
      */
     public function getHTML(string $url, ?bool $normalized = false): ?string
     {

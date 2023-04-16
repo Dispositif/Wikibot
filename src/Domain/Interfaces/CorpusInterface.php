@@ -7,9 +7,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\ExternLink;
+namespace App\Domain\Interfaces;
 
-interface ExternHttpClientInterface
+interface CorpusInterface
 {
-    public function getHTML(string $url, ?bool $normalized=false): ?string;
+    public function inCorpus(string $element, string $corpusName): bool;
+
+    public function addNewElementToCorpus(string $corpusName, string $element): bool;
 }

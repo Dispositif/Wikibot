@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace App\Infrastructure;
 
 use App\Application\Http\ExternHttpClient;
-use App\Domain\ExternLink\InternetDomainParserInterface;
+use App\Domain\Interfaces\InternetDomainParserInterface;
 use Exception;
 use Pdp\Domain;
 use Pdp\ResolvedDomainName;

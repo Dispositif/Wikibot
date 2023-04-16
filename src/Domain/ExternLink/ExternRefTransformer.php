@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Domain\ExternLink;
 
+use App\Domain\Interfaces\ExternHttpClientInterface;
 use App\Domain\Models\Summary;
 use App\Domain\Models\Wiki\AbstractWikiTemplate;
 use App\Domain\Models\Wiki\ArticleTemplate;
@@ -186,9 +187,6 @@ class ExternRefTransformer implements ExternRefTransformerInterface
         return true;
     }
 
-    /**
-     * @return void
-     */
     protected function logDebugConfigWebDomain(string $domain): void
     {
         if (!isset($this->config[$domain])) {
@@ -257,10 +255,6 @@ class ExternRefTransformer implements ExternRefTransformerInterface
     /**
      * todo Stay ?
      * todo refac lisible
-     *
-     * @param array $mapData
-     *
-     * @return AbstractWikiTemplate
      * @throws Exception
      */
     protected function chooseTemplateByData(string $domain, array $mapData): AbstractWikiTemplate

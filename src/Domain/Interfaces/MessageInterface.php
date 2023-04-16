@@ -7,11 +7,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\ExternLink;
+namespace App\Domain\Interfaces;
 
-interface TagParserInterface
+// @unused
+interface MessageInterface
 {
-    public function importHtml(string $data): TagParserInterface;
-
-    public function xpathResults(string $path): array;
+    public function send(string $queue, $message): void;
 }

@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Domain\ExternLink;
 
 use App\Application\Http\ExternHttpClient;
+use App\Domain\Interfaces\ExternHttpClientInterface;
 use App\Infrastructure\InternetDomainParser;
 use App\Infrastructure\TagParser;
 use DomainException;

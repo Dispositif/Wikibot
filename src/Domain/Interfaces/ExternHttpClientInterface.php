@@ -7,9 +7,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\ExternLink;
+namespace App\Domain\Interfaces;
 
-interface InternetDomainParserInterface
+interface ExternHttpClientInterface
 {
-    public function getRegistrableDomainFromURL(string $httpURL): string;
+    public function getHTML(string $url, ?bool $normalized=false): ?string;
 }

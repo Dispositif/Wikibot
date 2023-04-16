@@ -11,6 +11,8 @@ declare(strict_types=1);
 namespace App\Domain\ExternLink;
 
 use App\Application\Http\ExternHttpClient;
+use App\Domain\Interfaces\InternetDomainParserInterface;
+use App\Domain\Interfaces\TagParserInterface;
 use App\Domain\Utils\TextUtil;
 use App\Infrastructure\InternetDomainParser;
 use Exception;
