@@ -9,8 +9,10 @@ declare(strict_types=1);
 
 namespace App\Application\Examples;
 
-use App\Application\ExternRefTransformer;
+use App\Application\Http\ExternHttpClient;
+use App\Domain\ExternLink\ExternRefTransformer;
 use App\Domain\Models\Summary;
+use App\Domain\Publisher\ExternMapper;
 use App\Infrastructure\Logger;
 use Codedungeon\PHPCliColors\Color;
 use Exception;
@@ -28,13 +30,14 @@ $log = new Logger();
 $log->debug = true;
 $log->verbose = true;
 $summary = new Summary('test');
-$trans = new ExternRefTransformer($log);
-$trans->skipUnauthorised = true;
+$trans = new ExternRefTransformer(new ExternMapper($log), new ExternHttpClient($log), $log);
+$trans->skipSiteBlacklisted = true;
+$trans->skipRobotNoIndex = false;
 try {
     // Attention : pas de post-processing (sanitize title, etc.)
     $result = $trans->process($url, $summary);
 } catch (Exception $e) {
-    echo "EXCEPTION ". $e->getMessage().$e->getFile().$e->getLine();
+    $result = "EXCEPTION ". $e->getMessage().$e->getFile().$e->getLine();
 }
 
 echo $result."\n";

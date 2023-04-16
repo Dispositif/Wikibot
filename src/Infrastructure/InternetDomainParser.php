@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Infrastructure;
 
 use App\Application\Http\ExternHttpClient;
+use App\Domain\ExternLink\InternetDomainParserInterface;
 use Exception;
 use Pdp\Domain;
 use Pdp\ResolvedDomainName;
@@ -18,45 +19,52 @@ use Pdp\Rules;
 /**
  * Doc https://packagist.org/packages/jeremykendall/php-domain-parser
  */
-class InternetDomainParser
+class InternetDomainParser implements InternetDomainParserInterface
 {
-    // todo inject/config ?
     private const PATH_CACHE_PUBLIC_SUFFIX_LIST = __DIR__ . '/resources/public_suffix_list.dat';
+
+    /** @var Rules */
+    private $rules;
+
+    public function __construct()
+    {
+        if (!file_exists(self::PATH_CACHE_PUBLIC_SUFFIX_LIST)) {
+            throw new Exception('Public suffix list not found');
+        }
+        $this->rules = Rules::fromPath(self::PATH_CACHE_PUBLIC_SUFFIX_LIST);
+    }
+
 
     /**
      * https://www.google.fr => google.fr
      * http://fu.co.uk => fu.co.uk
      * @throws Exception
      */
-    public static function getRegistrableDomainFromURL(string $httpURL): string
+    public function getRegistrableDomainFromURL(string $httpURL): string
     {
-        $result = self::initialize($httpURL);
+        $result = $this->getResolvedDomainName($httpURL);
 
         return $result->registrableDomain()->toString();
     }
 
     /**
+     * Ok static method (only native php parsing).
      * https://www.google.fr => google.fr
      * http://fu.co.uk => fu.co.uk
      */
     public static function extractSubdomainString(string $httpURL): string
     {
         if (!ExternHttpClient::isHttpURL($httpURL)) {
-            throw new \Exception('string is not an URL '.$httpURL);
+            throw new Exception('string is not an URL ' . $httpURL);
         }
 
         return parse_url($httpURL, PHP_URL_HOST);
     }
 
-    protected static function initialize(string $httpURL): ResolvedDomainName
+    protected function getResolvedDomainName(string $httpURL): ResolvedDomainName
     {
-        if (!file_exists(self::PATH_CACHE_PUBLIC_SUFFIX_LIST)) {
-            throw new Exception('Public suffix list not found');
-        }
-
-        $publicSuffixRules = Rules::fromPath(self::PATH_CACHE_PUBLIC_SUFFIX_LIST);
         $domain = Domain::fromIDNA2008(parse_url($httpURL, PHP_URL_HOST));
 
-        return $publicSuffixRules->resolve($domain);
+        return $this->rules->resolve($domain);
     }
 }

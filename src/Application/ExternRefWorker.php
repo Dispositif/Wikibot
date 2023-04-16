@@ -9,26 +9,30 @@ declare(strict_types=1);
 
 namespace App\Application;
 
+use App\Application\Http\ExternHttpClient;
+use App\Domain\ExternLink\ExternRefTransformer;
+use App\Domain\Publisher\ExternMapper;
 use Codedungeon\PHPCliColors\Color;
 use Throwable;
 
 /**
  * Class Ref2ArticleWorker
- *
  * @package App\Application\Examples
  */
 class ExternRefWorker extends RefBotWorker
 {
-    public const TASK_BOT_FLAG                       = true;
-    public const SLEEP_AFTER_EDITION                 = 15; // sec
+    public const TASK_BOT_FLAG = true;
+    public const SLEEP_AFTER_EDITION = 15; // sec
     public const MINUTES_DELAY_AFTER_LAST_HUMAN_EDIT = 10; // minutes
-    public const CHECK_EDIT_CONFLICT                 = true;
-    public const ARTICLE_ANALYZED_FILENAME           = __DIR__.'/resources/article_externRef_edited.txt';
-    public const SKIP_ADQ                            = false;
-    public const SKIP_LASTEDIT_BY_BOT                = false;
-    public const CITATION_NUMBER_ON_FIRE             = 15;
-    public const CITATION_NUMBER_NO_BOTFLAG          = 20;
-    public const DEAD_LINK_NO_BOTFLAG                = 5;
+    public const CHECK_EDIT_CONFLICT = true;
+    public const ARTICLE_ANALYZED_FILENAME = __DIR__ . '/resources/article_externRef_edited.txt';
+    public const SKIP_ADQ = false;
+    public const SKIP_LASTEDIT_BY_BOT = false;
+    public const CITATION_NUMBER_ON_FIRE = 15;
+    public const CITATION_NUMBER_NO_BOTFLAG = 20;
+    public const DEAD_LINK_NO_BOTFLAG = 5;
+    public const SKIP_SITE_BLACKLISTED = true;
+    public const SKIP_ROBOT_NOINDEX = true;
 
     protected $modeAuto = true;
     /**
@@ -38,10 +42,13 @@ class ExternRefWorker extends RefBotWorker
 
     protected function setUpInConstructor(): void
     {
-        $transformer = new ExternRefTransformer($this->log);
-        $transformer->skipUnauthorised = false;
-
-        $this->transformer = $transformer;
+        $this->transformer = new ExternRefTransformer(
+            new ExternMapper($this->log),
+            new ExternHttpClient($this->log),
+            $this->log
+        );
+        $this->transformer->skipSiteBlacklisted = self::SKIP_SITE_BLACKLISTED;
+        $this->transformer->skipRobotNoIndex = self::SKIP_ROBOT_NOINDEX;
         //todo? move in __constructor + parent::__constructor()
     }
 
@@ -65,7 +72,7 @@ class ExternRefWorker extends RefBotWorker
             $result = $this->transformer->process($refContent, $this->summary);
         } catch (Throwable $e) {
             echo "** Problème détecté 234242\n";
-            $this->log->critical($e->getMessage()." ".$e->getFile().":".$e->getLine());
+            $this->log->critical($e->getMessage() . " " . $e->getFile() . ":" . $e->getLine());
 
             // TODO : parse $e->message pour traitement, taskName, botflag...
             return $refContent;
@@ -75,23 +82,20 @@ class ExternRefWorker extends RefBotWorker
             return $refContent;
         }
 
-        // Gestion semi-auto
-        if (!$this->transformer->skipUnauthorised) {
-            echo Color::BG_LIGHT_RED."--".Color::NORMAL." ".$refContent."\n";
-            echo Color::BG_LIGHT_GREEN."++".Color::NORMAL." $result \n\n";
+        // Gestion semi-auto : todo CONDITION POURRI FAUSSE $this->transformer->skipUnauthorised
 
-            if (!$this->autoOrYesConfirmation('Conserver cette modif ?')) {
-                return $refContent;
-            }
+        echo Color::BG_LIGHT_RED . "--" . Color::NORMAL . " " . $refContent . "\n";
+        echo Color::BG_LIGHT_GREEN . "++" . Color::NORMAL . " $result \n\n";
+
+        if (!$this->autoOrYesConfirmation('Conserver cette modif ?')) {
+            return $refContent;
         }
+
         if (preg_match('#{{lien brisé#i', $result)) {
             $this->summary->memo['count lien brisé'] = 1 + ($this->summary->memo['count lien brisé'] ?? 0);
             if ($this->summary->memo['count lien brisé'] >= self::DEAD_LINK_NO_BOTFLAG) {
                 $this->summary->setBotFlag(false);
             }
-        }
-        if ($this->summary->citationNumber >= self::CITATION_NUMBER_ON_FIRE) {
-            //$this->summary->setBotFlag(false);
         }
         if ($this->summary->citationNumber >= self::CITATION_NUMBER_NO_BOTFLAG) {
             $this->summary->setBotFlag(false);
@@ -105,7 +109,6 @@ class ExternRefWorker extends RefBotWorker
     /**
      * todo move to a Summary child ?
      * Rewriting default Summary::serialize()
-     *
      * @return string
      */
     protected function generateSummaryText(): string
@@ -113,10 +116,10 @@ class ExternRefWorker extends RefBotWorker
         $prefixSummary = ($this->summary->isBotFlag()) ? 'bot ' : '';
         $suffix = '';
         if (isset($this->summary->memo['count article'])) {
-            $suffix .= ' '.$this->summary->memo['count article'].'x {article}';
+            $suffix .= ' ' . $this->summary->memo['count article'] . 'x {article}';
         }
         if (isset($this->summary->memo['count lien web'])) {
-            $suffix .= ' '.$this->summary->memo['count lien web'].'x {lien web}';
+            $suffix .= ' ' . $this->summary->memo['count lien web'] . 'x {lien web}';
         }
         if (isset($this->summary->memo['presse'])) {
             $suffix .= ' 🗞️'; // 🗞️ 📰
@@ -126,7 +129,7 @@ class ExternRefWorker extends RefBotWorker
         }
         if (isset($this->summary->memo['count lien brisé'])) {
             $suffix .= ', ⚠️️️lien brisé'; //⚠️💩
-            $suffix .= ($this->summary->memo['count lien brisé'] > 1) ? ' x'.$this->summary->memo['count lien brisé'] :
+            $suffix .= ($this->summary->memo['count lien brisé'] > 1) ? ' x' . $this->summary->memo['count lien brisé'] :
                 '';
         }
         if (isset($this->summary->memo['accès url non libre'])) {
@@ -137,7 +140,7 @@ class ExternRefWorker extends RefBotWorker
             $suffix .= ' 🔥';
         }
 
-        return $prefixSummary.$this->summary->taskName.$suffix;
+        return $prefixSummary . $this->summary->taskName . $suffix;
     }
 
 }

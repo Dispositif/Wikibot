@@ -15,6 +15,16 @@ use PHPUnit\Framework\TestCase;
 class InternetDomainParserTest extends TestCase
 {
     /**
+     * @var InternetDomainParser
+     */
+    private $domainParser;
+
+    public function setUp(): void
+    {
+        $this->domainParser = new InternetDomainParser();
+    }
+
+    /**
      * @group skipci
      * @dataProvider provideUrls
      */
@@ -22,7 +32,7 @@ class InternetDomainParserTest extends TestCase
     {
         $this::assertSame(
             $expected,
-            InternetDomainParser::getRegistrableDomainFromURL($httpURL)
+            $this->domainParser->getRegistrableDomainFromURL($httpURL)
         );
     }
 

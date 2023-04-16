@@ -119,7 +119,6 @@ class ExternMapper implements MapperInterface
      */
     protected function postProcess(array $data): array
     {
-        $this->log->debug('call ExternMapper::postProcess()');
         $data = $this->deleteEmptyValueArray($data);
         if (isset($data['langue']) && 'fr' === $data['langue']) {
             unset($data['langue']);

@@ -7,11 +7,9 @@
 
 declare(strict_types=1);
 
-namespace App\Application;
+namespace App\Domain\ExternLink;
 
 use App\Application\Http\ExternHttpClient;
-use App\Domain\ExternPage;
-use App\Domain\ExternPageFactory;
 use App\Domain\Models\Summary;
 use App\Domain\Models\Wiki\AbstractWikiTemplate;
 use App\Domain\Models\Wiki\ArticleTemplate;
@@ -22,24 +20,30 @@ use App\Domain\Publisher\ExternMapper;
 use App\Domain\Utils\WikiTextUtil;
 use App\Domain\WikiTemplateFactory;
 use App\Infrastructure\InternetDomainParser;
-use App\Infrastructure\Logger;
 use Exception;
 use Normalizer;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\Yaml\Yaml;
 use Throwable;
 
 /**
- * todo move Domain ?
+ * TODO refac too big (responsibility)
  */
-class ExternRefTransformer implements TransformerInterface
+class ExternRefTransformer implements ExternRefTransformerInterface
 {
     public const HTTP_REQUEST_LOOP_DELAY = 10;
-    public const LOG_REQUEST_ERROR = __DIR__ . '/resources/external_request_error.log';
-    public const SKIP_DOMAIN_FILENAME = __DIR__ . '/resources/config_skip_domain.txt';
+    public const LOG_REQUEST_ERROR = __DIR__ . '/../../Application/resources/external_request_error.log'; // todo move
+    public const SKIP_DOMAIN_FILENAME = __DIR__ . '/../resources/config_skip_domain.txt';
     public const REPLACE_404 = true;
+    public const CONFIG_PRESSE = __DIR__ . '/../resources/config_presse.yaml';
+    public const CONFIG_NEWSPAPER_JSON = __DIR__ . '/../resources/data_newspapers.json';
+    public const CONFIG_SCIENTIFIC_JSON = __DIR__ . '/../resources/data_scientific_domain.json';
+    public const CONFIG_SCIENTIFIC_WIKI_JSON = __DIR__ . '/../resources/data_scientific_wiki.json';
+    public const ROBOT_NOINDEX_WHITELIST = ['legifrance.gouv.fr'];
 
-    public $skipUnauthorised = true;
+    public $skipSiteBlacklisted = true;
+    public $skipRobotNoIndex = true;
     /**
      * @var array
      */
@@ -77,17 +81,21 @@ class ExternRefTransformer implements TransformerInterface
      * @var Summary|null
      */
     private $summary;
+    /**
+     * @var ExternHttpClientInterface
+     */
+    private $httpClient;
 
-    public function __construct(LoggerInterface $log)
+    public function __construct(ExternMapper $externMapper, ExternHttpClientInterface $httpClient, ?LoggerInterface $logger)
     {
-        $this->log = $log;
-
+        $this->log = $logger ?? new NullLogger();
         $this->importConfigAndData();
-
-        $this->mapper = new ExternMapper(new Logger());
+        $this->mapper = $externMapper;
+        $this->httpClient = $httpClient;
     }
 
     /**
+     * TODO Refac : chain of responsibility or composite pattern
      * @throws Exception
      */
     public function process(string $url, Summary $summary): string
@@ -97,27 +105,33 @@ class ExternRefTransformer implements TransformerInterface
         }
         try {
             $url = WikiTextUtil::normalizeUrlForTemplate($url);
-            $pageData = $this->extractPageDataFromUrl($url);
+            $pageData = $this->extractPageDataFromUrl($url); // ['JSON-LD'] & ['meta'] !!
         } catch (Exception $exception) {
             return $this->manageHttpErrors($exception, $url);
         }
-        if ($this->emptyPageData($pageData, $url) || $this->robotNoIndex($pageData, $url)) {
+        if ($this->emptyPageData($pageData, $url)) {
+            return $url;
+        }
+        if ($this->isRobotNoIndex($pageData, $url) && $this->skipRobotNoIndex) {
+            // TODO ? return {lien web| titre=Titre inconnu...
+            // http://www.nydailynews.com/entertainment/jessica-barth-details-alleged-harvey-weinstein-encounter-article-1.3557986
             return $url;
         }
 
-        $mapData = $this->mapper->process($pageData);
-        if ($this->emptyMapData($mapData, $url)) {
+        $mappedData = $this->mapper->process($pageData); // only json-ld or only meta, after postprocess
+        if ($this->emptyMapData($mappedData, $url)) {
+            // TODO ? return {lien web| titre=Titre inconnu... site=prettydomain ...
             return $url;
         }
-        $mapData = $this->unsetAccesLibre($mapData);
+        $mappedData = $this->unsetAccesLibre($mappedData);
 
-        $this->addSummaryLog($mapData, $summary);
-        $this->tagAndLog($mapData);
+        $this->addSummaryLog($mappedData, $summary);
+        $this->tagAndLog($mappedData);
 
-        $template = $this->chooseTemplateByData($mapData);
+        $template = $this->chooseTemplateByData($mappedData);
 
-        $mapData = $this->replaceSomeData($mapData, $template);
-        $serialized = $this->optimizeAndSerialize($template, $mapData);
+        $mappedData = $this->replaceSomeData($mappedData, $template);
+        $serialized = $this->optimizeAndSerialize($template, $mappedData);
         $normalized = Normalizer::normalize($serialized); // sometimes :bool
         if (!empty($normalized) && is_string($normalized)) {
             return $normalized;
@@ -144,7 +158,7 @@ class ExternRefTransformer implements TransformerInterface
             throw new Exception('string is not an URL ' . $url);
         }
         try {
-            $this->domain = InternetDomainParser::getRegistrableDomainFromURL($url);
+            $this->domain = (new InternetDomainParser())->getRegistrableDomainFromURL($url);
         } catch (Exception $e) {
             $this->log->warning('Skip : not a valid URL : ' . $url);
             return false;
@@ -333,36 +347,39 @@ class ExternRefTransformer implements TransformerInterface
         );
     }
 
-    // todo inject
+    // todo extract Infra getcont form file + inject
     protected function importConfigAndData(): void
     {
         // todo REFAC DataObject[]
-        $this->config = Yaml::parseFile(__DIR__ . '/resources/config_presse.yaml');
+        $this->config = Yaml::parseFile(self::CONFIG_PRESSE);
         $skipFromFile = file(
             self::SKIP_DOMAIN_FILENAME,
             FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES
         );
         $this->skip_domain = $skipFromFile ?: [];
 
-        $this->data['newspaper'] = json_decode(file_get_contents(__DIR__ . '/resources/data_newspapers.json'), true, 512, JSON_THROW_ON_ERROR);
+        $this->data['newspaper'] = json_decode(file_get_contents(self::CONFIG_NEWSPAPER_JSON), true, 512, JSON_THROW_ON_ERROR);
         $this->data['scientific domain'] = json_decode(
-            file_get_contents(__DIR__ . '/resources/data_scientific_domain.json'),
+            file_get_contents(self::CONFIG_SCIENTIFIC_JSON),
             true,
             512,
             JSON_THROW_ON_ERROR
         );
         $this->data['scientific wiki'] = json_decode(
-            file_get_contents(__DIR__ . '/resources/data_scientific_wiki.json'),
+            file_get_contents(self::CONFIG_SCIENTIFIC_WIKI_JSON),
             true,
             512,
             JSON_THROW_ON_ERROR
         );
     }
 
+    /**
+     * @throws Exception
+     */
     protected function extractPageDataFromUrl(string $url): array
     {
         sleep(self::HTTP_REQUEST_LOOP_DELAY);
-        $this->externalPage = ExternPageFactory::fromURL($url, $this->log);
+        $this->externalPage = ExternPageFactory::fromURL($url, $this->httpClient, $this->log);
         $pageData = $this->externalPage->getData();
         $this->log->debug('metaData', $pageData);
 
@@ -404,11 +421,11 @@ class ExternRefTransformer implements TransformerInterface
                 return $this->formatLienBrise($url);
             }
             return $url;
-        }elseif (preg_match('#401 Unauthorized#i', $e->getMessage())) {
+        } elseif (preg_match('#401 Unauthorized#i', $e->getMessage())) {
             $this->log->notice('401 Unauthorized : skip ' . $url);
 
             return $url;
-        }else {
+        } else {
             //  autre : ne pas générer de {lien brisé}, car peut-être 404 temporaire
             $this->log->warning('erreur sur extractWebData ' . $e->getMessage());
 
@@ -423,7 +440,7 @@ class ExternRefTransformer implements TransformerInterface
         if (empty($pageData)
             || (empty($pageData['JSON-LD']) && empty($pageData['meta']))
         ) {
-            $this->log->notice('SKIP no metadata : ' . $url);
+            $this->log->notice('No metadata : ' . $url);
 
             return true;
         }
@@ -431,13 +448,25 @@ class ExternRefTransformer implements TransformerInterface
         return false;
     }
 
-    private function robotNoIndex(array $pageData, string $url): bool
+    /**
+     * Detect if robots noindex
+     * https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag?hl=fr
+     */
+    private function isRobotNoIndex(array $pageData, string $url): bool
     {
-        if (isset($pageData['robots']) && strpos($pageData['robots'], 'noindex') !== false) {
-            $this->log->notice('SKIP robots: noindex : ' . $url);
+        $robots = $pageData['meta']['robots'] ?? null;
+        if (
+            !empty($robots)
+            && (
+                strpos(strtolower($robots), 'noindex') !== false
+                || strpos(strtolower($robots), 'none') !== false
+            )
+        ) {
+            $this->log->notice('robots NOINDEX : ' . $url);
 
-            return true;
+            return !$this->isNoIndexDomainWhitelisted($pageData['meta']['prettyDomainName']);
         }
+
         return false;
     }
 
@@ -536,10 +565,21 @@ class ExternRefTransformer implements TransformerInterface
 
     protected function isSiteBlackListed(): bool
     {
-        if ($this->skipUnauthorised && in_array($this->domain, $this->skip_domain)) {
+        if ($this->skipSiteBlacklisted && in_array($this->domain, $this->skip_domain)) {
             $this->log->notice("Skip web site " . $this->domain);
             return true;
         }
+        return false;
+    }
+
+    protected function isNoIndexDomainWhitelisted(?string $prettyDomain): bool
+    {
+        if (in_array($prettyDomain ?? '', self::ROBOT_NOINDEX_WHITELIST)) {
+            $this->log->notice('ROBOT_NOINDEX_WHITELIST ' . $prettyDomain);
+
+            return true;
+        }
+
         return false;
     }
 }

@@ -9,29 +9,31 @@ declare(strict_types=1);
 
 namespace App\Application\Http;
 
+use App\Domain\ExternLink\ExternHttpClientInterface;
 use DomainException;
 use GuzzleHttp\Client;
 use Normalizer;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Throwable;
 
 /**
  * Http client (Guzzle) configured for web crawling.
  */
-class ExternHttpClient implements HttpClientInterface
+class ExternHttpClient implements ExternHttpClientInterface
 {
     /**
      * @var Client
      */
     private $client;
     /**
-     * @var LoggerInterface|null
+     * @var LoggerInterface
      */
     private $log;
 
     public function __construct(?LoggerInterface $log = null)
     {
-        $this->log = $log;
+        $this->log = $log ?? new NullLogger();
         $this->client = new Client(
             [
                 'timeout' => 30,
@@ -46,9 +48,6 @@ class ExternHttpClient implements HttpClientInterface
     /**
      * import source from URL with Guzzle.
      * todo abstract + refac async request
-     *
-     * @param string $url
-     * @param bool|null $normalized
      *
      * @return string|null
      */
@@ -67,14 +66,12 @@ class ExternHttpClient implements HttpClientInterface
 
         if (200 !== $response->getStatusCode()) {
             echo 'HTTP error ' . $response->getStatusCode();
-            if ($this->log !== null) {
-                $this->log->error('HTTP error ' . $response->getStatusCode() . ' ' . $response->getReasonPhrase());
-            }
+            $this->log->error('HTTP error ' . $response->getStatusCode() . ' ' . $response->getReasonPhrase());
 
             return null;
         }
 
-        $html = (string)$response->getBody()->getContents() ?? '';
+        $html = $response->getBody()->getContents() ?? '';
 
         return ($normalized) ? $this->normalizeHtml($html, $url) : $html;
     }
@@ -90,11 +87,6 @@ class ExternHttpClient implements HttpClientInterface
 
     /**
      * Normalize and converting to UTF-8 encoding
-     *
-     * @param string $html
-     * @param string|null $url
-     *
-     * @return string|null
      */
     private function normalizeHtml(string $html, ?string $url = ''): ?string
     {
@@ -129,10 +121,6 @@ class ExternHttpClient implements HttpClientInterface
 
     /**
      * Extract charset from HTML text
-     *
-     * @param string $html
-     *
-     * @return string|null
      */
     private function extractCharset(string $html): ?string
     {

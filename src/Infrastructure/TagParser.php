@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
  * For the full copyright and MIT license information, view the license file.
  */
 
@@ -9,27 +9,20 @@ declare(strict_types=1);
 
 namespace App\Infrastructure;
 
+use App\Domain\ExternLink\TagParserInterface;
 use DOMDocument;
 use Exception;
 use SimpleXMLElement;
 
-class TagParser
+class TagParser implements TagParserInterface
 {
-    /*
-     * @var SimpleXMLElement
-     */
+    /** @var SimpleXMLElement|null */
     protected $xml;
 
-    public function __construct()
-    {
-    }
-
     /**
-     * @param string $data
-     *
-     * @return $this
+     * import HTML string to SimpleXMLElement property.
      */
-    public function importHtml(string $data)
+    public function importHtml(string $data): TagParserInterface
     {
         libxml_use_internal_errors(true);
         $doc = new DOMDocument();
@@ -44,8 +37,6 @@ class TagParser
 
     /**
      * Get the <ref> values.
-     *
-     * @return array
      *
      * @throws Exception
      */
@@ -66,8 +57,6 @@ class TagParser
     }
 
     /**
-     * @param string $path
-     *
      * @return array string[]
      *
      * @throws Exception

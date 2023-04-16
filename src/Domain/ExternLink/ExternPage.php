@@ -8,19 +8,18 @@
 declare(strict_types=1);
 
 
-namespace App\Domain;
+namespace App\Domain\ExternLink;
 
 use App\Application\Http\ExternHttpClient;
 use App\Domain\Utils\TextUtil;
 use App\Infrastructure\InternetDomainParser;
-use App\Infrastructure\TagParser;
 use Exception;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Représente une page web d'un Lien Externe (hors wiki)
  * Class ExternPage
- *
  * @package App\Domain
  */
 class ExternPage
@@ -48,24 +47,35 @@ class ExternPage
      */
     private $html;
 
-    /**
-     * @var LoggerInterface|null
-     */
+    /** @var TagParserInterface|null */
+    private $tagParser;
+
+    /** @var InternetDomainParserInterface|null */
+    private $domainParser;
+
+    /** @var LoggerInterface */
     private $log;
 
     /**
      * ExternPage constructor.
-     *
      * @throws Exception
      */
-    public function __construct(string $url, string $html, ?LoggerInterface $log = null)
+    public function __construct(
+        string                         $url,
+        string                         $html,
+        ?TagParserInterface            $tagParser = null,
+        ?InternetDomainParserInterface $domainParser = null,
+        ?LoggerInterface               $log = null
+    )
     {
         if (!ExternHttpClient::isHttpURL($url)) {
-            throw new Exception('string is not an URL '.$url);
+            throw new Exception('string is not an URL ' . $url);
         }
         $this->url = $url;
         $this->html = $html;
-        $this->log = $log;
+        $this->tagParser = $tagParser;
+        $this->domainParser = $domainParser;
+        $this->log = $log ?? new NullLogger();
     }
 
     public function getUrl(): string
@@ -83,19 +93,22 @@ class ExternPage
         $meta['html-h1'] = $this->parseHtmlFirstH1($this->html);
         $meta['html-url'] = $this->url;
         $meta['prettyDomainName'] = $this->getPrettyDomainName();
+        $meta['robots'] = $this->getMetaRobotsContent($this->html);
 
         return ['JSON-LD' => $ld, 'meta' => $meta];
     }
 
     /**
      * extract LD-JSON metadata from <script type="application/ld+json">.
-     *
      * @throws Exception
      */
     private function parseLdJson(string $html): array
     {
-        $parser = new TagParser();
-        $results = $parser->importHtml($html)->xpathResults(
+        if (!$this->tagParser instanceof TagParserInterface) {
+            return [];
+        }
+
+        $results = $this->tagParser->importHtml($html)->xpathResults(
             '//script[@type="application/ld+json"]'
         );
 
@@ -157,7 +170,7 @@ class ExternPage
     public function getPrettyDomainName(): string
     {
         // Parse custom exceptions (free.fr, gouv.fr, etc)
-        $rawDomain = InternetDomainParser::extractSubdomainString($this->url);
+        $rawDomain = InternetDomainParser::extractSubdomainString($this->url); //only php parsing
         foreach (self::PRETTY_DOMAIN_EXCLUSION as $end) {
             if (TextUtil::str_ends_with($rawDomain, $end)) {
                 return $this->sanitizeSubDomain($rawDomain);
@@ -165,26 +178,31 @@ class ExternPage
         }
 
         // Parse using InternetDomainParser library
-        return $this->sanitizeSubDomain($this->getRegistrableSubDomain());
+        return $this->sanitizeSubDomain($this->getRegistrableSubDomain() ?? $rawDomain); // use lib and cached data
     }
 
     /**
      * "http://www.bla.co.uk/fubar" => "bla.co.uk"
      * @throws Exception
      */
-    public function getRegistrableSubDomain(): string
+    public function getRegistrableSubDomain(): ?string
     {
         try {
             if (!ExternHttpClient::isHttpURL($this->url)) {
-                throw new Exception('string is not an URL '.$this->url);
+                throw new Exception('string is not an URL ' . $this->url);
+            }
+            if (!$this->domainParser instanceof InternetDomainParserInterface) {
+                $this->log->notice('InternetDomainParser is not set');
+
+                return null;
             }
 
-            return InternetDomainParser::getRegistrableDomainFromURL($this->url);
+            return $this->domainParser->getRegistrableDomainFromURL($this->url);
         } catch (Exception $e) {
             if ($this->log !== null) {
-                $this->log->warning('InternetDomainParser::getRegistrableDomainFromURL NULL '.$this->url);
+                $this->log->warning('InternetDomainParser->getRegistrableDomainFromURL NULL ' . $this->url);
             }
-            throw new Exception('InternetDomainParser::getRegistrableDomainFromURL NULL', $e->getCode(), $e);
+            throw new Exception('InternetDomainParser->getRegistrableDomainFromURL NULL', $e->getCode(), $e);
         }
     }
 
@@ -234,5 +252,18 @@ class ExternPage
     protected function sanitizeSubDomain(string $subDomain): string
     {
         return str_replace('www.', '', $subDomain);
+    }
+
+    /**
+     * Extract robots meta tag content.
+     * <meta name="robots" content="noindex,noarchive">
+     */
+    private function getMetaRobotsContent(string $html): string
+    {
+        if (preg_match('#<meta[^>]+name="robots"[^>]+content="([^"]+)"#i', $html, $matches)) {
+            return $matches[1];
+        }
+
+        return '';
     }
 }
