@@ -12,7 +12,6 @@ namespace App\Application;
 use App\Application\Http\ExternHttpClient;
 use App\Domain\ExternLink\ExternRefTransformer;
 use App\Domain\Publisher\ExternMapper;
-use Codedungeon\PHPCliColors\Color;
 use Throwable;
 
 /**
@@ -22,6 +21,7 @@ use Throwable;
 class ExternRefWorker extends RefBotWorker
 {
     public const TASK_BOT_FLAG = true;
+    public const MAX_REFS_PROCESSED_IN_ARTICLE = 30;
     public const SLEEP_AFTER_EDITION = 15; // sec
     public const MINUTES_DELAY_AFTER_LAST_HUMAN_EDIT = 10; // minutes
     public const CHECK_EDIT_CONFLICT = true;
@@ -39,20 +39,6 @@ class ExternRefWorker extends RefBotWorker
      * @var ExternRefTransformer
      */
     protected $transformer;
-
-    protected function setUpInConstructor(): void
-    {
-        $this->transformer = new ExternRefTransformer(
-            new ExternMapper($this->log),
-            new ExternHttpClient($this->log),
-            $this->log
-        );
-        $this->transformer->skipSiteBlacklisted = self::SKIP_SITE_BLACKLISTED;
-        $this->transformer->skipRobotNoIndex = self::SKIP_ROBOT_NOINDEX;
-        //todo? move in __constructor + parent::__constructor()
-    }
-
-    // todo private (refac constructor->run())
 
     /**
      * Traite contenu d'une <ref> ou bien lien externe (précédé d'une puce).
@@ -73,8 +59,8 @@ class ExternRefWorker extends RefBotWorker
         } catch (Throwable $e) {
             echo "** Problème détecté 234242\n";
             $this->log->critical($e->getMessage() . " " . $e->getFile() . ":" . $e->getLine());
+            // TODO : parse $e->message -> variable process, taskName, botflag...
 
-            // TODO : parse $e->message pour traitement, taskName, botflag...
             return $refContent;
         }
 
@@ -84,9 +70,7 @@ class ExternRefWorker extends RefBotWorker
 
         // Gestion semi-auto : todo CONDITION POURRI FAUSSE $this->transformer->skipUnauthorised
 
-        echo Color::BG_LIGHT_RED . "--" . Color::NORMAL . " " . $refContent . "\n";
-        echo Color::BG_LIGHT_GREEN . "++" . Color::NORMAL . " $result \n\n";
-
+        $this->printDiff($refContent, $result, 'echo');
         if (!$this->autoOrYesConfirmation('Conserver cette modif ?')) {
             return $refContent;
         }
@@ -104,6 +88,18 @@ class ExternRefWorker extends RefBotWorker
         $this->summary->memo['count URL'] = 1 + ($this->summary->memo['count URL'] ?? 0);
 
         return $result;
+    }
+
+    protected function setUpInConstructor(): void
+    {
+        $this->transformer = new ExternRefTransformer(
+            new ExternMapper($this->log),
+            new ExternHttpClient($this->log),
+            $this->log
+        );
+        $this->transformer->skipSiteBlacklisted = self::SKIP_SITE_BLACKLISTED;
+        $this->transformer->skipRobotNoIndex = self::SKIP_ROBOT_NOINDEX;
+        //todo? move in __constructor + parent::__constructor()
     }
 
     /**
