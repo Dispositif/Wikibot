@@ -11,7 +11,7 @@ namespace App\Domain\ExternLink;
 
 trait RobotsRulesTrait
 {
-    public $noindexWhitelist = ['legifrance.gouv.fr'];
+    public $noindexWhitelist = ['test.com'];
 
     /**
      * Detect if robots noindex

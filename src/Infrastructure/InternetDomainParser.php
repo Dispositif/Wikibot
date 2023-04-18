@@ -48,6 +48,7 @@ class InternetDomainParser implements InternetDomainParserInterface
     }
 
     /**
+     * todo move ? HttpUtil
      * Ok static method (only native php parsing).
      * https://www.google.fr => google.fr
      * http://fu.co.uk => fu.co.uk

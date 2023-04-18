@@ -75,6 +75,7 @@ class ExternHttpClient implements ExternHttpClientInterface
     }
 
     /**
+     * Todo Move HttpUtils ?
      * Better than filter_var($url, FILTER_VALIDATE_URL) because it's not multibyte capable.
      * See for example .中国 domain name
      */

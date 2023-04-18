@@ -64,7 +64,7 @@ class ExternRefWorker extends RefBotWorker
             return $refContent;
         }
 
-        if ($result === $refContent) {
+        if (trim($result) === trim($refContent)) {
             return $refContent;
         }
 
