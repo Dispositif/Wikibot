@@ -92,6 +92,7 @@ class ExternRefWorker extends RefBotWorker
 
     protected function setUpInConstructor(): void
     {
+        // TODO extract ExternRefTransformerInterface
         $this->transformer = new ExternRefTransformer(
             new ExternMapper($this->log),
             new ExternHttpClient($this->log),

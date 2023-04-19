@@ -8,9 +8,10 @@ declare(strict_types=1);
 
 namespace App\Domain\ExternLink;
 
+use App\Domain\AppInterfaces\DomainTransformerInterface;
 use App\Domain\Models\Summary;
 
-interface ExternRefTransformerInterface
+interface ExternRefTransformerInterface extends DomainTransformerInterface
 {
     public function process(string $url, Summary $summary);
 }

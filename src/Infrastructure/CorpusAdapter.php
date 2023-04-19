@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure;
 
-use App\Domain\Interfaces\CorpusInterface;
+use App\Domain\ServiceInterfaces\CorpusInterface;
 use DomainException;
 use Exception;
 

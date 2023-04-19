@@ -48,7 +48,7 @@ class CodexNotificationWorker extends NotificationWorker
             //$logger->debug = true;
             $botConfig = new WikiBotConfig($logger);
             $botConfig->taskName = self::PROCESS_TASKNAME;
-            new ExternRefWorker($botConfig, $wiki, new PageList([$article]));
+            //new ExternRefWorker($botConfig, $wiki, new PageList([$article]));
 
             new GoogleBooksWorker($botConfig, $wiki, new PageList([$article]));
             sleep(10);
