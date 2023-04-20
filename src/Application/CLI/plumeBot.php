@@ -12,6 +12,8 @@ namespace App\Application\CLI;
 use App\Application\WikiBotConfig;
 use App\Application\WikiPageAction;
 use App\Domain\GoogleTransformer;
+use App\Infrastructure\GoogleApiQuota;
+use App\Infrastructure\GoogleBooksAdapter;
 use App\Infrastructure\ServiceFactory;
 use Codedungeon\PHPCliColors\Color;
 use Mediawiki\DataModel\EditInfo;
@@ -52,7 +54,7 @@ $auto = false;
 echo count($titles)." articles !\n";
 
 // Google Books
-$trans = new GoogleTransformer();
+$trans = new GoogleTransformer(new GoogleApiQuota(), new GoogleBooksAdapter());
 
 foreach ($titles as $title) {
     sleep(3);

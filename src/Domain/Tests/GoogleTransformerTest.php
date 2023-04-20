@@ -1,8 +1,8 @@
 <?php
-/**
- * This file is part of dispositif/wikibot application
- * 2019 : Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+/*
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -10,6 +10,8 @@ declare(strict_types=1);
 namespace App\Domain\Tests;
 
 use App\Domain\GoogleTransformer;
+use App\Infrastructure\GoogleApiQuota;
+use App\Infrastructure\GoogleBooksAdapter;
 use PHPUnit\Framework\TestCase;
 
 class GoogleTransformerTest extends TestCase
@@ -25,7 +27,8 @@ class GoogleTransformerTest extends TestCase
 {{Portail|monde chinois|République populaire de Chine}}
 EOF;
 
-        $trans = new GoogleTransformer();
+        $googleBooksAdapterMock = $this->createMock(GoogleBooksAdapter::class);
+        $trans = new GoogleTransformer(new GoogleApiQuota(), $googleBooksAdapterMock);
         $this::assertSame(
             [
                 [

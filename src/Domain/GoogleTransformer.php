@@ -1,21 +1,21 @@
 <?php
-/**
+/*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the license file.
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
 
 namespace App\Domain;
 
+use App\Domain\InfrastructurePorts\GoogleApiQuotaInterface;
+use App\Domain\InfrastructurePorts\GoogleBooksInterface;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\Publisher\GoogleBookMapper;
 use App\Domain\Publisher\GoogleBooksUtil;
 use App\Domain\Utils\NumberUtil;
 use App\Domain\Utils\WikiTextUtil;
-use App\Infrastructure\GoogleApiQuota;
-use App\Infrastructure\GoogleBooksAdapter;
 use App\Infrastructure\Logger;
 use DomainException;
 use Exception;
@@ -40,17 +40,22 @@ class GoogleTransformer
      */
     private $cacheOuvrageTemplate = [];
     /**
-     * @var GoogleApiQuota
+     * @var GoogleApiQuotaInterface
      */
     private $quota;
+    /**
+     * @var GoogleBooksInterface
+     */
+    private $googleBooksAdapter;
 
     /**
      * GoogleTransformer constructor.
      * todo dependency injection
      */
-    public function __construct()
+    public function __construct(GoogleApiQuotaInterface $googleApiQuota, GoogleBooksInterface $googleBooksAdapter)
     {
-        $this->quota = new GoogleApiQuota();
+        $this->quota = $googleApiQuota;
+        $this->googleBooksAdapter = $googleBooksAdapter;
     }
 
     /**
@@ -135,13 +140,10 @@ class GoogleTransformer
     }
 
     /**
-     * TODO : extract
+     * TODO : extract. TODO private ?
      * Convert GoogleBooks URL to wiki-template {ouvrage} citation.
+     * Need GoogleBooksAdapter injection.
      *
-     * @param string $url GoogleBooks URL
-     *
-     * @return string {{ouvrage}}
-     * @throws Exception
      * @throws Throwable
      */
     public function convertGBurl2OuvrageCitation(string $url): string
@@ -225,8 +227,9 @@ class GoogleTransformer
         }
 
         // Get Google data by ID ZvhBAAAAcAAJ
-        $adapter = new GoogleBooksAdapter();
-        $volume = $isISBN === true ? $adapter->getDataByIsbn($id) : $adapter->getDataByGoogleId($id);
+        $volume = $isISBN === true
+            ? $this->googleBooksAdapter->getDataByIsbn($id)
+            : $this->googleBooksAdapter->getDataByGoogleId($id);
         if (!$volume instanceof Volume) {
             throw new DomainException('googleBooks Volume not found for that GB-id/isbn');
         }

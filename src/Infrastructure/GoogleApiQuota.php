@@ -1,8 +1,8 @@
 <?php
-/**
- * This file is part of dispositif/wikibot application
- * 2019 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+/*
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Infrastructure;
 
 use App\Domain\Exceptions\ConfigException;
+use App\Domain\InfrastructurePorts\GoogleApiQuotaInterface;
 use DateTime;
 use DateTimeZone;
 use Exception;
@@ -24,7 +25,7 @@ use Throwable;
  *
  * @package App\Infrastructure
  */
-class GoogleApiQuota
+class GoogleApiQuota implements GoogleApiQuotaInterface
 {
     /** {"date":"2020-03-23T00:19:56-07:00","count":43}  */
     public const JSON_FILENAME   = __DIR__.'/resources/google_quota.json';

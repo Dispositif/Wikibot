@@ -1,14 +1,15 @@
 <?php
-/**
- * This file is part of dispositif/wikibot application
- * 2019 : Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+/*
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
 
 namespace App\Infrastructure;
 
+use App\Domain\InfrastructurePorts\GoogleBooksInterface;
 use App\Domain\Publisher\BookApiInterface;
 use App\Domain\Publisher\GoogleBookMapper;
 use Exception;
@@ -19,7 +20,7 @@ use Scriptotek\GoogleBooks\Volume;
  * See https://github.com/scriptotek/php-google-books package.
  * Class GoogleBooksAdapter.
  */
-class GoogleBooksAdapter extends AbstractBookApiAdapter implements BookApiInterface
+class GoogleBooksAdapter extends AbstractBookApiAdapter implements GoogleBooksInterface, BookApiInterface
 {
     public const SCRIPT_GOOGLE_QUOTA   = 900;
     public const SCRIPT_GOOGLE_COUNTRY = 'US';

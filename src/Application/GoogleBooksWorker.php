@@ -10,6 +10,8 @@ declare(strict_types=1);
 namespace App\Application;
 
 use App\Domain\GoogleTransformer;
+use App\Infrastructure\GoogleApiQuota;
+use App\Infrastructure\GoogleBooksAdapter;
 use Throwable;
 
 /**
@@ -38,7 +40,7 @@ class GoogleBooksWorker extends AbstractBotTaskWorker
      */
     protected function processWithDomainWorker(string $title, string $text): ?string
     {
-        $ref = new GoogleTransformer();
+        $ref = new GoogleTransformer(new GoogleApiQuota(), new GoogleBooksAdapter());
 
         return $ref->process($text);
     }
