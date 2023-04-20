@@ -47,7 +47,7 @@ class RecentChangeWorker
         // filter titles already in edited.txt
         $edited = file(__DIR__.'/resources/article_externRef_edited.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
         $filtered = array_diff($titles, $edited);
-        $list = new PageList( $filtered );
+        $list = new PageList( $filtered ); // TODO PageList factory in App ?
         echo ">" . $list->count() . " dans liste\n";
 
         $this->consumeList($list);

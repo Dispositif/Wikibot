@@ -11,9 +11,11 @@ declare(strict_types=1);
 namespace App\Application;
 
 
+use App\Application\InfrastructurePorts\PageListForAppInterface;
 use App\Infrastructure\DbAdapter;
 use App\Infrastructure\PageList;
 use App\Infrastructure\ServiceFactory;
+use Throwable;
 
 class CodexNotificationWorker extends NotificationWorker
 {
@@ -36,7 +38,7 @@ class CodexNotificationWorker extends NotificationWorker
     /**
      * Process external URL completion to wiki-template.
      */
-    private function processExternLinks(string $article, ?string $username = '')
+    private function processExternLinks(PageListForAppInterface $pageList)
     {
         try {
             $wiki = ServiceFactory::getMediawikiFactory(); // todo inject+interface
@@ -44,9 +46,9 @@ class CodexNotificationWorker extends NotificationWorker
             $botConfig->taskName = self::PROCESS_TASKNAME;
             //new ExternRefWorker($botConfig, $wiki, new PageList([$article]));
 
-            new GoogleBooksWorker($botConfig, $wiki, new PageList([$article]));
+            new GoogleBooksWorker($botConfig, $wiki, $pageList);
             sleep(10);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             unset($e);
         }
     }
@@ -63,7 +65,7 @@ class CodexNotificationWorker extends NotificationWorker
             $list = new PageList([$article]);
             // todo inject+interface DbAdapterInterface
             new ScanWiki2DB($wiki, new DbAdapter(), new WikiBotConfig($this->logger), $list, 15);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             echo $e->getMessage();
         }
     }
@@ -83,7 +85,7 @@ class CodexNotificationWorker extends NotificationWorker
 
             // URL => wiki-template completion
             $this->deleteEditedArticleFile($article);
-            $this->processExternLinks($article);
+            $this->processExternLinks(new PageList([$article])); // todo pagelist factory
         }
     }
 }

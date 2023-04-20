@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure;
 
+use App\Application\InfrastructurePorts\PageListForAppInterface;
 use App\Domain\InfrastructurePorts\PageListInterface;
 use Mediawiki\Api\UsageException;
 
@@ -19,7 +20,7 @@ use Mediawiki\Api\UsageException;
  *
  * @package App\Infrastructure
  */
-class PageList implements PageListInterface
+class PageList implements PageListInterface, PageListForAppInterface
 {
     protected $titles;
 
@@ -59,7 +60,7 @@ class PageList implements PageListInterface
             }
         }
 
-        return new PageList((array)$titles);
+        return new PageList($titles);
     }
 
     /**

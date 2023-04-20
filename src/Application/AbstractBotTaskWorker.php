@@ -39,7 +39,7 @@ abstract class AbstractBotTaskWorker
     public const THROTTLE_DELAY_AFTER_EACH_TITLE = 1; //secs
 
     /**
-     * @var \App\Domain\InfrastructurePorts\PageListInterface
+     * @var PageListInterface
      */
     protected $pageListGenerator;
     /**
