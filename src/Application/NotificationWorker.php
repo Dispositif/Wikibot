@@ -16,6 +16,7 @@ use Mediawiki\Api\MediawikiApi;
 use Mediawiki\Api\SimpleRequest;
 use Mediawiki\Api\UsageException;
 use Mediawiki\DataModel\EditInfo;
+use Psr\Log\LoggerInterface;
 use Throwable;
 
 /**
@@ -57,6 +58,10 @@ class NotificationWorker
      * @var array
      */
     protected $option;
+    /**
+     * @var LoggerInterface|null
+     */
+    protected $logger;
 
     /**
      * NotificationWorker constructor.
@@ -65,13 +70,13 @@ class NotificationWorker
      * @param string       $notifPage
      * @param array|null   $option
      */
-    public function __construct(MediawikiApi $api, string $notifPage, ?array $option = null)
+    public function __construct(MediawikiApi $api, string $notifPage, ?array $option = null, ?LoggerInterface $logger = null)
     {
         $this->api = $api;
         $this->notifPage = $notifPage;
         $this->option = $option ?? [];
-
         $this->process();
+        $this->logger = $logger;
     }
 
     private function process()

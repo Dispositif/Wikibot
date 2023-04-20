@@ -11,9 +11,9 @@ namespace App\Domain\Publisher\Tests;
 
 use App\Domain\ExternLink\ExternPage;
 use App\Domain\Publisher\ExternMapper;
-use App\Infrastructure\Logger;
 use App\Infrastructure\TagParser;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 
 class ExternMapperTest extends TestCase
 {
@@ -26,7 +26,7 @@ class ExternMapperTest extends TestCase
         $html = file_get_contents($filename);
 
         $page = new ExternPage('http://www.test.com', $html, new TagParser(), null);
-        $mapper = new ExternMapper(new Logger(), ['htmlTitleAllowed' => true]);
+        $mapper = new ExternMapper(new NullLogger(), ['htmlTitleAllowed' => true]);
         $data = $mapper->process($page->getData());
 
         if (isset($data['consulté le'])) {

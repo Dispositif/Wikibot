@@ -12,7 +12,6 @@ namespace App\Application;
 
 
 use App\Infrastructure\DbAdapter;
-use App\Infrastructure\Logger;
 use App\Infrastructure\PageList;
 use App\Infrastructure\ServiceFactory;
 
@@ -36,17 +35,12 @@ class CodexNotificationWorker extends NotificationWorker
 
     /**
      * Process external URL completion to wiki-template.
-     *
-     * @param string      $article
-     * @param string|null $username
      */
     private function processExternLinks(string $article, ?string $username = '')
     {
         try {
             $wiki = ServiceFactory::getMediawikiFactory(); // todo inject+interface
-            $logger = new Logger();
-            //$logger->debug = true;
-            $botConfig = new WikiBotConfig($logger);
+            $botConfig = new WikiBotConfig($this->logger);
             $botConfig->taskName = self::PROCESS_TASKNAME;
             //new ExternRefWorker($botConfig, $wiki, new PageList([$article]));
 
@@ -68,7 +62,7 @@ class CodexNotificationWorker extends NotificationWorker
             $wiki = ServiceFactory::getMediawikiFactory(); // todo inject+interface
             $list = new PageList([$article]);
             // todo inject+interface DbAdapterInterface
-            new ScanWiki2DB($wiki, new DbAdapter(), new WikiBotConfig(), $list, 15);
+            new ScanWiki2DB($wiki, new DbAdapter(), new WikiBotConfig($this->logger), $list, 15);
         } catch (\Throwable $e) {
             echo $e->getMessage();
         }

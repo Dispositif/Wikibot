@@ -1,8 +1,8 @@
 <?php
-/**
- * This file is part of dispositif/wikibot application
- * 2019 : Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+/*
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -13,8 +13,8 @@ use App\Domain\Models\Wiki\OuvrageClean;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Infrastructure\BnfAdapter;
 use App\Infrastructure\GoogleBooksAdapter;
-use App\Infrastructure\Logger;
 use App\Infrastructure\OpenLibraryAdapter;
+use Psr\Log\LoggerInterface;
 
 /**
  * todo rename OuvrageImport/Gateway ?
@@ -58,11 +58,11 @@ class OuvrageFactory
         return $ouvrage;
     }
 
-    public static function OptimizedFromData(array $data): OuvrageTemplate
+    public static function OptimizedFromData(array $data, LoggerInterface $logger = null): OuvrageTemplate
     {
         $ouvrage = new OuvrageClean();
         $ouvrage->hydrate($data);
-        $proc = OptimizerFactory::fromTemplate($ouvrage, null, new Logger());
+        $proc = OptimizerFactory::fromTemplate($ouvrage, null, $logger);
         $proc->doTasks();
 
         return $proc->getOptiTemplate();

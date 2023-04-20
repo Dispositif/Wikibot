@@ -12,7 +12,6 @@ namespace App\Application;
 use App\Domain\Exceptions\ConfigException;
 use App\Domain\Exceptions\StopActionException;
 use App\Domain\Utils\WikiTextUtil;
-use App\Infrastructure\Logger;
 use App\Infrastructure\ServiceFactory;
 use App\Infrastructure\SMS;
 use DateInterval;
@@ -22,6 +21,7 @@ use DomainException;
 use Exception;
 use Mediawiki\Api\UsageException;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Throwable;
 
 /**
@@ -71,7 +71,7 @@ class WikiBotConfig
 
     public function __construct(?LoggerInterface $logger = null)
     {
-        $this->log = $logger ?: new Logger();
+        $this->log = $logger ?? new NullLogger();
         ini_set('user_agent', getenv('USER_AGENT'));
     }
 
@@ -236,7 +236,7 @@ class WikiBotConfig
         }
         if ($botTalk && class_exists(TalkBotConfig::class)) {
             try {
-                (new TalkBotConfig())->botTalk();
+                (new TalkBotConfig($this->log))->botTalk();
             } catch (Throwable $botTalkException) {
                 unset($botTalkException);
             }

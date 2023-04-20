@@ -14,6 +14,7 @@ use App\Application\WikiPageAction;
 use App\Domain\GoogleTransformer;
 use App\Infrastructure\GoogleApiQuota;
 use App\Infrastructure\GoogleBooksAdapter;
+use App\Infrastructure\Logger;
 use App\Infrastructure\ServiceFactory;
 use Codedungeon\PHPCliColors\Color;
 use Mediawiki\DataModel\EditInfo;
@@ -28,7 +29,7 @@ $wiki = ServiceFactory::getMediawikiFactory();
 $taskName = "🧹📗 Correction de référence (lanouvellerepublique.fr : titre manquant)"; // 🧹📗🐵
 $botflag = false;
 
-$bot = new WikiBotConfig();
+$bot = new WikiBotConfig(new Logger());
 
 // Get raw list of articles
 $filename = __DIR__.'/../resources/plume.txt';

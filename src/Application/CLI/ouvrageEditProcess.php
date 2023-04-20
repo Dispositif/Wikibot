@@ -29,7 +29,7 @@ while (true) {
 //            $logger->debug = true;
         }
         $process = new OuvrageEditWorker(
-            new DbAdapter(), new WikiBotConfig(), new Memory(), $logger
+            new DbAdapter(), new WikiBotConfig($logger), new Memory(), $logger
         );
         $process->run();
         $count = 0;

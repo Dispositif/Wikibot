@@ -10,12 +10,12 @@ declare(strict_types=1);
 
 namespace App\Application;
 
-
-use App\Infrastructure\Logger;
 use App\Infrastructure\PageList;
 use App\Infrastructure\ServiceFactory;
 use Mediawiki\Api\MediawikiApi;
 use Mediawiki\Api\SimpleRequest;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
  * https://www.mediawiki.org/wiki/API:RecentChanges
@@ -27,10 +27,15 @@ class RecentChangeWorker
      * @var MediawikiApi
      */
     private $api;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
-    public function __construct(MediawikiApi $api)
+    public function __construct(MediawikiApi $api, ?LoggerInterface $logger = null)
     {
         $this->api = $api;
+        $this->logger = $logger ?? new NullLogger();
     }
 
     public function trackUser(string $user): void
@@ -77,8 +82,7 @@ class RecentChangeWorker
     private function consumeList(PageList $list): void
     {
         $wiki = ServiceFactory::getMediawikiFactory();
-        $logger = new Logger();
-        $botConfig = new WikiBotConfig($logger);
+        $botConfig = new WikiBotConfig($this->logger);
         $botConfig->taskName = "🦊 Amélioration de références : URL ⇒ ";
 
         new ExternRefWorker($botConfig, $wiki, $list);

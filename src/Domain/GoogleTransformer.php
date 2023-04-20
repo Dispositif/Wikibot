@@ -16,9 +16,9 @@ use App\Domain\Publisher\GoogleBookMapper;
 use App\Domain\Publisher\GoogleBooksUtil;
 use App\Domain\Utils\NumberUtil;
 use App\Domain\Utils\WikiTextUtil;
-use App\Infrastructure\Logger;
 use DomainException;
 use Exception;
+use Psr\Log\LoggerInterface;
 use Scriptotek\GoogleBooks\Volume;
 use Throwable;
 
@@ -47,15 +47,23 @@ class GoogleTransformer
      * @var GoogleBooksInterface
      */
     private $googleBooksAdapter;
+    /**
+     * @var LoggerInterface|null
+     */
+    private $logger;
 
     /**
      * GoogleTransformer constructor.
      * todo dependency injection
      */
-    public function __construct(GoogleApiQuotaInterface $googleApiQuota, GoogleBooksInterface $googleBooksAdapter)
+    public function __construct(
+        GoogleApiQuotaInterface $googleApiQuota,
+        GoogleBooksInterface $googleBooksAdapter,
+        LoggerInterface $logger = null)
     {
         $this->quota = $googleApiQuota;
         $this->googleBooksAdapter = $googleBooksAdapter;
+        $this->logger = $logger;
     }
 
     /**
@@ -202,7 +210,7 @@ class GoogleTransformer
             }
         }
 
-        $optimizer = OptimizerFactory::fromTemplate($ouvrage, null, new Logger());
+        $optimizer = OptimizerFactory::fromTemplate($ouvrage, null, $this->logger = null);
         $optimizer->doTasks();
         $ouvrage2 = $optimizer->getOptiTemplate();
 

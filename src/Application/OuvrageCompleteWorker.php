@@ -17,7 +17,6 @@ use App\Domain\OuvrageFactory;
 use App\Domain\Publisher\Wikidata2Ouvrage;
 use App\Domain\SummaryLogTrait;
 use App\Domain\Utils\TemplateParser;
-use App\Infrastructure\Logger;
 use App\Infrastructure\Memory;
 use App\Infrastructure\WikidataAdapter;
 use Exception;
@@ -64,14 +63,14 @@ class OuvrageCompleteWorker
      */
     private $ouvrage;
     /**
-     * @var LoggerInterface|NullLogger
+     * @var LoggerInterface
      */
-    private $log;
+    private $logger;
 
-    public function __construct(DbAdapterInterface $queueAdapter, ?LoggerInterface $log = null)
+    public function __construct(DbAdapterInterface $queueAdapter, ?LoggerInterface $logger = null)
     {
         $this->queueAdapter = $queueAdapter;
-        $this->log = $log ?? new NullLogger();
+        $this->logger = $logger ?? new NullLogger();
     }
 
     public function run(?int $limit = 10000): bool
@@ -93,7 +92,7 @@ class OuvrageCompleteWorker
                 $this->raw
             );
 
-            $this->log->debug($memory->getMemory(true));
+            $this->logger->debug($memory->getMemory(true));
 
             // initialise variables
             $this->resetSummaryLog();
@@ -106,7 +105,7 @@ class OuvrageCompleteWorker
                 $parse = TemplateParser::parseAllTemplateByName('ouvrage', $this->raw);
                 $origin = $parse['ouvrage'][0]['model'] ?? null;
             } catch (Throwable $e) {
-                $this->log->warning(
+                $this->logger->warning(
                     sprintf(
                         "*** ERREUR 432 impossible de transformer en modèle => skip %s : %s \n",
                         $row['id'],
@@ -119,7 +118,7 @@ class OuvrageCompleteWorker
             }
 
             if (!$origin instanceof OuvrageTemplate) {
-                $this->log->warning(
+                $this->logger->warning(
                     sprintf(
                         "*** ERREUR 433 impossible de transformer en modèle => skip %s : %s \n",
                         $row['id'],
@@ -132,7 +131,7 @@ class OuvrageCompleteWorker
             }
 
             // Final optimizing (with online predictions)
-            $optimizer = OptimizerFactory::fromTemplate($origin, $this->page, new Logger());
+            $optimizer = OptimizerFactory::fromTemplate($origin, $this->page, $this->logger);
             $optimizer->doTasks();
             $this->ouvrage = $optimizer->getOptiTemplate();
             $this->summaryLog = array_merge($this->getSummaryLog(), $optimizer->getSummaryLog());
@@ -199,11 +198,11 @@ class OuvrageCompleteWorker
         }
 
         online:
-        $this->log->info("sleep 10...\n");
+        $this->logger->info("sleep 10...\n");
         sleep(10);
 
         try {
-            $this->log->debug('BIBLIO NAT FRANCE...');
+            $this->logger->debug('BIBLIO NAT FRANCE...');
             // BnF sait pas trouver un vieux livre (10) d'après ISBN-13... FACEPALM !
             $bnfOuvrage = null;
             if ($isbn10) {
@@ -218,7 +217,7 @@ class OuvrageCompleteWorker
 
                 // Wikidata requests from $infos (ISBN/ISNI)
                 if (!empty($bnfOuvrage->getInfos())) {
-                    $this->log->info('WIKIDATA...');
+                    $this->logger->info('WIKIDATA...');
 
                     // TODO move to factory
                     $wikidataAdapter = new WikidataAdapter(
@@ -232,7 +231,7 @@ class OuvrageCompleteWorker
             if (strpos($e->getMessage(), 'Could not resolve host') !== false) {
                 throw $e;
             }
-            $this->log->error(
+            $this->logger->error(
                 sprintf(
                     "*** ERREUR BnF Isbn Search %s %s %s \n",
                     $e->getMessage(),
@@ -244,12 +243,12 @@ class OuvrageCompleteWorker
 
         if (!isset($bnfOuvrage) || !$this->skipGoogle($bnfOuvrage)) {
             try {
-                $this->log->info('GOOGLE...');
+                $this->logger->info('GOOGLE...');
 
                 $googleOuvrage = OuvrageFactory::GoogleFromIsbn($isbn);
                 $this->completeOuvrage($googleOuvrage);
             } catch (Throwable $e) {
-                $this->log->warning("*** ERREUR GOOGLE Isbn Search ***".$e->getMessage());
+                $this->logger->warning("*** ERREUR GOOGLE Isbn Search ***".$e->getMessage());
                 if (strpos($e->getMessage(), 'Could not resolve host: www.googleapis.com') === false) {
                     throw $e;
                 }
@@ -259,13 +258,13 @@ class OuvrageCompleteWorker
 
         if (!isset($bnfOuvrage) && !isset($googleOuvrage)) {
             try {
-                $this->log->info('OpenLibrary...');
+                $this->logger->info('OpenLibrary...');
                 $openLibraryOuvrage = OuvrageFactory::OpenLibraryFromIsbn($isbn);
                 if (!empty($openLibraryOuvrage)) {
                     $this->completeOuvrage($openLibraryOuvrage);
                 }
             } catch (Throwable $e) {
-                $this->log->warning('**** ERREUR OpenLibrary Isbn Search');
+                $this->logger->warning('**** ERREUR OpenLibrary Isbn Search');
             }
         }
     }
@@ -296,18 +295,18 @@ class OuvrageCompleteWorker
 
     private function completeOuvrage(OuvrageTemplate $onlineOuvrage)
     {
-        $this->log->info($onlineOuvrage->serialize(true));
-        $optimizer = OptimizerFactory::fromTemplate($onlineOuvrage, $this->page, new Logger());
+        $this->logger->info($onlineOuvrage->serialize(true));
+        $optimizer = OptimizerFactory::fromTemplate($onlineOuvrage, $this->page, $this->logger);
         $onlineOptimized = ($optimizer)->doTasks()->getOptiTemplate();
 
-        $completer = new OuvrageComplete($this->ouvrage, $onlineOptimized, new Logger());
+        $completer = new OuvrageComplete($this->ouvrage, $onlineOptimized, $this->logger);
         $this->ouvrage = $completer->getResult();
 
         // todo move that optimizing in OuvrageComplete ?
-        $optimizer = OptimizerFactory::fromTemplate($this->ouvrage, $this->page, new Logger());
+        $optimizer = OptimizerFactory::fromTemplate($this->ouvrage, $this->page, $this->logger);
         $this->ouvrage = $optimizer->doTasks()->getOptiTemplate();
 
-        $this->log->info('Summary', $completer->getSummaryLog());
+        $this->logger->info('Summary', $completer->getSummaryLog());
 
         if ($completer->major) {
             $this->major = true;
@@ -332,11 +331,11 @@ class OuvrageCompleteWorker
             'isbn' => substr($isbn,0,19),
             'version' => WikiBotConfig::VERSION ?? null,
         ];
-        $this->log->info('finalData', $finalData);
+        $this->logger->info('finalData', $finalData);
         // Json ?
         $result = $this->queueAdapter->sendCompletedData($finalData);
 
-        $this->log->debug($result ? 'OK DB' : 'erreur sendCompletedData()');
+        $this->logger->debug($result ? 'OK DB' : 'erreur sendCompletedData()');
     }
 
     /**

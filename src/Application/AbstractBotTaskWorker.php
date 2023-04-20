@@ -17,7 +17,6 @@ use App\Domain\AppPorts\DomainTransformerInterface;
 use App\Domain\Exceptions\ConfigException;
 use App\Domain\Exceptions\StopActionException;
 use App\Domain\Models\Summary;
-use App\Infrastructure\Logger;
 use App\Infrastructure\ServiceFactory;
 use Exception;
 use Mediawiki\Api\MediawikiFactory;
@@ -60,7 +59,7 @@ abstract class AbstractBotTaskWorker
     protected $modeAuto = false;
     protected $maxLag = 5;
     /**
-     * @var Logger|LoggerInterface
+     * @var LoggerInterface
      */
     protected $log;
     /**
