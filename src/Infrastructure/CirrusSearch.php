@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace App\Infrastructure;
 
 use App\Domain\Exceptions\ConfigException;
+use App\Domain\InfrastructurePorts\PageListInterface;
 use GuzzleHttp\Psr7\Response;
 use HttpException;
 

@@ -7,17 +7,11 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure;
+namespace App\Application\InfrastructurePorts;
 
 use App\Domain\InfrastructurePorts\PageListInterface;
 
-class FileManager implements PageListInterface
+interface PageListForAppInterface extends PageListInterface
 {
-    use CsvTrait;
 
-    public function getPageTitles(): array
-    {
-        // TODO: Implement getPageTitles() method.
-        return [];
-    }
 }

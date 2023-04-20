@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure;
 
+use App\Domain\InfrastructurePorts\PageListInterface;
 use Mediawiki\Api\UsageException;
 
 /**

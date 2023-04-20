@@ -1,11 +1,11 @@
 <?php
-/**
+/*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the license file.
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
-namespace App\Application\Examples;
+namespace App\Application\CLI;
 
 //$filename = __DIR__.'/resources/global_process.json';
 //

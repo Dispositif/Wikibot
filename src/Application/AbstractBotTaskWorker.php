@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Application;
 
+use App\Application\InfrastructurePorts\PageListForAppInterface as PageListInterface;
 use App\Application\Traits\BotWorkerTrait;
 use App\Application\Traits\WorkerAnalyzedTitlesTrait;
 use App\Application\Traits\WorkerCLITrait;
@@ -17,7 +18,6 @@ use App\Domain\Exceptions\ConfigException;
 use App\Domain\Exceptions\StopActionException;
 use App\Domain\Models\Summary;
 use App\Infrastructure\Logger;
-use App\Infrastructure\PageListInterface;
 use App\Infrastructure\ServiceFactory;
 use Exception;
 use Mediawiki\Api\MediawikiFactory;
@@ -40,7 +40,7 @@ abstract class AbstractBotTaskWorker
     public const THROTTLE_DELAY_AFTER_EACH_TITLE = 1; //secs
 
     /**
-     * @var PageListInterface
+     * @var \App\Domain\InfrastructurePorts\PageListInterface
      */
     protected $pageListGenerator;
     /**

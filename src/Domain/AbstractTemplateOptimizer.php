@@ -11,9 +11,9 @@ declare(strict_types=1);
 namespace App\Domain;
 
 
+use App\Domain\InfrastructurePorts\PageListInterface;
 use App\Domain\Models\Wiki\AbstractWikiTemplate;
 use App\Domain\Utils\TextUtil;
-use App\Infrastructure\PageListInterface;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -35,7 +35,7 @@ abstract class AbstractTemplateOptimizer implements TemplateOptimizerInterface
      */
     protected $log;
     /**
-     * @var PageListInterface|null
+     * @var \App\Domain\InfrastructurePorts\PageListInterface|null
      */
     protected $pageListManager;
 

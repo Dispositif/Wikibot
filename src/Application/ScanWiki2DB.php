@@ -1,16 +1,17 @@
 <?php
-/**
- * This file is part of dispositif/wikibot application
- * 2019 : Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+/*
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
 
 namespace App\Application;
 
+use App\Application\InfrastructurePorts\DbAdapterInterface;
+use App\Application\InfrastructurePorts\PageListForAppInterface as PageListInterface;
 use App\Domain\Utils\TemplateParser;
-use App\Infrastructure\PageListInterface;
 use Exception;
 use Mediawiki\Api\MediawikiFactory;
 
@@ -30,11 +31,11 @@ class ScanWiki2DB
     private $priority;
 
     public function __construct(
-        MediawikiFactory $wiki,
-        QueueInterface $dbAdapter,
-        WikiBotConfig $bot,
-        PageListInterface $list,
-        ?int $priority
+        MediawikiFactory   $wiki,
+        DbAdapterInterface $dbAdapter,
+        WikiBotConfig      $bot,
+        PageListInterface  $list,
+        ?int               $priority
         = 0
     ) {
         $this->wiki = $wiki; // ServiceFactory::wikiApi();

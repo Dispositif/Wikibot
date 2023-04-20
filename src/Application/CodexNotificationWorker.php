@@ -43,7 +43,7 @@ class CodexNotificationWorker extends NotificationWorker
     private function processExternLinks(string $article, ?string $username = '')
     {
         try {
-            $wiki = ServiceFactory::getMediawikiFactory();
+            $wiki = ServiceFactory::getMediawikiFactory(); // todo inject+interface
             $logger = new Logger();
             //$logger->debug = true;
             $botConfig = new WikiBotConfig($logger);
@@ -65,8 +65,9 @@ class CodexNotificationWorker extends NotificationWorker
     private function processWikiscanForOuvrage(string $article): void
     {
         try {
-            $wiki = ServiceFactory::getMediawikiFactory();
+            $wiki = ServiceFactory::getMediawikiFactory(); // todo inject+interface
             $list = new PageList([$article]);
+            // todo inject+interface DbAdapterInterface
             new ScanWiki2DB($wiki, new DbAdapter(), new WikiBotConfig(), $list, 15);
         } catch (\Throwable $e) {
             echo $e->getMessage();

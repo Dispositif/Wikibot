@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Examples;
+namespace App\Application\CLI;
 
 use App\Application\WikiPageAction;
 use App\Domain\Utils\DateUtil;

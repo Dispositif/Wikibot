@@ -31,20 +31,20 @@ rector:
 
 .PHONY: externref # 	extern reference wikipedia
 externref:
-	php ./src/Application/Examples/externRefprocess.php
+	php ./src/Application/CLI/externRefprocess.php
 
 .PHONY: googleExtern # 	extern reference google
 googleExtern:
-	php ./src/Application/Examples/gooExternProcess.php
+	php ./src/Application/CLI/gooExternProcess.php
 
 .PHONY: cleanError # 	clean error reports on wiki
 cleanError:
-	php ./src/Application/Examples/cleanErrorReport.php
+	php ./src/Application/CLI/cleanErrorReport.php
 
 .PHONY: ouvrageComplete # 	complete ouvrage
 ouvrageComplete:
-	php ./src/Application/Examples/ouvrageCompleteProcess.php
+	php ./src/Application/CLI/ouvrageCompleteProcess.php
 
 .PHONY: ouvrageEdit # 	edit ouvrage
 ouvrageEdit:
-	php ./src/Application/Examples/ouvrageEditProcess.php
+	php ./src/Application/CLI/ouvrageEditProcess.php

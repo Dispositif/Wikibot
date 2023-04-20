@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Examples;
+namespace App\Application\CLI;
 
 use App\Application\WikiPageAction;
 use App\Domain\Utils\WikiTextUtil;
@@ -15,7 +15,6 @@ use App\Infrastructure\DbAdapter;
 use App\Infrastructure\ServiceFactory;
 use Mediawiki\Api\MediawikiFactory;
 use Normalizer;
-
 
 include __DIR__.'/../myBootstrap.php';
 

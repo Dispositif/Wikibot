@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Application;
 
+use App\Application\InfrastructurePorts\DbAdapterInterface;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\OptimizerFactory;
 use App\Domain\OuvrageComplete;
@@ -47,7 +48,7 @@ class OuvrageCompleteWorker
             '9782021401196', // sous-titre erroné
         ];
     /**
-     * @var QueueInterface
+     * @var DbAdapterInterface
      */
     private $queueAdapter;
     /**
@@ -67,7 +68,7 @@ class OuvrageCompleteWorker
      */
     private $log;
 
-    public function __construct(QueueInterface $queueAdapter, ?LoggerInterface $log = null)
+    public function __construct(DbAdapterInterface $queueAdapter, ?LoggerInterface $log = null)
     {
         $this->queueAdapter = $queueAdapter;
         $this->log = $log ?? new NullLogger();

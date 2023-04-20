@@ -8,7 +8,7 @@
 declare(strict_types=1);
 
 
-namespace App\Infrastructure;
+namespace App\Domain\InfrastructurePorts;
 
 /**
  * For classes generating wiki articles list.

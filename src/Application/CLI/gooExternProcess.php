@@ -5,7 +5,7 @@
  * For the full copyright and MIT license information, view the license file.
  */
 
-namespace App\Application\Examples;
+namespace App\Application\CLI;
 
 use App\Application\GoogleBooksWorker;
 use App\Application\WikiBotConfig;

@@ -5,4 +5,4 @@ parameters:
 		- tests
 	excludePaths:
 	    - src/Application/Bazar
-	    - src/Application/Examples
+	    - src/Application/CLI

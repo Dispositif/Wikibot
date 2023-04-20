@@ -1,15 +1,15 @@
 <?php
-/**
- * This file is part of dispositif/wikibot application
- * 2019 : Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+/*
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
 
 namespace App\Infrastructure;
 
-use App\Application\QueueInterface;
+use App\Application\InfrastructurePorts\DbAdapterInterface;
 use DateInterval;
 use DateTime;
 use Exception;
@@ -22,7 +22,7 @@ use Throwable;
  * Temporary SQL play. https://github.com/fightbulc/simplon_mysql .
  * Class DbAdapter.
  */
-class DbAdapter implements QueueInterface
+class DbAdapter implements DbAdapterInterface
 {
     public const OPTI_VALID_DATE = '2020-04-05 00:00:00'; // v0.77
     protected $db;
