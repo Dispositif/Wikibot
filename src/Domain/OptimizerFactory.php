@@ -21,7 +21,6 @@ use Psr\Log\LoggerInterface;
  */
 class OptimizerFactory
 {
-
     public static function fromTemplate(
         WikiTemplateInterface $template,
         ?string $wikiPageTitle = null,
@@ -29,6 +28,7 @@ class OptimizerFactory
     ): ?TemplateOptimizerInterface {
         if ($template instanceof OuvrageTemplate) {
             return new OuvrageOptimize($template, $wikiPageTitle, $log, new FileManager());
+            // todo dependency inversion. FileManager used for ProcessLocation() only.
         }
         if ($template instanceof ArticleTemplate) {
             return new ArticleOptimizer($template, $wikiPageTitle, $log);

@@ -1,18 +1,18 @@
 <?php
-/**
+/*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the license file.
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
 
 namespace App\Domain\Publisher;
 
+use App\Domain\InfrastructurePorts\WikidataAdapterInterface;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\Utils\TextUtil;
 use App\Domain\Utils\WikiTextUtil;
-use App\Infrastructure\WikidataAdapter;
 use Exception;
 
 /**
@@ -31,6 +31,9 @@ class Wikidata2Ouvrage
      * @var array
      */
     private $infos;
+    /**
+     * @var WikidataAdapterInterface
+     */
     private $adapter;
     public $log = [];
     /**
@@ -45,13 +48,9 @@ class Wikidata2Ouvrage
     /**
      * Wikidata2Ouvrage constructor.
      *
-     * @param WikidataAdapter $wdAdapter
-     * @param OuvrageTemplate $ouvrage
-     * @param string|null     $title
-     *
      * @throws Exception
      */
-    public function __construct(WikidataAdapter $wdAdapter, OuvrageTemplate $ouvrage, ?string $title = null)
+    public function __construct(WikidataAdapterInterface $wdAdapter, OuvrageTemplate $ouvrage, ?string $title = null)
     {
         $this->adapter = $wdAdapter;
 

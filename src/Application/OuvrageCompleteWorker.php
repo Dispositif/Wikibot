@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Application;
 
 use App\Application\InfrastructurePorts\DbAdapterInterface;
+use App\Domain\InfrastructurePorts\WikidataAdapterInterface;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\OptimizerFactory;
 use App\Domain\OuvrageComplete;
@@ -18,9 +19,7 @@ use App\Domain\Publisher\Wikidata2Ouvrage;
 use App\Domain\SummaryLogTrait;
 use App\Domain\Utils\TemplateParser;
 use App\Infrastructure\Memory;
-use App\Infrastructure\WikidataAdapter;
 use Exception;
-use GuzzleHttp\Client;
 use Normalizer;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -66,11 +65,20 @@ class OuvrageCompleteWorker
      * @var LoggerInterface
      */
     private $logger;
+    /**
+     * @var WikidataAdapterInterface
+     */
+    private $wikidataAdapter;
 
-    public function __construct(DbAdapterInterface $queueAdapter, ?LoggerInterface $logger = null)
+    public function __construct(
+        DbAdapterInterface $queueAdapter,
+        WikidataAdapterInterface $wikidataAdapter,
+        ?LoggerInterface $logger = null
+    )
     {
         $this->queueAdapter = $queueAdapter;
         $this->logger = $logger ?? new NullLogger();
+        $this->wikidataAdapter = $wikidataAdapter;
     }
 
     public function run(?int $limit = 10000): bool
@@ -220,10 +228,7 @@ class OuvrageCompleteWorker
                     $this->logger->info('WIKIDATA...');
 
                     // TODO move to factory
-                    $wikidataAdapter = new WikidataAdapter(
-                        new Client(['timeout' => 30, 'headers' => ['User-Agent' => getenv('USER_AGENT')]])
-                    );
-                    $wdComplete = new Wikidata2Ouvrage($wikidataAdapter, clone $bnfOuvrage, $this->page);
+                    $wdComplete = new Wikidata2Ouvrage($this->wikidataAdapter, clone $bnfOuvrage, $this->page);
                     $this->completeOuvrage($wdComplete->getOuvrage());
                 }
             }

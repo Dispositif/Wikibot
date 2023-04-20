@@ -14,6 +14,8 @@ use App\Infrastructure\DbAdapter;
 use App\Infrastructure\GoogleApiQuota;
 use App\Infrastructure\Logger;
 use App\Infrastructure\SMS;
+use App\Infrastructure\WikidataAdapter;
+use GuzzleHttp\Client;
 use Throwable;
 
 include __DIR__.'/../myBootstrap.php';
@@ -34,7 +36,10 @@ while (true) {
             continue;
         }
 
-        $process = new OuvrageCompleteWorker(new DbAdapter(), $logger);
+        $wikidataAdapter = new WikidataAdapter(
+            new Client(['timeout' => 30, 'headers' => ['User-Agent' => getenv('USER_AGENT')]])
+        );
+        $process = new OuvrageCompleteWorker(new DbAdapter(), $wikidataAdapter, $logger);
         $process->run();
         $count = 0; // reinitialise boucle erreur
     } catch (Throwable $e) {

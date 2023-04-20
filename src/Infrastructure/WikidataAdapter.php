@@ -1,14 +1,15 @@
 <?php
-/**
+/*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the license file.
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
 
 namespace App\Infrastructure;
 
+use App\Domain\InfrastructurePorts\WikidataAdapterInterface;
 use DomainException;
 use Exception;
 use GuzzleHttp\Client;
@@ -20,7 +21,7 @@ use Normalizer;
  *
  * @package App\Infrastructure
  */
-class WikidataAdapter
+class WikidataAdapter implements WikidataAdapterInterface
 {
     private $client;
 
@@ -79,10 +80,6 @@ WHERE {
 
     /**
      * Get WD item, sitelink, VIAF from search by ISNI (author)
-     *
-     * @param string $isni
-     *
-     * @return array|null
      * @throws Exception
      */
     public function searchByISNI(string $isni): ?array

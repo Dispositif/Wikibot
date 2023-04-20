@@ -1,20 +1,19 @@
 <?php
-/**
+/*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the license file.
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
 
 namespace App\Domain\Publisher\Tests;
 
+use App\Domain\InfrastructurePorts\WikidataAdapterInterface;
 use App\Domain\OptimizerFactory;
 use App\Domain\Publisher\Wikidata2Ouvrage;
 use App\Domain\WikiTemplateFactory;
-use App\Infrastructure\WikidataAdapter;
 use Exception;
-use GuzzleHttp\Client;
 use PHPUnit\Framework\TestCase;
 
 include __DIR__.'/../../../Application/myBootstrap.php';
@@ -39,9 +38,10 @@ class Wikidata2OuvrageTest extends TestCase
             ]
         );
 
-        $wikidataAdapter = new WikidataAdapter(
-            new Client(['timeout' => 60, 'headers' => ['User-Agent' => getenv('USER_AGENT')]])
-        );
+        $wikidataAdapter = $this->createMock(WikidataAdapterInterface::class);
+//        $wikidataAdapter = new WikidataAdapter(
+//            new Client(['timeout' => 60, 'headers' => ['User-Agent' => getenv('USER_AGENT')]])
+//        );
         $convert = new Wikidata2Ouvrage($wikidataAdapter, $ouvrage);
         $wdOuvrage = $convert->getOuvrage();
         $this::assertSame(
