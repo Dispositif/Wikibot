@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace App\Domain\ExternLink;
 
-use App\Domain\AppInterfaces\DomainTransformerInterface;
+use App\Domain\AppPorts\DomainTransformerInterface;
 use App\Domain\Models\Summary;
 
 interface ExternRefTransformerInterface extends DomainTransformerInterface

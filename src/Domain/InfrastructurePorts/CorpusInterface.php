@@ -7,11 +7,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\ServiceInterfaces;
+namespace App\Domain\InfrastructurePorts;
 
-interface TagParserInterface
+interface CorpusInterface
 {
-    public function importHtml(string $data): TagParserInterface;
+    public function inCorpus(string $element, string $corpusName): bool;
 
-    public function xpathResults(string $path): array;
+    public function addNewElementToCorpus(string $corpusName, string $element): bool;
 }

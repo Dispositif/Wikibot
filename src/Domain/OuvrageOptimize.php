@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
  * For the full copyright and MIT license information, view the license file.
  */
 
@@ -14,7 +14,6 @@ use App\Domain\Models\Wiki\GoogleLivresTemplate;
 use App\Domain\Publisher\GoogleBooksUtil;
 use App\Domain\Utils\TextUtil;
 use App\Domain\Utils\WikiTextUtil;
-use App\Infrastructure\FileManager;
 use DomainException;
 use Exception;
 
@@ -23,7 +22,6 @@ use Exception;
  * TODO move methods to OuvrageClean setters
  * TODO AbstractProcess
  * TODO observer/event (log, MajorEdition)
- * Class OuvrageProcess.
  */
 class OuvrageOptimize extends AbstractTemplateOptimizer
 {
@@ -97,8 +95,7 @@ class OuvrageOptimize extends AbstractTemplateOptimizer
         }
 
         // translation : "London"->"Londres"
-        $manager = new FileManager();
-        $row = $manager->findCSVline(__DIR__.'/resources/traduction_ville.csv', $location);
+        $row = $this->pageListManager->findCSVline(__DIR__.'/resources/traduction_ville.csv', $location);
         if ($row !== [] && !empty($row[1])) {
             $this->setParam('lieu', $row[1]);
             $this->addSummaryLog('lieu francisé');

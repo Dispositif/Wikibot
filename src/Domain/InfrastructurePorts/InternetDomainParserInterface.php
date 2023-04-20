@@ -7,10 +7,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\ServiceInterfaces;
+namespace App\Domain\InfrastructurePorts;
 
-// @unused
-interface MessageInterface
+interface InternetDomainParserInterface
 {
-    public function send(string $queue, $message): void;
+    public function getRegistrableDomainFromURL(string $httpURL): string;
 }

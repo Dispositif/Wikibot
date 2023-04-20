@@ -1,8 +1,8 @@
 <?php
-/**
+/*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the license file.
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -13,6 +13,7 @@ use App\Domain\Models\Wiki\ArticleTemplate;
 use App\Domain\Models\Wiki\LienWebTemplate;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\Models\Wiki\WikiTemplateInterface;
+use App\Infrastructure\FileManager;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -27,7 +28,7 @@ class OptimizerFactory
         ?LoggerInterface $log = null
     ): ?TemplateOptimizerInterface {
         if ($template instanceof OuvrageTemplate) {
-            return new OuvrageOptimize($template, $wikiPageTitle, $log);
+            return new OuvrageOptimize($template, $wikiPageTitle, $log, new FileManager());
         }
         if ($template instanceof ArticleTemplate) {
             return new ArticleOptimizer($template, $wikiPageTitle, $log);

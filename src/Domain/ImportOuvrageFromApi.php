@@ -1,8 +1,8 @@
 <?php
-/**
- * This file is part of dispositif/wikibot application
- * 2019 : Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+/*
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -17,6 +17,9 @@ use Scriptotek\GoogleBooks\Volume;
 use SimpleXMLElement;
 use Throwable;
 
+/**
+ * TODO create interface for Scriptotek GB Volume !!
+ */
 class ImportOuvrageFromApi
 {
     private $adapter;

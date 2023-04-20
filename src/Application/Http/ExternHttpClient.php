@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace App\Application\Http;
 
-use App\Domain\ServiceInterfaces\ExternHttpClientInterface;
+use App\Domain\InfrastructurePorts\ExternHttpClientInterface;
 use DomainException;
 use GuzzleHttp\Client;
 use Normalizer;

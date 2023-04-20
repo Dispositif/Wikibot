@@ -7,11 +7,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\ServiceInterfaces;
+namespace App\Domain\AppPorts;
 
-interface CorpusInterface
+interface DomainTransformerInterface
 {
-    public function inCorpus(string $element, string $corpusName): bool;
 
-    public function addNewElementToCorpus(string $corpusName, string $element): bool;
 }

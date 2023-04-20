@@ -9,13 +9,13 @@ declare(strict_types=1);
 
 namespace App\Domain\ExternLink;
 
+use App\Domain\InfrastructurePorts\ExternHttpClientInterface;
 use App\Domain\Models\Summary;
 use App\Domain\Models\Wiki\AbstractWikiTemplate;
 use App\Domain\Models\Wiki\ArticleTemplate;
 use App\Domain\Models\Wiki\LienWebTemplate;
 use App\Domain\OptimizerFactory;
 use App\Domain\Publisher\ExternMapper;
-use App\Domain\ServiceInterfaces\ExternHttpClientInterface;
 use App\Domain\Utils\WikiTextUtil;
 use App\Domain\WikiTemplateFactory;
 use Exception;
@@ -88,7 +88,11 @@ class ExternRefTransformer implements ExternRefTransformerInterface
      */
     private $urlChecker;
 
-    public function __construct(ExternMapper $externMapper, ExternHttpClientInterface $httpClient, ?LoggerInterface $logger)
+    public function __construct(
+        ExternMapper $externMapper,
+        ExternHttpClientInterface $httpClient,
+        ?LoggerInterface $logger
+    )
     {
         $this->log = $logger ?? new NullLogger();
         $this->importConfigAndData();

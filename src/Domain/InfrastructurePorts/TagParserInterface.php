@@ -7,9 +7,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\ServiceInterfaces;
+namespace App\Domain\InfrastructurePorts;
 
-interface ExternHttpClientInterface
+interface TagParserInterface
 {
-    public function getHTML(string $url, ?bool $normalized=false): ?string;
+    public function importHtml(string $data): TagParserInterface;
+
+    public function xpathResults(string $path): array;
 }

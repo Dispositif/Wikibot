@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure;
 
-use App\Domain\ServiceInterfaces\TagParserInterface;
+use App\Domain\InfrastructurePorts\TagParserInterface;
 use DOMDocument;
 use Exception;
 use SimpleXMLElement;

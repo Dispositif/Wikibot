@@ -12,7 +12,7 @@ namespace App\Application;
 use App\Application\Traits\BotWorkerTrait;
 use App\Application\Traits\WorkerAnalyzedTitlesTrait;
 use App\Application\Traits\WorkerCLITrait;
-use App\Domain\AppInterfaces\DomainTransformerInterface;
+use App\Domain\AppPorts\DomainTransformerInterface;
 use App\Domain\Exceptions\ConfigException;
 use App\Domain\Exceptions\StopActionException;
 use App\Domain\Models\Summary;

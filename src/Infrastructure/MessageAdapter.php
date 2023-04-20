@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure;
 
-use App\Domain\ServiceInterfaces\MessageInterface;
+use App\Domain\InfrastructurePorts\MessageInterface;
 use Exception;
 use PhpAmqpLib\Message\AMQPMessage;
 
