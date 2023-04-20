@@ -11,7 +11,7 @@ namespace App\Domain\ExternLink;
 
 use App\Application\Http\ExternHttpClient;
 use App\Domain\InfrastructurePorts\ExternHttpClientInterface;
-use App\Infrastructure\InternetDomainParser;
+use App\Domain\InfrastructurePorts\InternetDomainParserInterface;
 use App\Infrastructure\TagParser;
 use DomainException;
 use Exception;
@@ -24,7 +24,11 @@ class ExternPageFactory
     /**
      * @throws Exception
      */
-    public static function fromURL($url, ExternHttpClientInterface $httpClient,LoggerInterface $logger = null): ExternPage
+    public static function fromURL(
+        string $url,
+        InternetDomainParserInterface $domainParser,
+        ExternHttpClientInterface $httpClient,
+        ?LoggerInterface $logger = null): ExternPage
     {
         if (!ExternHttpClient::isHttpURL($url)) {
             throw new Exception('string is not an URL '.$url);
@@ -34,7 +38,6 @@ class ExternPageFactory
             throw new DomainException('No HTML from requested URL '.$url);
         }
 
-        return new ExternPage($url, $html, new TagParser(), new InternetDomainParser(), $logger);
+        return new ExternPage($url, $html, new TagParser(), $domainParser, $logger);
     }
-
 }

@@ -16,6 +16,7 @@ use App\Application\Traits\WorkerCLITrait;
 use App\Domain\AppPorts\DomainTransformerInterface;
 use App\Domain\Exceptions\ConfigException;
 use App\Domain\Exceptions\StopActionException;
+use App\Domain\InfrastructurePorts\InternetDomainParserInterface;
 use App\Domain\Models\Summary;
 use App\Infrastructure\ServiceFactory;
 use Exception;
@@ -75,11 +76,17 @@ abstract class AbstractBotTaskWorker
      */
     private $domainTransformer;
 
+    /**
+     * @var InternetDomainParserInterface|null
+     */
+    protected $domainParser;
+
     public function __construct(
         WikiBotConfig $bot,
         MediawikiFactory $wiki,
         ?PageListInterface $pagesGen = null,
-        ?DomainTransformerInterface $domainTransformer = null
+        ?DomainTransformerInterface $domainTransformer = null,
+        ?InternetDomainParserInterface $domainParser = null
     )
     {
         $this->log = $bot->log;
@@ -88,15 +95,16 @@ abstract class AbstractBotTaskWorker
         if ($pagesGen !== null) {
             $this->pageListGenerator = $pagesGen;
         }
-        $this->setUpInConstructor();
+        $this->domainTransformer = $domainTransformer;
+        $this->domainParser = $domainParser;
 
+        $this->setUpInConstructor();
         $this->defaultTaskname = $bot->taskName;
 
         $this->initializePastAnalyzedTitles();
 
         // @throw exception on "Invalid CSRF token"
         $this->run();//todo delete that and use (Worker)->run($duration) or process management
-        $this->domainTransformer = $domainTransformer;
     }
 
     protected function setUpInConstructor(): void

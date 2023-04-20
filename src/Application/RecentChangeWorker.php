@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace App\Application;
 
+use App\Infrastructure\InternetDomainParser;
 use App\Infrastructure\PageList;
 use App\Infrastructure\ServiceFactory;
 use Mediawiki\Api\MediawikiApi;
@@ -85,7 +86,8 @@ class RecentChangeWorker
         $botConfig = new WikiBotConfig($this->logger);
         $botConfig->taskName = "🦊 Amélioration de références : URL ⇒ ";
 
-        new ExternRefWorker($botConfig, $wiki, $list);
+
+        new ExternRefWorker($botConfig, $wiki, $list, null, new InternetDomainParser());
     }
 
     private function getLastEditsbyUser(string $user): array

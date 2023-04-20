@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace App\Domain\ExternLink;
 
 use App\Application\Http\ExternHttpClient;
-use App\Infrastructure\InternetDomainParser;
+use App\Domain\InfrastructurePorts\InternetDomainParserInterface;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -33,10 +33,15 @@ class CheckURL
      * @var string
      */
     protected $url;
+    /**
+     * @var InternetDomainParserInterface
+     */
+    protected $internetDomainParser;
 
-    public function __construct(?LoggerInterface $logger = null)
+    public function __construct(InternetDomainParserInterface $domainParser, ?LoggerInterface $logger = null)
     {
         $this->log = $logger ?? new NullLogger();
+        $this->internetDomainParser = $domainParser;
     }
 
     public function isURLAuthorized(string $url): bool
@@ -72,7 +77,7 @@ class CheckURL
     protected function findRegistrableDomain(): ?string
     {
         try {
-            $this->registrableDomain = (new InternetDomainParser())->getRegistrableDomainFromURL($this->url);
+            $this->registrableDomain = $this->internetDomainParser->getRegistrableDomainFromURL($this->url);
         } catch (Exception $e) {
             $this->log->warning('Skip : not a valid URL : ' . $this->url);
             return null;
@@ -84,10 +89,6 @@ class CheckURL
      * todo move URL parsing
      * Skip PDF GIF etc
      * https://fr.wikipedia.org/wiki/Liste_d%27extensions_de_fichiers
-     *
-     * @param string $url
-     *
-     * @return bool
      */
     protected function hasForbiddenFilenameExtension(): bool
     {

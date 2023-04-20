@@ -12,4 +12,5 @@ namespace App\Domain\InfrastructurePorts;
 interface InternetDomainParserInterface
 {
     public function getRegistrableDomainFromURL(string $httpURL): string;
+    public static function extractSubdomainString(string $httpURL): string;
 }

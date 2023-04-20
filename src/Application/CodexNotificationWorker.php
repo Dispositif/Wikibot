@@ -44,7 +44,7 @@ class CodexNotificationWorker extends NotificationWorker
             $wiki = ServiceFactory::getMediawikiFactory(); // todo inject+interface
             $botConfig = new WikiBotConfig($this->logger);
             $botConfig->taskName = self::PROCESS_TASKNAME;
-            //new ExternRefWorker($botConfig, $wiki, new PageList([$article]));
+            //new ExternRefWorker($botConfig, $wiki, new PageList([$article], null, new InternetDomainParser()));
 
             new GoogleBooksWorker($botConfig, $wiki, $pageList);
             sleep(10);

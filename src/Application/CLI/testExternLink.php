@@ -13,6 +13,7 @@ use App\Application\Http\ExternHttpClient;
 use App\Domain\ExternLink\ExternRefTransformer;
 use App\Domain\Models\Summary;
 use App\Domain\Publisher\ExternMapper;
+use App\Infrastructure\InternetDomainParser;
 use App\Infrastructure\Logger;
 use Codedungeon\PHPCliColors\Color;
 use Exception;
@@ -30,7 +31,7 @@ $log = new Logger();
 $log->debug = true;
 $log->verbose = true;
 $summary = new Summary('test');
-$trans = new ExternRefTransformer(new ExternMapper($log), new ExternHttpClient($log), $log);
+$trans = new ExternRefTransformer(new ExternMapper($log), new ExternHttpClient($log), new InternetDomainParser(), $log);
 $trans->skipSiteBlacklisted = false;
 $trans->skipRobotNoIndex = false;
 try {

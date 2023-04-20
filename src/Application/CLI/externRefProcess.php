@@ -12,6 +12,7 @@ namespace App\Application\CLI;
 use App\Application\ExternRefWorker;
 use App\Application\WikiBotConfig;
 use App\Infrastructure\CirrusSearch;
+use App\Infrastructure\InternetDomainParser;
 use App\Infrastructure\Logger;
 use App\Infrastructure\PageList;
 use App\Infrastructure\ServiceFactory;
@@ -80,7 +81,7 @@ $filtered = array_diff($titles, $edited);
 $list = new PageList( $filtered );
 echo ">".$list->count()." dans liste\n";
 
-new ExternRefWorker($botConfig, $wiki, $list);
+new ExternRefWorker($botConfig, $wiki, $list, null, new InternetDomainParser());
 
 echo "END of process\n";
 sleep(60);

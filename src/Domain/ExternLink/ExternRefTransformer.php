@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Domain\ExternLink;
 
 use App\Domain\InfrastructurePorts\ExternHttpClientInterface;
+use App\Domain\InfrastructurePorts\InternetDomainParserInterface;
 use App\Domain\Models\Summary;
 use App\Domain\Models\Wiki\AbstractWikiTemplate;
 use App\Domain\Models\Wiki\ArticleTemplate;
@@ -87,11 +88,16 @@ class ExternRefTransformer implements ExternRefTransformerInterface
      * @var CheckURL
      */
     private $urlChecker;
+    /**
+     * @var InternetDomainParserInterface
+     */
+    protected $domainParser;
 
     public function __construct(
-        ExternMapper $externMapper,
+        ExternMapper              $externMapper,
         ExternHttpClientInterface $httpClient,
-        ?LoggerInterface $logger
+        InternetDomainParserInterface $domainParser,
+        ?LoggerInterface          $logger = null
     )
     {
         $this->log = $logger ?? new NullLogger();
@@ -99,7 +105,8 @@ class ExternRefTransformer implements ExternRefTransformerInterface
         $this->mapper = $externMapper;
         $this->httpClient = $httpClient;
         $this->externHttpErrorLogic = new ExternHttpErrorLogic($this->log);
-        $this->urlChecker = new CheckURL($logger);
+        $this->domainParser = $domainParser;
+        $this->urlChecker = new CheckURL($this->domainParser, $logger);
     }
 
     /**
@@ -207,7 +214,7 @@ class ExternRefTransformer implements ExternRefTransformerInterface
     protected function extractPageDataFromUrl(string $url): array
     {
         sleep(self::HTTP_REQUEST_LOOP_DELAY);
-        $this->externalPage = ExternPageFactory::fromURL($url, $this->httpClient, $this->log);
+        $this->externalPage = ExternPageFactory::fromURL($url, $this->domainParser, $this->httpClient, $this->log);
         $pageData = $this->externalPage->getData();
         $this->log->debug('metaData', $pageData);
 

@@ -10,7 +10,9 @@ declare(strict_types=1);
 namespace App\Application;
 
 use App\Application\Http\ExternHttpClient;
+use App\Domain\Exceptions\ConfigException;
 use App\Domain\ExternLink\ExternRefTransformer;
+use App\Domain\InfrastructurePorts\InternetDomainParserInterface;
 use App\Domain\Publisher\ExternMapper;
 use Throwable;
 
@@ -92,10 +94,15 @@ class ExternRefWorker extends RefBotWorker
 
     protected function setUpInConstructor(): void
     {
+        if (!$this->domainParser instanceof InternetDomainParserInterface) {
+            dump($this->domainParser);
+            throw new ConfigException('DomainParser not set');
+        }
         // TODO extract ExternRefTransformerInterface
         $this->transformer = new ExternRefTransformer(
             new ExternMapper($this->log),
             new ExternHttpClient($this->log),
+            $this->domainParser,
             $this->log
         );
         $this->transformer->skipSiteBlacklisted = self::SKIP_SITE_BLACKLISTED;
