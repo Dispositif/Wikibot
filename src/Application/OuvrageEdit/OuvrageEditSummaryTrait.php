@@ -7,9 +7,10 @@
 
 declare(strict_types=1);
 
-namespace App\Application;
+namespace App\Application\OuvrageEdit;
 
 use DateTime;
+use function App\Application\mb_substr;
 
 /**
  * Used only by OuvrageEditWorker.
@@ -30,9 +31,9 @@ trait OuvrageEditSummaryTrait
         $summary = sprintf(
             '%s [%s] %s %sx : %s',
             trim($prefix),
-            str_replace('v', '', $this->citationVersion),
+            str_replace('v', '', $this->pageWorkStatus->citationVersion),
             trim(self::TASK_NAME),
-            $this->nbRows,
+            $this->pageWorkStatus->nbRows,
             $citeSummary
         );
 
@@ -46,7 +47,7 @@ trait OuvrageEditSummaryTrait
      */
     protected function shrinkLongSummaryIfNoImportantDetailsToVerify(string $summary): string
     {
-        if (empty($this->importantSummary)) {
+        if (empty($this->pageWorkStatus->importantSummary)) {
             $length = strlen($summary);
             $summary = mb_substr($summary, 0, 80);
             $summary .= ($length > strlen($summary)) ? '…' : '';
@@ -58,8 +59,8 @@ trait OuvrageEditSummaryTrait
 
     protected function couldAddLuckMessage(string $summary): string
     {
-        if (!$this->luckyState && (new DateTime())->format('H:i') === '11:11') {
-            $this->luckyState = true;
+        if (!$this->pageWorkStatus->luckyState && (new DateTime())->format('H:i') === '11:11') {
+            $this->pageWorkStatus->luckyState = true;
             $summary .= self::LUCKY_MESSAGE;
         }
 
@@ -68,9 +69,9 @@ trait OuvrageEditSummaryTrait
 
     protected function generatePrefix(): string
     {
-        $prefix = ($this->botFlag) ? 'bot ' : '';
-        $prefix .= (empty($this->errorWarning)) ? '' : ' ⚠️';
-        $prefix .= (empty($this->featured_article)) ? '' : ' ☆'; // AdQ, BA
+        $prefix = ($this->pageWorkStatus->botFlag) ? 'bot ' : '';
+        $prefix .= (empty($this->pageWorkStatus->errorWarning)) ? '' : ' ⚠️';
+        $prefix .= (empty($this->pageWorkStatus->featured_article)) ? '' : ' ☆'; // AdQ, BA
 
         return $prefix;
     }
@@ -81,10 +82,10 @@ trait OuvrageEditSummaryTrait
     protected function getCiteSummary(): string
     {
         // basic modifs
-        $citeSummary = implode(' ', $this->citationSummary);
+        $citeSummary = implode(' ', $this->pageWorkStatus->citationSummary);
         // replaced by list of modifs to verify by humans
-        if (!empty($this->importantSummary)) {
-            $citeSummary = implode(', ', $this->importantSummary);
+        if (!empty($this->pageWorkStatus->importantSummary)) {
+            $citeSummary = implode(', ', $this->pageWorkStatus->importantSummary);
         }
         return $citeSummary;
     }
@@ -96,8 +97,8 @@ trait OuvrageEditSummaryTrait
      */
     protected function addSummaryTag(string $tag)
     {
-        if (!in_array($tag, $this->importantSummary)) {
-            $this->importantSummary[] = $tag;
+        if (!in_array($tag, $this->pageWorkStatus->importantSummary)) {
+            $this->pageWorkStatus->importantSummary[] = $tag;
         }
     }
 }

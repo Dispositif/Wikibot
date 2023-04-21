@@ -11,6 +11,8 @@ namespace App\Application\InfrastructurePorts;
 
 interface DbAdapterInterface
 {
+    public function getOptiValidDate(): string;
+
     public function getNewRaw(): ?array;
 
     public function sendCompletedData(array $finalData): bool;

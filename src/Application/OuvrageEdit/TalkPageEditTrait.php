@@ -1,14 +1,14 @@
 <?php
-/**
+/*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the license file.
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
 
 
-namespace App\Application;
+namespace App\Application\OuvrageEdit;
 
 use App\Infrastructure\ServiceFactory;
 use Psr\Log\LoggerInterface;
@@ -39,7 +39,7 @@ trait TalkPageEditTrait
 
         // format wiki message
         $errorList = '';
-        foreach ($this->errorWarning[$mainTitle] as $error) {
+        foreach ($this->pageWorkStatus->errorWarning[$mainTitle] as $error) {
             $errorList .= sprintf("* <span style=\"background:#FCDFE8\"><nowiki>%s</nowiki></span> \n", $error);
         }
 

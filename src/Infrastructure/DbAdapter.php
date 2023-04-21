@@ -19,6 +19,7 @@ use Simplon\Mysql\PDOConnector;
 use Throwable;
 
 /**
+ * TODO return DTO !!!
  * Temporary SQL play. https://github.com/fightbulc/simplon_mysql .
  * Class DbAdapter.
  */
@@ -35,6 +36,11 @@ class DbAdapter implements DbAdapterInterface
         );
         $this->pdoConn = $pdo->connect('utf8', ['port' => getenv('MYSQL_PORT')]);
         $this->db = new Mysql($this->pdoConn);
+    }
+
+    public function getOptiValidDate(): string
+    {
+        return self::OPTI_VALID_DATE;
     }
 
     /**
@@ -113,6 +119,7 @@ class DbAdapter implements DbAdapterInterface
     //------------------------------------------------------
 
     /**
+     * TODO DTO !!
      * Get batch of citations(template) for edit process.
      *
      * @param int|null $limit
@@ -122,6 +129,17 @@ class DbAdapter implements DbAdapterInterface
      */
     public function getAllRowsToEdit(?int $limit = 100): ?string
     {
+//        // ----------- TEST ----
+//        // it works
+//        $store = new PageOuvrageStore($this->db);
+//        $pageOuvrageModel = $store->read(
+//            (new ReadQueryBuilder())->addCondition(PageOuvrageDTO::COLUMN_PAGE, 'Autorail Pauline')
+//        );
+//        dump($pageOuvrageModel);
+//        die('stooooop');
+//
+//        // ---------- end TEST ----
+
         $e = null;
         try {
             $pageInfo = $this->pdoConn->query(
@@ -152,8 +170,9 @@ class DbAdapter implements DbAdapterInterface
                 return '[]';
             }
 
-            $page = $rows[0]['page'];
+            $page = $rows[0]['page']; // get first page to edit ?
 
+            // todo Replace bellow with PageOuvrageDTO
             // Order by optidate for first version in edit commentary ?
             $data = $this->db->fetchRowMany(
                 'SELECT * FROM page_ouvrages WHERE page=:page ORDER BY optidate DESC',

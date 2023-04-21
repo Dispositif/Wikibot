@@ -8,10 +8,12 @@
 
 declare(strict_types=1);
 
-namespace App\Application;
+namespace App\Application\OuvrageEdit;
 
 use App\Application\InfrastructurePorts\DbAdapterInterface;
 use App\Application\InfrastructurePorts\MemoryInterface;
+use App\Application\WikiBotConfig;
+use App\Application\WikiPageAction;
 use App\Domain\Utils\WikiTextUtil;
 use App\Infrastructure\ServiceFactory;
 use Codedungeon\PHPCliColors\Color;
@@ -24,7 +26,8 @@ use Psr\Log\NullLogger;
 use Throwable;
 
 /**
- *
+ * Legacy class, to be refactored. To big, too many responsibilities.
+ * todo use PageOuvrageCollectionDTO.
  */
 class OuvrageEditWorker
 {
@@ -36,57 +39,39 @@ class OuvrageEditWorker
      * poster ou pas le message en PD signalant les erreurs à résoudre
      */
     public const EDIT_SIGNALEMENT = true;
-
-    public const CITATION_LIMIT                 = 150;
-    public const DELAY_BOTFLAG_SECONDS          = 60;
-    public const DELAY_NO_BOTFLAG_SECONDS       = 60;
+    public const CITATION_LIMIT = 150;
+    public const DELAY_BOTFLAG_SECONDS = 60;
+    public const DELAY_NO_BOTFLAG_SECONDS = 60;
     public const DELAY_MINUTES_AFTER_HUMAN_EDIT = 10;
-    public const ERROR_MSG_TEMPLATE             = __DIR__.'/templates/message_errors.wiki';
+    public const ERROR_MSG_TEMPLATE = __DIR__ . '/../templates/message_errors.wiki';
+
+    /**
+     * @var PageWorkStatus
+     */
+    protected $pageWorkStatus;
 
     private $db;
+    /**
+     * @var WikiBotConfig
+     */
     private $bot;
-    private $wikiText;
-
-    private $citationSummary;
-    private $errorWarning = [];
-    public $importantSummary = [];
-
-    private $nbRows;
-
-    // Minor flag on edit
-    private $minorFlag = true;
-    // WikiBotConfig flag on edit
-    private $botFlag = true;
-
     /**
      * @var MemoryInterface
      */
     private $memory;
 
     /**
-     * @var LoggerInterface|NullLogger
+     * @var LoggerInterface
      */
     private $log;
-    /**
-     * @var mixed
-     */
-    private $citationVersion;
-    /**
-     * Featured/Good article (AdQ/BA)
-     * @var bool
-     */
-    private $featured_article = false;
-    /**
-     * @var bool
-     */
-    private $luckyState = false;
 
     public function __construct(
-        DbAdapter $dbAdapter,
-        WikiBotConfig $bot,
-        MemoryInterface $memory,
-        ?LoggerInterface $log = null
-    ) {
+        DbAdapterInterface $dbAdapter,
+        WikiBotConfig      $bot,
+        MemoryInterface    $memory,
+        ?LoggerInterface   $log = null
+    )
+    {
         $this->db = $dbAdapter;
         $this->bot = $bot;
         $this->memory = $memory;
@@ -100,7 +85,7 @@ class OuvrageEditWorker
     {
         while (true) {
             echo "\n-------------------------------------\n\n";
-            echo date("Y-m-d H:i:s")." ";
+            echo date("Y-m-d H:i:s") . " ";
             $this->log->info($this->memory->getMemory(true));
             $this->pageProcess();
             sleep(2); // précaution boucle infinie
@@ -114,7 +99,8 @@ class OuvrageEditWorker
     private function pageProcess(): bool
     {
         $e = null;
-        $this->initialize();
+        $this->pageWorkStatus = new PageWorkStatus();
+        $this->bot->checkStopOnTalkpage(true);
 
         // get a random queue line
         $json = $this->db->getAllRowsToEdit(self::CITATION_LIMIT);
@@ -128,16 +114,16 @@ class OuvrageEditWorker
 
         try {
             $title = $data[0]['page'];
-            echo Color::BG_CYAN.$title.Color::NORMAL." \n";
+            echo Color::BG_CYAN . $title . Color::NORMAL . " \n";
             $page = ServiceFactory::wikiPageAction($title, false); // , true ?
         } catch (Exception $e) {
-            $this->log->warning("*** WikiPageAction error : ".$title." \n");
+            $this->log->warning("*** WikiPageAction error : " . $title . " \n");
             sleep(20);
 
             return false;
         }
 
-        // Page supprimée ?
+        // Page supprimée ? todo event listener
         if ($page->getLastRevision() === null) {
             $this->log->warning("SKIP : page supprimée !\n");
             $this->db->deleteArticle($title);
@@ -159,29 +145,30 @@ class OuvrageEditWorker
 
             return false;
         }
-        $this->wikiText = $page->getText();
+        $this->pageWorkStatus->wikiText = $page->getText();
 
-        if (empty($this->wikiText)) {
+        if (empty($this->pageWorkStatus->wikiText)) {
             $this->log->warning("SKIP : this->wikitext vide\n");
             $this->db->skipArticle($title);
             return false;
         }
 
-        // Featured/Good article (AdQ/BA)
-        if (preg_match('#{{ ?En-tête label ?\| ?AdQ#i', $this->wikiText)) {
+        // Featured/Good article (AdQ/BA) todo event listener
+        if (preg_match('#{{ ?En-tête label ?\| ?AdQ#i', $this->pageWorkStatus->wikiText)) {
             $this->db->setLabel($title, 2);
             $this->log->warning("Article de Qualité !\n");
-            $this->botFlag = false;
-            $this->featured_article = true; // to add star in edit summary
+            $this->pageWorkStatus->botFlag = false;
+            $this->pageWorkStatus->featured_article = true; // to add star in edit summary
         }
-        if (preg_match('#{{ ?En-tête label ?\| ?BA#i', $this->wikiText)) {
+        if (preg_match('#{{ ?En-tête label ?\| ?BA#i', $this->pageWorkStatus->wikiText)) {
             $this->db->setLabel($title, 1);
-            $this->botFlag = false;
-            $this->featured_article = true; // to add star in edit summary
+            $this->pageWorkStatus->botFlag = false;
+            $this->pageWorkStatus->featured_article = true; // to add star in edit summary
             $this->log->warning("Bon article !!\n");
         }
 
-        if (WikiBotConfig::isEditionTemporaryRestrictedOnWiki($this->wikiText)) {
+        // todo event listener
+        if (WikiBotConfig::isEditionTemporaryRestrictedOnWiki($this->pageWorkStatus->wikiText)) {
             // TODO Gestion d'une repasse dans X jours
             $this->log->info("SKIP : protection/3R/travaux.\n");
             $this->db->skipArticle($title);
@@ -210,7 +197,7 @@ class OuvrageEditWorker
         $changed = false;
         foreach ($data as $dat) {
             // hack temporaire pour éviter articles dont CompleteProcess incomplet
-            if (empty($dat['opti']) || empty($dat['optidate']) || $dat['optidate'] < DbAdapter::OPTI_VALID_DATE) {
+            if (empty($dat['opti']) || empty($dat['optidate']) || $dat['optidate'] < $this->db->getOptiValidDate()) {
                 $this->log->notice("SKIP : Amélioration incomplet de l'article. sleep 10min");
                 sleep(600);
 
@@ -227,7 +214,7 @@ class OuvrageEditWorker
         }
 
         // EDIT THE PAGE
-        if ($this->wikiText === '' || $this->wikiText === '0') {
+        if ($this->pageWorkStatus->wikiText === '' || $this->pageWorkStatus->wikiText === '0') {
             return false;
         }
 
@@ -242,15 +229,15 @@ class OuvrageEditWorker
             // corona Covid :)
             //$miniSummary .= (date('H:i') === '20:00') ? ' 🏥' : ''; // 🏥🦠
 
-            $editInfo = ServiceFactory::editInfo($miniSummary, $this->minorFlag, $this->botFlag, 5);
-            $success = $page->editPage(Normalizer::normalize($this->wikiText), $editInfo);
+            $editInfo = ServiceFactory::editInfo($miniSummary, $this->pageWorkStatus->minorFlag, $this->pageWorkStatus->botFlag, 5);
+            $success = $page->editPage(Normalizer::normalize($this->pageWorkStatus->wikiText), $editInfo);
         } catch (Throwable $e) {
             // Invalid CSRF token.
             if (strpos($e->getMessage(), 'Invalid CSRF token') !== false) {
                 $this->log->alert("*** Invalid CSRF token \n");
                 throw new Exception('Invalid CSRF token', $e->getCode(), $e);
             } else {
-                $this->log->warning('Exception in editPage() '.$e->getMessage());
+                $this->log->warning('Exception in editPage() ' . $e->getMessage());
                 sleep(10);
 
                 return false;
@@ -266,43 +253,25 @@ class OuvrageEditWorker
             }
 
             try {
-                if (self::EDIT_SIGNALEMENT && !empty($this->errorWarning[$title])) {
+                if (self::EDIT_SIGNALEMENT && !empty($this->pageWorkStatus->errorWarning[$title])) {
                     $this->sendOuvrageErrorsOnTalkPage($data, $this->log);
                 }
             } catch (Throwable $e) {
-                $this->log->warning('Exception in editPage() '.$e->getMessage());
+                $this->log->warning('Exception in editPage() ' . $e->getMessage());
                 unset($e);
             }
 
-            if (!$this->botFlag) {
-                $this->log->debug("sleep ".self::DELAY_NO_BOTFLAG_SECONDS);
+            if (!$this->pageWorkStatus->botFlag) {
+                $this->log->debug("sleep " . self::DELAY_NO_BOTFLAG_SECONDS);
                 sleep(self::DELAY_NO_BOTFLAG_SECONDS);
             }
-            if ($this->botFlag) {
-                $this->log->debug("sleep ".self::DELAY_BOTFLAG_SECONDS);
+            if ($this->pageWorkStatus->botFlag) {
+                $this->log->debug("sleep " . self::DELAY_BOTFLAG_SECONDS);
                 sleep(self::DELAY_BOTFLAG_SECONDS);
             }
         }
 
         return $success;
-    }
-
-    /**
-     * @throws UsageException
-     */
-    private function initialize(): void
-    {
-        // initialisation vars
-        $this->botFlag = true;
-        $this->errorWarning = [];
-        $this->featured_article = false;
-        $this->wikiText = null;
-        $this->citationSummary = [];
-        $this->importantSummary = [];
-        $this->minorFlag = true;
-        $this->nbRows = 0;
-
-        $this->bot->checkStopOnTalkpage(true);
     }
 
     /**
@@ -315,23 +284,19 @@ class OuvrageEditWorker
     {
         $origin = $data['raw'];
         $completed = $data['opti'];
-
-        $this->log->debug('origin: '.$origin);
-        $this->log->debug('completed: '.$completed);
-        $this->log->debug('modifs: '.$data['modifs']);
-        $this->log->debug('version: '.$data['version']);
+        $this->printDebug($data);
 
         if (WikiTextUtil::isCommented($origin) || $this->isTextCreatingError($origin)) {
             $this->log->notice("SKIP: template avec commentaire HTML ou modèle problématique.");
-            $this->db->skipRow((int) $data['id']);
+            $this->db->skipRow((int)$data['id']);
 
             return false;
         }
 
-        $find = mb_strpos($this->wikiText, $origin);
+        $find = mb_strpos($this->pageWorkStatus->wikiText, $origin);
         if ($find === false) {
             $this->log->notice("String non trouvée.");
-            $this->db->skipRow((int) $data['id']);
+            $this->db->skipRow((int)$data['id']);
 
             return false;
         }
@@ -339,20 +304,26 @@ class OuvrageEditWorker
         $this->checkErrorWarning($data);
 
         // Replace text
-        $newText = WikiPageAction::replaceTemplateInText($this->wikiText, $origin, $completed);
+        $newText = WikiPageAction::replaceTemplateInText($this->pageWorkStatus->wikiText, $origin, $completed);
 
-        if (!$newText || $newText === $this->wikiText) {
+        if (!$newText || $newText === $this->pageWorkStatus->wikiText) {
             $this->log->warning("newText error");
 
             return false;
         }
-        $this->wikiText = $newText;
-        $this->minorFlag = ('1' === $data['major']) ? false : $this->minorFlag;
-        $this->citationVersion = $data['version'];
-        $this->citationSummary[] = $data['modifs'];
-        $this->nbRows++;
+        $this->pageWorkStatus->wikiText = $newText;
+        $this->pageWorkStatus->minorFlag = ('1' === $data['major']) ? false : $this->pageWorkStatus->minorFlag;
+        $this->pageWorkStatus->citationVersion = $data['version'];
+        $this->pageWorkStatus->citationSummary[] = $data['modifs'];
+        $this->pageWorkStatus->nbRows++;
 
         return true;
+    }
+
+    private function isTextCreatingError(string $string): bool
+    {
+        // mauvaise Modèle:Sp
+        return (preg_match('#\{\{-?(sp|s|sap)-?\|#', $string) === 1);
     }
 
     /**
@@ -379,29 +350,29 @@ class OuvrageEditWorker
             foreach ($matches[0] as $line) {
                 $this->addErrorWarning($data['page'], $line);
             }
-            //  $this->botFlag = false;
+            //  $this->pageWorkStatus->botFlag = false;
             $this->addSummaryTag('paramètre non corrigé');
         }
 
         // ISBN invalide
         if (preg_match("#isbn invalide ?=[^|}]+#i", $data['opti'], $matches) > 0) {
             $this->addErrorWarning($data['page'], $matches[0]);
-            $this->botFlag = false;
+            $this->pageWorkStatus->botFlag = false;
             $this->addSummaryTag('ISBN invalide 💩');
         }
 
         // Edits avec ajout conséquent de donnée
         if (preg_match('#distinction des auteurs#', $data['modifs']) > 0) {
-            $this->botFlag = false;
+            $this->pageWorkStatus->botFlag = false;
             $this->addSummaryTag('distinction auteurs 🧠');
         }
         // prédiction paramètre correct
         if (preg_match('#[^,]+(=>|⇒)[^,]+#', $data['modifs'], $matches) > 0) {
-            $this->botFlag = false;
+            $this->pageWorkStatus->botFlag = false;
             $this->addSummaryTag($matches[0]);
         }
         if (preg_match('#\+\+sous-titre#', $data['modifs']) > 0) {
-            $this->botFlag = false;
+            $this->pageWorkStatus->botFlag = false;
             $this->addSummaryTag('+sous-titre');
         }
         if (preg_match('#\+lieu#', $data['modifs']) > 0) {
@@ -431,7 +402,7 @@ class OuvrageEditWorker
         //        }
 
         // mention BnF si ajout donnée + ajout identifiant bnf=
-        if (!empty($this->importantSummary) && preg_match('#BnF#i', $data['modifs'], $matches) > 0) {
+        if (!empty($this->pageWorkStatus->importantSummary) && preg_match('#BnF#i', $data['modifs'], $matches) > 0) {
             $this->addSummaryTag('©[[BnF]]');
         }
     }
@@ -445,14 +416,16 @@ class OuvrageEditWorker
      */
     private function addErrorWarning(string $page, string $text): void
     {
-        if (!isset($this->errorWarning[$page]) || !in_array($text, $this->errorWarning[$page])) {
-            $this->errorWarning[$page][] = $text;
+        if (!isset($this->pageWorkStatus->errorWarning[$page]) || !in_array($text, $this->pageWorkStatus->errorWarning[$page])) {
+            $this->pageWorkStatus->errorWarning[$page][] = $text;
         }
     }
 
-    private function isTextCreatingError(string $string): bool
+    private function printDebug(array $data)
     {
-        // mauvaise Modèle:Sp
-        return (preg_match('#\{\{-?(sp|s|sap)-?\|#', $string) === 1);
+        $this->log->debug('origin: ' . $data['raw']);
+        $this->log->debug('completed: ' . $data['opti']);
+        $this->log->debug('modifs: ' . $data['modifs']);
+        $this->log->debug('version: ' . $data['version']);
     }
 }
