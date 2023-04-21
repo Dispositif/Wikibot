@@ -32,7 +32,7 @@ if ($quota->isQuotaReached()) {
 
 
 $wiki = ServiceFactory::getMediawikiFactory();
-$bot = new WikiBotConfig(new Logger());
+$bot = new WikiBotConfig($wiki, new Logger());
 $bot->taskName = "🌐📘 Amélioration bibliographique : lien Google Books ⇒ {ouvrage}";
 
 // les "* https://..." en biblio et liens externes

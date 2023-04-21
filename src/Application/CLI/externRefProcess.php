@@ -32,7 +32,7 @@ $wiki = ServiceFactory::getMediawikiFactory();
 $logger = new Logger();
 //$logger->colorMode = true;
 //$logger->debug = true;
-$botConfig = new WikiBotConfig($logger);
+$botConfig = new WikiBotConfig($wiki, $logger);
 $botConfig->taskName = "🌐 Amélioration de références : URL ⇒ "; // 🐞 🌐  🔗
 
 // LAST EDIT

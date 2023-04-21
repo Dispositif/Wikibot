@@ -45,7 +45,7 @@ class CodexNotificationWorker extends NotificationWorker
     {
         try {
             $wiki = ServiceFactory::getMediawikiFactory(); // todo inject+interface
-            $botConfig = new WikiBotConfig($this->logger);
+            $botConfig = new WikiBotConfig($wiki, $this->logger);
             $botConfig->taskName = self::PROCESS_TASKNAME;
             //new ExternRefWorker($botConfig, $wiki, new PageList([$article], null, new InternetDomainParser()));
 
@@ -67,7 +67,7 @@ class CodexNotificationWorker extends NotificationWorker
             $wiki = ServiceFactory::getMediawikiFactory(); // todo inject+interface
             $list = new PageList([$article]);
             // todo inject+interface DbAdapterInterface
-            new ScanWiki2DB($wiki, new DbAdapter(), new WikiBotConfig($this->logger), $list, 15);
+            new ScanWiki2DB($wiki, new DbAdapter(), new WikiBotConfig($wiki, $this->logger), $list, 15);
         } catch (Throwable $e) {
             echo $e->getMessage();
         }

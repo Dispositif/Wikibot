@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure;
 
+use App\Application\InfrastructurePorts\PageListForAppInterface;
 use App\Domain\InfrastructurePorts\PageListInterface;
 use Exception;
 use GuzzleHttp\Client;
@@ -19,7 +20,7 @@ use GuzzleHttp\Client;
  * https://wstat.fr/template/index.php?title=Ouvrage&query=inclusions&param=isbn&start=50000&limit=50&format=json
  * Class WstatImport.
  */
-class WstatImport implements PageListInterface
+class WstatImport implements PageListInterface, PageListForAppInterface
 {
     public const MAX_IMPORT = 50000;
 

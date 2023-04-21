@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure;
 
+use App\Application\InfrastructurePorts\PageListForAppInterface;
 use App\Domain\Exceptions\ConfigException;
 use App\Domain\InfrastructurePorts\PageListInterface;
 use GuzzleHttp\Psr7\Response;
@@ -24,7 +25,7 @@ use HttpException;
  *
  * @package App\Infrastructure
  */
-class CirrusSearch implements PageListInterface
+class CirrusSearch implements PageListInterface, PageListForAppInterface
 {
     public const BASE_URL = 'https://fr.wikipedia.org/w/api.php';
 

@@ -29,7 +29,7 @@ $wiki = ServiceFactory::getMediawikiFactory();
 $taskName = "🧹📗 Correction de référence (lanouvellerepublique.fr : titre manquant)"; // 🧹📗🐵
 $botflag = false;
 
-$bot = new WikiBotConfig(new Logger());
+$bot = new WikiBotConfig($wiki, new Logger());
 
 // Get raw list of articles
 $filename = __DIR__.'/../resources/plume.txt';

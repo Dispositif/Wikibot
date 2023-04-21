@@ -9,9 +9,10 @@ declare(strict_types=1);
 
 namespace App\Infrastructure;
 
+use App\Application\InfrastructurePorts\PageListForAppInterface;
 use App\Domain\InfrastructurePorts\PageListInterface;
 
-class FileManager implements PageListInterface
+class FileManager implements PageListInterface, PageListForAppInterface
 {
     use CsvTrait;
 

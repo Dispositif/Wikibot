@@ -7,12 +7,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\InfrastructurePorts;
 
-/**
- * Todo generator type ? adapter infra ?
- */
-interface PageListInterface
+namespace App\Application\InfrastructurePorts;
+
+
+interface SMSInterface
 {
-    public function getPageTitles(): array;
+    public function send(string $message): bool;
 }

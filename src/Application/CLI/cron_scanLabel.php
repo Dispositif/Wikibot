@@ -31,4 +31,4 @@ $ba = PageList::FromWikiCategory('Article potentiellement de qualité');
 $adq = PageList::FromWikiCategory('Article potentiellement bon');
 $list = new PageList(array_merge($ba->getPageTitles(), $adq->getPageTitles()));
 
-new ScanWiki2DB($wiki, new DbAdapter(), new WikiBotConfig(new Logger()), $list, 20);
+new ScanWiki2DB($wiki, new DbAdapter(), new WikiBotConfig($wiki, new Logger()), $list, 20);

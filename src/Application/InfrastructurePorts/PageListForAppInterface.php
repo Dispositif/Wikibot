@@ -9,9 +9,7 @@ declare(strict_types=1);
 
 namespace App\Application\InfrastructurePorts;
 
-use App\Domain\InfrastructurePorts\PageListInterface;
-
-interface PageListForAppInterface extends PageListInterface
+interface PageListForAppInterface
 {
-
+    public function getPageTitles(): array;
 }

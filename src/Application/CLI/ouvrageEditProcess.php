@@ -14,6 +14,7 @@ use App\Application\WikiBotConfig;
 use App\Infrastructure\DbAdapter;
 use App\Infrastructure\Logger;
 use App\Infrastructure\Memory;
+use App\Infrastructure\ServiceFactory;
 use Throwable;
 
 include __DIR__.'/../myBootstrap.php';
@@ -29,7 +30,7 @@ while (true) {
 //            $logger->debug = true;
         }
         $process = new OuvrageEditWorker(
-            new DbAdapter(), new WikiBotConfig($logger), new Memory(), $logger
+            new DbAdapter(), new WikiBotConfig(ServiceFactory::getMediawikiFactory(), $logger), new Memory(), $logger
         );
         $process->run();
         $count = 0;

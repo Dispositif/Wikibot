@@ -84,7 +84,7 @@ class RecentChangeWorker
     private function consumeList(PageList $list): void
     {
         $wiki = ServiceFactory::getMediawikiFactory();
-        $botConfig = new WikiBotConfig($this->logger);
+        $botConfig = new WikiBotConfig($wiki, $this->logger);
         $botConfig->taskName = "🦊 Amélioration de références : URL ⇒ ";
 
 

@@ -28,7 +28,7 @@ $wiki = ServiceFactory::getMediawikiFactory();
 if (!empty($argv[1])) {
     echo "Ajout manuel...\n";
     $list = new PageList([trim($argv[1])]);
-    new ScanWiki2DB($wiki, new DbAdapter(), new WikiBotConfig(), $list, 15);
+    new ScanWiki2DB($wiki, new DbAdapter(), new WikiBotConfig($wiki), $list, 15);
     exit;
 }
 
@@ -60,6 +60,6 @@ if (!empty($argv[1])) {
 // utilise une liste d'import wstat.fr
  echo "Liste d'après wstat.fr\n";
 $list = PageList::FromFile(__DIR__.'/../resources/importISBN_nov.txt');
-new ScanWiki2DB($wiki, new DbAdapter(), new WikiBotConfig(), $list, 0);
+new ScanWiki2DB($wiki, new DbAdapter(), new WikiBotConfig($wiki), $list, 0);
 
 
