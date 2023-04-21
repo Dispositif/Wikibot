@@ -84,4 +84,4 @@ echo ">".$list->count()." dans liste\n";
 new ExternRefWorker($botConfig, $wiki, $list, null, new InternetDomainParser());
 
 echo "END of process\n";
-sleep(60);
+
