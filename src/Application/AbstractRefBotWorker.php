@@ -15,7 +15,7 @@ use App\Domain\Utils\WikiTextUtil;
 use Codedungeon\PHPCliColors\Color;
 use Exception;
 
-abstract class RefBotWorker extends AbstractBotTaskWorker
+abstract class AbstractRefBotWorker extends AbstractBotTaskWorker
 {
     public const TASK_BOT_FLAG = false;
     public const MAX_REFS_PROCESSED_IN_ARTICLE = 30;

@@ -8,10 +8,13 @@
 declare(strict_types=1);
 
 
-namespace App\Application;
+namespace App\Application\Notification;
 
 
+use App\Application\GoogleBooksWorker;
 use App\Application\InfrastructurePorts\PageListForAppInterface;
+use App\Application\OuvrageScan\ScanWiki2DB;
+use App\Application\WikiBotConfig;
 use App\Infrastructure\DbAdapter;
 use App\Infrastructure\PageList;
 use App\Infrastructure\ServiceFactory;

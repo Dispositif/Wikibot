@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace App\Application\CLI;
 
-use App\Application\CodexNotificationWorker;
+use App\Application\Notification\CodexNotificationWorker;
 use App\Infrastructure\Logger;
 use App\Infrastructure\ServiceFactory;
 

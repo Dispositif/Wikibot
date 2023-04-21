@@ -7,8 +7,9 @@
 
 declare(strict_types=1);
 
-namespace App\Application;
+namespace App\Application\Notification;
 
+use App\Application\WikiPageAction;
 use App\Infrastructure\ServiceFactory;
 use DateTime;
 use Exception;

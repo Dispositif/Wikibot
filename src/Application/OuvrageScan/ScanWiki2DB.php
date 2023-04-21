@@ -7,10 +7,12 @@
 
 declare(strict_types=1);
 
-namespace App\Application;
+namespace App\Application\OuvrageScan;
 
 use App\Application\InfrastructurePorts\DbAdapterInterface;
 use App\Application\InfrastructurePorts\PageListForAppInterface as PageListInterface;
+use App\Application\WikiBotConfig;
+use App\Application\WikiPageAction;
 use App\Domain\Utils\TemplateParser;
 use Exception;
 use Mediawiki\Api\MediawikiFactory;

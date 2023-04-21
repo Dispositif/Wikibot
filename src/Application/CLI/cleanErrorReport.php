@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-use App\Application\ErrorReport;
+use App\Application\OuvrageEdit\OuvrageEditErrorReport;
 use App\Application\WikiPageAction;
 use App\Infrastructure\ServiceFactory;
 use Mediawiki\DataModel\EditInfo;
@@ -68,7 +68,7 @@ foreach ($pages as $page) {
 
 $talkTitles = $res;
 echo count($res)." articles à vérifier\n";
-$report = new ErrorReport();
+$report = new OuvrageEditErrorReport();
 $k = 0;
 foreach ($talkTitles as $talkTitle) {
     $talkTitle = str_replace('Talk:', 'Discussion:', $talkTitle);

@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace App\Application\CLI;
 
-use App\Application\ScanWiki2DB;
+use App\Application\OuvrageScan\ScanWiki2DB;
 use App\Application\WikiBotConfig;
 use App\Infrastructure\DbAdapter;
 use App\Infrastructure\Logger;

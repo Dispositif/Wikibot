@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace App\Application\Tests;
 
 use App\Application\InfrastructurePorts\MemoryInterface;
-use App\Application\OuvrageCompleteWorker;
+use App\Application\OuvrageComplete\OuvrageCompleteWorker;
 use App\Domain\InfrastructurePorts\WikidataAdapterInterface;
 use App\Infrastructure\DbAdapter;
 use PHPUnit\Framework\TestCase;

@@ -8,8 +8,9 @@
 declare(strict_types=1);
 
 
-namespace App\Application;
+namespace App\Application\ExternLink;
 
+use App\Application\WikiBotConfig;
 use App\Infrastructure\InternetDomainParser;
 use App\Infrastructure\PageList;
 use App\Infrastructure\ServiceFactory;

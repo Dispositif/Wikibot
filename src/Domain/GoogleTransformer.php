@@ -23,7 +23,7 @@ use Scriptotek\GoogleBooks\Volume;
 use Throwable;
 
 /**
- * TODO REFAC : duplicate, extract methods in trait or in RefBotWorker + ExternBotWorker
+ * TODO REFAC : duplicate, extract methods in trait or in AbstractRefBotWorker + ExternBotWorker
  * --
  * Transform <ref>https://books.google...</ref> to <ref>{{Ouvrage|...}}.</ref>
  * in an article wikitext.

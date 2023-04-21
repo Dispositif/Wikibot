@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace App\Application\CLI;
 
-use App\Application\OuvrageCompleteWorker;
+use App\Application\OuvrageComplete\OuvrageCompleteWorker;
 use App\Infrastructure\DbAdapter;
 use App\Infrastructure\GoogleApiQuota;
 use App\Infrastructure\Logger;

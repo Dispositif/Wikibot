@@ -7,10 +7,11 @@
 
 declare(strict_types=1);
 
-namespace App\Application;
+namespace App\Application\OuvrageComplete;
 
 use App\Application\InfrastructurePorts\DbAdapterInterface;
 use App\Application\InfrastructurePorts\MemoryInterface;
+use App\Application\WikiBotConfig;
 use App\Domain\InfrastructurePorts\WikidataAdapterInterface;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\OptimizerFactory;
@@ -26,9 +27,8 @@ use Psr\Log\NullLogger;
 use Throwable;
 
 /**
- * Class OuvrageCompleteWorker
- *
- * @package App\Application
+ * TODO Legacy class, to be refactored. To big, too many responsibilities.
+ * TODO use DTO from DbAdapter.
  */
 class OuvrageCompleteWorker
 {

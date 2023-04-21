@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace App\Application\CLI;
 
-use App\Application\ExternRefWorker;
+use App\Application\ExternLink\ExternRefWorker;
 use App\Application\WikiBotConfig;
 use App\Infrastructure\CirrusSearch;
 use App\Infrastructure\InternetDomainParser;

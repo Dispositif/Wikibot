@@ -7,8 +7,9 @@
  */
 declare(strict_types=1);
 
-namespace App\Application;
+namespace App\Application\ExternLink;
 
+use App\Application\AbstractRefBotWorker;
 use App\Application\Http\ExternHttpClient;
 use App\Domain\Exceptions\ConfigException;
 use App\Domain\ExternLink\ExternRefTransformer;
@@ -20,14 +21,14 @@ use Throwable;
  * Class Ref2ArticleWorker
  * @package App\Application\Examples
  */
-class ExternRefWorker extends RefBotWorker
+class ExternRefWorker extends AbstractRefBotWorker
 {
     public const TASK_BOT_FLAG = true;
     public const MAX_REFS_PROCESSED_IN_ARTICLE = 30;
     public const SLEEP_AFTER_EDITION = 15; // sec
     public const MINUTES_DELAY_AFTER_LAST_HUMAN_EDIT = 10; // minutes
     public const CHECK_EDIT_CONFLICT = true;
-    public const ARTICLE_ANALYZED_FILENAME = __DIR__ . '/resources/article_externRef_edited.txt';
+    public const ARTICLE_ANALYZED_FILENAME = __DIR__ . '/../resources/article_externRef_edited.txt';
     public const SKIP_ADQ = false;
     public const SKIP_LASTEDIT_BY_BOT = false;
     public const CITATION_NUMBER_ON_FIRE = 15;
