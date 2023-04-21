@@ -10,9 +10,9 @@ declare(strict_types=1);
 
 namespace App\Application;
 
+use App\Application\InfrastructurePorts\DbAdapterInterface;
+use App\Application\InfrastructurePorts\MemoryInterface;
 use App\Domain\Utils\WikiTextUtil;
-use App\Infrastructure\DbAdapter;
-use App\Infrastructure\Memory;
 use App\Infrastructure\ServiceFactory;
 use Codedungeon\PHPCliColors\Color;
 use Exception;
@@ -59,7 +59,7 @@ class OuvrageEditWorker
     private $botFlag = true;
 
     /**
-     * @var Memory
+     * @var MemoryInterface
      */
     private $memory;
 
@@ -84,7 +84,7 @@ class OuvrageEditWorker
     public function __construct(
         DbAdapter $dbAdapter,
         WikiBotConfig $bot,
-        Memory $memory,
+        MemoryInterface $memory,
         ?LoggerInterface $log = null
     ) {
         $this->db = $dbAdapter;

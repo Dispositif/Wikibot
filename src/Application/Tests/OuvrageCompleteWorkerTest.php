@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Application\Tests;
 
+use App\Application\InfrastructurePorts\MemoryInterface;
 use App\Application\OuvrageCompleteWorker;
 use App\Domain\InfrastructurePorts\WikidataAdapterInterface;
 use App\Infrastructure\DbAdapter;
@@ -38,7 +39,8 @@ class OuvrageCompleteWorkerTest extends TestCase
         $DbAdapterMock->method('sendCompletedData')->willReturn(true);
         $wikidataAdapterMock = $this->createMock(WikidataAdapterInterface::class);
 
-        $complete = new OuvrageCompleteWorker($DbAdapterMock, $wikidataAdapterMock);
+        $memoryMock = $this->createMock(MemoryInterface::class);
+        $complete = new OuvrageCompleteWorker($DbAdapterMock, $wikidataAdapterMock, $memoryMock);
 
         $this::assertSame(
             true,

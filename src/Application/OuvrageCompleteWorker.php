@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Application;
 
 use App\Application\InfrastructurePorts\DbAdapterInterface;
+use App\Application\InfrastructurePorts\MemoryInterface;
 use App\Domain\InfrastructurePorts\WikidataAdapterInterface;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\OptimizerFactory;
@@ -18,7 +19,6 @@ use App\Domain\OuvrageFactory;
 use App\Domain\Publisher\Wikidata2Ouvrage;
 use App\Domain\SummaryLogTrait;
 use App\Domain\Utils\TemplateParser;
-use App\Infrastructure\Memory;
 use Exception;
 use Normalizer;
 use Psr\Log\LoggerInterface;
@@ -45,6 +45,11 @@ class OuvrageCompleteWorker
             '285608043X', // Dictionnaire encyclopédique d'électronique (langue erronée)
             '9782021401196', // sous-titre erroné
         ];
+
+    /**
+     * @var MemoryInterface
+     */
+    protected $memory;
     /**
      * @var DbAdapterInterface
      */
@@ -73,17 +78,18 @@ class OuvrageCompleteWorker
     public function __construct(
         DbAdapterInterface $queueAdapter,
         WikidataAdapterInterface $wikidataAdapter,
+        MemoryInterface $memory,
         ?LoggerInterface $logger = null
     )
     {
         $this->queueAdapter = $queueAdapter;
         $this->logger = $logger ?? new NullLogger();
         $this->wikidataAdapter = $wikidataAdapter;
+        $this->memory = $memory;
     }
 
     public function run(?int $limit = 10000): bool
     {
-        $memory = new Memory();
         while ($limit > 0) {
             $limit--;
             sleep(1);
@@ -100,7 +106,7 @@ class OuvrageCompleteWorker
                 $this->raw
             );
 
-            $this->logger->debug($memory->getMemory(true));
+            $this->logger->debug($this->memory->getMemory(true));
 
             // initialise variables
             $this->resetSummaryLog();

@@ -13,6 +13,7 @@ use App\Application\OuvrageCompleteWorker;
 use App\Infrastructure\DbAdapter;
 use App\Infrastructure\GoogleApiQuota;
 use App\Infrastructure\Logger;
+use App\Infrastructure\Memory;
 use App\Infrastructure\SMS;
 use App\Infrastructure\WikidataAdapter;
 use GuzzleHttp\Client;
@@ -39,7 +40,7 @@ while (true) {
         $wikidataAdapter = new WikidataAdapter(
             new Client(['timeout' => 30, 'headers' => ['User-Agent' => getenv('USER_AGENT')]])
         );
-        $process = new OuvrageCompleteWorker(new DbAdapter(), $wikidataAdapter, $logger);
+        $process = new OuvrageCompleteWorker(new DbAdapter(), $wikidataAdapter, new Memory(), $logger);
         $process->run();
         $count = 0; // reinitialise boucle erreur
     } catch (Throwable $e) {
