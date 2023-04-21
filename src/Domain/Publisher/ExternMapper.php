@@ -22,7 +22,7 @@ use Psr\Log\LoggerInterface;
  */
 class ExternMapper implements MapperInterface
 {
-    use ArrayProcessTrait, ExternConverterTrait;
+    use ArrayProcessTrait;
 
     // Added if title extracted from HTML <title> or <h1>
     public const TITLE_TO_VERIFY_COMMENT = '<!-- Vérifiez ce titre -->';

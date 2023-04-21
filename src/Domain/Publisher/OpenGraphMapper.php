@@ -11,6 +11,9 @@ declare(strict_types=1);
 namespace App\Domain\Publisher;
 
 
+use App\Domain\Publisher\Traits\AuthorConverterTrait;
+use App\Domain\Publisher\Traits\MapperConverterTrait;
+use App\Domain\Publisher\Traits\OpenAccessTrait;
 use Exception;
 
 /**
@@ -19,7 +22,7 @@ use Exception;
  */
 class OpenGraphMapper implements MapperInterface
 {
-    use ExternConverterTrait;
+    use MapperConverterTrait, AuthorConverterTrait, OpenAccessTrait;
 
     /**
      * Allowing use of HTML <title> or <h1> to predict web page title ?
@@ -68,10 +71,10 @@ class OpenGraphMapper implements MapperInterface
                 $meta['content-language'] ?? $meta['Content-Language'] ?? $meta['html-lang'] ?? null
             ),
             'consulté le' => date('d-m-Y'),
-            'auteur' => $this->cleanAuthor(
+            'auteur' => $this->cleanAuthor($this->clean(
                 $meta['og:article:author'] ??
                 $meta['article:author'] ?? $meta['citation_author'] ?? $meta['article:author_name'] ?? null
-            ),
+            )),
             'format' => $this->convertOGtype2format($meta['og:type'] ?? null),
             'date' => $this->convertDate(
                 $meta['og:article:published_time'] ?? $meta['article:published_time'] ??
@@ -81,14 +84,13 @@ class OpenGraphMapper implements MapperInterface
 
             // DUBLIN CORE ONLY
             'périodique' => $this->clean($meta['DC.isPartOf'] ?? $meta['citation_journal_title'] ?? null),
-            'et al.' => $this->authorsEtAl(
-                $meta['citation_authors'] ?? $meta['DC.Contributor'] ?? null,
-                true
-            ),
+            'et al.' => $this->isAuthorsEtAl($meta['citation_authors'] ?? $meta['DC.Contributor'] ?? null)
+                ? 'oui'
+                : null,
             'auteur1' => $this->wikifyPressAgency(
-                $this->cleanAuthor(
-                    $this->authorsEtAl($meta['citation_authors'] ?? $meta['DC.Contributor'] ?? $meta['Author'] ?? null)
-                )
+                $this->cleanAuthor($this->clean(
+                    $this->shrinkMultiAuthors($meta['citation_authors'] ?? $meta['DC.Contributor'] ?? $meta['Author'] ?? null)
+                ))
             ),
             'volume' => $meta['citation_volume'] ?? null,
             'numéro' => $meta['citation_issue'] ?? null,
@@ -108,7 +110,7 @@ class OpenGraphMapper implements MapperInterface
     }
 
     /**
-     * Todo extraire cette logique to ExternConverterTrait or ExternPageTitlePredictor ?
+     * Todo extraire cette logique to MapperConverterTrait or ExternPageTitlePredictor ?
      */
     private function predictBestTitle(array $meta): ?string
     {

@@ -1,25 +1,25 @@
 <?php
-/**
+/*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the license file.
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
 
 namespace App\Domain\Publisher\Tests;
 
-use App\Domain\Publisher\ExternConverterTrait;
+use App\Domain\Publisher\Traits\MapperConverterTrait;
 use PHPUnit\Framework\TestCase;
 
-class ExternConverterTest extends TestCase
+class MapperConverterTraitTest extends TestCase
 {
-    use ExternConverterTrait;
+    use MapperConverterTrait;
 
     /**
      * @dataProvider provideCleanData
      */
-    public function testClean($text, $expected)
+    public function testClean($text, $expected): void
     {
         $this::assertSame(
             $expected,
@@ -27,7 +27,7 @@ class ExternConverterTest extends TestCase
         );
     }
 
-    public function provideCleanData()
+    public function provideCleanData(): array
     {
         return [
             ['bla|bla bob@gmail.com', 'bla/bla'],
