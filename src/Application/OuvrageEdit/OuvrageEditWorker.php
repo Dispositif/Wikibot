@@ -216,12 +216,12 @@ class OuvrageEditWorker
             return false;
         }
 
-        $this->generateSummaryOnPageWorkStatus($ouvrageData);
+        $this->addSummaryDataOnPageWorkStatus($ouvrageData);
 
         // Replace text
         $newText = WikiPageAction::replaceTemplateInText($this->pageWorkStatus->wikiText, $origin, $completed);
 
-        if (!$newText || $newText === $this->pageWorkStatus->wikiText) {
+        if (empty($newText) || $newText === $this->pageWorkStatus->wikiText) {
             $this->log->warning("newText error");
 
             return false;

@@ -76,7 +76,7 @@ class CitationValidator implements ValidatorInterface
         $find = mb_strpos($this->wikiText, $this->ouvrageData['raw']);
         if ($find === false) {
             $this->log->notice("String non trouvée.");
-            $this->db->skipRow((int)$this->ouvrageData['raw']['id']);
+            $this->db->skipRow((int)$this->ouvrageData['id']);
 
             return false;
         }

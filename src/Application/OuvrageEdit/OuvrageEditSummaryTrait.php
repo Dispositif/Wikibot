@@ -110,7 +110,7 @@ trait OuvrageEditSummaryTrait
      * todo extract. => responsability : pageWorkStatus + summary
      * Vérifie alerte d'erreurs humaines.
      */
-    protected function generateSummaryOnPageWorkStatus(array $ouvrageData): void
+    protected function addSummaryDataOnPageWorkStatus(array $ouvrageData): void
     {
         // paramètre inconnu
         if (preg_match_all(
