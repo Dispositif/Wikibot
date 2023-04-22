@@ -20,4 +20,10 @@ interface DbAdapterInterface
     public function skipRow(int $id): bool;
 
     public function insertPageOuvrages(array $data);
+
+    public function getAllRowsOfOneTitleToEdit(?int $limit = 100): ?string;
+
+    public function skipArticle(string $title): bool;
+
+    public function deleteArticle(string $title): bool;
 }

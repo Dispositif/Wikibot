@@ -25,7 +25,7 @@ trait TalkPageEditTrait
      *
      * @return bool
      */
-    private function sendOuvrageErrorsOnTalkPage(array $rows, LoggerInterface $log = null): bool
+    protected function sendOuvrageErrorsOnTalkPage(array $rows, LoggerInterface $log = null): bool
     {
         if ($log === null) {
             $log = new NullLogger();

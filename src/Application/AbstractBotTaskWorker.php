@@ -89,7 +89,7 @@ abstract class AbstractBotTaskWorker
         ?InternetDomainParserInterface $domainParser = null
     )
     {
-        $this->log = $bot->log;
+        $this->log = $bot->getLogger();
         $this->wiki = $wiki;
         $this->bot = $bot;
         if ($pagesGen !== null) {

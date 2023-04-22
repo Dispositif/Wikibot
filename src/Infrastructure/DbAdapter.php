@@ -127,7 +127,7 @@ class DbAdapter implements DbAdapterInterface
      * @return string|null
      * @throws Exception
      */
-    public function getAllRowsToEdit(?int $limit = 100): ?string
+    public function getAllRowsOfOneTitleToEdit(?int $limit = 100): ?string
     {
 //        // ----------- TEST ----
 //        // it works

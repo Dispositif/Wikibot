@@ -50,7 +50,7 @@ class WikiBotConfig
     /**
      * @var LoggerInterface
      */
-    public $log;
+    protected $log;
     /**
      * @var DateTimeImmutable
      */
@@ -69,13 +69,21 @@ class WikiBotConfig
         $this->mediawikiFactory = $mediawikiFactory;
     }
 
+    public function getLogger(): LoggerInterface
+    {
+        return $this->log;
+    }
+
     /**
      * Detect wiki-templates restricting the edition on a frwiki page.
      */
-    public static function isEditionTemporaryRestrictedOnWiki(string $text, ?string $botName = null): bool
+    public static function isEditionTemporaryRestrictedOnWiki(?string $text, ?string $botName = null): bool
     {
-        // travaux|en travaux| ??
-        return preg_match('#{{Protection#i', $text) > 0
+        return empty($text)
+            || preg_match('#{{Formation#i', $text) > 0
+            || preg_match('#{{En travaux#i', $text) > 0
+            || preg_match('#{{En cours#i', $text) > 0
+            || preg_match('#{{Protection#i', $text) > 0
             || preg_match('#\{\{(R3R|Règle des 3 révocations|travaux|en travaux|en cours|formation)#i', $text) > 0
             || self::isNoBotTag($text, $botName);
     }

@@ -9,8 +9,13 @@ declare(strict_types=1);
 
 namespace App\Application\OuvrageEdit;
 
+// todo extends WikiPageAction ?
 class PageWorkStatus
 {
+    /**
+     * @var string
+     */
+    public $title;
     public $wikiText = null;
     public $errorWarning = [];
     public $featured_article = false;
@@ -24,4 +29,14 @@ class PageWorkStatus
     public $botFlag = true;
     public $citationVersion = '';
     public $luckyState = false;
+
+    public function __construct(string $title)
+    {
+        $this->title = $title;
+    }
+
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
 }

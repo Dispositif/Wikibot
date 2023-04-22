@@ -12,13 +12,16 @@ namespace App\Application\OuvrageEdit;
 
 use App\Application\InfrastructurePorts\DbAdapterInterface;
 use App\Application\InfrastructurePorts\MemoryInterface;
+use App\Application\OuvrageEdit\Validators\CitationsNotEmptyValidator;
+use App\Application\OuvrageEdit\Validators\CitationValidator;
+use App\Application\OuvrageEdit\Validators\PageValidatorComposite;
+use App\Application\OuvrageEdit\Validators\TalkStopValidator;
+use App\Application\OuvrageEdit\Validators\WikiTextValidator;
 use App\Application\WikiBotConfig;
 use App\Application\WikiPageAction;
-use App\Domain\Utils\WikiTextUtil;
 use App\Infrastructure\ServiceFactory;
 use Codedungeon\PHPCliColors\Color;
 use Exception;
-use LogicException;
 use Mediawiki\Api\UsageException;
 use Normalizer;
 use Psr\Log\LoggerInterface;
@@ -26,8 +29,9 @@ use Psr\Log\NullLogger;
 use Throwable;
 
 /**
- * Legacy class, to be refactored. To big, too many responsibilities.
+ * Legacy class, to be refactored. Too big, too many responsibilities.
  * todo use PageOuvrageCollectionDTO.
+ * todo chain of responsibility pattern + log decorator (+ events ?)
  */
 class OuvrageEditWorker
 {
@@ -43,27 +47,32 @@ class OuvrageEditWorker
     public const DELAY_BOTFLAG_SECONDS = 60;
     public const DELAY_NO_BOTFLAG_SECONDS = 60;
     public const DELAY_MINUTES_AFTER_HUMAN_EDIT = 10;
-    public const ERROR_MSG_TEMPLATE = __DIR__ . '/../templates/message_errors.wiki';
+    public const ERROR_MSG_TEMPLATE = __DIR__ . '/templates/message_errors.wiki';
 
     /**
      * @var PageWorkStatus
      */
     protected $pageWorkStatus;
 
-    private $db;
+    /**
+     * @var WikiPageAction
+     */
+    protected $wikiPageAction = null;
+
+    protected $db;
     /**
      * @var WikiBotConfig
      */
-    private $bot;
+    protected $bot;
     /**
      * @var MemoryInterface
      */
-    private $memory;
+    protected $memory;
 
     /**
      * @var LoggerInterface
      */
-    private $log;
+    protected $log;
 
     public function __construct(
         DbAdapterInterface $dbAdapter,
@@ -96,63 +105,70 @@ class OuvrageEditWorker
      * @throws UsageException
      * @throws Exception
      */
-    private function pageProcess(): bool
+    protected function pageProcess(): bool
     {
         $e = null;
-        $this->pageWorkStatus = new PageWorkStatus();
-        $this->bot->checkStopOnTalkpage(true);
 
-        // get a random queue line
-        $json = $this->db->getAllRowsToEdit(self::CITATION_LIMIT);
-        $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-
-        if (empty($data)) {
-            $this->log->alert("SKIP : OuvrageEditWorker / getAllRowsToEdit() no row to process\n");
-            sleep(60);
-            throw new Exception('no row to process');
+        if ((new TalkStopValidator($this->bot))->validate() === false) { // move up ?
+            return false;
         }
 
+        // get a random queue line
+        $json = $this->db->getAllRowsOfOneTitleToEdit(self::CITATION_LIMIT);
+        $pageCitationCollection = $json ? json_decode($json, true, 512, JSON_THROW_ON_ERROR) : [];
+
+        if ((new CitationsNotEmptyValidator($pageCitationCollection, $this->log))->validate() === false) {
+            return false;
+        }
+
+        $this->pageWorkStatus = new PageWorkStatus($pageCitationCollection[0]['page']);
+        $this->printTitle($this->pageWorkStatus->getTitle());
+
+        // Find on wikipedia the page to edit
         try {
-            $title = $data[0]['page'];
-            echo Color::BG_CYAN . $title . Color::NORMAL . " \n";
-            $page = ServiceFactory::wikiPageAction($title, false); // , true ?
+            $this->wikiPageAction = ServiceFactory::wikiPageAction($this->pageWorkStatus->getTitle()); // , true ?
         } catch (Exception $e) {
-            $this->log->warning("*** WikiPageAction error : " . $title . " \n");
+            $this->log->warning("*** WikiPageAction error : " . $this->pageWorkStatus->getTitle() . " \n");
             sleep(20);
 
             return false;
         }
-
-        // Page supprimée ? todo event listener
-        if ($page->getLastRevision() === null) {
-            $this->log->warning("SKIP : page supprimée !\n");
-            $this->db->deleteArticle($title);
-
+        $pageValidator = new PageValidatorComposite(
+            $this->bot, $pageCitationCollection, $this->db, $this->wikiPageAction
+        );
+        if ($pageValidator->validate() === false) {
             return false;
         }
 
-        // HACK
-        if ($page->getLastEditor() == getenv('BOT_NAME')) {
-            $this->log->notice("SKIP : édité recemment par bot.\n");
-            $this->db->skipArticle($title);
+        $this->pageWorkStatus->wikiText = $this->wikiPageAction->getText();
+        $this->checkArticleLabels($this->pageWorkStatus->getTitle());
+        // or do that at the end of ArticleValidForEditValidator if PageWorkStatus injected ?
 
-            return false;
-        }
-        // todo include a sandbox page ?
-        if ($page->getNs() !== 0) {
-            $this->log->notice("SKIP : page n'est pas dans Main (ns 0)\n");
-            $this->db->skipArticle($title);
+        // print total number of rows completed in db
+        $rowNumber = is_countable($pageCitationCollection) ? count($pageCitationCollection) : 0;
+        $this->log->info(sprintf("%s rows to process\n", $rowNumber));
 
-            return false;
-        }
-        $this->pageWorkStatus->wikiText = $page->getText();
-
-        if (empty($this->pageWorkStatus->wikiText)) {
-            $this->log->warning("SKIP : this->wikitext vide\n");
-            $this->db->skipArticle($title);
+        // Make citations replacements
+        if ($this->makeCitationsReplacements($pageCitationCollection) === false) {
             return false;
         }
 
+        if ($this->editPage()) {
+            $this->updateDb($pageCitationCollection);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    protected function printTitle(string $title): void
+    {
+        echo Color::BG_CYAN . $title . Color::NORMAL . " \n";
+    }
+
+    protected function checkArticleLabels($title): void
+    {
         // Featured/Good article (AdQ/BA) todo event listener
         if (preg_match('#{{ ?En-tête label ?\| ?AdQ#i', $this->pageWorkStatus->wikiText)) {
             $this->db->setLabel($title, 2);
@@ -166,71 +182,77 @@ class OuvrageEditWorker
             $this->pageWorkStatus->featured_article = true; // to add star in edit summary
             $this->log->warning("Bon article !!\n");
         }
+    }
 
-        // todo event listener
-        if (WikiBotConfig::isEditionTemporaryRestrictedOnWiki($this->pageWorkStatus->wikiText)) {
-            // TODO Gestion d'une repasse dans X jours
-            $this->log->info("SKIP : protection/3R/travaux.\n");
-            $this->db->skipArticle($title);
+    protected function makeCitationsReplacements(array $pageCitationCollection): bool
+    {
+        $oldText = $this->pageWorkStatus->wikiText;
+        foreach ($pageCitationCollection as $dat) {
+            $this->processOneCitation($dat); // that modify PageWorkStatus->wikiText
+        }
+        $newWikiTextValidator = new WikiTextValidator(
+            $this->pageWorkStatus->wikiText, $oldText, $this->log, $this->pageWorkStatus->getTitle(), $this->db
+        );
 
+        return $newWikiTextValidator->validate();
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function processOneCitation(array $ouvrageData): bool
+    {
+        $origin = $ouvrageData['raw'];
+        $completed = $ouvrageData['opti'];
+        $this->printDebug($ouvrageData);
+
+        $citationValidator = new CitationValidator(
+            $ouvrageData,
+            $this->pageWorkStatus->wikiText,
+            $this->log,
+            $this->db
+        );
+        if ($citationValidator->validate() === false) {
             return false;
         }
 
-        if ($this->bot->minutesSinceLastEdit($title) < 10) {
-            // TODO Gestion d'une repasse dans X jours
-            $this->log->notice(
-                sprintf(
-                    "SKIP : édition humaine dans les dernières %s minutes.\n",
-                    self::DELAY_MINUTES_AFTER_HUMAN_EDIT
-                )
-            );
-            sleep(60 * self::DELAY_MINUTES_AFTER_HUMAN_EDIT); // hack: waiting cycles
+        $this->generateSummaryOnPageWorkStatus($ouvrageData);
+
+        // Replace text
+        $newText = WikiPageAction::replaceTemplateInText($this->pageWorkStatus->wikiText, $origin, $completed);
+
+        if (!$newText || $newText === $this->pageWorkStatus->wikiText) {
+            $this->log->warning("newText error");
 
             return false;
         }
+        $this->pageWorkStatus->wikiText = $newText;
+        $this->pageWorkStatus->minorFlag = ('1' === $ouvrageData['major']) ? false : $this->pageWorkStatus->minorFlag;
+        $this->pageWorkStatus->citationVersion = $ouvrageData['version']; // todo gérer versions différentes
+        $this->pageWorkStatus->citationSummary[] = $ouvrageData['modifs'];
+        $this->pageWorkStatus->nbRows++;
 
+        return true;
+    }
 
-        // GET all article lines from db
-        $this->log->info(sprintf("%s rows to process\n", is_countable($data) ? count($data) : 0));
+    protected function printDebug(array $data)
+    {
+        $this->log->debug('origin: ' . $data['raw']);
+        $this->log->debug('completed: ' . $data['opti']);
+        $this->log->debug('modifs: ' . $data['modifs']);
+        $this->log->debug('version: ' . $data['version']);
+    }
 
-        // foreach line
-        $changed = false;
-        foreach ($data as $dat) {
-            // hack temporaire pour éviter articles dont CompleteProcess incomplet
-            if (empty($dat['opti']) || empty($dat['optidate']) || $dat['optidate'] < $this->db->getOptiValidDate()) {
-                $this->log->notice("SKIP : Amélioration incomplet de l'article. sleep 10min");
-                sleep(600);
+    protected function editPage(): bool
+    {
+        $miniSummary = $this->generateFinalSummary();
 
-                return false;
-            }
-            $success = $this->dataProcess($dat);
-            $changed = ($success) ? true : $changed;
-        }
-        if (!$changed) {
-            $this->log->debug("Rien à changer...");
-            $this->db->skipArticle($title);
-
-            return false;
-        }
-
-        // EDIT THE PAGE
-        if ($this->pageWorkStatus->wikiText === '' || $this->pageWorkStatus->wikiText === '0') {
-            return false;
-        }
-
-        $miniSummary = $this->generateSummary();
-        $this->log->notice($miniSummary);
         $this->log->debug("sleep 2...");
         sleep(2); // todo ???
 
-        pageEdit:
-
         try {
-            // corona Covid :)
-            //$miniSummary .= (date('H:i') === '20:00') ? ' 🏥' : ''; // 🏥🦠
-
-            $editInfo = ServiceFactory::editInfo($miniSummary, $this->pageWorkStatus->minorFlag, $this->pageWorkStatus->botFlag, 5);
-            $success = $page->editPage(Normalizer::normalize($this->pageWorkStatus->wikiText), $editInfo);
+            $editInfo = ServiceFactory::editInfo($miniSummary, $this->pageWorkStatus->minorFlag, $this->pageWorkStatus->botFlag);
+            $success = $this->wikiPageAction->editPage(Normalizer::normalize($this->pageWorkStatus->wikiText), $editInfo);
         } catch (Throwable $e) {
             // Invalid CSRF token.
             if (strpos($e->getMessage(), 'Invalid CSRF token') !== false) {
@@ -243,189 +265,44 @@ class OuvrageEditWorker
                 return false;
             }
         }
-
         $this->log->info($success ? "Edition Ok\n" : "***** Edition KO !\n");
-
-        if ($success) {
-            // updata DB
-            foreach ($data as $dat) {
-                $this->db->sendEditedData(['id' => $dat['id']]);
-            }
-
-            try {
-                if (self::EDIT_SIGNALEMENT && !empty($this->pageWorkStatus->errorWarning[$title])) {
-                    $this->sendOuvrageErrorsOnTalkPage($data, $this->log);
-                }
-            } catch (Throwable $e) {
-                $this->log->warning('Exception in editPage() ' . $e->getMessage());
-                unset($e);
-            }
-
-            if (!$this->pageWorkStatus->botFlag) {
-                $this->log->debug("sleep " . self::DELAY_NO_BOTFLAG_SECONDS);
-                sleep(self::DELAY_NO_BOTFLAG_SECONDS);
-            }
-            if ($this->pageWorkStatus->botFlag) {
-                $this->log->debug("sleep " . self::DELAY_BOTFLAG_SECONDS);
-                sleep(self::DELAY_BOTFLAG_SECONDS);
-            }
-        }
 
         return $success;
     }
 
-    /**
-     * @param array $data
-     *
-     * @return bool
-     * @throws Exception
-     */
-    private function dataProcess(array $data): bool
+    protected function updateDb(array $pageOuvrageCollection)
     {
-        $origin = $data['raw'];
-        $completed = $data['opti'];
-        $this->printDebug($data);
-
-        if (WikiTextUtil::isCommented($origin) || $this->isTextCreatingError($origin)) {
-            $this->log->notice("SKIP: template avec commentaire HTML ou modèle problématique.");
-            $this->db->skipRow((int)$data['id']);
-
-            return false;
+        $title = $pageOuvrageCollection[0]['page'];
+        foreach ($pageOuvrageCollection as $ouvrageData) {
+            $this->db->sendEditedData(['id' => $ouvrageData['id']]);
         }
-
-        $find = mb_strpos($this->pageWorkStatus->wikiText, $origin);
-        if ($find === false) {
-            $this->log->notice("String non trouvée.");
-            $this->db->skipRow((int)$data['id']);
-
-            return false;
-        }
-
-        $this->checkErrorWarning($data);
-
-        // Replace text
-        $newText = WikiPageAction::replaceTemplateInText($this->pageWorkStatus->wikiText, $origin, $completed);
-
-        if (!$newText || $newText === $this->pageWorkStatus->wikiText) {
-            $this->log->warning("newText error");
-
-            return false;
-        }
-        $this->pageWorkStatus->wikiText = $newText;
-        $this->pageWorkStatus->minorFlag = ('1' === $data['major']) ? false : $this->pageWorkStatus->minorFlag;
-        $this->pageWorkStatus->citationVersion = $data['version'];
-        $this->pageWorkStatus->citationSummary[] = $data['modifs'];
-        $this->pageWorkStatus->nbRows++;
-
-        return true;
-    }
-
-    private function isTextCreatingError(string $string): bool
-    {
-        // mauvaise Modèle:Sp
-        return (preg_match('#\{\{-?(sp|s|sap)-?\|#', $string) === 1);
-    }
-
-    /**
-     * todo extract
-     * Vérifie alerte d'erreurs humaines.
-     *
-     * @param array $data
-     *
-     * @throws Exception
-     */
-    private function checkErrorWarning(array $data): void
-    {
-        if (!isset($data['opti'])) {
-            throw new LogicException('Opti NULL');
-        }
-
-        // paramètre inconnu
-        if (preg_match_all(
-                "#\|[^|]+<!-- ?(PARAMETRE [^>]+ N'EXISTE PAS|VALEUR SANS NOM DE PARAMETRE|ERREUR [^>]+) ?-->#",
-                $data['opti'],
-                $matches
-            ) > 0
-        ) {
-            foreach ($matches[0] as $line) {
-                $this->addErrorWarning($data['page'], $line);
+        try {
+            if (self::EDIT_SIGNALEMENT && !empty($this->pageWorkStatus->errorWarning[$title])) {
+                $this->sendOuvrageErrorsOnTalkPage($pageOuvrageCollection, $this->log);
             }
-            //  $this->pageWorkStatus->botFlag = false;
-            $this->addSummaryTag('paramètre non corrigé');
+        } catch (Throwable $e) {
+            $this->log->warning('Exception in editPage() ' . $e->getMessage());
+            unset($e);
         }
 
-        // ISBN invalide
-        if (preg_match("#isbn invalide ?=[^|}]+#i", $data['opti'], $matches) > 0) {
-            $this->addErrorWarning($data['page'], $matches[0]);
-            $this->pageWorkStatus->botFlag = false;
-            $this->addSummaryTag('ISBN invalide 💩');
+        if (!$this->pageWorkStatus->botFlag) {
+            $this->log->debug("sleep " . self::DELAY_NO_BOTFLAG_SECONDS);
+            sleep(self::DELAY_NO_BOTFLAG_SECONDS);
         }
-
-        // Edits avec ajout conséquent de donnée
-        if (preg_match('#distinction des auteurs#', $data['modifs']) > 0) {
-            $this->pageWorkStatus->botFlag = false;
-            $this->addSummaryTag('distinction auteurs 🧠');
-        }
-        // prédiction paramètre correct
-        if (preg_match('#[^,]+(=>|⇒)[^,]+#', $data['modifs'], $matches) > 0) {
-            $this->pageWorkStatus->botFlag = false;
-            $this->addSummaryTag($matches[0]);
-        }
-        if (preg_match('#\+\+sous-titre#', $data['modifs']) > 0) {
-            $this->pageWorkStatus->botFlag = false;
-            $this->addSummaryTag('+sous-titre');
-        }
-        if (preg_match('#\+lieu#', $data['modifs']) > 0) {
-            $this->addSummaryTag('+lieu');
-        }
-        if (preg_match('#tracking#', $data['modifs']) > 0) {
-            $this->addSummaryTag('tracking');
-        }
-        if (preg_match('#présentation en ligne#', $data['modifs']) > 0) {
-            $this->addSummaryTag('+présentation en ligne✨');
-        }
-        if (preg_match('#distinction auteurs#', $data['modifs']) > 0) {
-            $this->addSummaryTag('distinction auteurs 🧠');
-        }
-        if (preg_match('#\+lire en ligne#', $data['modifs']) > 0) {
-            $this->addSummaryTag('+lire en ligne✨');
-        }
-        if (preg_match('#\+lien #', $data['modifs']) > 0) {
-            $this->addSummaryTag('wikif');
-        }
-
-        if (preg_match('#\+éditeur#', $data['modifs']) > 0) {
-            $this->addSummaryTag('éditeur');
-        }
-        //        if (preg_match('#\+langue#', $data['modifs']) > 0) {
-        //            $this->addSummaryTag('langue');
-        //        }
-
-        // mention BnF si ajout donnée + ajout identifiant bnf=
-        if (!empty($this->pageWorkStatus->importantSummary) && preg_match('#BnF#i', $data['modifs'], $matches) > 0) {
-            $this->addSummaryTag('©[[BnF]]');
+        if ($this->pageWorkStatus->botFlag) {
+            $this->log->debug("sleep " . self::DELAY_BOTFLAG_SECONDS);
+            sleep(self::DELAY_BOTFLAG_SECONDS);
         }
     }
 
     /**
-     * todo extract
+     * todo extract to OuvrageEditSummaryTrait ?
      * Pour éviter les doublons dans signalements d'erreur.
-     *
-     * @param string $page
-     * @param string $text
      */
-    private function addErrorWarning(string $page, string $text): void
+    protected function addErrorWarning(string $title, string $text): void
     {
-        if (!isset($this->pageWorkStatus->errorWarning[$page]) || !in_array($text, $this->pageWorkStatus->errorWarning[$page])) {
-            $this->pageWorkStatus->errorWarning[$page][] = $text;
+        if (!isset($this->pageWorkStatus->errorWarning[$title]) || !in_array($text, $this->pageWorkStatus->errorWarning[$title])) {
+            $this->pageWorkStatus->errorWarning[$title][] = $text;
         }
-    }
-
-    private function printDebug(array $data)
-    {
-        $this->log->debug('origin: ' . $data['raw']);
-        $this->log->debug('completed: ' . $data['opti']);
-        $this->log->debug('modifs: ' . $data['modifs']);
-        $this->log->debug('version: ' . $data['version']);
     }
 }
