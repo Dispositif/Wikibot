@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace App\Domain\Models;
 
 /**
+ * Use by external link workers. Redundant with PageWorkStatus ?
  * See also EditSummaryTrait
  */
 class Summary
@@ -20,13 +21,9 @@ class Summary
     public $citationNumber = 0;
     public $botFlag = false;
     public $minorFlag = false;
+    public $log = [];
     public $memo = [];
 
-    /**
-     * Summary constructor.
-     *
-     * @param $taskName
-     */
     public function __construct(string $taskName)
     {
         $this->taskName = $taskName;

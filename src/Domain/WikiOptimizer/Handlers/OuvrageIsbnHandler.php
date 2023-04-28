@@ -8,24 +8,21 @@
 declare(strict_types=1);
 
 
-namespace App\Domain;
+namespace App\Domain\WikiOptimizer\Handlers;
 
+
+use App\Domain\IsbnFacade;
 use Exception;
 use Throwable;
 
-/**
- * TODO refac : too many conditions
- * Trait OptimizeISBNTrait
- */
-trait OptimizeISBNTrait
+class OuvrageIsbnHandler extends AbstractOuvrageHandler
 {
     /**
      * Refac complexity (lines, 20 conditions)
      * Validate or correct ISBN.
-     *
      * @throws Exception
      */
-    protected function processIsbn()
+    public function handle()
     {
         $isbn = $this->getParam('isbn') ?? '';
         if (empty($isbn)) {
@@ -53,7 +50,7 @@ trait OptimizeISBNTrait
                     sprintf('%s %s', $isbn, $e->getMessage() ?? '')
                 );
                 $this->addSummaryLog(sprintf('ISBN invalide: %s', $e->getMessage()));
-                $this->notCosmetic = true;
+                $this->optiStatus->setNotCosmetic(true);
             }
 
             return;
@@ -72,7 +69,7 @@ trait OptimizeISBNTrait
                 sprintf('%s %s', $isbn, $e->getMessage() ?? '')
             );
             $this->addSummaryLog(sprintf('ISBN invalide: %s', $e->getMessage()));
-            $this->notCosmetic = true;
+            $this->optiStatus->setNotCosmetic(true);
 
             // TODO log file ISBNinvalide
             return;
@@ -120,5 +117,27 @@ trait OptimizeISBNTrait
             $this->addSummaryLog('ISBN');
             //            $this->notCosmetic = true;
         }
+    }
+
+    /**
+     * Find year of book publication.
+     */
+    protected function findBookYear(): ?int
+    {
+        $annee = $this->getParam('année');
+        if (!empty($annee) && is_numeric($annee)) {
+            return (int)$annee;
+        }
+        $date = $this->getParam('date');
+        if ($date && preg_match('#[^0-9]?([12]\d\d\d)[^0-9]?#', $date, $matches) > 0) {
+            return (int)$matches[1];
+        }
+
+        return null;
+    }
+
+    protected function stripIsbn(string $isbn): string
+    {
+        return trim(preg_replace('#[^0-9Xx]#', '', $isbn));
     }
 }

@@ -26,8 +26,8 @@ use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\OptimizerFactory;
 use App\Domain\OuvrageComplete;
 use App\Domain\SummaryLogTrait;
+use App\Domain\WikiOptimizer\OuvrageOptimize;
 use DateTime;
-use DomainException;
 use Exception;
 use Normalizer;
 use Psr\Log\LoggerInterface;
@@ -56,9 +56,6 @@ class OuvrageCompleteWorker
     protected $queueAdapter;
 
     protected $page; // article title
-
-    protected $notCosmetic = false;
-    protected $major = false;
     /**
      * @var OuvrageTemplate
      */
@@ -71,6 +68,10 @@ class OuvrageCompleteWorker
      * @var WikidataAdapterInterface
      */
     protected $wikidataAdapter;
+    /**
+     * @var CitationWorkStatus
+     */
+    protected $citationWorkStatus;
 
     public function __construct(
         DbAdapterInterface       $queueAdapter,
@@ -91,15 +92,18 @@ class OuvrageCompleteWorker
             $limit--;
             sleep(1);
             $this->pageOuvrage = $this->getNewRow2CompleteOrException();
+            if ($this->pageOuvrage === null) {
+                throw new Exception('no more queue to process');
+            }
             $this->page = $this->pageOuvrage->getPage();
 
             $this->printTitle($this->pageOuvrage);
 
             // initialise variables
+            $this->citationWorkStatus = new CitationWorkStatus($this->page);
+
             $this->resetSummaryLog();
             $this->ouvrage = null;
-            $this->notCosmetic = false;
-            $this->major = false;
 
 
             // TODO WIP
@@ -109,10 +113,11 @@ class OuvrageCompleteWorker
 
             // Final optimizing (with online predictions)
             $optimizer = OptimizerFactory::fromTemplate($origin, $this->page, $this->logger);
+            /** @var OuvrageOptimize $optimizer */
             $optimizer->doTasks();
             $this->ouvrage = $optimizer->getOptiTemplate();
             $this->summaryLog = array_merge($this->getSummaryLog(), $optimizer->getSummaryLog());
-            $this->notCosmetic = ($optimizer->notCosmetic || $this->notCosmetic);
+            $this->citationWorkStatus->notCosmetic = ($optimizer->isNotCosmetic() || $this->citationWorkStatus->notCosmetic);
 
 
             /**
@@ -139,14 +144,15 @@ class OuvrageCompleteWorker
     /**
      * Get array (title+raw strings) to complete from AMQP queue, SQL Select or file reading.
      */
-    protected function getNewRow2CompleteOrException(): PageOuvrageDTO
+    protected function getNewRow2CompleteOrException(): ?PageOuvrageDTO
     {
         $pageOuvrageDTO = $this->queueAdapter->getNewRaw();
         if ((new NewPageOuvrageToCompleteValidator($pageOuvrageDTO))->validate()) {
             return $pageOuvrageDTO;
         }
+        $this->logger->debug('no more raw');
 
-        throw new DomainException('no more raw to complete');
+        return null;
     }
 
     // todo extract class
@@ -236,9 +242,9 @@ class OuvrageCompleteWorker
         $this->logger->info('Summary', $completer->getSummaryLog());
 
         if ($completer->major) {
-            $this->major = true;
+            $this->citationWorkStatus->minorFlag = false;
         }
-        $this->notCosmetic = ($completer->notCosmetic || $this->notCosmetic);
+        $this->citationWorkStatus->notCosmetic = ($completer->notCosmetic || $this->citationWorkStatus->notCosmetic);
         $this->summaryLog = array_merge($this->getSummaryLog(), $completer->getSummaryLog());
         unset($optimizer);
         unset($completer);
@@ -250,8 +256,8 @@ class OuvrageCompleteWorker
             ->setOpti($this->serializeFinalOpti())
             ->setOptidate(new DateTime())
             ->setModifs(mb_substr(implode(',', $this->getSummaryLog()), 0, 250))
-            ->setNotcosmetic(($this->notCosmetic) ? 1 : 0)
-            ->setMajor(($this->major) ? 1 : 0)
+            ->setNotcosmetic(($this->citationWorkStatus->notCosmetic) ? 1 : 0)
+            ->setMajor(($this->citationWorkStatus->minorFlag) ? 0 : 1)
             ->setIsbn(substr($this->ouvrage->getParam('isbn'), 0, 19))
             ->setVersion(WikiBotConfig::VERSION ?? null);
 

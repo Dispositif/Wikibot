@@ -13,10 +13,13 @@ use App\Domain\Models\Wiki\ArticleTemplate;
 use App\Domain\Models\Wiki\LienWebTemplate;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\Models\Wiki\WikiTemplateInterface;
+use App\Domain\WikiOptimizer\OuvrageOptimize;
+use App\Domain\WikiOptimizer\TemplateOptimizerInterface;
 use App\Infrastructure\FileManager;
 use Psr\Log\LoggerInterface;
 
 /**
+ * TODO static factory create dependency ! (use DI).
  * Class OptimizerFactory
  */
 class OptimizerFactory

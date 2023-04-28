@@ -7,13 +7,11 @@
 
 declare(strict_types=1);
 
-
 namespace App\Domain;
-
 
 use App\Domain\InfrastructurePorts\PageListInterface;
 use App\Domain\Models\Wiki\AbstractWikiTemplate;
-use App\Domain\Utils\TextUtil;
+use App\Domain\WikiOptimizer\TemplateOptimizerInterface;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -28,14 +26,14 @@ abstract class AbstractTemplateOptimizer implements TemplateOptimizerInterface
 
     protected $optiTemplate;
 
-    public $notCosmetic = false;
+    protected $notCosmetic = false;
 
     /**
      * @var LoggerInterface|NullLogger
      */
     protected $log;
     /**
-     * @var \App\Domain\InfrastructurePorts\PageListInterface|null
+     * @var PageListInterface|null
      */
     protected $pageListManager;
 
@@ -61,12 +59,15 @@ abstract class AbstractTemplateOptimizer implements TemplateOptimizerInterface
     }
 
     /**
+     * @return bool
+     */
+    public function isNotCosmetic(): bool
+    {
+        return $this->notCosmetic;
+    }
+
+    /**
      * TODO : return "" instead of null ?
-     *
-     * @param $name
-     *
-     * @return string|null
-     * @throws Exception
      */
     protected function getParam(string $name): ?string
     {
@@ -94,50 +95,6 @@ abstract class AbstractTemplateOptimizer implements TemplateOptimizerInterface
         // todo : overwrite setParam() ?
         if (!empty($value) || $this->optiTemplate->getParam($name)) {
             $this->optiTemplate->setParam($name, $value);
-        }
-    }
-
-    /**
-     * Correction des parametres rejetés à l'hydratation données.
-     *
-     * @throws Exception
-     */
-    protected function cleanAndPredictErrorParameters()
-    {
-        if (empty($this->optiTemplate->parametersErrorFromHydrate)) {
-            return;
-        }
-        $allParamsAndAlias = $this->optiTemplate->getParamsAndAlias();
-
-        foreach ($this->optiTemplate->parametersErrorFromHydrate as $name => $value) {
-            if (!is_string($name)) {
-                // example : 1 => "ouvrage collectif" from |ouvrage collectif|
-                continue;
-            }
-
-            // delete error parameter if no value
-            if (empty($value)) {
-                unset($this->optiTemplate->parametersErrorFromHydrate[$name]);
-
-                continue;
-            }
-
-            $maxDistance = 1;
-            if (mb_strlen($name) >= 4) {
-                $maxDistance = 2;
-            }
-            if (mb_strlen($name) >= 8) {
-                $maxDistance = 3;
-            }
-
-            $predName = TextUtil::predictCorrectParam($name, $allParamsAndAlias, $maxDistance);
-            if ($predName && mb_strlen($name) >= 5 && empty($this->getParam($predName))) {
-                $predName = $this->optiTemplate->getAliasParam($predName);
-                $this->setParam($predName, $value);
-                $this->addSummaryLog(sprintf('%s⇒%s ?', $name, $predName));
-                $this->notCosmetic = true;
-                unset($this->optiTemplate->parametersErrorFromHydrate[$name]);
-            }
         }
     }
 }

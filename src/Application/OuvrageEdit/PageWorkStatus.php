@@ -22,6 +22,7 @@ class PageWorkStatus
     public $citationSummary = [];
     public $importantSummary = [];
     public $nbRows = 0;
+    public $notCosmetic = false;
 
     // Minor flag on edit
     public $minorFlag = true;

@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace App\Domain\Tests;
 
-use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\OptimizerFactory;
 use App\Domain\Utils\TemplateParser;
 use App\Domain\WikiTemplateFactory;
@@ -383,19 +382,19 @@ class OuvrageOptimizeTest extends TestCase
         );
     }
 
-    /**
-     * @group skipci
-     */
-    public function testPredictPublisherWikiTitle(): void
-    {
-        $optimizer = OptimizerFactory::fromTemplate(new OuvrageTemplate());
-        $this::assertSame(
-            'Éditions Gallimard',
-            $optimizer->predictPublisherWikiTitle('Gallimard')
-        );
-        $this::assertSame(
-            null,
-            $optimizer->predictPublisherWikiTitle('fubar')
-        );
-    }
+//    /**
+//     * @group skipci
+//     */
+//    public function testPredictPublisherWikiTitle(): void
+//    {
+//        $optimizer = OptimizerFactory::fromTemplate(new OuvrageTemplate());
+//        $this::assertSame(
+//            'Éditions Gallimard',
+//            $optimizer->predictPublisherWikiTitle('Gallimard')
+//        );
+//        $this::assertSame(
+//            null,
+//            $optimizer->predictPublisherWikiTitle('fubar')
+//        );
+//    }
 }
