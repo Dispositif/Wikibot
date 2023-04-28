@@ -7,9 +7,9 @@
 
 declare(strict_types=1);
 
-namespace App\Application\OuvrageEdit\Validators;
+namespace App\Application\OuvrageComplete\Handlers;
 
-interface ValidatorInterface
+interface CompleteHandlerInterface
 {
-    public function validate(): bool;
+    public function handle();
 }

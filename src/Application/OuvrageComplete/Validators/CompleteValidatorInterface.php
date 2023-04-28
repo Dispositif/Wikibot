@@ -7,9 +7,11 @@
 
 declare(strict_types=1);
 
-namespace App\Application\OuvrageEdit\Validators;
 
-interface ValidatorInterface
+namespace App\Application\OuvrageComplete\Validators;
+
+
+interface CompleteValidatorInterface
 {
     public function validate(): bool;
 }

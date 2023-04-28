@@ -10,12 +10,14 @@ declare(strict_types=1);
 namespace App\Infrastructure;
 
 use App\Application\InfrastructurePorts\DbAdapterInterface;
+use App\Domain\Models\PageOuvrageDTO;
 use DateInterval;
 use DateTime;
 use Exception;
 use Simplon\Mysql\Mysql;
 use Simplon\Mysql\MysqlException;
 use Simplon\Mysql\PDOConnector;
+use Simplon\Mysql\QueryBuilder\UpdateQueryBuilder;
 use Throwable;
 
 /**
@@ -44,8 +46,6 @@ class DbAdapter implements DbAdapterInterface
     }
 
     /**
-     * @param $datas
-     *
      * @return array|bool
      * @throws Exception
      */
@@ -66,13 +66,15 @@ class DbAdapter implements DbAdapterInterface
     }
 
     /**
+     * TODO return PageOuvrage DTO (+ generator ?)
      * Get one new row (page, raw) to complete.
      * Order by isbn (NULL first)
      *
      * @return array|null
      */
-    public function getNewRaw(): ?array
+    public function getNewRaw(): ?PageOuvrageDTO
     {
+        $pageOuvrage = null;
         try {
             $row = $this->db->fetchRow(
                 'SELECT id,page,raw FROM page_ouvrages 
@@ -83,35 +85,34 @@ class DbAdapter implements DbAdapterInterface
                     'validDate' => self::OPTI_VALID_DATE,
                 ]
             );
+            $pageOuvrage = (new PageOuvrageDTO())->fromArray($row);
         } catch (Throwable $e) {
             echo "SQL : No more queue to process \n";
         }
 
-        return $row ?? null;
+        return ($pageOuvrage instanceof PageOuvrageDTO) ? $pageOuvrage : null;
     }
 
     /**
      * Update DB with completed data from CompleteProcess.
-     *
-     * @param array $finalData
-     *
-     * @return bool
+     * todo condition sur ID car recherche sur toutes les lignes raw (non indexées) c'est perf caca SQL
      */
-    public function sendCompletedData(array $finalData): bool
+    public function sendCompletedData(PageOuvrageDTO $pageOuvrage): bool
     {
         try {
-            $result = $this->db->update(
-                'page_ouvrages',
-                ['raw' => $finalData['raw']], // condition
-                $finalData
+            $pageOuvrageStore = new PageOuvrageStore($this->db);
+            $pageOuvrageStore->update(
+                (new UpdateQueryBuilder())
+                    ->setModel($pageOuvrage)
+                    ->addCondition(PageOuvrageDTO::COLUMN_ID, $pageOuvrage->getId())
             );
         } catch (MysqlException $e) {
-            dump($e);
+            print_r($e);
 
             return false;
         }
 
-        return !empty($result);
+        return true;
     }
 
     //------------------------------------------------------

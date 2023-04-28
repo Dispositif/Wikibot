@@ -8,6 +8,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Models;
 
+use DateTimeInterface;
+use Exception;
 use Simplon\Mysql\Crud\CrudModel;
 
 /**
@@ -63,9 +65,9 @@ class PageOuvrageDTO extends CrudModel
     /** @var @var int|null */
     protected $label;
 
-    public function getId(): int
+    public function getId(): ?int
     {
-        return $this->id;
+        return $this->id ? (int) $this->id : null;
     }
 
     public function getPage(): string
@@ -117,10 +119,20 @@ class PageOuvrageDTO extends CrudModel
         return $this->optidate;
     }
 
-    public function setOptidate(?string $optidate): PageOuvrageDTO
+    public function setOptidate($optidate): PageOuvrageDTO
     {
-        $this->optidate = $optidate;
-        return $this;
+        if ($optidate instanceof DateTimeInterface) {
+            $this->optidate = self::dateTimeToSql($optidate);
+
+            return $this;
+        }
+        if (null === $optidate || is_string($optidate)) {
+            $this->optidate = $optidate;
+
+            return $this;
+        }
+
+        throw new Exception('optidate bad format');
     }
 
     public function getSkip()
@@ -128,7 +140,7 @@ class PageOuvrageDTO extends CrudModel
         return $this->skip;
     }
 
-    public function setSkip($skip)
+    public function setSkip($skip): PageOuvrageDTO
     {
         $this->skip = $skip;
         return $this;
@@ -161,7 +173,7 @@ class PageOuvrageDTO extends CrudModel
         return $this->notcosmetic;
     }
 
-    public function setNotcosmetic($notcosmetic)
+    public function setNotcosmetic($notcosmetic): PageOuvrageDTO
     {
         $this->notcosmetic = $notcosmetic;
         return $this;
@@ -172,7 +184,7 @@ class PageOuvrageDTO extends CrudModel
         return $this->major;
     }
 
-    public function setMajor($major)
+    public function setMajor($major): PageOuvrageDTO
     {
         $this->major = $major;
         return $this;
@@ -205,7 +217,7 @@ class PageOuvrageDTO extends CrudModel
         return $this->priority;
     }
 
-    public function setPriority($priority)
+    public function setPriority($priority): PageOuvrageDTO
     {
         $this->priority = $priority;
         return $this;
@@ -227,7 +239,7 @@ class PageOuvrageDTO extends CrudModel
         return $this->torevert;
     }
 
-    public function setTorevert($torevert)
+    public function setTorevert($torevert): PageOuvrageDTO
     {
         $this->torevert = $torevert;
         return $this;
@@ -271,7 +283,7 @@ class PageOuvrageDTO extends CrudModel
         return $this->altered;
     }
 
-    public function setAltered($altered)
+    public function setAltered($altered): PageOuvrageDTO
     {
         $this->altered = $altered;
         return $this;
@@ -282,7 +294,7 @@ class PageOuvrageDTO extends CrudModel
         return $this->label;
     }
 
-    public function setLabel($label)
+    public function setLabel($label): PageOuvrageDTO
     {
         $this->label = $label;
         return $this;

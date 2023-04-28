@@ -9,13 +9,15 @@ declare(strict_types=1);
 
 namespace App\Application\InfrastructurePorts;
 
+use App\Domain\Models\PageOuvrageDTO;
+
 interface DbAdapterInterface
 {
     public function getOptiValidDate(): string;
 
-    public function getNewRaw(): ?array;
+    public function getNewRaw(): ?PageOuvrageDTO;
 
-    public function sendCompletedData(array $finalData): bool;
+    public function sendCompletedData(PageOuvrageDTO $pageOuvrage): bool;
 
     public function skipRow(int $id): bool;
 

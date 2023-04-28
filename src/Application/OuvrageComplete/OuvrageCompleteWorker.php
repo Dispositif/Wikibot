@@ -11,20 +11,27 @@ namespace App\Application\OuvrageComplete;
 
 use App\Application\InfrastructurePorts\DbAdapterInterface;
 use App\Application\InfrastructurePorts\MemoryInterface;
+use App\Application\OuvrageComplete\Handlers\BnfFromIsbnHandler;
+use App\Application\OuvrageComplete\Handlers\GoogleBooksHandler;
+use App\Application\OuvrageComplete\Handlers\OpenLibraryHandler;
+use App\Application\OuvrageComplete\Handlers\ParseTemplateHandler;
+use App\Application\OuvrageComplete\Handlers\WikidataSearchHandler;
+use App\Application\OuvrageComplete\Validators\GoogleRequestValidator;
+use App\Application\OuvrageComplete\Validators\IsbnBanValidator;
+use App\Application\OuvrageComplete\Validators\NewPageOuvrageToCompleteValidator;
 use App\Application\WikiBotConfig;
 use App\Domain\InfrastructurePorts\WikidataAdapterInterface;
+use App\Domain\Models\PageOuvrageDTO;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\OptimizerFactory;
 use App\Domain\OuvrageComplete;
-use App\Domain\OuvrageFactory;
-use App\Domain\Publisher\Wikidata2Ouvrage;
 use App\Domain\SummaryLogTrait;
-use App\Domain\Utils\TemplateParser;
+use DateTime;
+use DomainException;
 use Exception;
 use Normalizer;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use Throwable;
 
 /**
  * TODO Legacy class, to be refactored. To big, too many responsibilities.
@@ -34,52 +41,42 @@ class OuvrageCompleteWorker
 {
     use SummaryLogTrait;
 
-    /**
-     * Exclusion requête BnF/Google/etc
-     * Format EAN ou ISBN10 sans tiret.
-     */
-    public const ISBN_EAN_SKIP
-        = [
-            '9782918758440', // Profils de lignes du réseau ferré français vol.2
-            '9782918758341', // Profils de lignes du réseau ferré français vol.1
-            '285608043X', // Dictionnaire encyclopédique d'électronique (langue erronée)
-            '9782021401196', // sous-titre erroné
-        ];
 
     /**
      * @var MemoryInterface
      */
     protected $memory;
     /**
+     * @var PageOuvrageDTO
+     */
+    protected $pageOuvrage;
+    /**
      * @var DbAdapterInterface
      */
-    private $queueAdapter;
-    /**
-     * @var string
-     */
-    private $raw = '';
-    private $page; // article title
+    protected $queueAdapter;
 
-    private $notCosmetic = false;
-    private $major = false;
+    protected $page; // article title
+
+    protected $notCosmetic = false;
+    protected $major = false;
     /**
      * @var OuvrageTemplate
      */
-    private $ouvrage;
+    protected $ouvrage;
     /**
      * @var LoggerInterface
      */
-    private $logger;
+    protected $logger;
     /**
      * @var WikidataAdapterInterface
      */
-    private $wikidataAdapter;
+    protected $wikidataAdapter;
 
     public function __construct(
-        DbAdapterInterface $queueAdapter,
+        DbAdapterInterface       $queueAdapter,
         WikidataAdapterInterface $wikidataAdapter,
-        MemoryInterface $memory,
-        ?LoggerInterface $logger = null
+        MemoryInterface          $memory,
+        ?LoggerInterface         $logger = null
     )
     {
         $this->queueAdapter = $queueAdapter;
@@ -93,20 +90,10 @@ class OuvrageCompleteWorker
         while ($limit > 0) {
             $limit--;
             sleep(1);
-            $row = $this->getNewRow2Complete();
-            $this->raw = $row['raw'];
-            $this->page = $row['page'];
-            // Note : $row['id'] défini
+            $this->pageOuvrage = $this->getNewRow2CompleteOrException();
+            $this->page = $this->pageOuvrage->getPage();
 
-            echo sprintf(
-                "-------------------------------\n%s [%s]\n%s\n%s\n",
-                date("Y-m-d H:i:s"),
-                WikiBotConfig::VERSION ?? '',
-                $this->page,
-                $this->raw
-            );
-
-            $this->logger->debug($this->memory->getMemory(true));
+            $this->printTitle($this->pageOuvrage);
 
             // initialise variables
             $this->resetSummaryLog();
@@ -115,34 +102,10 @@ class OuvrageCompleteWorker
             $this->major = false;
 
 
-            try {
-                $parse = TemplateParser::parseAllTemplateByName('ouvrage', $this->raw);
-                $origin = $parse['ouvrage'][0]['model'] ?? null;
-            } catch (Throwable $e) {
-                $this->logger->warning(
-                    sprintf(
-                        "*** ERREUR 432 impossible de transformer en modèle => skip %s : %s \n",
-                        $row['id'],
-                        $this->raw
-                    )
-                );
-                $this->queueAdapter->skipRow((int) $row['id']);
-                sleep(10);
-                continue;
-            }
+            // TODO WIP
+            $handler = new ParseTemplateHandler($this->pageOuvrage, $this->queueAdapter, $this->logger);
+            $origin = $handler->handle();
 
-            if (!$origin instanceof OuvrageTemplate) {
-                $this->logger->warning(
-                    sprintf(
-                        "*** ERREUR 433 impossible de transformer en modèle => skip %s : %s \n",
-                        $row['id'],
-                        $this->raw
-                    )
-                );
-                $this->queueAdapter->skipRow((int) $row['id']);
-                sleep(10);
-                continue;
-            }
 
             // Final optimizing (with online predictions)
             $optimizer = OptimizerFactory::fromTemplate($origin, $this->page, $this->logger);
@@ -150,6 +113,7 @@ class OuvrageCompleteWorker
             $this->ouvrage = $optimizer->getOptiTemplate();
             $this->summaryLog = array_merge($this->getSummaryLog(), $optimizer->getSummaryLog());
             $this->notCosmetic = ($optimizer->notCosmetic || $this->notCosmetic);
+
 
             /**
              * RECHERCHE ONLINE
@@ -160,7 +124,7 @@ class OuvrageCompleteWorker
                 && !$origin->hasParamValue('isbn invalide')
                 && !$origin->hasParamValue('isbn erroné')
             ) {
-                $this->onlineIsbnSearch($isbn, $isbn10);
+                $this->completeByIsbnSearch($isbn, $isbn10);
             }
 
             $this->sendCompleted();
@@ -174,113 +138,33 @@ class OuvrageCompleteWorker
 
     /**
      * Get array (title+raw strings) to complete from AMQP queue, SQL Select or file reading.
-     *
-     * @return array
-     * @throws Exception
      */
-    private function getNewRow2Complete(): array
+    protected function getNewRow2CompleteOrException(): PageOuvrageDTO
     {
-        $row = $this->queueAdapter->getNewRaw();
-        if (empty($row) || empty($row['raw'])) {
-            echo "STOP: no more queue to process \n";
-            throw new Exception('no more queue to process');
+        $pageOuvrageDTO = $this->queueAdapter->getNewRaw();
+        if ((new NewPageOuvrageToCompleteValidator($pageOuvrageDTO))->validate()) {
+            return $pageOuvrageDTO;
         }
 
-        return $row;
+        throw new DomainException('no more raw to complete');
     }
 
-    /**
-     * @param string      $isbn
-     * @param string|null $isbn10
-     *
-     * @return bool
-     */
-    private function isIsbnSkipped(string $isbn, ?string $isbn10 = null): bool
+    // todo extract class
+
+    protected function printTitle(PageOuvrageDTO $pageOuvrage): void
     {
-        return in_array(str_replace('-', '', $isbn), self::ISBN_EAN_SKIP)
-            || ($isbn10 !== null
-                && in_array(str_replace('-', '', $isbn10), self::ISBN_EAN_SKIP));
+        echo sprintf(
+            "-------------------------------\n%s [%s]\n%s\n%s\n",
+            date("Y-m-d H:i:s"),
+            WikiBotConfig::VERSION ?? '',
+            $pageOuvrage->getPage(),
+            $pageOuvrage->getRaw()
+        );
+
+        $this->logger->debug($this->memory->getMemory(true));
     }
 
-    private function onlineIsbnSearch(string $isbn, ?string $isbn10 = null)
-    {
-        if ($this->isIsbnSkipped($isbn, $isbn10)) {
-            echo "*** SKIP THAT ISBN ***\n";
-
-            // Vérifier logique return
-            return;
-        }
-
-        online:
-        $this->logger->info("sleep 10...\n");
-        sleep(10);
-
-        try {
-            $this->logger->debug('BIBLIO NAT FRANCE...');
-            // BnF sait pas trouver un vieux livre (10) d'après ISBN-13... FACEPALM !
-            $bnfOuvrage = null;
-            if ($isbn10) {
-                $bnfOuvrage = OuvrageFactory::BnfFromIsbn($isbn10);
-                sleep(2);
-            }
-            if (!$isbn10 || null === $bnfOuvrage || empty($bnfOuvrage->getParam('titre'))) {
-                $bnfOuvrage = OuvrageFactory::BnfFromIsbn($isbn);
-            }
-            if ($bnfOuvrage instanceof OuvrageTemplate) {
-                $this->completeOuvrage($bnfOuvrage);
-
-                // Wikidata requests from $infos (ISBN/ISNI)
-                if (!empty($bnfOuvrage->getInfos())) {
-                    $this->logger->info('WIKIDATA...');
-
-                    // TODO move to factory
-                    $wdComplete = new Wikidata2Ouvrage($this->wikidataAdapter, clone $bnfOuvrage, $this->page);
-                    $this->completeOuvrage($wdComplete->getOuvrage());
-                }
-            }
-        } catch (Throwable $e) {
-            if (strpos($e->getMessage(), 'Could not resolve host') !== false) {
-                throw $e;
-            }
-            $this->logger->error(
-                sprintf(
-                    "*** ERREUR BnF Isbn Search %s %s %s \n",
-                    $e->getMessage(),
-                    $e->getFile(),
-                    $e->getLine()
-                )
-            );
-        }
-
-        if (!isset($bnfOuvrage) || !$this->skipGoogle($bnfOuvrage)) {
-            try {
-                $this->logger->info('GOOGLE...');
-
-                $googleOuvrage = OuvrageFactory::GoogleFromIsbn($isbn);
-                $this->completeOuvrage($googleOuvrage);
-            } catch (Throwable $e) {
-                $this->logger->warning("*** ERREUR GOOGLE Isbn Search ***".$e->getMessage());
-                if (strpos($e->getMessage(), 'Could not resolve host: www.googleapis.com') === false) {
-                    throw $e;
-                }
-                unset($e);
-            }
-        }
-
-        if (!isset($bnfOuvrage) && !isset($googleOuvrage)) {
-            try {
-                $this->logger->info('OpenLibrary...');
-                $openLibraryOuvrage = OuvrageFactory::OpenLibraryFromIsbn($isbn);
-                if (!empty($openLibraryOuvrage)) {
-                    $this->completeOuvrage($openLibraryOuvrage);
-                }
-            } catch (Throwable $e) {
-                $this->logger->warning('**** ERREUR OpenLibrary Isbn Search');
-            }
-        }
-    }
-
-    //    private function onlineQuerySearch(string $query)
+    //    protected function onlineQuerySearch(string $query)
     //    {
     //        echo "sleep 40...";
     //        sleep(20);
@@ -304,8 +188,40 @@ class OuvrageCompleteWorker
     //        }
     //    }
 
-    private function completeOuvrage(OuvrageTemplate $onlineOuvrage)
+    protected function completeByIsbnSearch(string $isbn, ?string $isbn10 = null)
     {
+        if ((new IsbnBanValidator($isbn, $isbn10))->validate() === false) {
+            echo "*** SKIP THAT ISBN ***\n";
+            return;
+        }
+
+        $this->logger->info("sleep 10...\n"); // API throttle
+        sleep(10);
+
+        $bnfOuvrage = (new BnfFromIsbnHandler($isbn, $isbn10, $this->logger))->handle();
+        $this->completeOuvrage($bnfOuvrage); // todo move to BnfFromIsbnHandler ?
+
+        if ($bnfOuvrage instanceof OuvrageTemplate) {
+            $wdOuvrage = (new WikidataSearchHandler($bnfOuvrage, $this->wikidataAdapter, $this->page))->handle();
+            $this->completeOuvrage($wdOuvrage);
+        }
+
+        if ((new GoogleRequestValidator($this->ouvrage, $bnfOuvrage))->validate()) {
+            $googleOuvrage = (new GoogleBooksHandler($isbn, $this->logger))->handle();
+            $this->completeOuvrage($googleOuvrage);
+        }
+
+        if (!isset($bnfOuvrage) && !isset($googleOuvrage)) {
+            $openLibraryOuvrage = (new OpenLibraryHandler($isbn, $this->logger))->handle();
+            $this->completeOuvrage($openLibraryOuvrage);
+        }
+    }
+
+    protected function completeOuvrage(?OuvrageTemplate $onlineOuvrage): void
+    {
+        if (!$onlineOuvrage instanceof OuvrageTemplate) {
+            return;
+        }
         $this->logger->info($onlineOuvrage->serialize(true));
         $optimizer = OptimizerFactory::fromTemplate($onlineOuvrage, $this->page, $this->logger);
         $onlineOptimized = ($optimizer)->doTasks()->getOptiTemplate();
@@ -328,31 +244,25 @@ class OuvrageCompleteWorker
         unset($completer);
     }
 
-    private function sendCompleted()
+    protected function sendCompleted()
     {
-        $isbn = $this->ouvrage->getParam('isbn');
-        $finalData = [
-            //    'page' =>
-            'raw' => $this->raw,
-            'opti' => $this->serializeFinalOpti(),
-            'optidate' => date("Y-m-d H:i:s"),
-            'modifs' => mb_substr(implode(',', $this->getSummaryLog()), 0, 250),
-            'notcosmetic' => ($this->notCosmetic) ? 1 : 0,
-            'major' => ($this->major) ? 1 : 0,
-            'isbn' => substr($isbn,0,19),
-            'version' => WikiBotConfig::VERSION ?? null,
-        ];
-        $this->logger->info('finalData', $finalData);
-        // Json ?
-        $result = $this->queueAdapter->sendCompletedData($finalData);
+        $this->pageOuvrage
+            ->setOpti($this->serializeFinalOpti())
+            ->setOptidate(new DateTime())
+            ->setModifs(mb_substr(implode(',', $this->getSummaryLog()), 0, 250))
+            ->setNotcosmetic(($this->notCosmetic) ? 1 : 0)
+            ->setMajor(($this->major) ? 1 : 0)
+            ->setIsbn(substr($this->ouvrage->getParam('isbn'), 0, 19))
+            ->setVersion(WikiBotConfig::VERSION ?? null);
 
+        $result = $this->queueAdapter->sendCompletedData($this->pageOuvrage);
         $this->logger->debug($result ? 'OK DB' : 'erreur sendCompletedData()');
     }
 
     /**
      * Final serialization of the completed OuvrageTemplate.
      */
-    private function serializeFinalOpti(): string
+    protected function serializeFinalOpti(): string
     {
         //        // Améliore style compact : plus espacé
         //        if ('|' === $this->ouvrage->userSeparator) {
@@ -365,13 +275,5 @@ class OuvrageCompleteWorker
         }
 
         return $finalOpti;
-    }
-
-    private function skipGoogle($bnfOuvrage): bool
-    {
-        return $bnfOuvrage instanceof OuvrageTemplate
-            && $bnfOuvrage->hasParamValue('titre')
-            && ($this->ouvrage->hasParamValue('lire en ligne')
-                || $this->ouvrage->hasParamValue('présentation en ligne'));
     }
 }
