@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Tests;
 
-use App\Domain\OptimizerFactory;
 use App\Domain\Utils\TemplateParser;
+use App\Domain\WikiOptimizer\OptimizerFactory;
 use App\Domain\WikiTemplateFactory;
 use Exception;
 use PHPUnit\Framework\TestCase;

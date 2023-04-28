@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure;
 
+use App\Domain\InfrastructurePorts\BookApiInterface;
 use App\Domain\InfrastructurePorts\GoogleBooksInterface;
-use App\Domain\Publisher\BookApiInterface;
 use App\Domain\Publisher\GoogleBookMapper;
 use Exception;
 use Scriptotek\GoogleBooks\GoogleBooks as GoogleAPI;

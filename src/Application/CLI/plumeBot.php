@@ -11,7 +11,7 @@ namespace App\Application\CLI;
 
 use App\Application\WikiBotConfig;
 use App\Application\WikiPageAction;
-use App\Domain\GoogleTransformer;
+use App\Domain\Transformers\GoogleTransformer;
 use App\Infrastructure\GoogleApiQuota;
 use App\Infrastructure\GoogleBooksAdapter;
 use App\Infrastructure\Logger;

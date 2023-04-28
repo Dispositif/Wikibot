@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Tests;
 
-use App\Domain\GoogleTransformer;
+use App\Domain\Transformers\GoogleTransformer;
 use App\Infrastructure\GoogleApiQuota;
 use App\Infrastructure\GoogleBooksAdapter;
 use PHPUnit\Framework\TestCase;

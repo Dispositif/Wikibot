@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
  * For the full copyright and MIT license information, view the license file.
  */
 
@@ -10,12 +10,12 @@ declare(strict_types=1);
 namespace App\Domain\Tests;
 
 use App\Domain\Models\Wiki\OuvrageClean;
-use App\Domain\OuvrageComplete;
+use App\Domain\Transformers\OuvrageMix;
 use App\Domain\WikiTemplateFactory;
 use Exception;
 use PHPUnit\Framework\TestCase;
 
-class OuvrageCompleteTest extends TestCase
+class OuvrageMixTest extends TestCase
 {
     public function testGetResult()
     {
@@ -29,7 +29,7 @@ class OuvrageCompleteTest extends TestCase
             '{{ouvrage|langue=fr|auteur1=Clément Borgal|titre=Loiret|année=1998|pages totales=319|isbn=9782862532349}}'
         );
 
-        $comp = new OuvrageComplete($origin, $google);
+        $comp = new OuvrageMix($origin, $google);
         $this::assertEquals(
             '{{Ouvrage |langue=fr |id=Bonneton |nom1=Collectif |titre=Loiret : un département à l\'élégance naturelle |éditeur=Christine Bonneton |lieu=Paris |année=2 septembre 1998 |isbn=978-2-86253-234-9 |pages totales=319}}',
             $comp->getResult()->serialize()
@@ -53,7 +53,7 @@ class OuvrageCompleteTest extends TestCase
         $online = WikiTemplateFactory::create('ouvrage');
         $online->hydrateFromText($onlineStr);
 
-        $comp = new OuvrageComplete($origin, $online);
+        $comp = new OuvrageMix($origin, $online);
         $this::assertEquals(
             $expected,
             $comp->getResult()->serialize(true)
@@ -174,7 +174,7 @@ class OuvrageCompleteTest extends TestCase
         $online = new OuvrageClean();
         $online->hydrateFromText($onlineStr);
 
-        $comp = new OuvrageComplete($origin, $online);
+        $comp = new OuvrageMix($origin, $online);
         $this::assertEquals(
             $same,
             $comp->hasSameAuthors()

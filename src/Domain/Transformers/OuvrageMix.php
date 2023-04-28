@@ -1,29 +1,25 @@
 <?php
 /*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
  * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
 
-namespace App\Domain;
+namespace App\Domain\Transformers;
 
 use App\Domain\Models\Wiki\GoogleLivresTemplate;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\Utils\TextUtil;
 use App\Domain\Utils\WikiTextUtil;
+use App\Infrastructure\IsbnFacade;
 use Exception;
 use Normalizer;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
-/**
- * Class OuvrageComplete
- *
- * @package App\Domain
- */
-class OuvrageComplete
+class OuvrageMix
 {
     public const WIKI_LANGUAGE = 'fr';
 
@@ -31,16 +27,10 @@ class OuvrageComplete
      * @var OuvrageTemplate
      */
     private $origin;
-
     private $book;
-
     public $major = false;
-
     public $notCosmetic = false;
-
     private $summaryLog = [];
-
-    //todo: injection référence base ou mapping ? (Google
     /**
      * @var LoggerInterface|NullLogger
      */

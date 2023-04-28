@@ -11,16 +11,14 @@ namespace App\Domain;
 
 use App\Domain\Models\Wiki\OuvrageClean;
 use App\Domain\Models\Wiki\OuvrageTemplate;
+use App\Domain\WikiOptimizer\OptimizerFactory;
 use App\Infrastructure\BnfAdapter;
 use App\Infrastructure\GoogleBooksAdapter;
 use App\Infrastructure\OpenLibraryAdapter;
 use Psr\Log\LoggerInterface;
 
 /**
- * todo rename OuvrageImport/Gateway ?
- * Class OuvrageFactory
- *
- * @package App\Domain
+ * todo hexa inject di (or move factory ?)
  */
 class OuvrageFactory
 {

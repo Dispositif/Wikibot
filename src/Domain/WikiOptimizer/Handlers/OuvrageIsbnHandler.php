@@ -10,8 +10,7 @@ declare(strict_types=1);
 
 namespace App\Domain\WikiOptimizer\Handlers;
 
-
-use App\Domain\IsbnFacade;
+use App\Infrastructure\IsbnFacade;
 use Exception;
 use Throwable;
 
@@ -115,7 +114,6 @@ class OuvrageIsbnHandler extends AbstractOuvrageHandler
         if ($isbn13 !== $isbn) {
             $this->setParam('isbn', $isbn13);
             $this->addSummaryLog('ISBN');
-            //            $this->notCosmetic = true;
         }
     }
 

@@ -7,15 +7,11 @@
 
 declare(strict_types=1);
 
+namespace App\Domain\InfrastructurePorts;
 
-namespace App\Domain\WikiOptimizer;
-
-
-class ArticleOptimizer extends AbstractTemplateOptimizer
+interface BookApiInterface
 {
-    public function doTasks(): self
-    {
-        // Implement doTasks() method.
-        return $this;
-    }
+    public function getDataByIsbn(string $isbn);
+
+    public function getMapper();
 }

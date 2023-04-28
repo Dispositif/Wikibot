@@ -1,17 +1,18 @@
 <?php
-/**
- * This file is part of dispositif/wikibot application
- * 2019 : Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+/*
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
 
-namespace App\Domain;
+namespace App\Infrastructure;
 
+use App\Domain\InfrastructurePorts\IsbnConverterInterface;
 use Biblys\Isbn\Isbn;
 
-class IsbnFacade extends Isbn
+class IsbnFacade extends Isbn implements IsbnConverterInterface
 {
     public const ERROR_EMPTY = 'aucun code fourni';
 
@@ -35,7 +36,7 @@ class IsbnFacade extends Isbn
             '88' => 'it',
         ];
 
-    public static function isbn2ean(string $isbn)
+    public static function isbn2ean(string $isbn): string
     {
         return preg_replace('#[^0-9X]#i', '', $isbn);
     }

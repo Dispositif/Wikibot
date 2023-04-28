@@ -23,9 +23,9 @@ use App\Application\WikiBotConfig;
 use App\Domain\InfrastructurePorts\WikidataAdapterInterface;
 use App\Domain\Models\PageOuvrageDTO;
 use App\Domain\Models\Wiki\OuvrageTemplate;
-use App\Domain\OptimizerFactory;
-use App\Domain\OuvrageComplete;
 use App\Domain\SummaryLogTrait;
+use App\Domain\Transformers\OuvrageMix;
+use App\Domain\WikiOptimizer\OptimizerFactory;
 use App\Domain\WikiOptimizer\OuvrageOptimize;
 use DateTime;
 use Exception;
@@ -232,10 +232,10 @@ class OuvrageCompleteWorker
         $optimizer = OptimizerFactory::fromTemplate($onlineOuvrage, $this->page, $this->logger);
         $onlineOptimized = ($optimizer)->doTasks()->getOptiTemplate();
 
-        $completer = new OuvrageComplete($this->ouvrage, $onlineOptimized, $this->logger);
+        $completer = new OuvrageMix($this->ouvrage, $onlineOptimized, $this->logger);
         $this->ouvrage = $completer->getResult();
 
-        // todo move that optimizing in OuvrageComplete ?
+        // todo move that optimizing in OuvrageMix ?
         $optimizer = OptimizerFactory::fromTemplate($this->ouvrage, $this->page, $this->logger);
         $this->ouvrage = $optimizer->doTasks()->getOptiTemplate();
 
@@ -277,7 +277,7 @@ class OuvrageCompleteWorker
         $finalOpti = $this->ouvrage->serialize(true);
         $finalOpti = Normalizer::normalize($finalOpti);
         if (empty($finalOpti) || !is_string($finalOpti)) {
-            throw new Exception('normalized $finalOpti serialize in OuvrageComplete is not a string');
+            throw new Exception('normalized $finalOpti serialize in OuvrageMix is not a string');
         }
 
         return $finalOpti;

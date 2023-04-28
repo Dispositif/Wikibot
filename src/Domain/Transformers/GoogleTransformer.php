@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain;
+namespace App\Domain\Transformers;
 
 use App\Domain\InfrastructurePorts\GoogleApiQuotaInterface;
 use App\Domain\InfrastructurePorts\GoogleBooksInterface;
@@ -16,6 +16,8 @@ use App\Domain\Publisher\GoogleBookMapper;
 use App\Domain\Publisher\GoogleBooksUtil;
 use App\Domain\Utils\NumberUtil;
 use App\Domain\Utils\WikiTextUtil;
+use App\Domain\WikiOptimizer\OptimizerFactory;
+use App\Domain\WikiTemplateFactory;
 use DomainException;
 use Exception;
 use Psr\Log\LoggerInterface;

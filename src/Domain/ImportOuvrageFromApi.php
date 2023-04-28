@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace App\Domain;
 
+use App\Domain\InfrastructurePorts\BookApiInterface;
 use App\Domain\Models\Wiki\OuvrageTemplate;
-use App\Domain\Publisher\BookApiInterface;
 use Exception;
 use LogicException;
 use Scriptotek\GoogleBooks\Volume;
@@ -18,7 +18,7 @@ use SimpleXMLElement;
 use Throwable;
 
 /**
- * TODO create interface for Scriptotek GB Volume !!
+ * TODO HEXA : create interface for Scriptotek GB Volume !!
  */
 class ImportOuvrageFromApi
 {
@@ -30,7 +30,7 @@ class ImportOuvrageFromApi
      * OuvrageFromApi constructor.
      *
      * @param OuvrageTemplate  $ouvrage
-     * @param BookApiInterface $adapter
+     * @param \App\Domain\InfrastructurePorts\BookApiInterface $adapter
      */
     public function __construct(OuvrageTemplate $ouvrage, BookApiInterface $adapter)
     {

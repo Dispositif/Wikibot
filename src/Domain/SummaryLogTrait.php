@@ -12,6 +12,7 @@ namespace App\Domain;
 
 /**
  * todo Refac : currently used by Application + Domain (move Domain?)
+ * => use OptiStatus
  * Trait SummaryLogTrait
  */
 trait SummaryLogTrait

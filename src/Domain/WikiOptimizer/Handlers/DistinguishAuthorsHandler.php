@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 namespace App\Domain\WikiOptimizer\Handlers;
 
-use App\Domain\PredictAuthors;
+use App\Domain\Predict\PredictAuthors;
 use App\Domain\Utils\WikiTextUtil;
 use Exception;
 

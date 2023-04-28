@@ -10,8 +10,8 @@ declare(strict_types=1);
 namespace App\Domain\Publisher\Tests;
 
 use App\Domain\InfrastructurePorts\WikidataAdapterInterface;
-use App\Domain\OptimizerFactory;
 use App\Domain\Publisher\Wikidata2Ouvrage;
+use App\Domain\WikiOptimizer\OptimizerFactory;
 use App\Domain\WikiTemplateFactory;
 use Exception;
 use PHPUnit\Framework\TestCase;

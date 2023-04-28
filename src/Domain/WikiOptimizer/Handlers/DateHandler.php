@@ -37,7 +37,7 @@ class DateHandler extends AbstractOuvrageHandler
     }
 
     /**
-     * Date->année (nécessaire pour OuvrageComplete).
+     * Date->année (nécessaire pour OuvrageMix).
      * @throws Exception
      */
     protected function moveDate2Year()

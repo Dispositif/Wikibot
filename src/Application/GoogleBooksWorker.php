@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace App\Application;
 
-use App\Domain\GoogleTransformer;
+use App\Domain\Transformers\GoogleTransformer;
 use App\Infrastructure\GoogleApiQuota;
 use App\Infrastructure\GoogleBooksAdapter;
 use Throwable;

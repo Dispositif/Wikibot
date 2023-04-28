@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace App\Domain\WikiOptimizer;
 
-use App\Domain\AbstractTemplateOptimizer;
 use App\Domain\WikiOptimizer\Handlers\HandlerComposite;
 use App\Domain\WikiOptimizer\Handlers\WebCleanAuthorsHandler;
 use App\Domain\WikiOptimizer\Handlers\WebSitePeriodiqueHandler;
