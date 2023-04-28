@@ -25,9 +25,9 @@ class LocationHandler extends AbstractOuvrageHandler
      */
     protected $pageListManager;
 
-    public function __construct(OuvrageTemplate $ouvrage, OptiStatus $summary, PageListInterface $pageListManager)
+    public function __construct(OuvrageTemplate $ouvrage, OptiStatus $optiStatus, PageListInterface $pageListManager)
     {
-        parent::__construct($ouvrage, $summary);
+        parent::__construct($ouvrage, $optiStatus);
         $this->pageListManager = $pageListManager;
     }
 
@@ -54,11 +54,12 @@ class LocationHandler extends AbstractOuvrageHandler
         }
 
         // translation : "London"->"Londres"
+        // todo fix polymorphic call to pageListManager::findCSVline
         $row = $this->pageListManager->findCSVline(self::TRANSLATE_CITY_FR, $location);
         if ($row !== [] && !empty($row[1])) {
             $this->setParam('lieu', $row[1]);
             $this->addSummaryLog('lieu francisé');
-            $this->notCosmetic = true;
+            $this->optiStatus->setNotCosmetic(true);
         }
     }
 }

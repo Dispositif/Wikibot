@@ -7,9 +7,7 @@
 
 declare(strict_types=1);
 
-
 namespace App\Domain\WikiOptimizer\Handlers;
-
 
 use App\Domain\Models\Wiki\AbstractWikiTemplate;
 use App\Domain\Models\Wiki\OuvrageTemplate;
@@ -26,10 +24,10 @@ abstract class AbstractOuvrageHandler implements OptimizeHandlerInterface
      */
     protected $optiStatus;
 
-    public function __construct(OuvrageTemplate $ouvrage, OptiStatus $summary)
+    public function __construct(OuvrageTemplate $ouvrage, OptiStatus $optiStatus)
     {
         $this->ouvrage = $ouvrage;
-        $this->optiStatus = $summary;
+        $this->optiStatus = $optiStatus;
     }
 
     abstract public function handle();

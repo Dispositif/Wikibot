@@ -8,12 +8,14 @@
 declare(strict_types=1);
 
 
-namespace App\Domain;
+namespace App\Domain\WikiOptimizer;
 
+
+use App\Domain\AbstractTemplateOptimizer;
 
 class ArticleOptimizer extends AbstractTemplateOptimizer
 {
-    public function doTasks()
+    public function doTasks(): self
     {
         // Implement doTasks() method.
         return $this;

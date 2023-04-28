@@ -13,6 +13,8 @@ use App\Domain\Models\Wiki\ArticleTemplate;
 use App\Domain\Models\Wiki\LienWebTemplate;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\Models\Wiki\WikiTemplateInterface;
+use App\Domain\WikiOptimizer\ArticleOptimizer;
+use App\Domain\WikiOptimizer\LienWebOptimizer;
 use App\Domain\WikiOptimizer\OuvrageOptimize;
 use App\Domain\WikiOptimizer\TemplateOptimizerInterface;
 use App\Infrastructure\FileManager;
