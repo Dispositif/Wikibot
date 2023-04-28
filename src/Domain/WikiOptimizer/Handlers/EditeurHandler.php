@@ -10,8 +10,8 @@ declare(strict_types=1);
 namespace App\Domain\WikiOptimizer\Handlers;
 
 use App\Domain\Models\Wiki\OuvrageTemplate;
+use App\Domain\OptiStatus;
 use App\Domain\Utils\WikiTextUtil;
-use App\Domain\WikiOptimizer\OptiStatus;
 use App\Domain\WikiOptimizer\OuvrageOptimize;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -24,7 +24,7 @@ class EditeurHandler implements OptimizeHandlerInterface
      */
     protected $ouvrage;
     /**
-     * @var OptiStatus
+     * @var \App\Domain\OptiStatus
      */
     protected $optiStatus;
     /**

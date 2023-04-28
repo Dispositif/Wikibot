@@ -11,9 +11,9 @@ namespace App\Domain\WikiOptimizer\Handlers;
 
 use App\Domain\InfrastructurePorts\PageListInterface;
 use App\Domain\Models\Wiki\OuvrageTemplate;
+use App\Domain\OptiStatus;
 use App\Domain\Utils\TextUtil;
 use App\Domain\Utils\WikiTextUtil;
-use App\Domain\WikiOptimizer\OptiStatus;
 use Exception;
 
 class LocationHandler extends AbstractOuvrageHandler

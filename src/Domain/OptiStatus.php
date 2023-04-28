@@ -7,10 +7,11 @@
 
 declare(strict_types=1);
 
+namespace App\Domain;
 
-namespace App\Domain\WikiOptimizer;
-
-
+/**
+ * See also Application/PageWorkStatus
+ */
 class OptiStatus
 {
     protected $summary = [];

@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Domain\WikiOptimizer;
 
+use App\Domain\OptiStatus;
 use App\Domain\WikiOptimizer\Handlers\AuthorLinkHandler;
 use App\Domain\WikiOptimizer\Handlers\BnfParamHandler;
 use App\Domain\WikiOptimizer\Handlers\DateHandler;

@@ -11,7 +11,7 @@ namespace App\Domain\WikiOptimizer\Handlers;
 
 use App\Domain\Models\Wiki\AbstractWikiTemplate;
 use App\Domain\Models\Wiki\OuvrageTemplate;
-use App\Domain\WikiOptimizer\OptiStatus;
+use App\Domain\OptiStatus;
 
 abstract class AbstractOuvrageHandler implements OptimizeHandlerInterface
 {

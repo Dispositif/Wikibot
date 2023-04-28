@@ -10,8 +10,8 @@ declare(strict_types=1);
 namespace App\Domain\WikiOptimizer\Handlers;
 
 use App\Domain\Models\Wiki\WikiTemplateInterface;
+use App\Domain\OptiStatus;
 use App\Domain\Utils\TextUtil;
-use App\Domain\WikiOptimizer\OptiStatus;
 
 class PredictErrorParameterHandler implements OptimizeHandlerInterface
 {

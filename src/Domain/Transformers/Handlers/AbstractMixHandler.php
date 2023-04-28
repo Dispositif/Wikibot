@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace App\Domain\Transformers\Handlers;
 
 use App\Domain\Models\Wiki\OuvrageTemplate;
-use App\Domain\WikiOptimizer\OptiStatus;
+use App\Domain\OptiStatus;
 use Psr\Log\LoggerInterface;
 
 abstract class AbstractMixHandler implements TransformHandlerInterface

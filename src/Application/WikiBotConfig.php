@@ -26,7 +26,7 @@ use Throwable;
 /**
  * Define wiki configuration of the bot.
  * See also .env file for parameters.
- * Class WikiBotConfig.
+ * Page/Edit/Summary status are defined in Application/.../PageWorkStatus or Domain/OptiStatus
  */
 class WikiBotConfig
 {

@@ -10,9 +10,9 @@ declare(strict_types=1);
 namespace App\Domain\Transformers;
 
 use App\Domain\Models\Wiki\OuvrageTemplate;
+use App\Domain\OptiStatus;
 use App\Domain\Transformers\Handlers\OuvrageMixComposite;
 use App\Domain\Transformers\Validator\SameBookValidator;
-use App\Domain\WikiOptimizer\OptiStatus;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 

@@ -9,7 +9,10 @@ declare(strict_types=1);
 
 namespace App\Application\OuvrageEdit;
 
-// todo extends WikiPageAction ?
+/**
+ * See also Application/OuvrageComplete/CitationStatus and Domain/OptiStatus
+ * todo extends WikiPageAction ?
+ */
 class PageWorkStatus
 {
     /**
