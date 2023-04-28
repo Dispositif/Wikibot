@@ -36,18 +36,7 @@ $botConfig = new WikiBotConfig($wiki, $logger);
 $botConfig->taskName = "🌐 Amélioration de références : URL ⇒ "; // 🐞 🌐  🔗
 
 // LAST EDIT
-// TODO : \<ref[^\>]*\> et liste à puces * http://...
-// todo 1600 avec espace entre <ref> et http : "http" insource:/\<ref[^\>]*\> +https?\:\/\/[^\>]+\<\/ref>/
-//$list = new CirrusSearch(
-//    [
-//        'srsearch' => '"http" insource:/\<ref\>https?\:\/\/[^\>]+\<\/ref>/',
-//        'srlimit' => '5000',
-//        'srqiprofile' => 'popular_inclinks_pv',
-//        'srsort' => 'last_edit_desc',
-//    ]
-//);
-//$list->setOptions(['reverse' => true]);
-
+// TODO : liste à puces * http://...
 
 // RANDOM :
 $list = new CirrusSearch(

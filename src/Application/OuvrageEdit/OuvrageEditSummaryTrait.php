@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace App\Application\OuvrageEdit;
 
 use DateTime;
-use function App\Application\mb_substr;
 
 /**
  * Used only by OuvrageEditWorker.

@@ -24,14 +24,13 @@ use Psr\Log\NullLogger;
  */
 class RecentChangeWorker
 {
-    const USER_RC_LIMIT = 100;
-    /**
-     * @var MediawikiApi
-     */
+    protected const USER_RC_LIMIT = 100;
+    protected const TASK_NAME = '🦊 Amélioration de références : URL ⇒ ';
+    protected const ALREADY_EDITED_PATH = __DIR__.'/../resources/article_externRef_edited.txt';
+
+    /** @var MediawikiApi */
     private $api;
-    /**
-     * @var LoggerInterface
-     */
+    /** @var LoggerInterface */
     private $logger;
 
     public function __construct(MediawikiApi $api, ?LoggerInterface $logger = null)
@@ -47,7 +46,7 @@ class RecentChangeWorker
         $titles = $this->getLastEditsbyUser($user);
 
         // filter titles already in edited.txt
-        $edited = file(__DIR__.'/resources/article_externRef_edited.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        $edited = file(self::ALREADY_EDITED_PATH, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
         $filtered = array_diff($titles, $edited);
         $list = new PageList( $filtered ); // TODO PageList factory in App ?
         echo ">" . $list->count() . " dans liste\n";
@@ -85,7 +84,7 @@ class RecentChangeWorker
     {
         $wiki = ServiceFactory::getMediawikiFactory();
         $botConfig = new WikiBotConfig($wiki, $this->logger);
-        $botConfig->taskName = "🦊 Amélioration de références : URL ⇒ ";
+        $botConfig->taskName = self::TASK_NAME;
 
 
         new ExternRefWorker($botConfig, $wiki, $list, null, new InternetDomainParser());

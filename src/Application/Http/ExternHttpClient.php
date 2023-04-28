@@ -107,9 +107,12 @@ class ExternHttpClient implements ExternHttpClientInterface
         }
         try {
             $html2 = iconv($charset, 'UTF-8//TRANSLIT', $html);
+            if (false === $html2) {
+                throw new DomainException("error iconv : $charset to UTF-8 on " . $url);
+            }
             $html2 = Normalizer::normalize($html2);
             if (!is_string($html2)) {
-                return '';
+                throw new DomainException("error normalizer : $charset to UTF-8 on " . $url);
             }
         } catch (Throwable $e) {
             throw new DomainException("error converting : $charset to UTF-8 on " . $url, $e->getCode(), $e);

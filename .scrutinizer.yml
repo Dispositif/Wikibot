@@ -44,6 +44,7 @@ filter:
     excluded_paths:
         - "*/Tests/*"
         - "*/resources/*"
+        - "*/Bazar/*"
     dependency_paths:
         - vendor/
 tools:

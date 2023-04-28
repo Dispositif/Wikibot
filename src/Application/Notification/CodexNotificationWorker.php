@@ -22,7 +22,7 @@ use Throwable;
 
 class CodexNotificationWorker extends NotificationWorker
 {
-    public const ARTICLE_ANALYZED_FILENAME = __DIR__.'/resources/article_externRef_edited.txt';
+    public const ARTICLE_ANALYZED_FILENAME = __DIR__.'/../resources/article_externRef_edited.txt';
     public const PROCESS_TASKNAME          = '🔔 Amélioration de références : URL ⇒ ';
 
     /**
