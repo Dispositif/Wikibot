@@ -11,7 +11,7 @@ namespace App\Domain\WikiOptimizer;
 
 use App\Domain\AbstractTemplateOptimizer;
 use App\Domain\WikiOptimizer\Handlers\AuthorLinkHandler;
-use App\Domain\WikiOptimizer\Handlers\BnfHandler;
+use App\Domain\WikiOptimizer\Handlers\BnfParamHandler;
 use App\Domain\WikiOptimizer\Handlers\DateHandler;
 use App\Domain\WikiOptimizer\Handlers\DistinguishAuthorsHandler;
 use App\Domain\WikiOptimizer\Handlers\EditeurHandler;
@@ -20,77 +20,91 @@ use App\Domain\WikiOptimizer\Handlers\ExternalTemplateHandler;
 use App\Domain\WikiOptimizer\Handlers\GoogleBooksUrlHandler;
 use App\Domain\WikiOptimizer\Handlers\LangParamHandler;
 use App\Domain\WikiOptimizer\Handlers\LocationHandler;
+use App\Domain\WikiOptimizer\Handlers\OptimizeHandlerInterface;
 use App\Domain\WikiOptimizer\Handlers\OuvrageFormatHandler;
 use App\Domain\WikiOptimizer\Handlers\OuvrageIsbnHandler;
 use App\Domain\WikiOptimizer\Handlers\PredictErrorParameterHandler;
 use App\Domain\WikiOptimizer\Handlers\TitleHandler;
 
 /**
- * Legacy.
- * TODO move methods to OuvrageClean setters
- * TODO AbstractProcess
- * TODO observer/event (log, MajorEdition)
+ * Check and correct param value of {ouvrage} wikitemplate, from bibliographic logic rules or prediction.
+ * No request to external API.
+ * Use local library : ISBN check, etc.
  */
 class OuvrageOptimize extends AbstractTemplateOptimizer
 {
     public const CONVERT_GOOGLEBOOK_TEMPLATE = false; // change OuvrageOptimizeTest !!
-
     public const WIKI_LANGUAGE = 'fr';
+    public const PUBLISHER_FRWIKI_FILENAME = __DIR__ . '/../resources/data_editors_wiki.json';
 
-    public const PUBLISHER_FRWIKI_FILENAME = __DIR__.'/../resources/data_editors_wiki.json';
-
-    protected $notCosmetic = false;
-
-    protected $major = false;
+    /**
+     * @var OptiStatus
+     */
+    protected $optiStatus;
 
     /**
      * @noinspection PhpParamsInspection
      */
     public function doTasks(): self
     {
-        $optiStatus = new OptiStatus();
+        $this->optiStatus = new OptiStatus(); // move to AbstractTemplateOptimizer ?
+        $optiStatus = $this->optiStatus;
 
-        (new PredictErrorParameterHandler($this->optiTemplate, $optiStatus))->handle();
+        // Composite handler
+        $handlers = [
+            new PredictErrorParameterHandler($this->optiTemplate, $optiStatus),
+            new DistinguishAuthorsHandler($this->optiTemplate, $optiStatus),
+            new LangParamHandler($this->optiTemplate, $optiStatus),
+            (new LangParamHandler($this->optiTemplate, $optiStatus))->setLangParam('langue originale'),
+            new TitleHandler($this->optiTemplate, $optiStatus),
+            new AuthorLinkHandler($this->optiTemplate, $optiStatus),
+            new EditionCitebookHandler($this->optiTemplate, $optiStatus),
+            new EditeurHandler($this->optiTemplate, $optiStatus, $this->wikiPageTitle, $this->log),
+            new DateHandler($this->optiTemplate, $optiStatus),
+            new ExternalTemplateHandler($this->optiTemplate, $optiStatus),
+            new OuvrageFormatHandler($this->optiTemplate, $optiStatus),
+            new OuvrageIsbnHandler($this->optiTemplate, $optiStatus),
+            new BnfParamHandler($this->optiTemplate, $optiStatus),
+            new LocationHandler($this->optiTemplate, $optiStatus, $this->pageListManager),
+            new GoogleBooksUrlHandler($this->optiTemplate, $optiStatus),
+            (new GoogleBooksUrlHandler($this->optiTemplate, $optiStatus))
+                ->sethandlerParam('présentation en ligne'),
+            new PredictErrorParameterHandler($this->optiTemplate, $optiStatus),
+            new DistinguishAuthorsHandler($this->optiTemplate, $optiStatus),
+            new LangParamHandler($this->optiTemplate, $optiStatus),
+            (new LangParamHandler($this->optiTemplate, $optiStatus))->setLangParam('langue originale'),
+            new TitleHandler($this->optiTemplate, $optiStatus),
+            new AuthorLinkHandler($this->optiTemplate, $optiStatus),
+            new EditionCitebookHandler($this->optiTemplate, $optiStatus),
+            new EditeurHandler($this->optiTemplate, $optiStatus, $this->wikiPageTitle, $this->log),
+            new DateHandler($this->optiTemplate, $optiStatus),
+            new ExternalTemplateHandler($this->optiTemplate, $optiStatus),
+            new OuvrageFormatHandler($this->optiTemplate, $optiStatus),
+            new OuvrageIsbnHandler($this->optiTemplate, $optiStatus),
+            new BnfParamHandler($this->optiTemplate, $optiStatus),
+            new LocationHandler($this->optiTemplate, $optiStatus, $this->pageListManager),
+            new GoogleBooksUrlHandler($this->optiTemplate, $optiStatus),
+            (new GoogleBooksUrlHandler($this->optiTemplate, $optiStatus))
+                ->sethandlerParam('présentation en ligne'),
+        ];
 
-        (new DistinguishAuthorsHandler($this->optiTemplate, $optiStatus))->handle();
-
-        $langParamHandler = new LangParamHandler($this->optiTemplate, $optiStatus);
-        $langParamHandler->handle();
-        $langParamHandler->setLangParam('langue originale');
-        $langParamHandler->handle();
-
-        (new TitleHandler($this->optiTemplate, $optiStatus))->handle();
-
-        (new AuthorLinkHandler($this->optiTemplate, $optiStatus))->handle();
-
-        (new EditionCitebookHandler($this->optiTemplate, $optiStatus))->handle();
-
-        (new EditeurHandler($this->optiTemplate, $optiStatus, $this->wikiPageTitle, $this->log))->handle();
-
-        (new DateHandler($this->optiTemplate, $optiStatus))->handle();
-
-        (new ExternalTemplateHandler($this->optiTemplate, $optiStatus))->handle();
-
-        (new OuvrageFormatHandler($this->optiTemplate, $optiStatus))->handle();
-
-        (new OuvrageIsbnHandler($this->optiTemplate, $optiStatus))->handle();
-
-        (new BnfHandler($this->optiTemplate, $optiStatus))->handle();
-
-        (new LocationHandler($this->optiTemplate, $optiStatus, $this->pageListManager))->handle();
-
-        $googleUrlHandler = new GoogleBooksUrlHandler($this->optiTemplate, $optiStatus);
-        $googleUrlHandler->handle();
-        $googleUrlHandler->sethandlerParam('présentation en ligne')->handle();
+        foreach ($handlers as $handler) {
+            if (!$handler instanceof OptimizeHandlerInterface) {
+                throw new \LogicException('Handler must implement OptimizeHandlerInterface');
+            }
+            $handler->handle();
+        }
 
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function isNotCosmetic(): bool
     {
-        return $this->notCosmetic;
+        return $this->optiStatus->isNotCosmetic();
+    }
+
+    public function getOptiStatus(): OptiStatus
+    {
+        return $this->optiStatus;
     }
 }

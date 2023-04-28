@@ -30,7 +30,6 @@ abstract class AbstractOuvrageHandler implements OptimizeHandlerInterface
     {
         $this->ouvrage = $ouvrage;
         $this->optiStatus = $summary;
-//        echo get_class($this) . "\n";
     }
 
     abstract public function handle();

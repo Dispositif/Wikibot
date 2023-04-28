@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace App\Domain\WikiOptimizer\Handlers;
 
-class BnfHandler extends AbstractOuvrageHandler
+class BnfParamHandler extends AbstractOuvrageHandler
 {
     public function handle()
     {
