@@ -11,8 +11,8 @@ namespace App\Application\CLI;
 
 use App\Application\OuvrageEdit\OuvrageEditWorker;
 use App\Application\WikiBotConfig;
+use App\Infrastructure\ConsoleLogger;
 use App\Infrastructure\DbAdapter;
-use App\Infrastructure\Logger;
 use App\Infrastructure\Memory;
 use App\Infrastructure\ServiceFactory;
 use Throwable;
@@ -24,7 +24,7 @@ $count = 0; // erreurs successives
 while (true) {
     try {
         echo "*** NEW EDIT PROCESS\n";
-        $logger = new Logger();
+        $logger = new ConsoleLogger();
         if (getenv('ENV') === 'DEV') {
             $logger->verbose = true;
 //            $logger->debug = true;

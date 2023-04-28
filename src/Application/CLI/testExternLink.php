@@ -13,8 +13,8 @@ use App\Application\Http\ExternHttpClient;
 use App\Domain\ExternLink\ExternRefTransformer;
 use App\Domain\Models\Summary;
 use App\Domain\Publisher\ExternMapper;
+use App\Infrastructure\ConsoleLogger;
 use App\Infrastructure\InternetDomainParser;
-use App\Infrastructure\Logger;
 use Codedungeon\PHPCliColors\Color;
 use Exception;
 
@@ -27,7 +27,7 @@ if (empty($url)) {
 
 echo Color::BG_LIGHT_RED.$url.Color::NORMAL."\n";
 
-$log = new Logger();
+$log = new ConsoleLogger();
 $log->debug = true;
 $log->verbose = true;
 $summary = new Summary('test');

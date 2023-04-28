@@ -10,9 +10,9 @@ declare(strict_types=1);
 namespace App\Application\CLI;
 
 use App\Application\OuvrageComplete\OuvrageCompleteWorker;
+use App\Infrastructure\ConsoleLogger;
 use App\Infrastructure\DbAdapter;
 use App\Infrastructure\GoogleApiQuota;
-use App\Infrastructure\Logger;
 use App\Infrastructure\Memory;
 use App\Infrastructure\SMS;
 use App\Infrastructure\WikidataAdapter;
@@ -22,7 +22,7 @@ use Throwable;
 include __DIR__.'/../myBootstrap.php';
 
 // sort of process management
-$logger = new Logger();
+$logger = new ConsoleLogger();
 //$logger->debug = true;
 $count = 0;
 while (true) {

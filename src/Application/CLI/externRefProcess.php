@@ -12,8 +12,8 @@ namespace App\Application\CLI;
 use App\Application\ExternLink\ExternRefWorker;
 use App\Application\WikiBotConfig;
 use App\Infrastructure\CirrusSearch;
+use App\Infrastructure\ConsoleLogger;
 use App\Infrastructure\InternetDomainParser;
-use App\Infrastructure\Logger;
 use App\Infrastructure\PageList;
 use App\Infrastructure\ServiceFactory;
 
@@ -29,7 +29,7 @@ include __DIR__.'/../myBootstrap.php'; // Codex
 
 /** @noinspection PhpUnhandledExceptionInspection */
 $wiki = ServiceFactory::getMediawikiFactory();
-$logger = new Logger();
+$logger = new ConsoleLogger();
 //$logger->colorMode = true;
 //$logger->debug = true;
 $botConfig = new WikiBotConfig($wiki, $logger);

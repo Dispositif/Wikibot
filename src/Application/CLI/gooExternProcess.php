@@ -10,8 +10,8 @@ namespace App\Application\CLI;
 use App\Application\GoogleBooksWorker;
 use App\Application\WikiBotConfig;
 use App\Infrastructure\CirrusSearch;
+use App\Infrastructure\ConsoleLogger;
 use App\Infrastructure\GoogleApiQuota;
-use App\Infrastructure\Logger;
 use App\Infrastructure\PageList;
 use App\Infrastructure\ServiceFactory;
 
@@ -32,7 +32,7 @@ if ($quota->isQuotaReached()) {
 
 
 $wiki = ServiceFactory::getMediawikiFactory();
-$bot = new WikiBotConfig($wiki, new Logger());
+$bot = new WikiBotConfig($wiki, new ConsoleLogger());
 $bot->taskName = "🌐📘 Amélioration bibliographique : lien Google Books ⇒ {ouvrage}";
 
 // les "* https://..." en biblio et liens externes

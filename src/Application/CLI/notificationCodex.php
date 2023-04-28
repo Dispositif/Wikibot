@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace App\Application\CLI;
 
 use App\Application\Notification\CodexNotificationWorker;
-use App\Infrastructure\Logger;
+use App\Infrastructure\ConsoleLogger;
 use App\Infrastructure\ServiceFactory;
 
 require_once __DIR__.'/../myBootstrap.php';
@@ -23,6 +23,6 @@ require_once __DIR__.'/../myBootstrap.php';
  */
 
 echo date('Y-m-d H\:i:s')." Check notifications... \n";
-new CodexNotificationWorker(ServiceFactory::getMediawikiApi(), 'Utilisateur:CodexBot/Notifications', [], new Logger());
+new CodexNotificationWorker(ServiceFactory::getMediawikiApi(), 'Utilisateur:CodexBot/Notifications', [], new ConsoleLogger());
 
 

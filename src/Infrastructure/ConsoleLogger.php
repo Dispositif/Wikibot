@@ -14,7 +14,7 @@ use Codedungeon\PHPCliColors\Color;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LoggerInterface;
 
-class Logger extends AbstractLogger implements LoggerInterface
+class ConsoleLogger extends AbstractLogger implements LoggerInterface
 {
     //    use LoggerTrait;
 

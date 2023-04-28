@@ -12,9 +12,9 @@ namespace App\Application\CLI;
 use App\Application\WikiBotConfig;
 use App\Application\WikiPageAction;
 use App\Domain\Transformers\GoogleTransformer;
+use App\Infrastructure\ConsoleLogger;
 use App\Infrastructure\GoogleApiQuota;
 use App\Infrastructure\GoogleBooksAdapter;
-use App\Infrastructure\Logger;
 use App\Infrastructure\ServiceFactory;
 use Codedungeon\PHPCliColors\Color;
 use Mediawiki\DataModel\EditInfo;
@@ -29,7 +29,7 @@ $wiki = ServiceFactory::getMediawikiFactory();
 $taskName = "🧹📗 Correction de référence (lanouvellerepublique.fr : titre manquant)"; // 🧹📗🐵
 $botflag = false;
 
-$bot = new WikiBotConfig($wiki, new Logger());
+$bot = new WikiBotConfig($wiki, new ConsoleLogger());
 
 // Get raw list of articles
 $filename = __DIR__.'/../resources/plume.txt';

@@ -11,8 +11,8 @@ namespace App\Application\CLI;
 
 use App\Application\OuvrageScan\ScanWiki2DB;
 use App\Application\WikiBotConfig;
+use App\Infrastructure\ConsoleLogger;
 use App\Infrastructure\DbAdapter;
-use App\Infrastructure\Logger;
 use App\Infrastructure\PageList;
 use App\Infrastructure\ServiceFactory;
 
@@ -31,4 +31,4 @@ $ba = PageList::FromWikiCategory('Article potentiellement de qualité');
 $adq = PageList::FromWikiCategory('Article potentiellement bon');
 $list = new PageList(array_merge($ba->getPageTitles(), $adq->getPageTitles()));
 
-new ScanWiki2DB($wiki, new DbAdapter(), new WikiBotConfig($wiki, new Logger()), $list, 20);
+new ScanWiki2DB($wiki, new DbAdapter(), new WikiBotConfig($wiki, new ConsoleLogger()), $list, 20);
