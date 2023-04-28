@@ -241,10 +241,10 @@ class OuvrageCompleteWorker
 
         $this->logger->info('Summary', $completer->getSummaryLog());
 
-        if ($completer->major) {
+        if ($completer->getOptiStatus()->isMajor()) {
             $this->citationWorkStatus->minorFlag = false;
         }
-        $this->citationWorkStatus->notCosmetic = ($completer->notCosmetic || $this->citationWorkStatus->notCosmetic);
+        $this->citationWorkStatus->notCosmetic = ($completer->getOptiStatus()->isNotCosmetic() || $this->citationWorkStatus->notCosmetic);
         $this->summaryLog = array_merge($this->getSummaryLog(), $completer->getSummaryLog());
         unset($optimizer);
         unset($completer);

@@ -11,6 +11,7 @@ namespace App\Domain\Tests;
 
 use App\Domain\Models\Wiki\OuvrageClean;
 use App\Domain\Transformers\OuvrageMix;
+use App\Domain\Transformers\Validator\SameAuthorValidator;
 use App\Domain\WikiTemplateFactory;
 use Exception;
 use PHPUnit\Framework\TestCase;
@@ -29,6 +30,7 @@ class OuvrageMixTest extends TestCase
             '{{ouvrage|langue=fr|auteur1=Clément Borgal|titre=Loiret|année=1998|pages totales=319|isbn=9782862532349}}'
         );
 
+        /** @noinspection PhpParamsInspection */
         $comp = new OuvrageMix($origin, $google);
         $this::assertEquals(
             '{{Ouvrage |langue=fr |id=Bonneton |nom1=Collectif |titre=Loiret : un département à l\'élégance naturelle |éditeur=Christine Bonneton |lieu=Paris |année=2 septembre 1998 |isbn=978-2-86253-234-9 |pages totales=319}}',
@@ -44,6 +46,7 @@ class OuvrageMixTest extends TestCase
      * @param string $expected
      *
      * @throws Exception
+     * @noinspection PhpParamsInspection
      */
     public function testComplete(string $originStr, string $onlineStr, string $expected)
     {
@@ -60,7 +63,7 @@ class OuvrageMixTest extends TestCase
         );
     }
 
-    public function provideComplete()
+    public function provideComplete(): array
     {
         return [
             [
@@ -174,10 +177,11 @@ class OuvrageMixTest extends TestCase
         $online = new OuvrageClean();
         $online->hydrateFromText($onlineStr);
 
-        $comp = new OuvrageMix($origin, $online);
+        /** @noinspection PhpParamsInspection */
+        $sameAuthorValidator = new SameAuthorValidator($origin, $online);
         $this::assertEquals(
             $same,
-            $comp->hasSameAuthors()
+            $sameAuthorValidator->validate()
         );
     }
 
