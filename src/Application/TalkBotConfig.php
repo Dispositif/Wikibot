@@ -159,7 +159,7 @@ class TalkBotConfig extends WikiBotConfig
             $text = file_get_contents(self::TALKCONFIG_FILENAME);
 
             return json_decode($text, true, 512, JSON_THROW_ON_ERROR);
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return [];
         }
     }

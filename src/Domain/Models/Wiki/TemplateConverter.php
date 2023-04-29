@@ -33,9 +33,7 @@ class TemplateConverter
      * Conversion {ouvrage} en {article}.
      * todo Move factory ?
      *
-     * @param OuvrageTemplate $ouvrage
      *
-     * @return ArticleTemplate|null
      * @throws Exception
      */
     public static function ArticleFromOuvrage(OuvrageTemplate $ouvrage): ?ArticleTemplate
@@ -48,7 +46,7 @@ class TemplateConverter
 
             $articleInfos = array_merge(['ConvertFromOuvrage' => 1], $ouvrage->getInfos());
             $article->setInfos($articleInfos);
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             return null;
         }
 
@@ -64,9 +62,7 @@ class TemplateConverter
     /**
      * TODO : refac/move in AbstractTemplate
      *
-     * @param ArticleTemplate $article
      *
-     * @return bool
      * @throws Exception
      */
     public static function hasNeededParams(ArticleTemplate $article): bool
@@ -86,9 +82,7 @@ class TemplateConverter
     /**
      * Convert param names between wiki-templates.
      *
-     * @param array $ouvrageData
      *
-     * @return array
      */
     private static function convertDataOuvrage2Article(array $ouvrageData): array
     {

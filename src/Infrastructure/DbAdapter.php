@@ -21,15 +21,15 @@ use Simplon\Mysql\QueryBuilder\UpdateQueryBuilder;
 use Throwable;
 
 /**
- * TODO return DTO !!!
+ * TODO WIP refac : return DTO !!!
  * Temporary SQL play. https://github.com/fightbulc/simplon_mysql .
  * Class DbAdapter.
  */
 class DbAdapter implements DbAdapterInterface
 {
-    public const OPTI_VALID_DATE = '2020-04-05 00:00:00'; // v0.77
-    protected $db;
-    protected $pdoConn; // v.34 sous-titre sans maj
+    final public const OPTI_VALID_DATE = '2023-01-01 00:00:00'; // v1.0
+    protected Mysql $db;
+    protected $pdoConn;
 
     public function __construct()
     {
@@ -46,10 +46,9 @@ class DbAdapter implements DbAdapterInterface
     }
 
     /**
-     * @return array|bool
      * @throws Exception
      */
-    public function insertPageOuvrages(array $datas)
+    public function insertPageOuvrages(array $datas): bool|array
     {
         // check if article already in db
         $page = $datas[0]['page'];
@@ -66,11 +65,8 @@ class DbAdapter implements DbAdapterInterface
     }
 
     /**
-     * TODO return PageOuvrage DTO (+ generator ?)
      * Get one new row (page, raw) to complete.
      * Order by isbn (NULL first)
-     *
-     * @return array|null
      */
     public function getNewRaw(): ?PageOuvrageDTO
     {
@@ -86,7 +82,7 @@ class DbAdapter implements DbAdapterInterface
                 ]
             );
             $pageOuvrage = (new PageOuvrageDTO())->fromArray($row);
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             echo "SQL : No more queue to process \n";
         }
 
@@ -95,7 +91,10 @@ class DbAdapter implements DbAdapterInterface
 
     /**
      * Update DB with completed data from CompleteProcess.
-     * todo condition sur ID car recherche sur toutes les lignes raw (non indexées) c'est perf caca SQL
+     *
+     * The update by column "id" is limited to one row, for a performance reason.
+     * Indeed, the "raw" column can not be indexed (MySql), so a modification of all rows with an identical raw
+     * explodes the query time.
      */
     public function sendCompletedData(PageOuvrageDTO $pageOuvrage): bool
     {
@@ -257,9 +256,7 @@ class DbAdapter implements DbAdapterInterface
     /**
      * Update DB after wiki edition.
      *
-     * @param array $data
      *
-     * @return bool
      */
     public function sendEditedData(array $data): bool
     {
@@ -302,7 +299,7 @@ class DbAdapter implements DbAdapterInterface
                     'nextVerifyDate' => (new DateTime())->sub(new DateInterval('P2D'))->format('Y-m-d H:i:s'),
                 ]
             );
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             echo "SQL : No more queue to process \n";
         }
 

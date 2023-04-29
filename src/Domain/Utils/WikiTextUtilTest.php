@@ -136,9 +136,6 @@ EOF;
 
     /**
      * @dataProvider provideWikify
-     *
-     * @param string $text
-     * @param string $expected
      */
     public function testUnWikify(string $text, string $expected)
     {

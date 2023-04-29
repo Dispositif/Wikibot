@@ -58,8 +58,6 @@ class CodexNotificationWorker extends NotificationWorker
 
     /**
      * Process wikiSan for future {ouvrage} completion
-     *
-     * @param string $article
      */
     private function processWikiscanForOuvrage(string $article): void
     {

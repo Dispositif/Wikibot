@@ -61,10 +61,6 @@ class OuvrageCompleteWorker
      */
     protected $ouvrage;
     /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-    /**
      * @var WikidataAdapterInterface
      */
     protected $wikidataAdapter;
@@ -77,11 +73,10 @@ class OuvrageCompleteWorker
         DbAdapterInterface       $queueAdapter,
         WikidataAdapterInterface $wikidataAdapter,
         MemoryInterface          $memory,
-        ?LoggerInterface         $logger = null
+        protected LoggerInterface         $logger = new NullLogger()
     )
     {
         $this->queueAdapter = $queueAdapter;
-        $this->logger = $logger ?? new NullLogger();
         $this->wikidataAdapter = $wikidataAdapter;
         $this->memory = $memory;
     }
@@ -92,7 +87,7 @@ class OuvrageCompleteWorker
             $limit--;
             sleep(1);
             $this->pageOuvrage = $this->getNewRow2CompleteOrException();
-            if ($this->pageOuvrage === null) {
+            if (!$this->pageOuvrage instanceof \App\Domain\Models\PageOuvrageDTO) {
                 throw new Exception('no more queue to process');
             }
             $this->page = $this->pageOuvrage->getPage();
@@ -195,7 +190,7 @@ class OuvrageCompleteWorker
 
     protected function completeByIsbnSearch(string $isbn, ?string $isbn10 = null)
     {
-        if ((new IsbnBanValidator($isbn, $isbn10))->validate() === false) {
+        if (!(new IsbnBanValidator($isbn, $isbn10))->validate()) {
             echo "*** SKIP THAT ISBN ***\n";
             return;
         }

@@ -39,45 +39,24 @@ class ExternPage
             'blogspot.com',
         ];
 
-    /**
-     * @var string
-     */
-    private $url;
-
-    /**
-     * @var string
-     */
-    private $html;
-
-    /** @var TagParserInterface|null */
-    private $tagParser;
-
-    /** @var InternetDomainParserInterface|null */
-    private $domainParser;
-
-    /** @var LoggerInterface */
-    private $log;
+    private readonly string $url;
 
     /**
      * ExternPage constructor.
      * @throws Exception
      */
     public function __construct(
-        string                         $url,
-        string                         $html,
-        ?TagParserInterface            $tagParser = null,
-        ?InternetDomainParserInterface $domainParser = null,
-        ?LoggerInterface               $log = null
+        string                                          $url,
+        private readonly string                         $html,
+        private readonly ?TagParserInterface            $tagParser = null,
+        private readonly ?InternetDomainParserInterface $domainParser = null,
+        private readonly LoggerInterface                $log = new NullLogger()
     )
     {
         if (!ExternHttpClient::isHttpURL($url)) {
             throw new Exception('string is not an URL ' . $url);
         }
         $this->url = $url;
-        $this->html = $html;
-        $this->tagParser = $tagParser;
-        $this->domainParser = $domainParser;
-        $this->log = $log ?? new NullLogger();
     }
 
     public function getUrl(): string
@@ -115,7 +94,7 @@ class ExternPage
         );
 
         foreach ($results as $result) {
-            $json = trim($result);
+            $json = trim((string) $result);
             // filtrage empty value (todo?)
             if ($json === '') {
                 continue;

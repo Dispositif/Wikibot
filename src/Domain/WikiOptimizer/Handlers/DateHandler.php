@@ -31,7 +31,7 @@ class DateHandler extends AbstractOuvrageHandler
 
         try {
             $this->moveDate2Year();
-        } catch (Exception $e) {
+        } catch (Exception) {
             // nothing (log?)
         }
     }

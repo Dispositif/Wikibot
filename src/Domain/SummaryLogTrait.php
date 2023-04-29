@@ -19,9 +19,6 @@ trait SummaryLogTrait
 {
     protected $summaryLog = [];
 
-    /**
-     * @return array
-     */
     public function getSummaryLog(): array
     {
         return $this->summaryLog;
@@ -32,9 +29,6 @@ trait SummaryLogTrait
         $this->summaryLog = [];
     }
 
-    /**
-     * @param string $string
-     */
     protected function addSummaryLog(string $string): void
     {
         if (!empty($string)) {

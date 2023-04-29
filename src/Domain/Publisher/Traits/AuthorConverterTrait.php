@@ -65,7 +65,7 @@ trait AuthorConverterTrait
                 return html_entity_decode($data['author']['name']);
             }
 
-            return html_entity_decode($data['author']['name'][0]);
+            return html_entity_decode((string) $data['author']['name'][0]);
         }
 
         return null;
@@ -86,7 +86,7 @@ trait AuthorConverterTrait
 
             // "author" => [ "@type" => "Person", "name" => [] ]
             if (isset($data['author'][$index]['name'][0])) {
-                return html_entity_decode($data['author'][$index]['name'][0]);
+                return html_entity_decode((string) $data['author'][$index]['name'][0]);
             }
         }
 
@@ -98,7 +98,7 @@ trait AuthorConverterTrait
         if (isset($data['author']) && isset($data['author'][0]) && isset($data['author'][0]['@type'])
             && 'Person' !== $data['author'][0]['@type']
         ) {
-            return html_entity_decode($data['author'][0]['name']);
+            return html_entity_decode((string) $data['author'][0]['name']);
         }
 
         return null;
@@ -133,11 +133,7 @@ trait AuthorConverterTrait
         if (empty($authors)) {
             return false;
         }
-        if (substr_count($authors, ',') >= 2 || substr_count($authors, ';') >= 1) {
-            return true;
-        }
-
-        return false;
+        return substr_count($authors, ',') >= 2 || substr_count($authors, ';') >= 1;
     }
 
     protected function cleanAuthor(?string $str = null): ?string
@@ -167,7 +163,7 @@ trait AuthorConverterTrait
             return null;
         }
         // skip potential wikilinks
-        if (strpos($str, '[') !== false) {
+        if (str_contains($str, '[')) {
             return $str;
         }
         $str = preg_replace('#\b(AFP)\b#i', '[[Agence France-Presse|AFP]]', $str);

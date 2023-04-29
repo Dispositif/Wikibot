@@ -58,7 +58,7 @@ class TemplateParserTest extends TestCase
         ];
     }
 
-    public function testFindAllTemplatesByName()
+    public function testFindAllTemplatesByName(): never
     {
         $this::markTestIncomplete('not implemented');
     }
@@ -68,7 +68,6 @@ class TemplateParserTest extends TestCase
      *
      * @param       $template
      * @param       $text
-     * @param array $expected
      */
     public function testParseDataFromTemplate($template, $text, array $expected)
     {
@@ -92,7 +91,7 @@ class TemplateParserTest extends TestCase
         ];
     }
 
-    public function testParseAllTemplateByName()
+    public function testParseAllTemplateByName(): never
     {
         $this::markTestIncomplete('not implemented');
     }

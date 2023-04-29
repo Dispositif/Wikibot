@@ -25,6 +25,6 @@ trait DtoConvertDateTrait
 
     public static function dateTimeToSql(?DateTimeInterface $date): ?string
     {
-        return $date ? $date->format('Y-m-d H:i:s') : null;
+        return $date instanceof \DateTimeInterface ? $date->format('Y-m-d H:i:s') : null;
     }
 }

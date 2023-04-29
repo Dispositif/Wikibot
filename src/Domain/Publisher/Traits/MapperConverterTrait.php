@@ -40,9 +40,7 @@ trait MapperConverterTrait
     /**
      * Note : à appliquer AVANT wikification (sinon bug sur | )
      *
-     * @param string|null $str
      *
-     * @return string|null
      */
     protected function clean(?string $str = null): ?string
     {
@@ -88,7 +86,7 @@ trait MapperConverterTrait
                 '',
                 '',
             ],
-            $str
+            (string) $str
         );
 
         $str = html_entity_decode($str);
@@ -112,10 +110,10 @@ trait MapperConverterTrait
             return null;
         }
         // og:type = default: website / video.movie / video.tv_show video.other / article, book, profile
-        if (strpos($ogType, 'video') !== false) {
+        if (str_contains($ogType, 'video')) {
             return 'vidéo';
         }
-        if (strpos($ogType, 'book') !== false) {
+        if (str_contains($ogType, 'book')) {
             return 'livre';
         }
 
@@ -124,9 +122,7 @@ trait MapperConverterTrait
 
     /**
      * https://developers.facebook.com/docs/internationalization#locales
-     * @param string|null $lang
      *
-     * @return string|null
      */
     protected function convertLangue(?string $lang = null): ?string
     {
@@ -161,7 +157,7 @@ trait MapperConverterTrait
     {
         try {
             $date = new DateTime($str);
-        } catch (Exception $e) {
+        } catch (Exception) {
             // 23/11/2015 00:00:00
             if (isset($this->log) && method_exists($this->log, 'notice')) {
                 $this->log->notice('tryFormatDateOrComment failed with ' . $str);

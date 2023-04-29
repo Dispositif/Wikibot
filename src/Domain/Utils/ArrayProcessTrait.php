@@ -26,8 +26,6 @@ trait ArrayProcessTrait
 
     public function deleteEmptyValueArray(array $array): array
     {
-        return array_filter($array, function ($value) {
-            return (null !== $value && '' !== $value);
-        });
+        return array_filter($array, fn($value) => null !== $value && '' !== $value);
     }
 }

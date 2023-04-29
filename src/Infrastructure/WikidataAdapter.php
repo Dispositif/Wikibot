@@ -23,11 +23,11 @@ use Normalizer;
  */
 class WikidataAdapter implements WikidataAdapterInterface
 {
-    private $client;
+    private ?Client $client = null;
 
     public function __construct(?Client $client = null)
     {
-        if ($client === null) {
+        if (!$client instanceof Client) {
             // lazy dependency factory :)
             $this->client = new Client(['timeout' => 60, 'headers' => ['User-Agent' => getenv('USER_AGENT')]]);
         } else {
@@ -106,9 +106,6 @@ WHERE {
     }
 
     /**
-     * @param string $sparql
-     *
-     * @return array|null
      * @throws Exception
      */
     private function sparqlRequest(string $sparql): ?array
@@ -150,9 +147,7 @@ WHERE {
     /**
      * todo move
      *
-     * @param string $isni
      *
-     * @return bool
      */
     private function ISNIvalide(string $isni): bool
     {

@@ -16,14 +16,8 @@ class ExternHttpErrorLogic
 {
     public const LOG_REQUEST_ERROR = __DIR__ . '/../../Application/resources/external_request_error.log';
 
-    /**
-     * @var LoggerInterface
-     */
-    private $log;
-
-    public function __construct(?LoggerInterface $log = null)
+    public function __construct(private readonly LoggerInterface $log = new NullLogger())
     {
-        $this->log = $log ?? new NullLogger();
     }
 
     public function manageHttpErrors(string $errorMessage, string $url): string

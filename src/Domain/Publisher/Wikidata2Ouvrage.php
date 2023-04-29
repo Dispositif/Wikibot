@@ -26,36 +26,22 @@ use Exception;
 class Wikidata2Ouvrage
 {
 
-    private $ouvrage;
-    /**
-     * @var array
-     */
-    private $infos;
-    /**
-     * @var WikidataAdapterInterface
-     */
-    private $adapter;
+    private readonly OuvrageTemplate $ouvrage;
+    private readonly array $infos;
     public $log = [];
     /**
      * @var array|null
      */
-    private $data;
-    /**
-     * @var string|null
-     */
-    private $title; // article title
+    private $data; // article title
 
     /**
      * Wikidata2Ouvrage constructor.
      *
      * @throws Exception
      */
-    public function __construct(WikidataAdapterInterface $wdAdapter, OuvrageTemplate $ouvrage, ?string $title = null)
+    public function __construct(private readonly WikidataAdapterInterface $adapter, OuvrageTemplate $ouvrage, private readonly ?string $title = null)
     {
-        $this->adapter = $wdAdapter;
-
         $clone = clone $ouvrage;
-        $this->title = $title;
         $this->infos = $clone->getInfos();
         $clone->setInfos([]); // suppression Infos
         $clone->setDataSource('WikiData');
@@ -87,7 +73,6 @@ class Wikidata2Ouvrage
     }
 
     /**
-     * @return void
      * @throws Exception
      */
     private function completeAuthorLink(): void
@@ -116,15 +101,13 @@ class Wikidata2Ouvrage
      * "https://fr.wikipedia.org/wiki/Michel_Houellebecq" => "Michel Houellebecq".
      *
      * @param $wikiURL
-     *
-     * @return string|null
      */
     private function wikiURL2title($wikiURL): ?string
     {
         $lienTitre = str_replace(
             ['https://fr.wikipedia.org/wiki/', '_'],
             ['', ' '],
-            $wikiURL
+            (string) $wikiURL
         );
 
         return trim(urldecode($lienTitre));

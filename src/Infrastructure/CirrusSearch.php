@@ -13,8 +13,9 @@ namespace App\Infrastructure;
 use App\Application\InfrastructurePorts\PageListForAppInterface;
 use App\Domain\Exceptions\ConfigException;
 use App\Domain\InfrastructurePorts\PageListInterface;
+use Exception;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
-use HttpException;
 
 /**
  * https://fr.wikipedia.org/w/api.php?action=help&modules=query%2Bsearch
@@ -28,10 +29,7 @@ use HttpException;
 class CirrusSearch implements PageListInterface, PageListForAppInterface
 {
     public const BASE_URL = 'https://fr.wikipedia.org/w/api.php';
-
-    private $params;
-    private $options;
-    private $defaultParams
+    private array $defaultParams
         = [
             'action' => 'query',
             'list' => 'search',
@@ -40,12 +38,10 @@ class CirrusSearch implements PageListInterface, PageListForAppInterface
             'srnamespace' => '0',
             'srlimit' => '100',
         ];
-    private $client;
+    private readonly ClientInterface $client;
 
-    public function __construct(array $params, ?array $options = [])
+    public function __construct(private readonly array $params, private ?array $options = [])
     {
-        $this->params = $params;
-        $this->options = $options;
         $this->client = ServiceFactory::httpClient(['timeout' => 300]);
     }
 
@@ -67,7 +63,7 @@ class CirrusSearch implements PageListInterface, PageListForAppInterface
         $titles = [];
         foreach ($results as $res) {
             if (!empty($res['title'])) {
-                $titles[] = trim($res['title']); // trim utile ?
+                $titles[] = trim((string) $res['title']); // trim utile ?
             }
         }
 
@@ -78,9 +74,6 @@ class CirrusSearch implements PageListInterface, PageListForAppInterface
         return $titles;
     }
 
-    /**
-     * @param array|null $options
-     */
     public function setOptions(?array $options): void
     {
         $this->options = $options;
@@ -102,9 +95,8 @@ class CirrusSearch implements PageListInterface, PageListForAppInterface
     /**
      * todo Wiki API ?
      *
-     * @return array
      * @throws ConfigException
-     * @throws HttpException
+     * @throws Exception
      */
     private function httpRequest(): array
     {
@@ -118,7 +110,7 @@ class CirrusSearch implements PageListInterface, PageListForAppInterface
          * @var $response Response
          */
         if ($response->getStatusCode() !== 200) {
-            throw new HttpException(
+            throw new Exception(
                 'CirrusSearch error : '.$response->getStatusCode().' '.$response->getReasonPhrase()
             );
         }
@@ -127,7 +119,7 @@ class CirrusSearch implements PageListInterface, PageListForAppInterface
             return [];
         }
         try {
-            $array = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+            $array = json_decode((string) $json, true, 512, JSON_THROW_ON_ERROR);
         } catch (\Throwable $e) {
             throw new \Exception($e->getMessage(), $e->getCode(), $e);
         }

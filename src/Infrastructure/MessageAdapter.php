@@ -21,7 +21,7 @@ use PhpAmqpLib\Message\AMQPMessage;
  */
 class MessageAdapter implements MessageInterface
 {
-    private $tempStorage = [];
+    private array $tempStorage = [];
 
     // todo: dependency inject AMQPAdapter, logAdapter, etc ?
     public function __construct()

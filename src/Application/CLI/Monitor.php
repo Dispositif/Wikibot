@@ -16,25 +16,21 @@ use App\Infrastructure\ServiceFactory;
 use Mediawiki\Api\MediawikiFactory;
 use Normalizer;
 
-include __DIR__.'/../myBootstrap.php';
+include __DIR__ . '/../myBootstrap.php';
 
 $process = new Monitor();
 $process->run();
 
 /**
  * TODO refac
- *
  */
 class Monitor
 {
     public const SLEEP_TIME = 60;
 
-    private $db;
-    private $lastTitle = '';
-    /**
-     * @var MediawikiFactory
-     */
-    private $wiki;
+    private readonly DbAdapter $db;
+    private string $lastTitle = '';
+    private readonly MediawikiFactory $wiki;
 
     public function __construct()
     {
@@ -108,11 +104,6 @@ class Monitor
 
     /**
      * TODO : if find raw -> reverted
-     *
-     * @param array  $data
-     * @param string $text
-     *
-     * @return int
      */
     private function checkAltered(array $data, string $text): int
     {
@@ -158,5 +149,4 @@ class Monitor
 
         return (int)round(($count - $found) / count($data) * 100);
     }
-
 }

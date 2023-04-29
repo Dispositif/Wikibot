@@ -22,26 +22,18 @@ use Throwable;
  */
 class ImportOuvrageFromApi
 {
-    private $adapter;
-
-    private $ouvrage;
+    private readonly OuvrageTemplate $ouvrage;
 
     /**
      * OuvrageFromApi constructor.
-     *
-     * @param OuvrageTemplate  $ouvrage
-     * @param \App\Domain\InfrastructurePorts\BookApiInterface $adapter
      */
-    public function __construct(OuvrageTemplate $ouvrage, BookApiInterface $adapter)
+    public function __construct(OuvrageTemplate $ouvrage, private readonly BookApiInterface $adapter)
     {
-        $this->adapter = $adapter;
         $this->ouvrage = clone $ouvrage;
     }
 
     /**
      * Inutile si pas de clonage $ouvrage dans construct().
-     *
-     * @return OuvrageTemplate|null
      */
     public function getOuvrage(): ?OuvrageTemplate
     {
@@ -49,9 +41,7 @@ class ImportOuvrageFromApi
     }
 
     /**
-     * @param string $isbn
      *
-     * @return OuvrageTemplate
      *
      * @throws Exception
      */
@@ -83,8 +73,6 @@ class ImportOuvrageFromApi
 
     /**
      * @param $volume
-     *
-     * @return array
      */
     private function mapping($volume): array
     {

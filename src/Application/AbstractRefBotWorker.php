@@ -55,7 +55,7 @@ abstract class AbstractRefBotWorker extends AbstractBotTaskWorker
         $refs = array_slice($refs, 0, self::MAX_REFS_PROCESSED_IN_ARTICLE, true);
 
         foreach ($refs as $ref) {
-            $refContent = WikiTextUtil::stripFinalPoint(trim($ref[1]));
+            $refContent = WikiTextUtil::stripFinalPoint(trim((string) $ref[1]));
 
             $newRefContent = $this->processRefContent($refContent);
 
@@ -65,16 +65,16 @@ abstract class AbstractRefBotWorker extends AbstractBotTaskWorker
         return $text;
     }
 
-    public abstract function processRefContent($refContent): string;
+    public abstract function processRefContent(string $refContent): string;
 
     protected function replaceRefInText(array $ref, string $replace, string $text)
     {
         // Pas de changement
-        if (WikiTextUtil::stripFinalPoint(trim($replace)) === WikiTextUtil::stripFinalPoint(trim($ref[1]))) {
+        if (WikiTextUtil::stripFinalPoint(trim($replace)) === WikiTextUtil::stripFinalPoint(trim((string) $ref[1]))) {
             return $text;
         }
         $replace = $this->addFinalPeriod($ref[0], $replace);
-        $result = str_replace($ref[1], $replace, $ref[0]);
+        $result = str_replace($ref[1], $replace, (string) $ref[0]);
         $this->printDiff($ref[0], $result);
 
         return str_replace($ref[0], $result, $text);
@@ -85,7 +85,7 @@ abstract class AbstractRefBotWorker extends AbstractBotTaskWorker
      */
     protected function addFinalPeriod($ref, string $replace): string
     {
-        if (preg_match('#</ref>#', $ref)) {
+        if (preg_match('#</ref>#', (string) $ref)) {
             $replace .= '.';
         }
         return $replace;

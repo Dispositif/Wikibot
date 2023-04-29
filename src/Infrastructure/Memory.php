@@ -54,6 +54,6 @@ class Memory implements MemoryInterface
     {
         $unit = ['b', 'Kb', 'Mb', 'Gb', 'Tb', 'Pb'];
 
-        return @round($size / pow(1024, ($i = floor(log($size, 1024)))), 2).' '.$unit[intval($i)];
+        return @round($size / 1024 ** ($i = floor(log($size, 1024))), 2).' '.$unit[(int) $i];
     }
 }

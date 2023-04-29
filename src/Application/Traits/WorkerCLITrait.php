@@ -19,7 +19,7 @@ trait WorkerCLITrait
 {
     protected function autoOrYesConfirmation(string $question = 'ÉDITION ?'): bool
     {
-        $this->modeAuto = $this->modeAuto ?? false;
+        $this->modeAuto ??= false;
         if ($this->modeAuto) {
             return true;
         }

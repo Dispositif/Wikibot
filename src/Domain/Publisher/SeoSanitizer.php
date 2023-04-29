@@ -70,13 +70,13 @@ class SeoSanitizer
     private function getSEOSeparator(string $title): ?string
     {
         // order is important. '-' before '/' ? see date, etc
-        if (strpos($title, ' | ') !== false) {
+        if (str_contains($title, ' | ')) {
             return ' | ';
         }
-        if (strpos($title, ' / ') !== false) {
+        if (str_contains($title, ' / ')) {
             return ' / ';
         }
-        if (strpos($title, ' - ') !== false) {
+        if (str_contains($title, ' - ')) {
             return ' - ';
         }
 //        if (strpos($title, ' : ') !== false) {
@@ -107,8 +107,8 @@ class SeoSanitizer
                 $strippedSegment = str_replace(['.', '-', ' '], '', $strippedSegment);
 
                 return !empty(trim($segment))
-                    && false === strpos($strippedSegment, $prettyDomainName)
-                    && false === strpos($strippedSegment, $siteName);
+                    && !str_contains($strippedSegment, $prettyDomainName)
+                    && !str_contains($strippedSegment, $siteName);
             }
         ));
     }

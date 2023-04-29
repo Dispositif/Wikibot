@@ -18,9 +18,7 @@ trait BiblioTemplateTrait
     /**
      * Pas de serialization année vide si date non vide.
      *
-     * @param string $serial
      *
-     * @return string
      */
     private function anneeOrDateSerialize(string $serial): string
     {

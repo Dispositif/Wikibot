@@ -37,7 +37,7 @@ class OpenLibraryHandler implements CompleteHandlerInterface
             $this->logger->info('OpenLibrary...');
             return OuvrageFactory::OpenLibraryFromIsbn($this->isbn);
 
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             $this->logger->warning('**** ERREUR OpenLibrary Isbn Search');
         }
 

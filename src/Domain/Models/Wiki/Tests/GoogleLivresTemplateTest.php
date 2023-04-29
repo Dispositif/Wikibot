@@ -167,8 +167,6 @@ class GoogleLivresTemplateTest extends TestCase
     /**
      * @dataProvider provideGoogleUrl
      *
-     * @param string $url
-     * @param string $expected
      *
      * @throws Exception
      */

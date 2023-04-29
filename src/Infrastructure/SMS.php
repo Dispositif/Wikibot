@@ -15,10 +15,7 @@ use GuzzleHttp\Client;
 
 class SMS implements SMSInterface
 {
-    /**
-     * @var Client
-     */
-    private $client;
+    private readonly Client $client;
 
     /**
      * @throws Exception

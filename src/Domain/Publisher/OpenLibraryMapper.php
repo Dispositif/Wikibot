@@ -42,11 +42,11 @@ class OpenLibraryMapper extends AbstractBookMapper implements MapperInterface
 
     private function filterSubtitle(array $details): ?string
     {
-        if (!isset($details['subtitle']) || 'roman' === mb_strtolower($details['subtitle'])) {
+        if (!isset($details['subtitle']) || 'roman' === mb_strtolower((string) $details['subtitle'])) {
             return null;
         }
 
-        if (strlen($details['subtitle']) > 80) {
+        if (strlen((string) $details['subtitle']) > 80) {
             return null;
         }
 
@@ -63,8 +63,6 @@ class OpenLibraryMapper extends AbstractBookMapper implements MapperInterface
      * property should be used to test if a book is readable.
      *
      * @param $data
-     *
-     * @return string|null
      */
     private function readOnline($data): ?string
     {
@@ -75,12 +73,12 @@ class OpenLibraryMapper extends AbstractBookMapper implements MapperInterface
         return null;
     }
 
-    private function convertDate2Year($details)
+    private function convertDate2Year($details): ?string
     {
         if (!isset($details['publish_date'])) {
             return null;
         }
-        if (preg_match('/[^0-9]?([12]\d{3})[^0-9]?/', $details['publish_date'], $matches) > 0) {
+        if (preg_match('/[^0-9]?([12]\d{3})[^0-9]?/', (string) $details['publish_date'], $matches) > 0) {
             return (string) $matches[1];
         }
 

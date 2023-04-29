@@ -177,10 +177,10 @@ class WikiBotConfig
 
     protected function sendSMS(string $lastEditor): bool
     {
-        if ($this->SMSClient) {
+        if ($this->SMSClient instanceof SMSInterface) {
             try {
                 return $this->SMSClient->send(sprintf('%s {stop} by %s', $this::getBotName(), $lastEditor));
-            } catch (Throwable $error) {
+            } catch (Throwable) {
                 return false;
             }
         }
@@ -193,7 +193,7 @@ class WikiBotConfig
         if ($this instanceof TalkBotConfig) {
             try {
                 return $this->botTalk();
-            } catch (Throwable $botTalkException) {
+            } catch (Throwable) {
                 // do nothing
             }
         }
@@ -234,7 +234,7 @@ class WikiBotConfig
         try {
             $json = file_get_contents(static::WATCHPAGE_FILENAME);
             $array = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             throw new ConfigException('Watchpage file malformed.');
         }
 

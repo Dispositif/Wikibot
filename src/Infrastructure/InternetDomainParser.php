@@ -23,8 +23,7 @@ class InternetDomainParser implements InternetDomainParserInterface
 {
     private const PATH_CACHE_PUBLIC_SUFFIX_LIST = __DIR__ . '/resources/public_suffix_list.dat';
 
-    /** @var Rules */
-    private $rules;
+    private readonly Rules $rules;
 
     public function __construct()
     {

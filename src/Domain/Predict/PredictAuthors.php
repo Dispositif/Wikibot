@@ -16,9 +16,9 @@ use App\Domain\Utils\WikiTextUtil;
  */
 class PredictAuthors
 {
-    private $typoPredict;
+    private readonly TypoTokenizer $typoPredict;
 
-    private $authors = [];
+    private array $authors = [];
 
     public function __construct()
     {

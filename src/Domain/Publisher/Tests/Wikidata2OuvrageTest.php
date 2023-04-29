@@ -23,7 +23,7 @@ class Wikidata2OuvrageTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testIntegrationComplete()
+    public function testIntegrationComplete(): never
     {
         $this::markTestSkipped("test d'integration avec requete WIKIDATA");
         // besoin bootstrap user-agent pour requete ?

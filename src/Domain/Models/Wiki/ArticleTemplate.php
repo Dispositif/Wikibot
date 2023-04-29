@@ -52,7 +52,6 @@ class ArticleTemplate extends ArticleTemplateAlias implements ArticleOrLienBrise
      * todo move to BiblioTrait + fusion
      * Propose fubar pour un <ref name="fubar"> ou un {{article|'id=fubar'}}.
      *
-     * @return string
      * @throws Exception
      */
     public function generateRefName(): string

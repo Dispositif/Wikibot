@@ -36,33 +36,21 @@ class Summary
         return trim($prefixSummary.$this->taskName);
     }
 
-    /**
-     * @return bool
-     */
     public function isBotFlag(): bool
     {
         return $this->botFlag;
     }
 
-    /**
-     * @param bool $botFlag
-     */
     public function setBotFlag(bool $botFlag): void
     {
         $this->botFlag = $botFlag;
     }
 
-    /**
-     * @return bool
-     */
     public function isMinorFlag(): bool
     {
         return $this->minorFlag;
     }
 
-    /**
-     * @param bool $minorFlag
-     */
     public function setMinorFlag(bool $minorFlag): void
     {
         $this->minorFlag = $minorFlag;

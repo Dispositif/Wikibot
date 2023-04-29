@@ -41,9 +41,6 @@ class OuvrageMixTest extends TestCase
     /**
      * @dataProvider provideComplete
      *
-     * @param string $originStr
-     * @param string $onlineStr
-     * @param string $expected
      *
      * @throws Exception
      * @noinspection PhpParamsInspection

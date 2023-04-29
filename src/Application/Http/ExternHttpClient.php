@@ -22,18 +22,10 @@ use Throwable;
  */
 class ExternHttpClient implements ExternHttpClientInterface
 {
-    /**
-     * @var Client
-     */
-    private $client;
-    /**
-     * @var LoggerInterface
-     */
-    private $log;
+    private readonly Client $client;
 
-    public function __construct(?LoggerInterface $log = null)
+    public function __construct(private readonly LoggerInterface $log = new NullLogger())
     {
-        $this->log = $log ?? new NullLogger();
         $this->client = new Client(
             [
                 'timeout' => 30,

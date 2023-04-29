@@ -30,7 +30,7 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
     /**
      * @var bool|null
      */
-    private $mapLanguageData = false;
+    private bool $mapLanguageData = false;
 
     /**
      * @param Volume|null $volume
@@ -60,8 +60,6 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
 
     /**
      * Use the inconstant 'language' ?
-     *
-     * @param bool $useLanguage
      */
     public function mapLanguageData(bool $useLanguage)
     {
@@ -70,17 +68,15 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
 
     /**
      * @param $volume
-     *
-     * @return string|null
      */
     private function filterSubtitle($volume): ?string
     {
         // "biographie" ?
-        if (empty($volume->subtitle) || in_array(mb_strtolower($volume->subtitle), self::SUBTITLE_FILTER)) {
+        if (empty($volume->subtitle) || in_array(mb_strtolower((string) $volume->subtitle), self::SUBTITLE_FILTER)) {
             return null;
         }
 
-        if (strlen($volume->subtitle) > 50) {
+        if (strlen((string) $volume->subtitle) > 50) {
             return null;
         }
 
@@ -99,11 +95,6 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
         return null;
     }
 
-    /**
-     * @param Volume $volume
-     *
-     * @return string|null
-     */
     private function convertIsbn(Volume $volume): ?string
     {
         if (!isset($volume->industryIdentifiers)) {
@@ -125,11 +116,6 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
         return $isbn;
     }
 
-    /**
-     * @param Volume $volume
-     *
-     * @return string|null
-     */
     private function presentationEnLigne(Volume $volume): ?string
     {
         if (empty($volume->id) || $volume->accessInfo->viewability != 'PARTIAL') {
@@ -139,11 +125,6 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
         return $this->returnGoogleRef($volume);
     }
 
-    /**
-     * @param Volume $volume
-     *
-     * @return string|null
-     */
     private function lireEnLigne(Volume $volume): ?string
     {
         if (empty($volume->id) || $volume->accessInfo->viewability != 'ALL_PAGES') {
@@ -153,11 +134,6 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
         return $this->returnGoogleRef($volume);
     }
 
-    /**
-     * @param Volume $volume
-     *
-     * @return string
-     */
     private function returnGoogleRef(Volume $volume): string
     {
         if (self::MODE_RAW_URL) {
@@ -171,9 +147,7 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
      * /!\ Google Books language data not consistant !
      * set $mapLanguageData to true to use that data in mapping.
      *
-     * @param Volume $volume
      *
-     * @return string|null
      */
     private function langFilterByIsbn(Volume $volume): ?string
     {

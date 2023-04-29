@@ -22,7 +22,6 @@ class DateUtil
     /**
      * todo
      *
-     * @param string $string
      *
      * @return DateTime
      * @throws Exception
@@ -33,10 +32,10 @@ class DateUtil
         $string = self::french2English(trim($string));
 
         $timezone = new DateTimeZone('Europe/Paris'); // CET, CEST
-        if (preg_match('/\(UTC\)/', $string)) {
+        if (preg_match('/\(UTC\)/', (string) $string)) {
             $timezone = new DateTimeZone('UTC');
         }
-        $string = preg_replace('/\([A-Z]{3,4}\)/', '', $string); // strip CET,CEST,UTC
+        $string = preg_replace('/\([A-Z]{3,4}\)/', '', (string) $string); // strip CET,CEST,UTC
         // convert fuseau ? https://stackoverflow.com/questions/5746531/utc-date-time-string-to-timezone
 
         return DateTime::createFromFormat('d M Y \à H\:i', trim($string), $timezone);

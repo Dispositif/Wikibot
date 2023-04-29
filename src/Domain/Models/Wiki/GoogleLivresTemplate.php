@@ -46,7 +46,6 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
      * See also https://fr.wikipedia.org/wiki/Utilisateur:Jack_ma/GB
      * https://stackoverflow.com/questions/11584551/need-information-on-query-parameters-for-google-books-e-g-difference-between-d.
      *
-     * @param string $url
      *
      * @return GoogleLivresTemplate|null
      * @throws Exception
@@ -61,7 +60,7 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
         if (empty($gooDat['id'])) {
             throw new DomainException("no GoogleBook 'id' in URL");
         }
-        if (!preg_match('#[0-9A-Za-z_\-]{12}#', $gooDat['id'])) {
+        if (!preg_match('#[0-9A-Za-z_\-]{12}#', (string) $gooDat['id'])) {
             throw new DomainException("GoogleBook 'id' malformed [0-9A-Za-z_\-]{12}");
         }
 
@@ -76,9 +75,7 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
     /**
      * Mapping Google URL data to {Google Livres} data.
      *
-     * @param array $gooData
      *
-     * @return array
      */
     private static function mapGooData(array $gooData): array
     {
@@ -95,12 +92,12 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
             $data['page autre'] = $gooData['pg'];
 
             //  pg=PAx => "page=x"
-            if (preg_match('/^PA(\d+)$/', $gooData['pg'], $matches) > 0) {
+            if (preg_match('/^PA(\d+)$/', (string) $gooData['pg'], $matches) > 0) {
                 $data['page'] = $matches[1];
                 unset($data['page autre']);
             }
             //  pg=PRx => "page=x|romain=1"
-            if (preg_match('/^PR(\d+)$/', $gooData['pg'], $matches) > 0) {
+            if (preg_match('/^PR(\d+)$/', (string) $gooData['pg'], $matches) > 0) {
                 $data['page'] = $matches[1];
                 $data['romain'] = '1';
                 unset($data['page autre']);
@@ -119,9 +116,7 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
     /**
      * Check if Google URL or wiki {Google Books} template.
      *
-     * @param string $text
      *
-     * @return bool
      */
     public static function isGoogleBookValue(string $text): bool
     {

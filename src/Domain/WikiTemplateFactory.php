@@ -1,8 +1,8 @@
 <?php
-/**
- * This file is part of dispositif/wikibot application
- * 2019 : Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+/*
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -24,28 +24,19 @@ use LogicException;
 abstract class WikiTemplateFactory
 {
     /**
-     * @param string $templateName
      *
      * @return AbstractWikiTemplate|null
      * @throws Exception
      */
     public static function create(string $templateName): ?AbstractWikiTemplate
     {
-        switch (mb_strtolower($templateName)) {
-            case 'ouvrage':
-                return new OuvrageTemplate();
-            case 'article':
-                return new ArticleTemplate();
-            case 'lien web':
-                return new LienWebTemplate();
-            case 'lien brise':
-            case 'lien brisé':
-                return new LienBriseTemplate();
-            case 'google livres':
-            case 'google books':
-                return new GoogleLivresTemplate();
-            default:
-                throw new LogicException('template "'.$templateName.'" unknown');
-        }
+        return match (mb_strtolower($templateName)) {
+            'ouvrage' => new OuvrageTemplate(),
+            'article' => new ArticleTemplate(),
+            'lien web' => new LienWebTemplate(),
+            'lien brise', 'lien brisé' => new LienBriseTemplate(),
+            'google livres', 'google books' => new GoogleLivresTemplate(),
+            default => throw new LogicException('template "'.$templateName.'" unknown'),
+        };
     }
 }

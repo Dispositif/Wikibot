@@ -131,7 +131,6 @@ abstract class AbstractWikiTemplate extends AbstractStrictWikiTemplate implement
      * Merge Render data with wrong parameters+value from user input.
      * The wrong ones already corrected are not added.
      *
-     * @param array $paramsByRenderOrder
      *
      * @return array
      */
@@ -184,14 +183,13 @@ abstract class AbstractWikiTemplate extends AbstractStrictWikiTemplate implement
     /**
      * TODO move ? trait ? to TemplateFactory ? /refac.
      *
-     * @param string $tplText
      *
      * @return AbstractWikiTemplate
      * @throws Exception
      */
     public function hydrateFromText(string $tplText): AbstractWikiTemplate
     {
-        $tplText = (string) str_ireplace(static::COMMENT_STRIPPED, '', $tplText);
+        $tplText = (string) str_ireplace((string) static::COMMENT_STRIPPED, '', $tplText);
 
         if (WikiTextUtil::isCommented($tplText)) {
             throw new DomainException('HTML comment tag detected');

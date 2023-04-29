@@ -48,10 +48,7 @@ class OuvrageTemplate extends OuvrageTemplateAlias implements WikiTemplateInterf
         return $this->dataSource;
     }
 
-    /**
-     * @param mixed $dataSource
-     */
-    public function setDataSource($dataSource): void
+    public function setDataSource(mixed $dataSource): void
     {
         $this->dataSource = $dataSource;
     }
@@ -92,7 +89,6 @@ class OuvrageTemplate extends OuvrageTemplateAlias implements WikiTemplateInterf
     /**
      * Strip empty 'isbn' before 1970.
      *
-     * @param string $serial
      *
      * @return string
      */

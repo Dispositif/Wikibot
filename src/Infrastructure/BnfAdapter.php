@@ -38,9 +38,6 @@ class BnfAdapter extends AbstractBookApiAdapter implements BookApiInterface
     }
 
     /**
-     * @param string $isbn
-     *
-     * @return SimpleXMLElement|null
      * @throws Exception
      */
     public function getDataByIsbn(string $isbn): ?SimpleXMLElement
@@ -70,7 +67,7 @@ class BnfAdapter extends AbstractBookApiAdapter implements BookApiInterface
             $xml = new SimpleXMLElement($raw);
             // Registering XML namespace or xpath() don't work
             $xml->registerXPathNamespace('mxc', 'info:lc/xmlns/marcxchange-v2');
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             echo 'Error BnF XML';
 
             return null;

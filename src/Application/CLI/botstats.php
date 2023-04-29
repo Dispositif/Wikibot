@@ -94,7 +94,7 @@ if (!empty($monitor)) {
             "<tr><td>%s &#37;</td><td>%s</td><td>[https://fr.wikipedia.org/w/index.php?title=%s&action=history histo]</td><td>[[%s]]</td><td>%s</td></tr>\n",
             $monit['altered'] ?? '?',
             $edited->format('d-m-Y'),
-            str_replace(' ', '_', $monit['page']),
+            str_replace(' ', '_', (string) $monit['page']),
             $monit['page'] ?? '??',
             $monit['version']
         );

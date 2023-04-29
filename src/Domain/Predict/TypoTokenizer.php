@@ -19,7 +19,7 @@ use App\Domain\Utils\WikiTextUtil;
  */
 class TypoTokenizer
 {
-    private $tokenValue = [];
+    private array $tokenValue = [];
 
     /**
      * Tokenize into typographic pattern.
@@ -30,10 +30,6 @@ class TypoTokenizer
      * string => 'Penaud, Jean-Pierre'
      * pattern => 'FIRSTUPPER COMMA MIXED'
      * tokens => [ 0 => 'Penaud', 1 => ',', 2 => 'Jean-Pierre'].
-     *
-     * @param string $text
-     *
-     * @return array (see example)
      */
     public function typoPatternFromAuthor(string $text): array
     {
@@ -70,9 +66,9 @@ class TypoTokenizer
             if (empty($tok)) {
                 continue;
             }
-            if (preg_match('#^(PATTERNINITIAL|PATTERNURL|PATTERNAND|PATTERNCOMMA|PATTERNBIBABREV|PATTERNPUNCTUATION)$#', $tok, $matches) > 0) {
+            if (preg_match('#^(PATTERNINITIAL|PATTERNURL|PATTERNAND|PATTERNCOMMA|PATTERNBIBABREV|PATTERNPUNCTUATION)$#', (string) $tok, $matches) > 0) {
 
-                $shortpattern = str_replace('PATTERN','', $tok);
+                $shortpattern = str_replace('PATTERN','', (string) $tok);
                 $res['pattern'] .= ' '.$shortpattern; // PATTERNAND -> AND
                 if (in_array($matches[1], ['PATTERNCOMMA', 'PATTERNPUNCTUATION']) || empty($matches[1])) {
                     $res['value'][] = '*';
@@ -82,27 +78,27 @@ class TypoTokenizer
                 }
                 //"J. R . R." => INITIAL (1 seule fois)
                 // $res = str_replace('INITIAL INITIAL', 'INITIAL', $res);
-            } elseif (preg_match('#^\d+$#', $tok) > 0) {
+            } elseif (preg_match('#^\d+$#', (string) $tok) > 0) {
                 $res['pattern'] .= ' ALLNUMBER';
                 $res['value'][] = $tok;
-            } elseif (preg_match('#^[0-9\-]+$#', $tok) > 0) {
+            } elseif (preg_match('#^[0-9\-]+$#', (string) $tok) > 0) {
                 $res['pattern'] .= ' DASHNUMBER';
                 $res['value'][] = $tok;
-            } elseif (preg_match('#\d#', $tok) > 0) {
+            } elseif (preg_match('#\d#', (string) $tok) > 0) {
                 $res['pattern'] .= ' WITHNUMBER';
                 $res['value'][] = $tok;
-            } elseif (mb_strtolower($tok, 'UTF-8') === $tok) {
+            } elseif (mb_strtolower((string) $tok, 'UTF-8') === $tok) {
                 $res['pattern'] .= ' ALLLOWER';
                 $res['value'][] = $tok;
-            } elseif (mb_strtoupper($tok, 'UTF-8') === $tok) {
+            } elseif (mb_strtoupper((string) $tok, 'UTF-8') === $tok) {
                 $res['pattern'] .= ' ALLUPPER';
                 $res['value'][] = $tok;
-            } elseif (mb_strtoupper(substr($tok, 0, 1), 'UTF-8') === substr($tok, 0, 1)
-                && mb_strtolower(substr($tok, 1), 'UTF-8') === substr($tok, 1)
+            } elseif (mb_strtoupper(substr((string) $tok, 0, 1), 'UTF-8') === substr((string) $tok, 0, 1)
+                && mb_strtolower(substr((string) $tok, 1), 'UTF-8') === substr((string) $tok, 1)
             ) {
                 $res['pattern'] .= ' FIRSTUPPER';
                 $res['value'][] = $tok;
-            } elseif (preg_match('#[a-zA-Zàéù]#', $tok) > 0) {
+            } elseif (preg_match('#[a-zA-Zàéù]#', (string) $tok) > 0) {
                 $res['pattern'] .= ' MIXED';
                 $res['value'][] = $tok;
             } else {
@@ -120,9 +116,7 @@ class TypoTokenizer
      * Pre-process text : add spaces between relevant typographic items.
      * Save values by types in $tokenValue.
      *
-     * @param string $modText
      *
-     * @return string
      */
     private function preprocessTypoPattern(string $modText): string
     {

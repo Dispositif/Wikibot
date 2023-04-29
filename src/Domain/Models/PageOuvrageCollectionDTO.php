@@ -13,8 +13,8 @@ use Iterator;
 
 class PageOuvrageCollectionDTO implements Iterator
 {
-    private $items = [];
-    private $pointer = 0;
+    private array $items = [];
+    private int $pointer = 0;
 
     public function __construct(array $items)
     {

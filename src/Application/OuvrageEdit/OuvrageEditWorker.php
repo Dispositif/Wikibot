@@ -68,11 +68,6 @@ class OuvrageEditWorker
      * @var MemoryInterface
      */
     protected $memory;
-
-    /**
-     * @var LoggerInterface
-     */
-    protected $log;
     /**
      * @var ImportantSummaryCreator
      */
@@ -82,13 +77,12 @@ class OuvrageEditWorker
         DbAdapterInterface $dbAdapter,
         WikiBotConfig      $bot,
         MemoryInterface    $memory,
-        ?LoggerInterface   $log = null
+        protected LoggerInterface   $log = new NullLogger()
     )
     {
         $this->db = $dbAdapter;
         $this->bot = $bot;
         $this->memory = $memory;
-        $this->log = $log ?? new NullLogger();
     }
 
     /**
@@ -111,15 +105,15 @@ class OuvrageEditWorker
      */
     protected function pageProcess(): bool
     {
-        if ((new TalkStopValidator($this->bot))->validate() === false) { // move up ?
+        if (!(new TalkStopValidator($this->bot))->validate()) { // move up ?
             return false;
         }
 
         // get a random queue line
         $json = $this->db->getAllRowsOfOneTitleToEdit(self::CITATION_LIMIT);
-        $pageCitationCollection = $json ? json_decode($json, true, 512, JSON_THROW_ON_ERROR) : [];
+        $pageCitationCollection = $json ? json_decode((string) $json, true, 512, JSON_THROW_ON_ERROR) : [];
 
-        if ((new CitationsNotEmptyValidator($pageCitationCollection, $this->log))->validate() === false) {
+        if (!(new CitationsNotEmptyValidator($pageCitationCollection, $this->log))->validate()) {
             return false;
         }
 
@@ -129,7 +123,7 @@ class OuvrageEditWorker
         // Find on wikipedia the page to edit
         try {
             $this->wikiPageAction = ServiceFactory::wikiPageAction($this->pageWorkStatus->getTitle()); // , true ?
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->log->warning("*** WikiPageAction error : " . $this->pageWorkStatus->getTitle() . " \n");
             sleep(20);
 
@@ -138,7 +132,7 @@ class OuvrageEditWorker
         $pageValidator = new PageValidatorComposite(
             $this->bot, $pageCitationCollection, $this->db, $this->wikiPageAction
         );
-        if ($pageValidator->validate() === false) {
+        if (!$pageValidator->validate()) {
             return false;
         }
 
@@ -151,7 +145,7 @@ class OuvrageEditWorker
         $this->log->info(sprintf("%s rows to process\n", $rowNumber));
 
         // Make citations replacements
-        if ($this->makeCitationsReplacements($pageCitationCollection) === false) {
+        if (!$this->makeCitationsReplacements($pageCitationCollection)) {
             return false;
         }
 
@@ -172,13 +166,13 @@ class OuvrageEditWorker
     protected function checkArticleLabels($title): void
     {
         // Featured/Good article (AdQ/BA) todo event listener
-        if (preg_match('#{{ ?En-tête label ?\| ?AdQ#i', $this->pageWorkStatus->wikiText)) {
+        if (preg_match('#{{ ?En-tête label ?\| ?AdQ#i', (string) $this->pageWorkStatus->wikiText)) {
             $this->db->setLabel($title, 2);
             $this->log->warning("Article de Qualité !\n");
             $this->pageWorkStatus->botFlag = false;
             $this->pageWorkStatus->featured_article = true; // to add star in edit summary
         }
-        if (preg_match('#{{ ?En-tête label ?\| ?BA#i', $this->pageWorkStatus->wikiText)) {
+        if (preg_match('#{{ ?En-tête label ?\| ?BA#i', (string) $this->pageWorkStatus->wikiText)) {
             $this->db->setLabel($title, 1);
             $this->pageWorkStatus->botFlag = false;
             $this->pageWorkStatus->featured_article = true; // to add star in edit summary
@@ -215,7 +209,7 @@ class OuvrageEditWorker
             $this->log,
             $this->db
         );
-        if ($citationValidator->validate() === false) {
+        if (!$citationValidator->validate()) {
             return false;
         }
 
@@ -257,7 +251,7 @@ class OuvrageEditWorker
             $success = $this->wikiPageAction->editPage(Normalizer::normalize($this->pageWorkStatus->wikiText), $editInfo);
         } catch (Throwable $e) {
             // Invalid CSRF token.
-            if (strpos($e->getMessage(), 'Invalid CSRF token') !== false) {
+            if (str_contains($e->getMessage(), 'Invalid CSRF token')) {
                 $this->log->alert("*** Invalid CSRF token \n");
                 throw new Exception('Invalid CSRF token', $e->getCode(), $e);
             } else {

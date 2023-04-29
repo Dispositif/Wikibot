@@ -51,14 +51,9 @@ abstract class AbstractQueueWorker
     /**
      * Process with one of the queue message.
      * Note: Callback needs a public function. See call_user_func().
-     *
-     * @param AMQPMessage $msg
      */
     abstract public function msgProcess(AMQPMessage $msg): void;
 
-    /**
-     * @param AMQPMessage $msg
-     */
     protected function acknowledge(AMQPMessage $msg)
     {
         $msg->delivery_info['channel']

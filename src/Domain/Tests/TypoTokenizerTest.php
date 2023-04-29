@@ -19,9 +19,6 @@ class TypoTokenizerTest extends TestCase
      * For TDD.
      *
      * @dataProvider patternProvider
-     *
-     * @param string $text
-     * @param string $pattern
      */
     public function testTokenizeAuthor(string $text, string $pattern)
     {

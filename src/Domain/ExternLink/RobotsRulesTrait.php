@@ -23,8 +23,8 @@ trait RobotsRulesTrait
         if (
             !empty($robots)
             && (
-                stripos($robots, 'noindex') !== false
-                || stripos($robots, 'none') !== false
+                stripos((string) $robots, 'noindex') !== false
+                || stripos((string) $robots, 'none') !== false
             )
         ) {
             $this->log->notice('robots NOINDEX : ' . $url);

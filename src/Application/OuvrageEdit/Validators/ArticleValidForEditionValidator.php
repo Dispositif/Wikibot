@@ -11,6 +11,7 @@ namespace App\Application\OuvrageEdit\Validators;
 
 use App\Application\InfrastructurePorts\DbAdapterInterface;
 use App\Application\WikiPageAction;
+use Mediawiki\DataModel\Revision;
 use Psr\Log\LoggerInterface;
 
 class ArticleValidForEditionValidator implements ValidatorInterface
@@ -57,7 +58,7 @@ class ArticleValidForEditionValidator implements ValidatorInterface
     protected function hasLastRevision(): bool
     {
         // Page supprimée ?
-        if ($this->wikiPageAction->getLastRevision() === null) {
+        if (!$this->wikiPageAction->getLastRevision() instanceof Revision) {
             $this->log->warning("SKIP : page supprimée !\n");
             $this->db->deleteArticle($this->title);
 

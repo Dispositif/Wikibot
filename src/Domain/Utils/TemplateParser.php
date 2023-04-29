@@ -25,8 +25,6 @@ abstract class TemplateParser extends WikiTextUtil
      * todo : simplify array if only one occurrence ?
      * todo refac extract/logic.
      *
-     * @param string $tplName
-     * @param string $text
      *
      * @return array
      * @throws Exception
@@ -102,8 +100,6 @@ abstract class TemplateParser extends WikiTextUtil
      * Using the first {{template}} definition found in text
      * todo legacy.
      *
-     * @param string $tplName
-     * @param string $text
      *
      * @return array
      */
@@ -155,8 +151,6 @@ abstract class TemplateParser extends WikiTextUtil
     /**
      * For multiple occurrences see findAllTemplatesByName().
      *
-     * @param string $templateName
-     * @param string $text
      *
      * @return array|null
      */
@@ -196,16 +190,12 @@ abstract class TemplateParser extends WikiTextUtil
 
     /**
      * replace sub-templates pipes | by @PIPE@ in text.
-     *
-     * @param string $text
-     *
-     * @return string
      */
     protected static function encodeTemplatePipes(string $text): string
     {
         if (preg_match_all('#{{(?:[^{}]+)}}#m', $text, $subTmpl) > 0) {
             foreach ($subTmpl[0] as $sub) {
-                $subSanit = str_replace('|', '@PIPE@', $sub);
+                $subSanit = str_replace('|', '@PIPE@', (string) $sub);
                 $text = str_replace($sub, $subSanit, $text);
             }
         }
@@ -232,7 +222,7 @@ abstract class TemplateParser extends WikiTextUtil
             $line = str_replace(
                 ["\t", "\n", "\r", ' '],
                 ['', '', '', ' '],
-                $line
+                (string) $line
             ); // perte cosmétique : est-ce bien ? + espace insécable remplacé par espace sécable
 
             // $line : fu = bar (OK : fu=bar=coco)
@@ -267,10 +257,6 @@ abstract class TemplateParser extends WikiTextUtil
 
     /**
      * Find text style of template : only pipe, space-pipe-space, pipe-space, return-pipe, etc.
-     *
-     * @param string $tplText
-     *
-     * @return string
      */
     public static function findUserStyleSeparator(string $tplText): string
     {
@@ -292,10 +278,6 @@ abstract class TemplateParser extends WikiTextUtil
 
     /**
      * Detect if "param     = bla".
-     *
-     * @param string $tplText
-     *
-     * @return bool
      */
     public static function isMultispacedTemplate(string $tplText): bool
     {

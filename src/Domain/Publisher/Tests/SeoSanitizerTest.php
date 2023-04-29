@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 
 class SeoSanitizerTest extends TestCase
 {
-    private $sanitizer;
+    private SeoSanitizer $sanitizer;
 
     public function setUp(): void
     {

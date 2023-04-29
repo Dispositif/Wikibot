@@ -81,7 +81,6 @@ abstract class AbstractStrictWikiTemplate extends AbstractParametersObject imple
 
     /**
      * @param        $name
-     * @param string $value
      *
      * @throws Exception
      */
@@ -95,7 +94,6 @@ abstract class AbstractStrictWikiTemplate extends AbstractParametersObject imple
     /**
      * Delete key if empty value and the key not required.
      *
-     * @param array $params
      *
      * @return array
      */
@@ -209,7 +207,6 @@ abstract class AbstractStrictWikiTemplate extends AbstractParametersObject imple
     /**
      * todo peu utile en public
      *
-     * @param string $name
      *
      * @return string
      */

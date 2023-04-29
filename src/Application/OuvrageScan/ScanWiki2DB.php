@@ -23,29 +23,14 @@ use Mediawiki\Api\MediawikiFactory;
  */
 class ScanWiki2DB
 {
-    private $wiki;
-    private $db;
-    private $bot;
-    /**
-     * @var PageListInterface
-     */
-    private $pageList;
-    private $priority;
-
     public function __construct(
-        MediawikiFactory   $wiki,
-        DbAdapterInterface $dbAdapter,
-        WikiBotConfig      $bot,
-        PageListInterface  $list,
-        ?int               $priority
+        private readonly MediawikiFactory   $wiki,
+        private readonly DbAdapterInterface $db,
+        private readonly WikiBotConfig      $bot,
+        private readonly PageListInterface  $pageList,
+        private readonly ?int               $priority
         = 0
     ) {
-        $this->wiki = $wiki; // ServiceFactory::wikiApi();
-        $this->db = $dbAdapter;
-        $this->bot = $bot;
-        $this->pageList = $list;
-        $this->priority = $priority;
-
         $this->process();
     }
 
@@ -67,9 +52,6 @@ class ScanWiki2DB
     }
 
     /**
-     * @param string $title
-     *
-     * @return bool
      * @throws Exception
      */
     public function pageScan(string $title): bool
@@ -112,7 +94,6 @@ class ScanWiki2DB
 
     /**
      * @param        $ouvrages
-     * @param string $title
      *
      * @return mixed
      */
@@ -132,7 +113,7 @@ class ScanWiki2DB
         }
 
         $result = $this->db->insertPageOuvrages($data);
-        dump($result);
+        print_r($result);
 
         return $result;
     }

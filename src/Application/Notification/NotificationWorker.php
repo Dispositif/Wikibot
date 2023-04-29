@@ -18,6 +18,7 @@ use Mediawiki\Api\SimpleRequest;
 use Mediawiki\Api\UsageException;
 use Mediawiki\DataModel\EditInfo;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Throwable;
 
 /**
@@ -48,36 +49,21 @@ class NotificationWorker
     public const PUBLISH_LOG_ON_WIKI = true;
 
     /**
-     * @var MediawikiApi
-     */
-    protected $api;
-    /**
-     * @var string
-     */
-    protected $notifPage;
-    /**
      * @var array
      */
     protected $option;
-    /**
-     * @var LoggerInterface|null
-     */
-    protected $logger;
 
     /**
      * NotificationWorker constructor.
-     *
-     * @param MediawikiApi $api
-     * @param string       $notifPage
-     * @param array|null   $option
      */
-    public function __construct(MediawikiApi $api, string $notifPage, ?array $option = null, ?LoggerInterface $logger = null)
+    public function __construct(
+        protected readonly MediawikiApi $api,
+        protected string $notifPage,
+        ?array $option = null,
+        protected LoggerInterface $logger = new NullLogger())
     {
-        $this->api = $api;
-        $this->notifPage = $notifPage;
         $this->option = $option ?? [];
         $this->process();
-        $this->logger = $logger;
     }
 
     private function process()
@@ -175,7 +161,7 @@ class NotificationWorker
                     ]
                 )
             );
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             return false;
         }
 
@@ -195,9 +181,6 @@ class NotificationWorker
     /**
      * Write wikilog of notifications on a dedicated page.
      *
-     * @param array $wikilog
-     *
-     * @return bool
      * @throws UsageException
      * @throws Exception
      */

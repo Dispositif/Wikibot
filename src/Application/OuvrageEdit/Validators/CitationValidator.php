@@ -58,11 +58,7 @@ class CitationValidator implements ValidatorInterface
 
             return false;
         }
-        if (!$this->stringFound()) {
-            return false;
-        }
-
-        return true;
+        return $this->stringFound();
     }
 
     protected function isTextCreatingError(string $string): bool
@@ -73,7 +69,7 @@ class CitationValidator implements ValidatorInterface
 
     protected function stringFound(): bool
     {
-        $find = mb_strpos($this->wikiText, $this->ouvrageData['raw']);
+        $find = mb_strpos($this->wikiText, (string) $this->ouvrageData['raw']);
         if ($find === false) {
             $this->log->notice("String non trouvée.");
             $this->db->skipRow((int)$this->ouvrageData['id']);

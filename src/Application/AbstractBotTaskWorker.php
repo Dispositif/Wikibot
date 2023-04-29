@@ -71,10 +71,6 @@ abstract class AbstractBotTaskWorker
      * @var Summary
      */
     protected $summary;
-    /**
-     * @var DomainTransformerInterface|null
-     */
-    private $domainTransformer;
 
     /**
      * @var InternetDomainParserInterface|null
@@ -82,20 +78,19 @@ abstract class AbstractBotTaskWorker
     protected $domainParser;
 
     public function __construct(
-        WikiBotConfig $bot,
-        MediawikiFactory $wiki,
-        ?PageListInterface $pagesGen = null,
-        ?DomainTransformerInterface $domainTransformer = null,
-        ?InternetDomainParserInterface $domainParser = null
+        WikiBotConfig                                $bot,
+        MediawikiFactory                             $wiki,
+        ?PageListInterface                           $pagesGen = null,
+        private readonly ?DomainTransformerInterface $domainTransformer = null,
+        ?InternetDomainParserInterface               $domainParser = null
     )
     {
         $this->log = $bot->getLogger();
         $this->wiki = $wiki;
         $this->bot = $bot;
-        if ($pagesGen !== null) {
+        if ($pagesGen instanceof PageListInterface) {
             $this->pageListGenerator = $pagesGen;
         }
-        $this->domainTransformer = $domainTransformer;
         $this->domainParser = $domainParser;
 
         $this->setUpInConstructor();

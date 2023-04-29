@@ -17,10 +17,7 @@ trait WikiArrayTrait
      * Génère la liste complète de paramètres possibles d'après l'ordre
      * fantaisiste (humain) et l'ordre officiel (documentation).
      *
-     * @param array $fantasyOrder
-     * @param array $cleanOrder
      *
-     * @return array
      */
     public function completeFantasyOrder(array $fantasyOrder, array $cleanOrder): array
     {

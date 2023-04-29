@@ -45,7 +45,7 @@ class MixLienAuteur extends AbstractMixHandler
         // WP:"Paul Durand" — Bnf "Paul Durand,..."
         if (!empty($bookAuteur1) && !empty($originAuteur1)
             && (mb_strtolower($bookAuteur1) === mb_strtolower($originAuteur1)
-                || strpos($originAuteur1, $this->book->getParam('nom1') ?? '') !== false)
+                || str_contains($originAuteur1, $this->book->getParam('nom1') ?? ''))
         ) {
             $this->origin->setParam('lien auteur1', $lienAuteur1);
             $this->optiStatus->addSummaryLog('+lien auteur1');

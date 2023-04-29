@@ -18,10 +18,7 @@ use SimpleXMLElement;
  */
 class BnfMapper extends AbstractBookMapper implements MapperInterface
 {
-    /**
-     * @var SimpleXMLElement
-     */
-    private $xml;
+    private ?SimpleXMLElement $xml = null;
 
     /**
      * XML in UniMarc format.
@@ -175,9 +172,7 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
     /**
      * Strip FR lang
      *
-     * @param string|null $lang
      *
-     * @return string|null
      */
     private function stripLangFR(?string $lang = null): ?string
     {
@@ -187,8 +182,6 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
     /**
      * Convert number of pages.
      * "1 vol. (126 p.)".
-     *
-     * @return string|null
      */
     private function convertPages(): ?string
     {
@@ -204,9 +197,7 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
      * todo gestion bilingue fr+en
      * ISO 639-1 http://www.loc.gov/standards/iso639-2/php/French_list.php.
      *
-     * @param string|null $lang
      *
-     * @return string|null
      */
     private function lang2wiki(?string $lang = null): ?string
     {

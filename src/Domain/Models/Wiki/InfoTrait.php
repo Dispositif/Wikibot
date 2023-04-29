@@ -19,36 +19,21 @@ trait InfoTrait
 {
     protected $infos = [];
 
-    /**
-     * @return array
-     */
     public function getInfos(): array
     {
         return $this->infos;
     }
 
-    /**
-     * @param array $infos
-     */
     public function setInfos(array $infos): void
     {
         $this->infos = $infos;
     }
 
-    /**
-     * @param string $name
-     *
-     * @return string|null
-     */
     public function getInfo(string $name): ?string
     {
         return ($this->infos[$name]) ?? null;
     }
 
-    /**
-     * @param string $name
-     * @param string $value
-     */
     public function setInfo(string $name, string $value): void
     {
         $value = trim($value);

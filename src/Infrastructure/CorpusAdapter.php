@@ -21,7 +21,7 @@ use Exception;
  */
 class CorpusAdapter extends FileManager implements CorpusInterface
 {
-    private $storage = [];
+    private array $storage = [];
 
     /**
      * ugly memory // todo refac Generator.

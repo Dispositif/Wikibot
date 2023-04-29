@@ -40,7 +40,7 @@ class GoogleBooksUrlHandler extends AbstractOuvrageHandler
 
         if (OuvrageOptimize::CONVERT_GOOGLEBOOK_TEMPLATE) {
             $template = GoogleLivresTemplate::createFromURL($url);
-            if ($template !== null) {
+            if ($template instanceof GoogleLivresTemplate) {
                 $this->setParam($this->handlerParam, $template->serialize());
                 $this->addSummaryLog('{Google}');
                 $this->optiStatus->setNotCosmetic(true);

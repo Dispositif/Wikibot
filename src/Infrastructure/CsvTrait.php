@@ -1,8 +1,8 @@
 <?php
-/**
- * This file is part of dispositif/wikibot application
- * 2019 : Philippe M. <dispositif@gmail.com>
- * For the full copyright and MIT license information, please view the LICENSE file.
+/*
+ * This file is part of dispositif/wikibot application (@github)
+ * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
+ * For the full copyright and MIT license information, view the license file.
  */
 
 declare(strict_types=1);
@@ -16,11 +16,7 @@ trait CsvTrait
     /**
      * Search string in a simple list CSV.
      *
-     * @param string   $filename
-     * @param string   $search
-     * @param int|null $col
      *
-     * @return bool
      * @throws Exception
      */
     public function isStringInCSV(string $filename, string $search, ?int $col = 0): bool
@@ -29,9 +25,6 @@ trait CsvTrait
     }
 
     /**
-     * @param string $filename
-     *
-     * @return array
      * @throws Exception
      */
     public function getCSVfirstLine(string $filename): array
@@ -71,7 +64,6 @@ trait CsvTrait
     /**
      * todo: Ugly. Memory consuming.
      *
-     * @param string $filename
      *
      * @throws Exception
      */

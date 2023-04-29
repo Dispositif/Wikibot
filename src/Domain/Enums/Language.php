@@ -52,8 +52,6 @@ abstract class Language
     }
 
     /**
-     * @param string $lang
-     *
      * @return bool
      */
     private static function isWikiLang(string $lang): bool

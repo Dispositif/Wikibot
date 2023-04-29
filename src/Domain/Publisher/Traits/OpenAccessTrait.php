@@ -27,7 +27,7 @@ trait OpenAccessTrait
     {
         // https://developers.facebook.com/docs/instant-articles/subscriptions/content-tiering/?locale=fr_FR
         if (isset($data['og:article:content_tier'])) {
-            switch (strtolower($data['og:article:content_tier'])) {
+            switch (strtolower((string) $data['og:article:content_tier'])) {
                 case 'free':
                     return 'libre';
                 case 'locked':
@@ -57,7 +57,7 @@ trait OpenAccessTrait
         if (is_bool($str)) {
             return $str;
         }
-        $str = strtolower($str);
+        $str = strtolower((string) $str);
         return in_array($str, ['true', '1', 'yes', 'oui', 'ok']);
     }
 
@@ -68,14 +68,8 @@ trait OpenAccessTrait
      */
     protected function isOpenFromDCrights(array $data): bool
     {
-        if (
-            isset($data['DC.rights'])
-            && in_array(strtolower($data['DC.rights']), $this->DCopenValues)
-        ) {
-            return true;
-        }
-
-        return false;
+        return isset($data['DC.rights'])
+        && in_array(strtolower((string) $data['DC.rights']), $this->DCopenValues);
     }
 
     /**
@@ -85,13 +79,7 @@ trait OpenAccessTrait
      */
     protected function isOpenFromDCaccessRights(array $data): bool
     {
-        if (
-            isset($data['DC.accessRights'])
-            && in_array(strtolower($data['DC.accessRights']), $this->DCopenValues)
-        ) {
-            return true;
-        }
-
-        return false;
+        return isset($data['DC.accessRights'])
+        && in_array(strtolower((string) $data['DC.accessRights']), $this->DCopenValues);
     }
 }

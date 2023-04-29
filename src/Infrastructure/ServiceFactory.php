@@ -26,22 +26,12 @@ use PhpAmqpLib\Connection\AMQPStreamConnection;
  */
 class ServiceFactory
 {
-    /**
-     * @var AMQPStreamConnection
-     */
-    private static $AMQPConnection;
+    private static ?AMQPStreamConnection $AMQPConnection = null;
 
-    /**
-     * @var MediawikiFactory
-     */
-    private static $wikiApi;
+    private static ?MediawikiFactory $wikiApi = null;
 
     //    private static $dbConnection;
-
-    /**
-     * @var MediawikiApi
-     */
-    private static $api;
+    private static ?MediawikiApi $api = null;
 
     private function __construct()
     {
@@ -52,9 +42,7 @@ class ServiceFactory
      * todo $param
      * todo $channel->close(); $AMQPConnection->close();.
      *
-     * @param string $queueName
      *
-     * @return AMQPChannel
      */
     public static function queueChannel(string $queueName): AMQPChannel
     {
@@ -93,11 +81,7 @@ class ServiceFactory
     //        }
     //    }
     // --Commented out by Inspection STOP (21/04/2020 02:45)
-
     /**
-     * @param bool|null $forceLogin
-     *
-     * @return MediawikiApi
      * @throws UsageException
      */
     public static function getMediawikiApi(?bool $forceLogin = false): MediawikiApi
@@ -117,9 +101,7 @@ class ServiceFactory
      * todo rename getMediawikiFactory
      * todo? replace that singleton pattern ??? (multi-lang wiki?).
      *
-     * @param bool|null $forceLogin
      *
-     * @return MediawikiFactory
      * @throws UsageException
      */
     public static function getMediawikiFactory(?bool $forceLogin = false): MediawikiFactory
@@ -136,10 +118,8 @@ class ServiceFactory
     }
 
     /**
-     * @param string $title
      * @param bool   $forceLogin
      *
-     * @return WikiPageAction
      * @throws UsageException
      * @throws Exception
      */
@@ -157,7 +137,7 @@ class ServiceFactory
 
     public static function httpClient(?array $option = null): ClientInterface
     {
-        $option = $option ?? [];
+        $option ??= [];
         $defaultOption = [
             'timeout' => 60,
             'allow_redirects' => true,

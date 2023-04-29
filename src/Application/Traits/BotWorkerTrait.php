@@ -64,11 +64,7 @@ trait BotWorkerTrait
 
             return false;
         }
-        if (!$this->checkAllowedNowEdition($title, $text)) {
-            return false;
-        }
-
-        return true;
+        return (bool) $this->checkAllowedNowEdition($title, $text);
     }
 
     protected function isSomethingToChange(?string $text, ?string $newText): bool

@@ -27,9 +27,9 @@ trait OuvrageEditSummaryTrait
 
         $summary = sprintf(
             '%s [%s] %s %sx : %s',
-            trim($prefix),
-            str_replace('v', '', $this->pageWorkStatus->citationVersion),
-            trim(self::TASK_NAME),
+            trim((string) $prefix),
+            str_replace('v', '', (string) $this->pageWorkStatus->citationVersion),
+            trim((string) self::TASK_NAME),
             $this->pageWorkStatus->nbRows,
             $citeSummary
         );
@@ -69,10 +69,9 @@ trait OuvrageEditSummaryTrait
     protected function generatePrefix(): string
     {
         $prefix = ($this->pageWorkStatus->botFlag) ? 'bot ' : '';
-        $prefix .= (empty($this->pageWorkStatus->errorWarning)) ? '' : ' ⚠️';
-        $prefix .= (empty($this->pageWorkStatus->featured_article)) ? '' : ' ☆'; // AdQ, BA
+        $prefix .= (empty($this->pageWorkStatus->errorWarning)) ? '' : ' ⚠️'; // AdQ, BA
 
-        return $prefix;
+        return $prefix . ((empty($this->pageWorkStatus->featured_article)) ? '' : ' ☆');
     }
 
     /**

@@ -26,17 +26,10 @@ class RecentChangeWorker
 {
     protected const USER_RC_LIMIT = 100;
     protected const TASK_NAME = '🦊 Amélioration de références : URL ⇒ ';
-    protected const ALREADY_EDITED_PATH = __DIR__.'/../resources/article_externRef_edited.txt';
+    protected const ALREADY_EDITED_PATH = __DIR__ . '/../resources/article_externRef_edited.txt';
 
-    /** @var MediawikiApi */
-    private $api;
-    /** @var LoggerInterface */
-    private $logger;
-
-    public function __construct(MediawikiApi $api, ?LoggerInterface $logger = null)
+    public function __construct(private readonly MediawikiApi $api, private readonly LoggerInterface $logger = new NullLogger())
     {
-        $this->api = $api;
-        $this->logger = $logger ?? new NullLogger();
     }
 
     public function trackUser(string $user): void
@@ -48,13 +41,25 @@ class RecentChangeWorker
         // filter titles already in edited.txt
         $edited = file(self::ALREADY_EDITED_PATH, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
         $filtered = array_diff($titles, $edited);
-        $list = new PageList( $filtered ); // TODO PageList factory in App ?
+        $list = new PageList($filtered); // TODO PageList factory in App ?
         echo ">" . $list->count() . " dans liste\n";
 
         $this->consumeList($list);
     }
 
     // https://www.mediawiki.org/wiki/API:RecentChanges
+
+    private function getLastEditsbyUser(string $user): array
+    {
+        $recentchanges = $this->requestLastEditsbyUser($user);
+        $titles = [];
+        foreach ($recentchanges as $rc) {
+            $titles[] = $rc['title'];
+        }
+
+        return array_unique($titles);
+    }
+
     private function requestLastEditsbyUser(string $user): array
     {
         $result = $this->api->getRequest(
@@ -88,16 +93,5 @@ class RecentChangeWorker
 
 
         new ExternRefWorker($botConfig, $wiki, $list, null, new InternetDomainParser());
-    }
-
-    private function getLastEditsbyUser(string $user): array
-    {
-        $recentchanges = $this->requestLastEditsbyUser($user);
-        $titles = [];
-        foreach ($recentchanges as $rc) {
-            $titles[] = $rc['title'];
-        }
-
-        return array_unique($titles);
     }
 }

@@ -35,18 +35,13 @@ class ExternMapper implements MapperInterface
     // if site name extracted for meta data is too long, it's probably SEO
     public const SITE_MAX_LENGTH = 40;
     public const SITE_MAX_ALLCAPS = 1;
+    private bool $titleFromHtmlState = false;
 
-    /** @var LoggerInterface */
-    private $log;
-    /** @var mixed[] */
-    private $options = [];
-    /** @var bool */
-    private $titleFromHtmlState = false;
-
-    public function __construct(LoggerInterface $log, ?array $options = [])
+    /**
+     * @param mixed[] $options
+     */
+    public function __construct(private readonly LoggerInterface $log, private readonly ?array $options = [])
     {
-        $this->log = $log;
-        $this->options = $options;
     }
 
     public function process($data): array
@@ -130,20 +125,20 @@ class ExternMapper implements MapperInterface
         }
         if (isset($data['site']) && TextUtil::countAllCapsWords($data['site']) > self::SITE_MAX_ALLCAPS) {
             $this->log->debug('lowercase site name');
-            $data['site'] = TextUtil::mb_ucfirst(mb_strtolower($data['site']));
+            $data['site'] = TextUtil::mb_ucfirst(mb_strtolower((string) $data['site']));
         }
         // SEO : cut site name if too long if no domain.name and no wiki link
         if (
             isset($data['site'])
-            && false === mb_strpos($data['site'], '.')
-            && false === mb_strpos($data['site'], '[[')) {
+            && false === mb_strpos((string) $data['site'], '.')
+            && false === mb_strpos((string) $data['site'], '[[')) {
             $data['site'] = TextUtil::cutTextOnSpace($data['site'], self::SITE_MAX_LENGTH);
         }
 
         // lowercase title if too many ALLCAPS words
         if (isset($data['titre']) && TextUtil::countAllCapsWords($data['titre']) > self::TITLE_MAX_ALLCAPS) {
             $this->log->debug('lowercase title');
-            $data['titre'] = TextUtil::mb_ucfirst(mb_strtolower($data['titre']));
+            $data['titre'] = TextUtil::mb_ucfirst(mb_strtolower((string) $data['titre']));
         }
 
         // title has 150 chars max, or is cut with "…" at the end
@@ -163,7 +158,7 @@ class ExternMapper implements MapperInterface
         if (
             !empty($title)
             && mb_strlen($title) >= 30
-            && true === $this->titleFromHtmlState
+            && $this->titleFromHtmlState
         ) {
             /** @noinspection PhpRedundantOptionalArgumentInspection */
             $title = TextUtil::cutTextOnSpace($title, self::TITLE_HTML_MAX_LENGTH);

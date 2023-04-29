@@ -14,7 +14,6 @@ class WikiTextUtil extends TextUtil
     /**
      * todo {{ref}}
      *
-     * @param string $text
      *
      * @return array [0=>['<ref>fu</ref>', 'fu'], 1=> ...]
      */
@@ -30,7 +29,7 @@ class WikiTextUtil extends TextUtil
         // extraction des liens externes
         // ^\* *(https?:\/\/[^ ]+[^ .])$
         if (preg_match_all('#^\* *(https?://[^ \n]+[^ \n.])\.? *\n#im', $text, $liensExternes, PREG_SET_ORDER)) {
-            $result = array_merge($result, $liensExternes);
+            $result = [...$result, ...$liensExternes];
         }
 
         return $result;
@@ -79,8 +78,6 @@ class WikiTextUtil extends TextUtil
     /**
      * Generate wikilink from string.
      *
-     * @param string      $label
-     * @param string|null $page
      *
      * @return string
      */
@@ -104,7 +101,6 @@ class WikiTextUtil extends TextUtil
 
     /**
      * "fu_bar_ " => "Fu bar".
-     * @param string $str
      *
      * @return string
      */
@@ -117,7 +113,6 @@ class WikiTextUtil extends TextUtil
      * Get page titles from wiki encoded links.
      * (but not others projects links like [[wikt:bla]].
      *
-     * @param string $text
      *
      * @return array|null
      */
@@ -135,7 +130,6 @@ class WikiTextUtil extends TextUtil
      * "[http://google.fr Google]" => "Google"
      * "bla [http://google.fr]" => "bla"
      *
-     * @param string $text
      *
      * @return string
      */
@@ -147,8 +141,6 @@ class WikiTextUtil extends TextUtil
     }
 
     /**
-     * @param string $text
-     *
      * @return bool
      */
     public static function isCommented(string $text): bool
@@ -166,7 +158,6 @@ class WikiTextUtil extends TextUtil
      * trailing spaces and one of the newlines.
      * (c) WikiMedia /includes/parser/Sanitizer.php.
      *
-     * @param string $text
      *
      * @return string
      */
@@ -208,13 +199,12 @@ class WikiTextUtil extends TextUtil
     /**
      * Strip the final point (".") as in <ref> ending.
      *
-     * @param string $str
      *
      * @return string
      */
     public static function stripFinalPoint(string $str): string
     {
-        if (substr($str, -1, 1) === '.') {
+        if (str_ends_with($str, '.')) {
             return substr($str, 0, strlen($str) - 1);
         }
 
@@ -225,7 +215,6 @@ class WikiTextUtil extends TextUtil
      * Normalize URL for inclusion as a wiki-template value.
      * https://en.wikipedia.org/wiki/Template:Citation_Style_documentation/url
      *
-     * @param string $url
      *
      * @return string
      */

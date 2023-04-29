@@ -32,9 +32,7 @@ class OpenLibraryAdapter extends AbstractBookApiAdapter implements BookApiInterf
     }
 
     /**
-     * @param string $isbn
      *
-     * @return array|null
      *
      * @throws Exception
      */

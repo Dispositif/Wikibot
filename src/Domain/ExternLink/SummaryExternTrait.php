@@ -17,14 +17,13 @@ trait SummaryExternTrait
     /**
      * todo move
      *
-     * @param array $mapData
      *
      * @throws Exception
      */
     protected function tagAndLog(array $mapData)
     {
         $this->log->debug('mapData', $mapData);
-        $this->summary->citationNumber = $this->summary->citationNumber ?? 0;
+        $this->summary->citationNumber ??= 0;
         $this->summary->citationNumber++;
 
         if (!isset($this->summary->memo['sites'])

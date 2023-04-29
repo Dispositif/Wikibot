@@ -81,7 +81,6 @@ class TitleHandler extends AbstractOuvrageHandler
      * idem  'titre chapitre'.
      * Lien externe déplacé éventuellement dans "lire en ligne"
      *
-     * @param string $param
      *
      * @throws Exception
      */

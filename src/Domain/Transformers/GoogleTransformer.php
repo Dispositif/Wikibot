@@ -20,7 +20,6 @@ use App\Domain\WikiOptimizer\OptimizerFactory;
 use App\Domain\WikiTemplateFactory;
 use DomainException;
 use Exception;
-use Psr\Log\LoggerInterface;
 use Scriptotek\GoogleBooks\Volume;
 use Throwable;
 
@@ -40,32 +39,14 @@ class GoogleTransformer
     /**
      * @var array OuvrageTemplate[]
      */
-    private $cacheOuvrageTemplate = [];
-    /**
-     * @var GoogleApiQuotaInterface
-     */
-    private $quota;
-    /**
-     * @var GoogleBooksInterface
-     */
-    private $googleBooksAdapter;
-    /**
-     * @var LoggerInterface|null
-     */
-    private $logger;
+    private array $cacheOuvrageTemplate = [];
 
     /**
      * GoogleTransformer constructor.
      * todo dependency injection
      */
-    public function __construct(
-        GoogleApiQuotaInterface $googleApiQuota,
-        GoogleBooksInterface $googleBooksAdapter,
-        LoggerInterface $logger = null)
+    public function __construct(private readonly GoogleApiQuotaInterface $quota, private readonly GoogleBooksInterface $googleBooksAdapter, private ?\Psr\Log\LoggerInterface $logger = null)
     {
-        $this->quota = $googleApiQuota;
-        $this->googleBooksAdapter = $googleBooksAdapter;
-        $this->logger = $logger;
     }
 
     /**
@@ -137,7 +118,7 @@ class GoogleTransformer
             // ajout point final pour référence
             $citation .= '.';
 
-            $newRef = str_replace($ref[1], $citation, $ref[0]);
+            $newRef = str_replace($ref[1], $citation, (string) $ref[0]);
             echo $newRef."\n";
 
             $text = str_replace($ref[0], $newRef, $text);
@@ -197,12 +178,12 @@ class GoogleTransformer
         // Google page => 'passage'
         if (!empty($gooDat['pg'])) {
             // Exclusion de page=1, page=2 (vue par défaut sur Google Book)
-            if (preg_match('#(?:PA|PT)(\d+)$#', $gooDat['pg'], $matches) && (int) $matches[1] >= 3) {
+            if (preg_match('#(?:PA|PT)(\d+)$#', (string) $gooDat['pg'], $matches) && (int) $matches[1] >= 3) {
                 $page = $matches[1];
             }
             // conversion chiffres Romain pour PR
             // Exclusion de page=1, page=2 (vue par défaut sur Google Book)
-            if (preg_match('#PR(\d+)$#', $gooDat['pg'], $matches) && (int) $matches[1] >= 3) {
+            if (preg_match('#PR(\d+)$#', (string) $gooDat['pg'], $matches) && (int) $matches[1] >= 3) {
                 $page = NumberUtil::arab2roman((int) $matches[1], true);
             }
 
@@ -224,9 +205,7 @@ class GoogleTransformer
      * Generate wiki-template {ouvrage} from GoogleBook ID.
      *
      * @param string    $id GoogleBooks ID
-     * @param bool|null $isISBN
      *
-     * @return OuvrageTemplate
      * @throws Exception
      */
     private function generateOuvrageFromGoogleData(string $id, ?bool $isISBN = false): OuvrageTemplate
@@ -262,9 +241,7 @@ class GoogleTransformer
     /**
      * todo move
      *
-     * @param string $text
      *
-     * @return array
      */
     public function extractGoogleExternalBullets(string $text): array
     {
@@ -285,13 +262,11 @@ class GoogleTransformer
     /**
      * TODO Duplication du dessus...
      *
-     * @param string $text
-     * @param array  $links
      *
      * @return string|string[]
      * @throws Throwable
      */
-    private function processExternLinks(string $text, array $links)
+    private function processExternLinks(string $text, array $links): string|array
     {
         foreach ($links as $pattern) {
             if ($this->quota->isQuotaReached()) {
@@ -307,7 +282,7 @@ class GoogleTransformer
             // todo : ajout point final pour référence ???
             $citation .= '.';
 
-            $newRef = str_replace($pattern[1], $citation, $pattern[0]);
+            $newRef = str_replace($pattern[1], $citation, (string) $pattern[0]);
             echo $newRef."\n";
 
             $text = str_replace($pattern[0], $newRef, $text);

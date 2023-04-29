@@ -52,7 +52,7 @@ class WebSitePeriodiqueHandler implements OptimizeHandlerInterface
             $this->template->getParam('périodique')
         ));
         $siteWords = strtolower(str_replace([' ', '-'], '', $this->template->getParam('site')));
-        if (strpos($siteWords, $periodiqueWords) !== false) {
+        if (str_contains($siteWords, $periodiqueWords)) {
             $this->template->unsetParam('périodique');
             $this->log->info('quasi doublon site/périodique');
         }

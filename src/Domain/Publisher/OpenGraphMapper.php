@@ -31,9 +31,6 @@ class OpenGraphMapper implements MapperInterface
 
     protected $titleFromHtmlState = false;
 
-    /**
-     * @param array|null $options
-     */
     public function __construct(?array $options = [])
     {
         if (!empty($options['htmlTitleAllowed']) && is_bool($options['htmlTitleAllowed'])) {

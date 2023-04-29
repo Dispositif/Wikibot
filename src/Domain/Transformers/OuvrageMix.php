@@ -20,28 +20,16 @@ class OuvrageMix
 {
     use OuvrageMixTrait;
 
-    /**
-     * @var OptiStatus
-     */
-    protected $optiStatus;
-    /**
-     * @var OuvrageTemplate
-     */
-    private $origin;
-    /**
-     * @var OuvrageTemplate
-     */
-    private $book;
-    /**
-     * @var LoggerInterface|NullLogger
-     */
-    private $log;
+    protected OptiStatus $optiStatus;
+    private readonly OuvrageTemplate $origin;
 
-    public function __construct(OuvrageTemplate $origin, OuvrageTemplate $book, ?LoggerInterface $log = null)
+    public function __construct(
+        OuvrageTemplate                  $origin,
+        private readonly OuvrageTemplate $book,
+        private readonly LoggerInterface $log = new NullLogger()
+    )
     {
         $this->origin = clone $origin;
-        $this->book = $book;
-        $this->log = $log ?? new NullLogger();
     }
 
     public function getSummaryLog(): array

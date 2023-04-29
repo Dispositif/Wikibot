@@ -33,18 +33,12 @@ class GoogleApiQuota implements GoogleApiQuotaInterface
     public const REBOOT_HOUR     = 0;
     public const DAILY_QUOTA     = 1000;
 
-    /**
-     * @var DateTime
-     */
-    private $lastDate;
-    /**
-     * @var int
-     */
-    private $count = 0;
+    private DateTime $lastDate;
+    private int $count = 0;
     /**
      * @var DateTime Today reboot date/time of the quota
      */
-    private $todayBoot;
+    private readonly DateTime $todayBoot;
 
     /**
      * GoogleRequestQuota constructor.
@@ -66,7 +60,6 @@ class GoogleApiQuota implements GoogleApiQuotaInterface
     }
 
     /**
-     * @return array
      * @throws ConfigException
      */
     private function getFileData(): array
@@ -78,7 +71,7 @@ class GoogleApiQuota implements GoogleApiQuotaInterface
         try {
             $json = file_get_contents(static::JSON_FILENAME);
             $array = (array)json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             throw new ConfigException('Error on Google Quota file : reading or JSON malformed.');
         }
 
@@ -125,9 +118,6 @@ class GoogleApiQuota implements GoogleApiQuotaInterface
         }
     }
 
-    /**
-     * @return int
-     */
     public function getCount(): int
     {
         $this->checkNewReboot();

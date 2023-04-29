@@ -24,15 +24,12 @@ class WstatImport implements PageListInterface, PageListForAppInterface
 {
     public const MAX_IMPORT = 50000;
 
-    private $params = [];
+    private array $params = [];
 
-    private $max = 100;
+    private ?int $max = 100;
 
-    private $client;
-
-    public function __construct(Client $client, ?array $params = null, ?int $max = 500)
+    public function __construct(private readonly Client $client, ?array $params = null, ?int $max = 500)
     {
-        $this->client = $client;
         $this->max = min(self::MAX_IMPORT, $max);
 
         //example
@@ -50,7 +47,7 @@ class WstatImport implements PageListInterface, PageListForAppInterface
         $this->params = $params;
     }
 
-    public function getUrl()
+    public function getUrl(): string
     {
         $this->params['format'] = 'json';
         // todo verify http_build_query() enc_type parameter
@@ -87,7 +84,6 @@ class WstatImport implements PageListInterface, PageListForAppInterface
     /**
      * Explode raw string.
      *
-     * @param array $raw
      *
      * @return array [['title' => ..., 'template' => ...]]
      */
@@ -104,20 +100,19 @@ class WstatImport implements PageListInterface, PageListForAppInterface
             $this->max -= 1;
 
             // validate and explode wstat data
-            $pos = mb_strpos($line, '|', 0);
+            $pos = mb_strpos((string) $line, '|', 0);
             if (false === $pos || 0 === $pos) {
                 continue;
             }
-            $title = trim(mb_substr($line, 0, $pos));
-            $template = trim(mb_substr($line, $pos + 1));
+            $title = trim(mb_substr((string) $line, 0, $pos));
+            $template = trim(mb_substr((string) $line, $pos + 1));
             $data[] = ['title' => $title, 'template' => $template];
         }
 
-        return (array)$data;
+        return $data;
     }
 
     /**
-     * @param string $url
      *
      * @return string
      * @throws Exception

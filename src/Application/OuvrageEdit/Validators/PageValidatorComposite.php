@@ -44,9 +44,9 @@ class PageValidatorComposite implements ValidatorInterface
     {
         foreach ($this->validators as $validator) {
             if (!$validator instanceof ValidatorInterface) {
-                throw new RuntimeException(get_class($validator) . ' must implement ValidatorInterface.');
+                throw new RuntimeException($validator::class . ' must implement ValidatorInterface.');
             }
-            if ($validator->validate() === false) {
+            if (!$validator->validate()) {
                 return false;
             }
         }

@@ -50,7 +50,7 @@ class ExternRefWorker extends AbstractRefBotWorker
      *
      * @return string
      */
-    public function processRefContent($refContent): string
+    public function processRefContent(string $refContent): string
     {
         // todo // hack Temporary Skip URL
         if (preg_match('#books\.google#', $refContent)) {

@@ -14,13 +14,10 @@ use LogicException;
 class HandlerComposite implements OptimizeHandlerInterface
 {
     /**
-     * @var OptimizeHandlerInterface[]
+     * @param OptimizeHandlerInterface[] $handlers
      */
-    private $handlers;
-
-    public function __construct(array $handlers)
+    public function __construct(private readonly array $handlers)
     {
-        $this->handlers = $handlers;
     }
 
     public function handle()

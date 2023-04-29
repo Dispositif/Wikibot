@@ -23,27 +23,13 @@ class BigTitle
 {
     use ArrayProcessTrait;
 
-    /**
-     * @var string
-     */
-    private $title;
-    /**
-     * @var string|null
-     */
-    private $subTitle;
-
     private $lang = null;
 
     /**
      * BigTitle constructor.
-     *
-     * @param string      $title
-     * @param string|null $subTitle
      */
-    public function __construct(string $title, ?string $subTitle = null)
+    public function __construct(private readonly string $title, private readonly ?string $subTitle = null)
     {
-        $this->title = $title;
-        $this->subTitle = $subTitle;
     }
 
     public function getData(): array

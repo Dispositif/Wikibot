@@ -19,8 +19,8 @@ class PageOuvrageDTO extends CrudModel
 {
     use DtoConvertDateTrait;
 
-    const COLUMN_ID = 'id';
-    const COLUMN_PAGE = 'page';
+    public const COLUMN_ID = 'id';
+    public const COLUMN_PAGE = 'page';
 
     /** @var int */
     protected $id;

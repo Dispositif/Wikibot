@@ -16,9 +16,7 @@ class OuvrageEditErrorReport
      * 0 => "|editor=JT Staley, MP Bryant, N Pfennig, and JG Holt, eds. <!--PARAMETRE 'editor' N'EXISTE PAS -->"
      * 1 => "|editor=DR Boone and RW Castenholz, eds. <!--PARAMETRE 'editor' N'EXISTE PAS -->".
      *
-     * @param string $text
      *
-     * @return array|null
      */
     public function getReport(string $text): ?array
     {
@@ -50,10 +48,7 @@ class OuvrageEditErrorReport
     /**
      * Delete the previous bot errorReporting message from text.
      *
-     * @param string      $text
-     * @param string|null $botName
      *
-     * @return string
      */
     public function deleteAllReports(string $text, ?string $botName = 'CodexBot'): string
     {

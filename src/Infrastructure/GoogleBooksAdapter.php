@@ -30,10 +30,7 @@ class GoogleBooksAdapter extends AbstractBookApiAdapter implements GoogleBooksIn
     protected $mapper;
 
     // todo inject + factory
-    /**
-     * @var GoogleApiQuota
-     */
-    private $quotaCounter;
+    private readonly GoogleApiQuota $quotaCounter;
 
     public function __construct()
     {
@@ -69,7 +66,6 @@ class GoogleBooksAdapter extends AbstractBookApiAdapter implements GoogleBooksIn
     }
 
     /**
-     * @param string $googleId
      *
      * @return Volume
      * @throws Exception
@@ -86,8 +82,6 @@ class GoogleBooksAdapter extends AbstractBookApiAdapter implements GoogleBooksIn
     }
 
     /**
-     * @param string $query
-     *
      * @return array
      */
     public function search(string $query)

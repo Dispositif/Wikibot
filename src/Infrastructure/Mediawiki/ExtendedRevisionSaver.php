@@ -68,7 +68,7 @@ class ExtendedRevisionSaver extends RevisionSaver
             throw new RuntimeException('Dont know how to save content of this model.');
         }
         $params['text'] = $content->getData();
-        $params['md5'] = md5($content->getData());
+        $params['md5'] = md5((string) $content->getData());
 
         $timestamp = $revision->getTimestamp();
         if (!is_null($timestamp)) {

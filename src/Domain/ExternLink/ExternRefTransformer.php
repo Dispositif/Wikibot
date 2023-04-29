@@ -83,11 +83,8 @@ class ExternRefTransformer implements ExternRefTransformerInterface
      * @var ExternHttpClientInterface
      */
     protected $httpClient;
-    private $externHttpErrorLogic;
-    /**
-     * @var CheckURL
-     */
-    private $urlChecker;
+    private readonly ExternHttpErrorLogic $externHttpErrorLogic;
+    private readonly CheckURL $urlChecker;
     /**
      * @var InternetDomainParserInterface
      */
@@ -186,7 +183,7 @@ class ExternRefTransformer implements ExternRefTransformerInterface
         $this->logDebugConfigWebDomain($domain);
 
         // todo move to config
-        $this->config[$domain] = $this->config[$domain] ?? [];
+        $this->config[$domain] ??= [];
         $this->config[$domain] = is_array($this->config[$domain]) ? $this->config[$domain] : [];
 
         if ($this->config[$domain] === 'deactivated' || isset($this->config[$domain]['deactivated'])) {
@@ -271,8 +268,8 @@ class ExternRefTransformer implements ExternRefTransformerInterface
     protected function chooseTemplateByData(string $domain, array $mapData): AbstractWikiTemplate
     {
         // Logique : choix template
-        $this->config[$domain]['template'] = $this->config[$domain]['template'] ?? [];
-        $mapData['DATA-ARTICLE'] = $mapData['DATA-ARTICLE'] ?? false;
+        $this->config[$domain]['template'] ??= [];
+        $mapData['DATA-ARTICLE'] ??= false;
 
         if (!empty($mapData['doi'])) {
             $templateName = 'article';
@@ -340,10 +337,7 @@ class ExternRefTransformer implements ExternRefTransformerInterface
     }
 
     /**
-     * @param AbstractWikiTemplate $template
-     * @param array $mapData
      *
-     * @return string
      * @throws Exception
      */
     protected function optimizeAndSerialize(AbstractWikiTemplate $template, array $mapData): string

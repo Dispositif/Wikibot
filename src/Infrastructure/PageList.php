@@ -43,8 +43,6 @@ class PageList implements PageListInterface, PageListForAppInterface
 
     /**
      * @param $filename
-     *
-     * @return PageList
      */
     public static function FromFile(string $filename): PageList
     {
@@ -64,9 +62,6 @@ class PageList implements PageListInterface, PageListForAppInterface
     }
 
     /**
-     * @param string $categoryName
-     *
-     * @return PageList
      * @throws UsageException
      */
     public static function FromWikiCategory(string $categoryName): PageList

@@ -107,12 +107,6 @@ trait PublisherLogicTrait
         return $this->stripParamValue('stripfromtitle', $mapData, 'titre');
     }
 
-    /**
-     * @param AbstractWikiTemplate $template
-     * @param array $mapData
-     *
-     * @return array
-     */
     protected function replaceSiteForLienWeb(AbstractWikiTemplate $template, array $mapData): array
     {
         if (isset($this->config[$this->registrableDomain]['site']) && $template instanceof LienWebTemplate) {
@@ -124,12 +118,6 @@ trait PublisherLogicTrait
         return $mapData;
     }
 
-    /**
-     * @param array $mapData
-     * @param AbstractWikiTemplate $template
-     *
-     * @return array
-     */
     protected function replacePeriodique(array $mapData, AbstractWikiTemplate $template): array
     {
         if (isset($this->config[$this->registrableDomain]['périodique'])
@@ -168,7 +156,7 @@ trait PublisherLogicTrait
             && isset($this->config[$this->registrableDomain][$configParam])
             && !empty($mapData[$templateParam])) {
             $stripText = $this->config[$this->registrableDomain][$configParam]; // string|array
-            $mapData[$templateParam] = trim(str_ireplace($stripText, '', $mapData[$templateParam]));
+            $mapData[$templateParam] = trim(str_ireplace((string) $stripText, '', (string) $mapData[$templateParam]));
             if (empty($mapData[$templateParam])) {
                 unset($mapData[$templateParam]);
             }
@@ -181,6 +169,6 @@ trait PublisherLogicTrait
         if (isset($this->publisherData['scientific domain'][$this->registrableDomain])) {
             return true;
         }
-        return strpos('.revues.org', $this->registrableDomain) > 0;
+        return strpos('.revues.org', (string) $this->registrableDomain) > 0;
     }
 }

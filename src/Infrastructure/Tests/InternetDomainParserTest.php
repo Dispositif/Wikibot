@@ -14,10 +14,7 @@ use PHPUnit\Framework\TestCase;
 
 class InternetDomainParserTest extends TestCase
 {
-    /**
-     * @var InternetDomainParser
-     */
-    private $domainParser;
+    private InternetDomainParser $domainParser;
 
     public function setUp(): void
     {

@@ -45,7 +45,7 @@ class ParseTemplateHandler implements CompleteHandlerInterface
         try {
             $parse = TemplateParser::parseAllTemplateByName('ouvrage', $this->pageOuvrage->getRaw());
             $origin = $parse['ouvrage'][0]['model'] ?? null;
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             $this->logger->warning(sprintf(
                 "*** ERREUR 432 impossible de transformer en modèle => skip %s : %s \n",
                 $this->pageOuvrage->getId(),

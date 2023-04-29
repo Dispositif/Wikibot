@@ -14,10 +14,7 @@ use PHPUnit\Framework\TestCase;
 
 class OpenGraphMapperTest extends TestCase
 {
-    /**
-     * @var OpenGraphMapper
-     */
-    private $mapper;
+    private OpenGraphMapper $mapper;
 
     public function setUp(): void
     {

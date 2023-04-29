@@ -78,7 +78,7 @@ class CheckURL
     {
         try {
             $this->registrableDomain = $this->internetDomainParser->getRegistrableDomainFromURL($this->url);
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->log->warning('Skip : not a valid URL : ' . $this->url);
             return null;
         }

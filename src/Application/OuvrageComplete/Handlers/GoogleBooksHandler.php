@@ -39,7 +39,7 @@ class GoogleBooksHandler implements CompleteHandlerInterface
             return OuvrageFactory::GoogleFromIsbn($this->isbn);
         } catch (Throwable $e) {
             $this->logger->warning("*** ERREUR GOOGLE Isbn Search ***" . $e->getMessage());
-            if (strpos($e->getMessage(), 'Could not resolve host: www.googleapis.com') === false) {
+            if (!str_contains($e->getMessage(), 'Could not resolve host: www.googleapis.com')) {
                 throw $e;
             }
         }

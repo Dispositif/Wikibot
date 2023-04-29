@@ -115,9 +115,7 @@ class EditeurHandler implements OptimizeHandlerInterface
     /**
      * todo move (cf. Article/Lien web optimizing)
      *
-     * @param string $publisherName
      *
-     * @return string|null
      */
     public function predictPublisherWikiTitle(string $publisherName): ?string
     {
@@ -133,7 +131,7 @@ class EditeurHandler implements OptimizeHandlerInterface
             $this->log->error('Catch EDITOR_TITLES_FILENAME import ' . $e->getMessage());
         }
         if (isset($data[$publisherName])) {
-            return (string)urldecode($data[$publisherName]);
+            return (string)urldecode((string) $data[$publisherName]);
         }
 
         return null;

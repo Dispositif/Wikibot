@@ -10,10 +10,7 @@ use Scriptotek\GoogleBooks\Volume;
 
 class GoogleBookMapperTest extends TestCase
 {
-    /**
-     * @var Volume
-     */
-    private $volume;
+    private Volume $volume;
 
     public function setUp(): void
     {

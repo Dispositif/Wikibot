@@ -43,7 +43,6 @@ abstract class AbstractParametersObject
     /**
      * Compare param/value data. Empty value ignored. Params order ignored.
      *
-     * @param AbstractParametersObject $object
      *
      * @return bool
      */

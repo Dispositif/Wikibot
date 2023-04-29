@@ -52,7 +52,7 @@ class BnfFromIsbnHandler implements CompleteHandlerInterface
             }
 
         } catch (Throwable $e) {
-            if (strpos($e->getMessage(), 'Could not resolve host') !== false) {
+            if (str_contains($e->getMessage(), 'Could not resolve host')) {
                 throw $e;
             }
             $this->logger->error(sprintf(

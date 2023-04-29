@@ -29,12 +29,6 @@ class NumberUtil
             1 => 'I',
         ];
 
-    /**
-     * @param int       $number
-     * @param bool|null $lowerSize
-     *
-     * @return string|null
-     */
     public static function arab2roman(int $number, ?bool $lowerSize = false): ?string
     {
         if ($number <= 0) {

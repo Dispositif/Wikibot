@@ -22,12 +22,10 @@ trait TalkPageEditTrait
      *
      * @param array                $rows Collection of citations
      * @param LoggerInterface|null $log
-     *
-     * @return bool
      */
     protected function sendOuvrageErrorsOnTalkPage(array $rows, LoggerInterface $log = null): bool
     {
-        if ($log === null) {
+        if (!$log instanceof LoggerInterface) {
             $log = new NullLogger();
         }
         if (empty($rows[0]) || empty($rows[0]['page'])) {
@@ -51,7 +49,7 @@ trait TalkPageEditTrait
                 $id = $main->getLastRevision()->getId();
                 $diffStr = sprintf(
                     ' ([https://fr.wikipedia.org/w/index.php?title=%s&diff=%s diff])',
-                    str_replace(' ', '_', $mainTitle),
+                    str_replace(' ', '_', (string) $mainTitle),
                     $id
                 );
             }

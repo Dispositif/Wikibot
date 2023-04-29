@@ -109,8 +109,6 @@ abstract class TextUtil
      * UTF8 first letter in lower case.
      * "Économie" => "économie".
      *
-     * @param string      $str
-     * @param string|null $e
      *
      * @return string
      */
@@ -146,15 +144,12 @@ abstract class TextUtil
     //    {
     //        return preg_match('/[^\\p{Common}\\p{Latin}]/u', $str);
     //    }
-
     /**
      * Simplest levenshtein distance prediction of the correct param name.
      * Weird results with ASCII extended chars :
      * levenshtein('notre','nôtre') => 2
      * TODO move.
      *
-     * @param string $str
-     * @param array  $names
      * @param int    $max Maximum number of permutation/add/subtraction)
      *
      * @return string|null
@@ -186,7 +181,6 @@ abstract class TextUtil
     /**
      * For predictCorrectParam().
      *
-     * @param string $str
      *
      * @return string
      */
@@ -217,7 +211,6 @@ abstract class TextUtil
      * OK : grec, cyrillique, macron, hatchek, brève, rond en chef, tilde
      * UTF-8 compatible.
      *
-     * @param string $string
      *
      * @return string
      */
@@ -237,8 +230,6 @@ abstract class TextUtil
     /**
      * Like PHP8 str_ends_with(). Multibytes ok.
      *
-     * @param string $haystack
-     * @param string $needle
      *
      * @return bool
      */
@@ -255,8 +246,6 @@ abstract class TextUtil
     /**
      * Like PHP8 str_starts_with().
      *
-     * @param string $haystack
-     * @param string $needle
      *
      * @return bool
      */
