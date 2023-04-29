@@ -10,15 +10,15 @@ declare(strict_types=1);
 namespace App\Application\OuvrageEdit;
 
 /**
+ * todo choisir/clarifier redondance avec WikiPageAction !!
  * See also Application/OuvrageComplete/CitationStatus and Domain/OptiStatus
- * todo extends WikiPageAction ?
  */
 class PageWorkStatus
 {
     /**
      * @var string
      */
-    public $title;
+    protected $title;
     public $wikiText = null;
     public $errorWarning = [];
     public $featured_article = false;
@@ -42,5 +42,19 @@ class PageWorkStatus
     public function getTitle(): ?string
     {
         return $this->title;
+    }
+
+    public function addErrorWarning(string $text): void
+    {
+        if (empty($this->errorWarning) || !in_array($text, $this->errorWarning)) {
+            $this->errorWarning[] = $text;
+        }
+    }
+
+    public function addSummaryTag(string $tag)
+    {
+        if (!in_array($tag, $this->importantSummary)) {
+            $this->importantSummary[] = $tag;
+        }
     }
 }

@@ -73,6 +73,10 @@ class OuvrageEditWorker
      * @var LoggerInterface
      */
     protected $log;
+    /**
+     * @var ImportantSummaryCreator
+     */
+    protected $summaryCreator;
 
     public function __construct(
         DbAdapterInterface $dbAdapter,
@@ -107,8 +111,6 @@ class OuvrageEditWorker
      */
     protected function pageProcess(): bool
     {
-        $e = null;
-
         if ((new TalkStopValidator($this->bot))->validate() === false) { // move up ?
             return false;
         }
@@ -187,6 +189,7 @@ class OuvrageEditWorker
     protected function makeCitationsReplacements(array $pageCitationCollection): bool
     {
         $oldText = $this->pageWorkStatus->wikiText;
+        $this->summaryCreator = new ImportantSummaryCreator($this->pageWorkStatus);
         foreach ($pageCitationCollection as $dat) {
             $this->processOneCitation($dat); // that modify PageWorkStatus->wikiText
         }
@@ -216,8 +219,6 @@ class OuvrageEditWorker
             return false;
         }
 
-        $this->addSummaryDataOnPageWorkStatus($ouvrageData);
-
         // Replace text
         $newText = WikiPageAction::replaceTemplateInText($this->pageWorkStatus->wikiText, $origin, $completed);
 
@@ -226,6 +227,7 @@ class OuvrageEditWorker
 
             return false;
         }
+        $this->summaryCreator->processPageOuvrage($ouvrageData);
         $this->pageWorkStatus->wikiText = $newText;
         $this->pageWorkStatus->minorFlag = ('1' === $ouvrageData['major']) ? false : $this->pageWorkStatus->minorFlag;
         $this->pageWorkStatus->citationVersion = $ouvrageData['version']; // todo gérer versions différentes
@@ -292,17 +294,6 @@ class OuvrageEditWorker
         if ($this->pageWorkStatus->botFlag) {
             $this->log->debug("sleep " . self::DELAY_BOTFLAG_SECONDS);
             sleep(self::DELAY_BOTFLAG_SECONDS);
-        }
-    }
-
-    /**
-     * todo extract to OuvrageEditSummaryTrait ?
-     * Pour éviter les doublons dans signalements d'erreur.
-     */
-    protected function addErrorWarning(string $title, string $text): void
-    {
-        if (!isset($this->pageWorkStatus->errorWarning[$title]) || !in_array($text, $this->pageWorkStatus->errorWarning[$title])) {
-            $this->pageWorkStatus->errorWarning[$title][] = $text;
         }
     }
 }

@@ -13,14 +13,10 @@ use DateTime;
 
 /**
  * Used only by OuvrageEditWorker.
+ * TODO make it used by PageWorkStatus instead of OuvrageEditWorker ? Or ImportantSummaryCreator ?
  */
 trait OuvrageEditSummaryTrait
 {
-    /* Beware !! $importantSummary also defined in OuvrageEditWorker */
-    public $importantSummary = [];
-
-    abstract protected function addErrorWarning(string $title, string $text): void;
-
     /**
      * Generate wiki edition summary.
      */
@@ -91,90 +87,5 @@ trait OuvrageEditSummaryTrait
             $citeSummary = implode(', ', $this->pageWorkStatus->importantSummary);
         }
         return $citeSummary;
-    }
-
-    /**
-     * For substantive or ambiguous modifications done.
-     *
-     * @param string $tag
-     */
-    protected function addSummaryTag(string $tag)
-    {
-        if (!in_array($tag, $this->pageWorkStatus->importantSummary)) {
-            $this->pageWorkStatus->importantSummary[] = $tag;
-        }
-    }
-
-    /**
-     * todo extract. => responsability : pageWorkStatus + summary
-     * Vérifie alerte d'erreurs humaines.
-     */
-    protected function addSummaryDataOnPageWorkStatus(array $ouvrageData): void
-    {
-        // paramètre inconnu
-        if (preg_match_all(
-                "#\|[^|]+<!-- ?(PARAMETRE [^>]+ N'EXISTE PAS|VALEUR SANS NOM DE PARAMETRE|ERREUR [^>]+) ?-->#",
-                $ouvrageData['opti'],
-                $matches
-            ) > 0
-        ) {
-            foreach ($matches[0] as $line) {
-                $this->addErrorWarning($ouvrageData['page'], $line);
-            }
-            //  $this->pageWorkStatus->botFlag = false;
-            $this->addSummaryTag('paramètre non corrigé');
-        }
-
-        // ISBN invalide
-        if (preg_match("#isbn invalide ?=[^|}]+#i", $ouvrageData['opti'], $matches) > 0) {
-            $this->addErrorWarning($ouvrageData['page'], $matches[0]);
-            $this->pageWorkStatus->botFlag = false;
-            $this->addSummaryTag('ISBN invalide 💩');
-        }
-
-        // Edits avec ajout conséquent de donnée
-        if (preg_match('#distinction des auteurs#', $ouvrageData['modifs']) > 0) {
-            $this->pageWorkStatus->botFlag = false;
-            $this->addSummaryTag('distinction auteurs 🧠');
-        }
-        // prédiction paramètre correct
-        if (preg_match('#[^,]+(=>|⇒)[^,]+#', $ouvrageData['modifs'], $matches) > 0) {
-            $this->pageWorkStatus->botFlag = false;
-            $this->addSummaryTag($matches[0]);
-        }
-        if (preg_match('#\+\+sous-titre#', $ouvrageData['modifs']) > 0) {
-            $this->pageWorkStatus->botFlag = false;
-            $this->addSummaryTag('+sous-titre');
-        }
-        if (preg_match('#\+lieu#', $ouvrageData['modifs']) > 0) {
-            $this->addSummaryTag('+lieu');
-        }
-        if (preg_match('#tracking#', $ouvrageData['modifs']) > 0) {
-            $this->addSummaryTag('tracking');
-        }
-        if (preg_match('#présentation en ligne#', $ouvrageData['modifs']) > 0) {
-            $this->addSummaryTag('+présentation en ligne✨');
-        }
-        if (preg_match('#distinction auteurs#', $ouvrageData['modifs']) > 0) {
-            $this->addSummaryTag('distinction auteurs 🧠');
-        }
-        if (preg_match('#\+lire en ligne#', $ouvrageData['modifs']) > 0) {
-            $this->addSummaryTag('+lire en ligne✨');
-        }
-        if (preg_match('#\+lien #', $ouvrageData['modifs']) > 0) {
-            $this->addSummaryTag('wikif');
-        }
-
-        if (preg_match('#\+éditeur#', $ouvrageData['modifs']) > 0) {
-            $this->addSummaryTag('éditeur');
-        }
-        //        if (preg_match('#\+langue#', $data['modifs']) > 0) {
-        //            $this->addSummaryTag('langue');
-        //        }
-
-        // mention BnF si ajout donnée + ajout identifiant bnf=
-        if (!empty($this->pageWorkStatus->importantSummary) && preg_match('#BnF#i', $ouvrageData['modifs'], $matches) > 0) {
-            $this->addSummaryTag('©[[BnF]]');
-        }
     }
 }
