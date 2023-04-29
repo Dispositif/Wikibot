@@ -1,11 +1,12 @@
 build:
     environment:
-        php: 7.4
+        php: 8.1
         variables:
 #            SCRUTIZINER: true
 #        dependencies:
 #            before:
 #                - composer require phpunit/phpunit:^8.0 --dev
+# composer ... --ignore-platform-reqs is needed to ignore the iblis/isbn dependencies problem with PHP 8
     tests:
         override:
             # overwrite phpunit.xml config

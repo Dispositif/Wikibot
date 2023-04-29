@@ -25,8 +25,10 @@ Please do not play with this package. These programs can actually modify the liv
 wiki-etiquette should be followed before running it on any wiki. See https://en.wikipedia.org/wiki/WP:Bot for rules and
 authorization requests.
  
-Tech stack : PHP >=7.3, RabbitMQ or MySQL, composer libraries (Symfony components, addwiki/mediawiki-api, etc), 
+Tech stack : PHP >=8.1 (version 1.1 on PHP7.2), RabbitMQ or MySQL, composer libraries (Symfony components, addwiki/mediawiki-api, etc), 
 hexagonal architecture….
+
+Use ``make`` on root, for the list of some available commands.
 
 <img src="https://raw.githubusercontent.com/Dispositif/Wikibot/master/docs/workers.png" alt="schemas of workers" style="max-width:300px;" />
 
