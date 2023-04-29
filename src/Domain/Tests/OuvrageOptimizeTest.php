@@ -198,7 +198,8 @@ class OuvrageOptimizeTest extends TestCase
 
         $optimized = (OptimizerFactory::fromTemplate($origin))->doTasks()->getOptiTemplate();
         $this::assertSame(
-            '{{Ouvrage|langue=en|prénom1=Ernest|nom1=Nègre|titre=Toponymie|sous-titre=France|tome=3|éditeur=|année=|passage=15-27|isbn=978-2-600-02884-4|isbn2=2-600-02884-6|id=ZE}}',
+            '{{Ouvrage|langue=en|prénom1=Ernest|nom1=Nègre|titre=Toponymie|sous-titre=France|tome=3|éditeur=|année=|passage=15-27|isbn=2600028846|id=ZE}}',
+// Expected with ISBN converter:   '{{Ouvrage|langue=en|prénom1=Ernest|nom1=Nègre|titre=Toponymie|sous-titre=France|tome=3|éditeur=|année=|passage=15-27|isbn=978-2-600-02884-4|isbn2=2-600-02884-6|id=ZE}}',
             $optimized->serialize(true)
         );
     }
@@ -291,8 +292,7 @@ class OuvrageOptimizeTest extends TestCase
     }
 
     /**
-     * @dataProvider provideISBN
-     *
+     * @dataProvider provideIsbnNoConversion
      * @throws Exception
      */
     public function testIsbn(array $data, string $expected): void
@@ -307,7 +307,39 @@ class OuvrageOptimizeTest extends TestCase
         );
     }
 
-    public function provideISBN(): array
+    public function provideIsbnNoConversion(): array
+    {
+        // With iSBN converter desactived
+        return [
+            [
+                // no ISBN before 1970
+                ['année' => '1950'],
+                '{{Ouvrage|titre=|éditeur=|année=1950}}',
+            ],
+            [
+                // empty 'isbn' after 1970
+                ['année' => '1980'],
+                '{{Ouvrage|titre=|éditeur=|année=1980|isbn=}}',
+            ],
+            [
+                // isbn 13 but not conversion
+                ['isbn' => '9782600028844'],
+                '{{Ouvrage|titre=|éditeur=|année=|isbn=9782600028844}}',
+            ],
+            [
+                // isbn 13
+                ['isbn' => '978-2-600-02884-4'],
+                '{{Ouvrage|titre=|éditeur=|année=|isbn=978-2-600-02884-4}}',
+            ],
+            [
+                // isbn10 but not conversion
+                ['isbn' => '2-7068-1251-6', 'date' => 'octobre 1988'],
+                '{{Ouvrage|titre=|éditeur=|date=octobre 1988|isbn=2-7068-1251-6}}',
+            ],
+        ];
+    }
+
+    public function provideISBNforConverter(): array
     {
         return [
             [

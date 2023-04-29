@@ -10,9 +10,8 @@ declare(strict_types=1);
 namespace App\Infrastructure;
 
 use App\Domain\InfrastructurePorts\IsbnConverterInterface;
-use Biblys\Isbn\Isbn;
 
-class IsbnFacade extends Isbn implements IsbnConverterInterface
+class IsbnFacade implements IsbnConverterInterface
 {
     public const ERROR_EMPTY = 'aucun code fourni';
 
@@ -43,15 +42,16 @@ class IsbnFacade extends Isbn implements IsbnConverterInterface
 
     public function getCountryShortName(): ?string
     {
-        $langCode = $this->getCountry() ?? '';
-        if (empty($langCode)) {
-            return null;
-        }
-
-        if (array_key_exists($langCode, self::ISBN_LANGUAGE_CODES)) {
-            return self::ISBN_LANGUAGE_CODES[$langCode];
-        }
-
         return null;
+//        $langCode = $this->getCountry() ?? '';
+//        if (empty($langCode)) {
+//            return null;
+//        }
+//
+//        if (array_key_exists($langCode, self::ISBN_LANGUAGE_CODES)) {
+//            return self::ISBN_LANGUAGE_CODES[$langCode];
+//        }
+//
+//        return null;
     }
 }

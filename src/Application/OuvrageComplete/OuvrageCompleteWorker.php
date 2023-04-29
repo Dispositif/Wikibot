@@ -134,7 +134,6 @@ class OuvrageCompleteWorker
 
             $this->sendCompleted();
             unset($optimizer);
-            unset($parse);
             unset($origin);
         } // END WHILE
 

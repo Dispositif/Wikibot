@@ -80,7 +80,7 @@ class OuvrageOptimize extends AbstractTemplateOptimizer
             new DateHandler($this->optiTemplate, $optiStatus),
             new ExternalTemplateHandler($this->optiTemplate, $optiStatus),
             new OuvrageFormatHandler($this->optiTemplate, $optiStatus),
-            new OuvrageIsbnHandler($this->optiTemplate, $optiStatus),
+//            new OuvrageIsbnHandler($this->optiTemplate, $optiStatus),
             new BnfParamHandler($this->optiTemplate, $optiStatus),
             new LocationHandler($this->optiTemplate, $optiStatus, $this->pageListManager),
             new GoogleBooksUrlHandler($this->optiTemplate, $optiStatus),
