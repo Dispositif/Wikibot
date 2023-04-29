@@ -10,16 +10,12 @@
     "CodexBot",
     "frwiki"
   ],
-  "config": {
-    "platform": {
-      "php": "7.4"
-    }
-  },
+  "config": {},
   "require": {
-    "php": ">=7.2",
-    "addwiki/mediawiki-api": "^0.7.3",
+    "php": ">=8.1",
+    "addwiki/mediawiki-api": "^2.8",
     "symfony/dotenv": "^4.3",
-    "symfony/console": "4.4.7",
+    "symfony/console": "*",
     "guzzlehttp/guzzle": "~6.0",
     "php-amqplib/php-amqplib": "^2.10",
     "yooper/php-text-analysis": "^1.5",
@@ -36,7 +32,9 @@
     "symfony/yaml": "4.*",
     "codedungeon/php-cli-colors": "~1.0",
     "ext-iconv": "*",
-    "jeremykendall/php-domain-parser": "^6.1"
+    "jeremykendall/php-domain-parser": "^6.1",
+    "ext-curl": "*",
+    "addwiki/mediawiki-api-base": "*"
   },
   "autoload": {
     "psr-4": {
