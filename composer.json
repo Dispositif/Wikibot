@@ -28,7 +28,6 @@
     "ext-dom": "*",
     "scriptotek/google-books": "^0.2.4",
     "simplon/mysql": "^2.2",
-    "biblys/isbn": "^2.1.1",
     "ext-libxml": "*",
     "hnhdigital-os/laravel-git-info": "^1.0",
     "ext-intl": "*",
