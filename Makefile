@@ -13,9 +13,9 @@ help:
 phpstan-all:
 	php -d memory_limit=1G ./vendor/bin/phpstan
 
-.PHONY: phpstan # 	phpstan <class> (level 4)
-phpstan: pathclass
-	php -d memory_limit=1G ./vendor/bin/phpstan analyse -c phpstan.neon -l 4 pathclass
+.PHONY: phpstan # 	phpstan path="src/.../myclass" (level 4)
+phpstan:
+	php -d memory_limit=1G ./vendor/bin/phpstan analyse -c phpstan.neon -l 4 $(path)
 
 .PHONY: phpunit # 	Phpunit all tests
 phpunit:
@@ -25,9 +25,13 @@ phpunit:
 coverage:
 	php ./vendor/bin/phpunit --coverage-html coverage
 
-.PHONY: rector # 	Launch Rector DRY-RUN
+.PHONY: rector # 	rector path="src/.../myclass" (dry run)
 rector:
-	php ./vendor/bin/rector process src --dry-run
+	php ./vendor/bin/rector process ${path} --dry-run
+
+.PHONY: rector-hard # 	make rector-hard path="src/.../myclass" (HARD RUN!)
+rector-hard:
+	php ./vendor/bin/rector process ${path}
 
 .PHONY: externref # 	extern reference wikipedia
 externref:
