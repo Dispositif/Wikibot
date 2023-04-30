@@ -26,7 +26,7 @@ class WikiBotConfigTest extends TestCase
         $this::assertSame($bool, WikiBotConfig::isEditionTemporaryRestrictedOnWiki($text, $botName));
     }
 
-    public function provideEditionRestricted()
+    public static function provideEditionRestricted()
     {
         return [
             [false, 'bla bla'],

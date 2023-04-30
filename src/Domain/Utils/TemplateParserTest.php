@@ -27,7 +27,7 @@ class TemplateParserTest extends TestCase
         );
     }
 
-    public function provideStyleSeparator()
+    public static function provideStyleSeparator()
     {
         return [
             ['{{Ouvrage|langue=fr|prénom1=Ernest|nom1=Nègre|titre=Toponymie}}', '|'],
@@ -83,7 +83,7 @@ class TemplateParserTest extends TestCase
      *
      * @return array
      */
-    public function provideParseDataFromTemplate()
+    public static function provideParseDataFromTemplate()
     {
         return [
             ['ouvrage', '{{ ouvrage | title =bla | nom = po }}', ['title' => 'bla', 'nom' => 'po']],

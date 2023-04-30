@@ -34,7 +34,7 @@ class OuvrageOptimizeTest extends TestCase
         );
     }
 
-    public function provideSomeParam(): array
+    public static function provideSomeParam(): array
     {
         return [
             // "edition" [ordinal number] from {Cite book} => "réimpression" (année) ou "numéro d'édition"
@@ -220,7 +220,7 @@ class OuvrageOptimizeTest extends TestCase
         );
     }
 
-    public function provideProcessTitle(): array
+    public static function provideProcessTitle(): array
     {
         return [
             [
@@ -307,7 +307,7 @@ class OuvrageOptimizeTest extends TestCase
         );
     }
 
-    public function provideIsbnNoConversion(): array
+    public static function provideIsbnNoConversion(): array
     {
         // With iSBN converter desactived
         return [
@@ -339,7 +339,7 @@ class OuvrageOptimizeTest extends TestCase
         ];
     }
 
-    public function provideISBNforConverter(): array
+    public static function provideISBNforConverter(): array
     {
         return [
             [

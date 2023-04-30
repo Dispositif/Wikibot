@@ -27,7 +27,7 @@ class ExternPageTest extends TestCase
         $this::assertSame($expected, $page->getPrettyDomainName());
     }
 
-    public function provideTestResult(): array
+    public static function provideTestResult(): array
     {
         return [
             ['http://test.com', 'test.com'],
@@ -52,7 +52,7 @@ class ExternPageTest extends TestCase
         $this::assertSame($expected, $page->getPrettyDomainName());
     }
 
-    public function provideTestResult2(): array
+    public static function provideTestResult2(): array
     {
         return [
             ['http://test.com', 'test.com'],

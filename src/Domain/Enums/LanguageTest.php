@@ -24,7 +24,7 @@ class LanguageTest extends TestCase
         );
     }
 
-    public function provideAll2wiki(): array
+    public static function provideAll2wiki(): array
     {
         return [
             ['en-us', 'en'],

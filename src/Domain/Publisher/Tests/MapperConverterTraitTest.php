@@ -27,7 +27,7 @@ class MapperConverterTraitTest extends TestCase
         );
     }
 
-    public function provideCleanData(): array
+    public static function provideCleanData(): array
     {
         return [
             ['bla|bla bob@gmail.com', 'bla/bla'],

@@ -33,7 +33,7 @@ class InternetDomainParserTest extends TestCase
         );
     }
 
-    public function provideUrls(): array
+    public static function provideUrls(): array
     {
         return [
             ['https://www.google.fr', 'google.fr'],

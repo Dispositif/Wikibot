@@ -35,7 +35,7 @@ class ExternMapperTest extends TestCase
         $this::assertSame($expected, $data);
     }
 
-    public function provideMappingFromFile(): array
+    public static function provideMappingFromFile(): array
     {
         return [
             [

@@ -17,8 +17,7 @@ class TypoTokenizerTest extends TestCase
 {
     /**
      * For TDD.
-     *
-     * @dataProvider patternProvider
+     * @dataProvider providePatternExamples
      */
     public function testTokenizeAuthor(string $text, string $pattern)
     {
@@ -30,7 +29,7 @@ class TypoTokenizerTest extends TestCase
         );
     }
 
-    public function patternProvider()
+    public static function providePatternExamples()
     {
         return [
             //            ['B. Marc (dir.) et Pierre BERGER', 'INITIAL FIRSTUPPER BIBABREV AND FIRSTUPPER ALLUPPER'],
@@ -70,7 +69,7 @@ class TypoTokenizerTest extends TestCase
         );
     }
 
-    public function provideAuthorNames()
+    public static function provideAuthorNames()
     {
         return [
             ['Marc Durand et Pierre Berger', [0 => 'Marc Durand', 1 => 'Pierre Berger']],

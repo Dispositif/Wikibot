@@ -60,7 +60,7 @@ class OuvrageMixTest extends TestCase
         );
     }
 
-    public function provideComplete(): array
+    public static function provideComplete(): array
     {
         return [
             [
@@ -182,7 +182,7 @@ class OuvrageMixTest extends TestCase
         );
     }
 
-    public function provideAuthors(): array
+    public static function provideAuthors(): array
     {
         return [
             [

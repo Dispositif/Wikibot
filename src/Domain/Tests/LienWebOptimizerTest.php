@@ -37,7 +37,7 @@ class LienWebOptimizerTest extends TestCase
         );
     }
 
-    public function provideSomeParam(): array
+    public static function provideSomeParam(): array
     {
         return [
             [

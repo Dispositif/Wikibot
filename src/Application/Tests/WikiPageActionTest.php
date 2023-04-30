@@ -25,7 +25,7 @@ class WikiPageActionTest extends TestCase
         );
     }
 
-    public function provideReplaceTemplateInText()
+    public static function provideReplaceTemplateInText()
     {
         return [
             [

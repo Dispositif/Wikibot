@@ -40,7 +40,7 @@ class OuvrageTemplateTest extends TestCase
         );
     }
 
-    public function provideSpanInitial()
+    public static function provideSpanInitial()
     {
         return [
             [

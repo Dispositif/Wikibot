@@ -30,7 +30,7 @@ class OpenGraphMapperTest extends TestCase
         $this::assertSame($expected, $actual);
     }
 
-    public function provideBestTitle(): array
+    public static function provideBestTitle(): array
     {
         return [
             ['', '', '', ''], // no title TODO ?

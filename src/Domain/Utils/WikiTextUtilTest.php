@@ -24,7 +24,7 @@ class WikiTextUtilTest extends TestCase
         );
     }
 
-    public function provideExternalLink(): array
+    public static function provideExternalLink(): array
     {
         return [
             ['[[fu]] [http://google.fr bla] [http://google.com blo]', '[[fu]] bla blo'],
@@ -72,7 +72,7 @@ EOF;
         );
     }
 
-    public function provideWikilink()
+    public static function provideWikilink()
     {
         return [
             [['fu_bar'], '[[fu bar]]'],
@@ -145,7 +145,7 @@ EOF;
         );
     }
 
-    public function provideWikify()
+    public static function provideWikify()
     {
         return [
             ['blabla<!-- fu -->', 'blabla'],

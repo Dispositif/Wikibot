@@ -27,7 +27,7 @@ class NumberUtilTest extends TestCase
         );
     }
 
-    public function provideArab2roman(): array
+    public static function provideArab2roman(): array
     {
         return [
             [24, 'XXIV'],

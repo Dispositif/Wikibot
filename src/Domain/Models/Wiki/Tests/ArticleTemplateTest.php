@@ -29,7 +29,7 @@ class ArticleTemplateTest extends TestCase
         );
     }
 
-    public function provideArticleSerialize(): array
+    public static function provideArticleSerialize(): array
     {
         return [
             [
@@ -57,7 +57,6 @@ class ArticleTemplateTest extends TestCase
 
     /**
      * @dataProvider provideConvertOuvrage2Article
-     * @throws \Exception
      */
     public function testConvertFromOuvrage(string $ouvrageSerial, string $articleSerial)
     {
@@ -72,7 +71,7 @@ class ArticleTemplateTest extends TestCase
         );
     }
 
-    public final function provideConvertOuvrage2Article(): array
+    public static function provideConvertOuvrage2Article(): array
     {
         return [
             [

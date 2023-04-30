@@ -29,7 +29,7 @@ class SeoSanitizerTest extends TestCase
         $this::assertSame($expected, $this->sanitizer->cleanSEOTitle($prettyDomain, $title));
     }
 
-    public function provideTitleResult(): array
+    public static function provideTitleResult(): array
     {
         return [
             ['test.com', '', null], // no title TODO ?

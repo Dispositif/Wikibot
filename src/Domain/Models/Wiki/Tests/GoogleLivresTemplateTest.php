@@ -55,14 +55,14 @@ class GoogleLivresTemplateTest extends TestCase
         GoogleBooksUtil::simplifyGoogleUrl($url);
     }
 
-    public function provideExceptionURL(): array
+    public static function provideExceptionURL(): array
     {
         return [
             ['https://www.google.fr/books/edition/_/sfd'],
         ];
     }
 
-    public function provideSimplify(): array
+    public static function provideSimplify(): array
     {
         return [
             [
@@ -178,7 +178,7 @@ class GoogleLivresTemplateTest extends TestCase
         );
     }
 
-    public function provideGoogleUrl(): array
+    public static function provideGoogleUrl(): array
     {
         return [
             [
