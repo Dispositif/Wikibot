@@ -12,6 +12,7 @@ namespace App\Application\Tests;
 use App\Application\InfrastructurePorts\MemoryInterface;
 use App\Application\OuvrageComplete\OuvrageCompleteWorker;
 use App\Domain\InfrastructurePorts\WikidataAdapterInterface;
+use App\Domain\Models\PageOuvrageDTO;
 use App\Infrastructure\DbAdapter;
 use PHPUnit\Framework\TestCase;
 
@@ -33,9 +34,11 @@ class OuvrageCompleteWorkerTest extends TestCase
     public function testRun()
     {
         $DbAdapterMock = $this->createMock(DbAdapter::class);
-        $DbAdapterMock->method('getNewRaw')->willReturn(
-            ['page' => 'bla', 'raw' => '{{Ouvrage |auteur=Pierre André|titre=Bla|}}']
-        );
+        $pageOuvrageDto = new PageOuvrageDTO([
+            'page' => 'bla',
+            'raw' => '{{Ouvrage |auteur=Pierre André|titre=Bla|}}'
+        ]);
+        $DbAdapterMock->method('getNewRaw')->willReturn($pageOuvrageDto);
         $DbAdapterMock->method('sendCompletedData')->willReturn(true);
         $wikidataAdapterMock = $this->createMock(WikidataAdapterInterface::class);
 

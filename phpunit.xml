@@ -1,54 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  ~ This file is part of dispositif/wikibot application (@github)
-  ~ 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
-  ~ For the full copyright and MIT license information, view the license file.
-  -->
-
 <!-- https://phpunit.de/manual/current/en/appendixes.configuration.html -->
 <!--suppress XmlHighlighting -->
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.8/phpunit.xsd"
-         colors="true"
-         convertDeprecationsToExceptions="false"
-         convertNoticesToExceptions="false"
-         convertWarningsToExceptions="false"
-         bootstrap="./vendor/autoload.php">
-    <php>
-        <ini name="error_reporting" value="-1"/>
-        <server name="KERNEL_CLASS" value="AppKernel"/>
-        <env name="SYMFONY_DEPRECATIONS_HELPER" value="disabled" />
-    </php>
-    <testsuites>
-        <testsuite name="Project Test Suite">
-            <directory>src</directory>
-        </testsuite>
-    </testsuites>
-    <filter>
-        <whitelist>
-            <directory suffix=".php">src</directory>
-            <exclude>
-                <directory>src/Application/Bazar</directory>
-                <directory>src/Application/CLI</directory>
-                <directory>src/Domain/Bazar</directory>
-                <file>src/Application/QueueWorker.php</file>
-                <file>src/Application/myBootstrap.php</file>
-                <file>src/Application/ScanWiki2DB.php</file>
-                <file>src/Infrastructure/WstatImport.php</file>
-            </exclude>
-        </whitelist>
-    </filter>
-    <groups>
-        <exclude>
-            <group>integration</group>
-        </exclude>
-    </groups>
-
-    <logging>
-        <!--&lt;!&ndash;<log type="tap" target="tests/build/report.tap"/>&ndash;&gt;-->
-        <!--<log type="junit" target="tests/build/report.junit.xml"/>-->
-        <!--<log type="coverage-html" target="tests/build/coverage" charset="UTF-8" yui="true" highlight="true"/>-->
-        <log type="coverage-text" target="tests/coverage.txt"/>
-        <log type="coverage-clover" target="tests/clover.xml"/>
-    </logging>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.1/phpunit.xsd" colors="true" bootstrap="./vendor/autoload.php" cacheDirectory=".phpunit.cache">
+  <coverage>
+    <report>
+      <clover outputFile="tests/clover.xml"/>
+      <text outputFile="tests/coverage.txt"/>
+    </report>
+  </coverage>
+  <php>
+    <ini name="error_reporting" value="-1"/>
+    <server name="KERNEL_CLASS" value="AppKernel"/>
+    <env name="SYMFONY_DEPRECATIONS_HELPER" value="disabled"/>
+  </php>
+  <testsuites>
+    <testsuite name="Project Test Suite">
+      <directory>src</directory>
+    </testsuite>
+  </testsuites>
+  <groups>
+    <exclude>
+      <group>integration</group>
+    </exclude>
+  </groups>
+  <logging>
+    <!--&lt;!&ndash;<log type="tap" target="tests/build/report.tap"/>&ndash;&gt;-->
+    <!--<log type="junit" target="tests/build/report.junit.xml"/>-->
+    <!--<log type="coverage-html" target="tests/build/coverage" charset="UTF-8" yui="true" highlight="true"/>-->
+  </logging>
+  <source>
+    <include>
+      <directory suffix=".php">src</directory>
+    </include>
+    <exclude>
+      <directory>src/Application/Bazar</directory>
+      <directory>src/Application/CLI</directory>
+      <directory>src/Domain/Bazar</directory>
+      <file>src/Application/QueueWorker.php</file>
+      <file>src/Application/myBootstrap.php</file>
+      <file>src/Application/ScanWiki2DB.php</file>
+      <file>src/Infrastructure/WstatImport.php</file>
+    </exclude>
+  </source>
 </phpunit>
