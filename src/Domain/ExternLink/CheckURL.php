@@ -93,7 +93,7 @@ class CheckURL
     protected function hasForbiddenFilenameExtension(): bool
     {
         return (bool)preg_match(
-            '#\.(pdf|jpg|jpeg|gif|png|xls|xlsx|xlr|xml|xlt|txt|csv|js|docx|exe|gz|zip|ini|movie|mp3|mp4|ogg|raw|rss|tar|tgz|wma)$#i',
+            '#\.(pdf|jpg|jpeg|gif|png|webp|xls|xlsx|xlr|xml|xlt|txt|csv|js|docx|exe|gz|zip|ini|movie|mp3|mp4|ogg|raw|rss|tar|tgz|wma)$#i',
             $this->url
         );
     }

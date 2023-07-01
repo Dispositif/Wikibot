@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace App\Domain\ExternLink;
 
+use App\Domain\ExternLink\Validators\RobotNoIndexValidator;
+use App\Domain\InfrastructurePorts\DeadlinkArchiverInterface;
 use App\Domain\InfrastructurePorts\ExternHttpClientInterface;
 use App\Domain\InfrastructurePorts\InternetDomainParserInterface;
 use App\Domain\Models\Summary;
@@ -30,89 +32,62 @@ use Throwable;
  */
 class ExternRefTransformer implements ExternRefTransformerInterface
 {
-    use SummaryExternTrait, RobotsRulesTrait, PublisherLogicTrait;
+    use SummaryExternTrait, PublisherLogicTrait;
 
     public const HTTP_REQUEST_LOOP_DELAY = 10;
     public const SKIP_DOMAIN_FILENAME = __DIR__ . '/../resources/config_skip_domain.txt';
     public const REPLACE_404 = true;
+    public const REPLACE_410 = true;
     public const CONFIG_PRESSE = __DIR__ . '/../resources/config_presse.yaml';
     public const CONFIG_NEWSPAPER_JSON = __DIR__ . '/../resources/data_newspapers.json';
     public const CONFIG_SCIENTIFIC_JSON = __DIR__ . '/../resources/data_scientific_domain.json';
     public const CONFIG_SCIENTIFIC_WIKI_JSON = __DIR__ . '/../resources/data_scientific_wiki.json';
 
-    public $skipSiteBlacklisted = true;
-    public $skipRobotNoIndex = true;
-    /**
-     * @var array
-     */
-    public $summaryLog = [];
-    /**
-     * @var LoggerInterface
-     */
-    protected $log;
+    public bool $skipSiteBlacklisted = true;
+    public bool $skipRobotNoIndex = true;
+    public array $summaryLog = [];
+
     protected $config;
-    /**
-     * @var string
-     */
-    protected $registrableDomain;
-    /**
-     * @var string
-     */
-    protected $url;
-    /**
-     * @var ExternMapper
-     */
-    protected $mapper;
-    /**
-     * @var array
-     */
-    protected $publisherData = [];
-    /**
-     * @var array
-     */
-    protected $skip_domain;
-    /**
-     * @var ExternPage
-     */
-    protected $externalPage;
-    /**
-     * @var Summary|null
-     */
-    protected $summary;
-    /**
-     * @var ExternHttpClientInterface
-     */
-    protected $httpClient;
+    protected string $registrableDomain;
+    protected string $url;
+    protected array $publisherData = [];
+    protected array $skip_domain = [];
+    protected ExternPage $externalPage;
+    protected ?Summary $summary;
+    protected ?string $originDomain;
+    protected array $options = [];
     private readonly ExternHttpErrorLogic $externHttpErrorLogic;
     private readonly CheckURL $urlChecker;
-    /**
-     * @var InternetDomainParserInterface
-     */
-    protected $domainParser;
 
     public function __construct(
-        ExternMapper              $externMapper,
-        ExternHttpClientInterface $httpClient,
-        InternetDomainParserInterface $domainParser,
-        ?LoggerInterface          $logger = null
+        protected ExternMapper $mapper,
+        protected ExternHttpClientInterface $httpClient,
+        protected InternetDomainParserInterface $domainParser,
+        protected LoggerInterface $log = new NullLogger(),
+        protected ?DeadlinkArchiverInterface $deadlinkArchiver = null
     )
     {
-        $this->log = $logger ?? new NullLogger();
         $this->importConfigAndData();
-        $this->mapper = $externMapper;
-        $this->httpClient = $httpClient;
-        $this->externHttpErrorLogic = new ExternHttpErrorLogic($this->log);
-        $this->domainParser = $domainParser;
-        $this->urlChecker = new CheckURL($this->domainParser, $logger);
+        $this->externHttpErrorLogic = new ExternHttpErrorLogic(
+            new DeadLinkTransformer($deadlinkArchiver, $domainParser, null, $log),
+            $log
+        );
+        $this->urlChecker = new CheckURL($domainParser, $log);
     }
 
     /**
+     * Transform "http://bla" => "{lien web|...}}", "{article}" or "{lien brisé}".
+     *
      * TODO Refac : chain of responsibility or composite pattern
+     * todo refac : return data DTO ? to much responsability!
+     *
      * @throws Exception
      */
-    public function process(string $url, Summary $summary): string
+    public function process(string $url, Summary $summary = new Summary(), array $options = []): string
     {
         $this->url = $url;
+        $this->options = $options; // used only to pass RegistrableDomain of archived deadlink
+
         if (!$this->urlChecker->isURLAuthorized($url)) {
             return $url;
         }
@@ -129,13 +104,14 @@ class ExternRefTransformer implements ExternRefTransformerInterface
             $url = WikiTextUtil::normalizeUrlForTemplate($url);
             $pageData = $this->extractPageDataFromUrl($url); // ['JSON-LD'] & ['meta'] !!
         } catch (Exception $exception) {
-            return $this->externHttpErrorLogic->manageHttpErrors($exception->getMessage(), $url);
+            return $this->externHttpErrorLogic->manageByHttpErrorMessage($exception->getMessage(), $url);
         }
         if ($this->emptyPageData($pageData, $url)) {
             return $url;
         }
-        if ($this->isRobotNoIndex($pageData, $url) && $this->skipRobotNoIndex) {
-            // TODO ? return {lien web| titre=Titre inconnu...
+        $noIndexValidator = new RobotNoIndexValidator($pageData, $url, $this->log); // todo inject
+        if ($noIndexValidator->validate() && $this->skipRobotNoIndex) {
+            // TODO ? return {lien web| titre=Titre inconnu... |note=noindex }
             // http://www.nydailynews.com/entertainment/jessica-barth-details-alleged-harvey-weinstein-encounter-article-1.3557986
             return $url;
         }
@@ -153,6 +129,7 @@ class ExternRefTransformer implements ExternRefTransformerInterface
         $template = $this->chooseTemplateByData($this->registrableDomain, $mappedData);
 
         $mappedData = $this->replaceSomeData($mappedData, $template); // template specif + data + url
+
         $serialized = $this->optimizeAndSerialize($template, $mappedData);
 
         $normalized = Normalizer::normalize($serialized); // sometimes :bool
@@ -302,6 +279,7 @@ class ExternRefTransformer implements ExternRefTransformerInterface
     {
         $mapData = $this->replaceSitenameByConfig($mapData, $template);
         $mapData = $this->fallbackIfSitenameNull($mapData, $template);
+        $mapData = $this->correctSiteViaWebarchiver($mapData);
 
         $mapData = $this->replaceURLbyOriginal($mapData);
 
@@ -350,5 +328,14 @@ class ExternRefTransformer implements ExternRefTransformerInterface
         $serialized = $templateOptimized->serialize(true);
         $this->log->info('Serialized 444: ' . $serialized . "\n");
         return $serialized;
+    }
+
+    protected function correctSiteViaWebarchiver(array $mapData): array
+    {
+        if (!empty($this->options['originalRegistrableDomain']) && $mapData['site']) {
+            $mapData['site'] = $this->options['originalRegistrableDomain'].' via '.$mapData['site'];
+        }
+
+        return $mapData;
     }
 }

@@ -7,8 +7,14 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\AppPorts;
+namespace App\Domain\InfrastructurePorts;
 
-interface DomainTransformerInterface
+use App\Domain\Models\WebarchiveDTO;
+
+/**
+ * Wikiwix, archive.org, etc.
+ */
+interface DeadlinkArchiverInterface
 {
+    public function searchWebarchive(string $url): ?WebarchiveDTO;
 }

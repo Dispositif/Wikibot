@@ -24,7 +24,7 @@ class Summary
     public $log = [];
     public $memo = [];
 
-    public function __construct(string $taskName)
+    public function __construct(string $taskName = 'fu')
     {
         $this->taskName = $taskName;
     }

@@ -15,6 +15,7 @@ use App\Domain\Models\Summary;
 use App\Domain\Publisher\ExternMapper;
 use App\Infrastructure\ConsoleLogger;
 use App\Infrastructure\InternetDomainParser;
+use App\Infrastructure\WikiwixAdapter;
 use Codedungeon\PHPCliColors\Color;
 use Exception;
 
@@ -27,11 +28,20 @@ if (empty($url)) {
 
 echo Color::BG_LIGHT_RED.$url.Color::NORMAL."\n";
 
-$log = new ConsoleLogger();
-$log->debug = true;
-$log->verbose = true;
+$logger = new ConsoleLogger();
+$logger->debug = true;
+$logger->verbose = true;
 $summary = new Summary('test');
-$trans = new ExternRefTransformer(new ExternMapper($log), new ExternHttpClient($log), new InternetDomainParser(), $log);
+$httpClient = new ExternHttpClient($logger);
+//$httpClient = new ExternHttpClient($log);
+
+$trans = new ExternRefTransformer(
+    new ExternMapper($logger),
+    $httpClient,
+    new InternetDomainParser(),
+    $logger,
+    new WikiwixAdapter($httpClient, $logger)
+);
 $trans->skipSiteBlacklisted = false;
 $trans->skipRobotNoIndex = false;
 try {

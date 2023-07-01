@@ -13,5 +13,5 @@ use App\Domain\Models\Summary;
 
 interface ExternRefTransformerInterface extends DomainTransformerInterface
 {
-    public function process(string $url, Summary $summary);
+    public function process(string $url, Summary $summary, array $options = []): string;
 }

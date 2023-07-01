@@ -15,6 +15,7 @@ use App\Domain\Exceptions\ConfigException;
 use App\Domain\ExternLink\ExternRefTransformer;
 use App\Domain\InfrastructurePorts\InternetDomainParserInterface;
 use App\Domain\Publisher\ExternMapper;
+use App\Infrastructure\WikiwixAdapter;
 use Throwable;
 
 /**
@@ -78,12 +79,21 @@ class ExternRefWorker extends AbstractRefBotWorker
             return $refContent;
         }
 
+
         if (preg_match('#{{lien brisé#i', $result)) {
             $this->summary->memo['count lien brisé'] = 1 + ($this->summary->memo['count lien brisé'] ?? 0);
             if ($this->summary->memo['count lien brisé'] >= self::DEAD_LINK_NO_BOTFLAG) {
                 $this->summary->setBotFlag(false);
             }
         }
+
+        if (str_contains($result, 'https://archive.wikiwix.com/cache/')) {
+            $this->summary->memo['wikiwix'] = 1 + ($this->summary->memo['wikiwix'] ?? 0);
+            if ($this->summary->memo['wikiwix'] >= self::DEAD_LINK_NO_BOTFLAG) {
+                $this->summary->setBotFlag(false);
+            }
+        }
+
         if ($this->summary->citationNumber >= self::CITATION_NUMBER_NO_BOTFLAG) {
             $this->summary->setBotFlag(false);
         }
@@ -100,11 +110,13 @@ class ExternRefWorker extends AbstractRefBotWorker
             throw new ConfigException('DomainParser not set');
         }
         // TODO extract ExternRefTransformerInterface
+        $httpClient = new ExternHttpClient($this->log);
         $this->transformer = new ExternRefTransformer(
             new ExternMapper($this->log),
-            new ExternHttpClient($this->log),
+            $httpClient,
             $this->domainParser,
-            $this->log
+            $this->log,
+            new WikiwixAdapter($httpClient)
         );
         $this->transformer->skipSiteBlacklisted = self::SKIP_SITE_BLACKLISTED;
         $this->transformer->skipRobotNoIndex = self::SKIP_ROBOT_NOINDEX;
@@ -133,10 +145,19 @@ class ExternRefWorker extends AbstractRefBotWorker
             $suffix .= ' 🧪'; // 🧪 🔬
         }
         if (isset($this->summary->memo['count lien brisé'])) {
-            $suffix .= ', ⚠️️️lien brisé'; //⚠️💩
-            $suffix .= ($this->summary->memo['count lien brisé'] > 1) ? ' x' . $this->summary->memo['count lien brisé'] :
-                '';
+            $suffix .= ' ⚠️️️lien brisé'; //⚠️💩
+            $suffix .= ($this->summary->memo['count lien brisé'] > 1)
+                ? ' x' . $this->summary->memo['count lien brisé']
+                : '';
         }
+        if (isset($this->summary->memo['wikiwix'])) {
+            $suffix .= ' ';
+            $suffix .= ($this->summary->memo['wikiwix'] > 1)
+                ? $this->summary->memo['wikiwix'].'x '
+                : '';
+            $suffix .= '🥝Wikiwix'; //⚠ 🥝📂
+        }
+
         if (isset($this->summary->memo['accès url non libre'])) {
             $suffix .= ' 🔒';
         }

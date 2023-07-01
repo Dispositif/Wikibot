@@ -37,6 +37,12 @@ class ExternHttpClient implements ExternHttpClientInterface
         );
     }
 
+    //hack for WikiwixAdapter todo : plutôt request() compatible ClientInterface ?
+    public function getClient(): Client
+    {
+        return $this->client;
+    }
+
     /**
      * import source from URL with Guzzle.
      * todo abstract + refac async request
