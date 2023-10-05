@@ -39,8 +39,6 @@ class BnfMapper extends AbstractBookMapper implements MapperInterface
         // skip multi-records
         $nbResults = (int)$xml->xpath('//srw:numberOfRecords[1]')[0] ?? 0;
         if (1 !== $nbResults) {
-            echo "BNF : $nbResults records (skip)\n";
-
             return [];
         }
 

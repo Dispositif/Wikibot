@@ -1,6 +1,9 @@
 build:
     environment:
-        php: 8.1
+        php:
+            version: '8.1'
+            ini:
+                'date.timezone': 'Europe/Paris'
         variables:
 #            SCRUTIZINER: true
 #        dependencies:

@@ -1,5 +1,12 @@
 language: php
 
+# https://docs.travis-ci.com/user/billing-overview/#partner-queue-solution
+os: linux
+arch:
+    - arm64
+    - ppc64le
+    - s390x
+
 # Allows use container-based infrastructure
 sudo: false
 
@@ -19,17 +26,16 @@ git:
 branches:
     only:
         - master
-        - develop
 
 # Matrix to test in every php version
 matrix:
     # Fast finish allows to set the build as "finished" even if the "allow_failures" matrix elements are not finished yet.
     fast_finish: true
     include:
-        -   php: 7.4
         -   php: 8.1
+        -   php: 8.2
     allow_failures:
-        -   php: 7.4
+        -   php: 8.2
 
 # Define an environment variable
 env:

@@ -1,11 +1,11 @@
 # Wikibot
 
 [![Build Status](https://scrutinizer-ci.com/g/Dispositif/Wikibot/badges/build.png?b=master)](https://scrutinizer-ci.com/g/Dispositif/Wikibot/build-status/master)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/Dispositif/Wikibot/tree/master.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/Dispositif/Wikibot/tree/master)
 [![Maintainability](https://api.codeclimate.com/v1/badges/b7a0aa7a832ddf24adb0/maintainability)](https://codeclimate.com/repos/5d73cea4465eac01630065a7/maintainability)
 ![GitHub](https://img.shields.io/github/license/Dispositif/Wikibot)
 [![Code Coverage](https://scrutinizer-ci.com/g/Dispositif/Wikibot/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/Dispositif/Wikibot/?branch=master)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Dispositif/Wikibot/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Dispositif/Wikibot/?branch=master)
-
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Dispositif/Wikibot/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Dispositif/Wikibot/inspections)
 
 PHP CLI app for Wikipedia robot. 
 
