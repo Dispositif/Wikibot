@@ -61,8 +61,7 @@ class ExternRefWorker extends AbstractRefBotWorker
         try {
             $result = $this->transformer->process($refContent, $this->summary);
         } catch (Throwable $e) {
-            echo "** Problème détecté 234242\n";
-            $this->log->critical($e->getMessage() . " " . $e->getFile() . ":" . $e->getLine());
+            $this->log->critical('Error patate34 '. $e->getMessage() . " " . $e->getFile() . ":" . $e->getLine());
             // TODO : parse $e->message -> variable process, taskName, botflag...
 
             return $refContent;

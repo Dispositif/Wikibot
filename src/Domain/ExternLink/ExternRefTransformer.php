@@ -93,10 +93,12 @@ class ExternRefTransformer implements ExternRefTransformerInterface
         }
         $this->registrableDomain = $this->urlChecker->getRegistrableDomain($url); // hack
         if ($this->isSiteBlackListed()) {
+            $this->log->debug('Site blacklisted : ' . $this->registrableDomain);
             return $url;
         }
 
         if (!$this->validateConfigWebDomain($this->registrableDomain)) {
+            $this->log->debug('Domain not validate by config : ' . $this->registrableDomain);
             return $url;
         }
 
@@ -107,10 +109,12 @@ class ExternRefTransformer implements ExternRefTransformerInterface
             return $this->externHttpErrorLogic->manageByHttpErrorMessage($exception->getMessage(), $url);
         }
         if ($this->emptyPageData($pageData, $url)) {
+            $this->log->debug('Empty page data');
             return $url;
         }
         $noIndexValidator = new RobotNoIndexValidator($pageData, $url, $this->log); // todo inject
         if ($noIndexValidator->validate() && $this->skipRobotNoIndex) {
+            $this->log->debug('NOINDEX detected');
             // TODO ? return {lien web| titre=Titre inconnu... |note=noindex }
             // http://www.nydailynews.com/entertainment/jessica-barth-details-alleged-harvey-weinstein-encounter-article-1.3557986
             return $url;

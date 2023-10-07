@@ -67,6 +67,12 @@ class ExternHttpClient implements ExternHttpClientInterface
             return null;
         }
 
+        $contentType = $response->getHeader('Content-Type');
+        if (in_array('application/pdf', explode(';', $contentType[0]))) {
+            $this->log->debug('Incompatible application/pdf content-type');
+            return null;
+        }
+
         $html = $response->getBody()->getContents() ?? '';
 
         return ($normalized) ? $this->normalizeHtml($html, $url) : $html;
@@ -105,6 +111,7 @@ class ExternHttpClient implements ExternHttpClientInterface
         }
         try {
             $html2 = iconv($charset, 'UTF-8//TRANSLIT', $html);
+//            PHP Notice:  iconv(): Detected an illegal character in input string on line 107
             if (false === $html2) {
                 throw new DomainException("error iconv : $charset to UTF-8 on " . $url);
             }
