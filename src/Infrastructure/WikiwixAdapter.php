@@ -43,6 +43,7 @@ class WikiwixAdapter implements DeadlinkArchiverInterface
     {
         $archiveData = $this->requestWikiwixApi($url);
         if (empty($archiveData['longformurl'])) {
+            $this->log->debug('WikiwixAdapter: DTO longformurl empty');
             return null;
         }
 
@@ -64,14 +65,18 @@ class WikiwixAdapter implements DeadlinkArchiverInterface
         );
 
         if (!$response instanceof ResponseInterface || $response->getStatusCode() !== 200) {
+            $this->log->debug('WikiwixAdapter: incorrect response', [
+                'status' => $response->getStatusCode(),
+                'content-type' => $response->getHeader('Content-Type'),
+            ]);
             return [];
         }
         $jsonString = $response->getBody()->getContents();
         $data = json_decode($jsonString, true) ?? [];
 
         // check wikiwix archive status
-        if (empty($data['status']) || (int) $data['status'] !== 200) {
-            $this->log->debug('WikiwixAdapter response: ' . $jsonString);
+        if (empty($data['status']) || (int)$data['status'] !== 200) {
+            $this->log->debug('WikiwixAdapter incorrect response: ' . $jsonString);
 
             return [];
         }

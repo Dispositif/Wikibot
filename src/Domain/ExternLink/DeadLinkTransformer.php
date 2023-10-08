@@ -25,6 +25,9 @@ use Psr\Log\NullLogger;
  */
 class DeadLinkTransformer
 {
+    private const DELAY_PARSE_ARCHIVE = 3;
+    private const REPLACE_RAW_WIKIWIX_BY_LIENWEB = false;
+
     public function __construct(
         protected ?DeadlinkArchiverInterface     $archiver = null,
         protected ?InternetDomainParserInterface $domainParser = null,
@@ -40,6 +43,7 @@ class DeadLinkTransformer
             $webarchive = $this->archiver->searchWebarchive($url);
             if ($webarchive instanceof WebarchiveDTO) {
                 $this->log->notice('🥝wikiwix found');
+                $this->log->debug('archive url: ' . $webarchive->getArchiveUrl());
                 return $this->generateLienWebFromArchive($webarchive);
             }
             $this->log->notice('wikiwix not found');
@@ -50,9 +54,30 @@ class DeadLinkTransformer
 
     private function generateLienWebFromArchive(WebarchiveDTO $dto): string
     {
-        sleep(1);
+        sleep(self::DELAY_PARSE_ARCHIVE);
 
-        return $this->externRefProcessOnArchive($dto);
+        $externRefProcessOnArchive = $this->externRefProcessOnArchive($dto);
+
+        // Wikiwix : "Sorry, this system is overloaded. Please come back in a minute."
+        // manage content-type 'application/pdf' which is not parsed by ExternRefTransformer
+        if (
+            self::REPLACE_RAW_WIKIWIX_BY_LIENWEB
+            && str_starts_with($externRefProcessOnArchive, 'https://archive.wikiwix.com/cache/')
+        ) {
+            $this->log->notice('Replace raw wikiwix by lien web');
+
+            return sprintf(
+                '{{Lien web |url= %s |titre=%s |site= %s |consulté le=%s |archive-date=%s}}',
+                $dto->getArchiveUrl(),
+                'Archive ' . $this->generateTitleFromURLText($dto->getOriginalUrl()).'<!-- titre à compléter -->',
+                'via '.$dto->getArchiver(),
+                date('d-m-Y'),
+                $dto->getArchiveDate() ? $dto->getArchiveDate()->format('d-m-Y') : ''
+            );
+        }
+
+        return $externRefProcessOnArchive;
+
 
         // OLD SOLUTION without a second GET request to wikiwix (todo make an switch option to the current class?)
 //        return sprintf(
@@ -88,16 +113,6 @@ class DeadLinkTransformer
         return $this->externRefTransformer->process($dto->getArchiveUrl(), $summary, $options);
     }
 
-    protected function generateLienBrise(string $url, \DateTimeInterface $now): string
-    {
-        return sprintf(
-            '{{Lien brisé |url= %s |titre=%s |brisé le=%s}}',
-            $url,
-            $this->generateTitleFromURLText($url),
-            $now->format('d-m-Y')
-        );
-    }
-
     protected function generateTitleFromURLText(string $url): string
     {
         $text = str_replace(['https://', 'http://', 'www.'], '', $url);
@@ -106,5 +121,15 @@ class DeadLinkTransformer
         }
 
         return $text;
+    }
+
+    protected function generateLienBrise(string $url, \DateTimeInterface $now): string
+    {
+        return sprintf(
+            '{{Lien brisé |url= %s |titre=%s |brisé le=%s}}',
+            $url,
+            $this->generateTitleFromURLText($url),
+            $now->format('d-m-Y')
+        );
     }
 }
