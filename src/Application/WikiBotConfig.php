@@ -30,7 +30,7 @@ use Throwable;
  */
 class WikiBotConfig
 {
-    public const VERSION = '2.0';
+    public const VERSION = '2.1';
     public const WATCHPAGE_FILENAME = __DIR__ . '/resources/watch_pages.json';
     public const EXIT_ON_CHECK_WATCHPAGE = false;
     // do not stop if they play with {stop} on bot talk page
@@ -45,6 +45,7 @@ class WikiBotConfig
     public const EDIT_LAPS_FLAGBOT = 8;
     public const TALK_STOP_CHECK_INTERVAL = 'PT2M';
     public const TALK_PAGE_PREFIX = 'Discussion_utilisateur:';
+    public const SLEEP_BEFORE_STOP_TALKPAGE = 30;
 
     public $taskName = 'Amélioration indéfinie';
     /**
@@ -108,9 +109,10 @@ class WikiBotConfig
 
     /**
      * Throws Exception if "{{stop}}" or "STOP" on talk page.
-     * @throws StopActionException|UsageException
+     *
+     * @throws StopActionException
      */
-    public function checkStopOnTalkpage(?bool $botTalk = false): void
+    public function checkStopOnTalkpageOrException(?bool $botTalk = false): void
     {
         if ($this->isLastCheckStopDateRecent()) {
             return;
@@ -124,13 +126,14 @@ class WikiBotConfig
         if (preg_match('#({{stop}}|{{Stop}}|STOP)#', $text) > 0) {
             echo date('Y-m-d H:i');
             echo sprintf("\n*** STOP ON TALK PAGE BY %s ***\n\n", $lastEditor);
+            sleep(self::SLEEP_BEFORE_STOP_TALKPAGE);
 
             $this->sendSMSandFunnyTalk($lastEditor, $botTalk);
 
             throw new StopActionException();
         }
 
-        $this->lastCheckStopDate = new DateTimeImmutable;
+        $this->lastCheckStopDate = new DateTimeImmutable();
     }
 
     protected function isLastCheckStopDateRecent(): bool

@@ -91,9 +91,9 @@ abstract class AbstractRefBotWorker extends AbstractBotTaskWorker
         return $replace;
     }
 
-    protected function printDiff(string $before, string $after, string $level = 'debug'): void
+    protected function printDiff(string $before, string $after, string $level = 'info'): void
     {
         $this->log->log($level, sprintf("%s--%s %s\n", Color::BG_LIGHT_RED, Color::NORMAL, $before));
-        $this->log->log($level, sprintf("%s--%s %s\n", Color::BG_LIGHT_GREEN, Color::NORMAL, $after));
+        $this->log->log($level, sprintf("%s++%s %s\n", Color::BG_LIGHT_GREEN, Color::NORMAL, $after));
     }
 }

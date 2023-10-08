@@ -22,46 +22,34 @@ use App\Infrastructure\ServiceFactory;
  */
 
 //$env = 'test';
-//include __DIR__.'/../ZiziBot_Bootstrap.php';
-include __DIR__.'/../myBootstrap.php'; // Codex
+include __DIR__.'/../ZiziBot_Bootstrap.php';
+//include __DIR__.'/../myBootstrap.php'; // Codex
 
 // todo VOIR EN BAS
 
 /** @noinspection PhpUnhandledExceptionInspection */
 $wiki = ServiceFactory::getMediawikiFactory();
 $logger = new ConsoleLogger();
-//$logger->colorMode = true;
+$logger->colorMode = true;
 //$logger->debug = true;
 $botConfig = new WikiBotConfig($wiki, $logger);
-$botConfig->taskName = "🌐 Amélioration de références : URL ⇒ "; // 🐞 🌐  🔗
+$botConfig->taskName = "🐭 Amélioration de références : URL ⇒ "; // 🐞 🌐  🔗
 
 $botConfig->checkStopOnTalkpageOrException();
 
 // LAST EDIT
-// TODO : liste à puces * http://...
-
-// RANDOM :
+// TODO : \<ref[^\>]*\> et liste à puces * http://...
+// todo 1600 avec espace entre <ref> et http : "http" insource:/\<ref[^\>]*\> +https?\:\/\/[^\>]+\<\/ref>/
 $list = new CirrusSearch(
     [
         'srsearch' => '"http" insource:/\<ref[^\>]*\> ?https?\:\/\/[^\<\ ]+ *\<\/ref/',
         'srlimit' => '5000',
-        'srsort' => 'random',
-        'srqiprofile' => 'popular_inclinks_pv', /* Notation basée principalement sur le nombre de vues de la page */
+        'srqiprofile' => 'popular_inclinks_pv',
+        'srsort' => 'last_edit_desc',
     ]
 );
+$list->setOptions(['reverse' => true]);
 
-if (!empty($argv[1])) {
-    $list = new PageList([trim($argv[1])]);
-
-    // delete Title from edited.txt
-    $file = __DIR__.'/../resources/article_externRef_edited.txt';
-    $text = file_get_contents($file);
-    $newText = str_replace(trim($argv[1])."\n", '', $text);
-    if (!empty($text) && $text !== $newText) {
-        @file_put_contents($file, $newText);
-    }
-    $botConfig->taskName = '🐞'.$botConfig->taskName;
-}
 
 // filter titles already in edited.txt
 $titles = $list->getPageTitles();
@@ -75,4 +63,3 @@ echo ">".$list->count()." dans liste\n";
 new ExternRefWorker($botConfig, $wiki, $list, null, new InternetDomainParser());
 
 echo "END of process\n";
-

@@ -31,7 +31,7 @@ class TalkStopValidator implements ValidatorInterface
      */
     public function validate(): bool
     {
-        $this->botConfig->checkStopOnTalkpage();
+        $this->botConfig->checkStopOnTalkpageOrException();
 
         return true;
     }

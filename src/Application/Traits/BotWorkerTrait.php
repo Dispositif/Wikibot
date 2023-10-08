@@ -20,7 +20,7 @@ trait BotWorkerTrait
      */
     protected function checkAllowedNowEdition(string $title, string $text): bool
     {
-        $this->bot->checkStopOnTalkpage(true);
+        $this->bot->checkStopOnTalkpageOrException(true);
 
         if (WikiBotConfig::isEditionTemporaryRestrictedOnWiki($text)) {
             echo "SKIP : protection/3R/travaux.\n";
