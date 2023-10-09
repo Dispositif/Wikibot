@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace App\Domain\ExternLink;
 
-use App\Application\Http\ExternHttpClient;
+use App\Application\Utils\HttpUtil;
 use App\Domain\InfrastructurePorts\InternetDomainParserInterface;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -48,7 +48,7 @@ class CheckURL
     {
         $this->url = $url;
         $this->registrableDomain = null;
-        if (!ExternHttpClient::isHttpURL($url)) {
+        if (!HttpUtil::isHttpURL($url)) {
             $this->log->debug('Skip : not a valid URL : ' . $url);
             return false;
         }
@@ -56,7 +56,7 @@ class CheckURL
         if ($this->hasForbiddenFilenameExtension()) {
             return false;
         }
-        if (!ExternHttpClient::isHttpURL($url)) {
+        if (!HttpUtil::isHttpURL($url)) {
             throw new Exception('string is not an URL ' . $url);
         }
 

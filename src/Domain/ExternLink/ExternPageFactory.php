@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace App\Domain\ExternLink;
 
-use App\Application\Http\ExternHttpClient;
+use App\Application\Utils\HttpUtil;
 use App\Domain\InfrastructurePorts\ExternHttpClientInterface;
 use App\Domain\InfrastructurePorts\InternetDomainParserInterface;
 use App\Infrastructure\TagParser;
@@ -30,12 +30,12 @@ class ExternPageFactory
         ExternHttpClientInterface $httpClient,
         ?LoggerInterface $logger = null): ExternPage
     {
-        if (!ExternHttpClient::isHttpURL($url)) {
-            throw new Exception('string is not an URL '.$url);
+        if (!HttpUtil::isHttpURL($url)) {
+            throw new Exception('string is not an URL ' . $url);
         }
         $html = $httpClient->getHTML($url, true);
         if (empty($html)) {
-            throw new DomainException('No HTML from requested URL '.$url);
+            throw new DomainException('No HTML from requested URL ' . $url);
         }
 
         return new ExternPage($url, $html, new TagParser(), $domainParser, $logger);

@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 namespace App\Domain\ExternLink;
 
-use App\Application\Http\ExternHttpClient;
+use App\Application\Utils\HttpUtil;
 use App\Domain\InfrastructurePorts\InternetDomainParserInterface;
 use App\Domain\InfrastructurePorts\TagParserInterface;
 use App\Domain\Utils\TextUtil;
@@ -53,7 +53,7 @@ class ExternPage
         private readonly LoggerInterface                $log = new NullLogger()
     )
     {
-        if (!ExternHttpClient::isHttpURL($url)) {
+        if (!HttpUtil::isHttpURL($url)) {
             throw new Exception('string is not an URL ' . $url);
         }
         $this->url = $url;
@@ -169,7 +169,7 @@ class ExternPage
     public function getRegistrableSubDomain(): ?string
     {
         try {
-            if (!ExternHttpClient::isHttpURL($this->url)) {
+            if (!HttpUtil::isHttpURL($this->url)) {
                 throw new Exception('string is not an URL ' . $this->url);
             }
             if (!$this->domainParser instanceof InternetDomainParserInterface) {

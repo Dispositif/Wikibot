@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure;
 
-use App\Application\Http\ExternHttpClient;
+use App\Application\Utils\HttpUtil;
 use App\Domain\InfrastructurePorts\InternetDomainParserInterface;
 use Exception;
 use Pdp\Domain;
@@ -54,7 +54,7 @@ class InternetDomainParser implements InternetDomainParserInterface
      */
     public static function extractSubdomainString(string $httpURL): string
     {
-        if (!ExternHttpClient::isHttpURL($httpURL)) {
+        if (!HttpUtil::isHttpURL($httpURL)) {
             throw new Exception('string is not an URL ' . $httpURL);
         }
 
