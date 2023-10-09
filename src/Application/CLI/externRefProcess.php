@@ -21,7 +21,6 @@ use App\Infrastructure\ServiceFactory;
  * Traitement synchrone des URL brutes http:// transformée en {lien web} ou {article}
  */
 
-//$env = 'test';
 //include __DIR__.'/../ZiziBot_Bootstrap.php';
 include __DIR__.'/../myBootstrap.php'; // Codex
 
@@ -33,7 +32,7 @@ $logger = new ConsoleLogger();
 //$logger->colorMode = true;
 //$logger->debug = true;
 $botConfig = new WikiBotConfig($wiki, $logger);
-$botConfig->taskName = "🌐 Amélioration de références : URL ⇒ "; // 🐞 🌐  🔗
+$botConfig->taskName = "🧅Amélioration de références : URL ⇒ "; // 🐞 🌐  🔗🧅
 
 $botConfig->checkStopOnTalkpageOrException();
 
@@ -44,7 +43,7 @@ $botConfig->checkStopOnTalkpageOrException();
 $list = new CirrusSearch(
     [
         'srsearch' => '"http" insource:/\<ref[^\>]*\> ?https?\:\/\/[^\<\ ]+ *\<\/ref/',
-        'srlimit' => '5000',
+        'srlimit' => '1000',
         'srsort' => 'random',
         'srqiprofile' => 'popular_inclinks_pv', /* Notation basée principalement sur le nombre de vues de la page */
     ]
