@@ -10,23 +10,26 @@ declare(strict_types=1);
 namespace App\Application\ExternLink;
 
 use App\Application\AbstractRefBotWorker;
-use App\Application\Http\ExternHttpClient;
 use App\Domain\Exceptions\ConfigException;
 use App\Domain\ExternLink\ExternRefTransformer;
 use App\Domain\InfrastructurePorts\InternetDomainParserInterface;
 use App\Domain\Publisher\ExternMapper;
+use App\Infrastructure\ServiceFactory;
 use App\Infrastructure\WikiwixAdapter;
 use Throwable;
 
 /**
+ * TODO add construct arguments for TOR-Enabled
+ *
  * Class Ref2ArticleWorker
  * @package App\Application\Examples
  */
 class ExternRefWorker extends AbstractRefBotWorker
 {
+    public const TOR_ENABLED_FOR_WEB_CRAWL = true;
     public const TASK_BOT_FLAG = true;
     public const MAX_REFS_PROCESSED_IN_ARTICLE = 30;
-    public const SLEEP_AFTER_EDITION = 15; // sec
+    public const SLEEP_AFTER_EDITION = 5; // sec
     public const MINUTES_DELAY_AFTER_LAST_HUMAN_EDIT = 10; // minutes
     public const CHECK_EDIT_CONFLICT = true;
     public const ARTICLE_ANALYZED_FILENAME = __DIR__ . '/../resources/article_externRef_edited.txt';
@@ -46,10 +49,6 @@ class ExternRefWorker extends AbstractRefBotWorker
 
     /**
      * Traite contenu d'une <ref> ou bien lien externe (précédé d'une puce).
-     *
-     * @param $refContent
-     *
-     * @return string
      */
     public function processRefContent(string $refContent): string
     {
@@ -102,6 +101,7 @@ class ExternRefWorker extends AbstractRefBotWorker
         return $result;
     }
 
+    // todo inverse dependency
     protected function setUpInConstructor(): void
     {
         if (!$this->domainParser instanceof InternetDomainParserInterface) {
@@ -109,13 +109,12 @@ class ExternRefWorker extends AbstractRefBotWorker
             throw new ConfigException('DomainParser not set');
         }
         // TODO extract ExternRefTransformerInterface
-        $httpClient = new ExternHttpClient($this->log);
         $this->transformer = new ExternRefTransformer(
             new ExternMapper($this->log),
-            $httpClient,
+            ServiceFactory::getHttpClient(self::TOR_ENABLED_FOR_WEB_CRAWL),
             $this->domainParser,
             $this->log,
-            new WikiwixAdapter($httpClient)
+            new WikiwixAdapter(ServiceFactory::getHttpClient())
         );
         $this->transformer->skipSiteBlacklisted = self::SKIP_SITE_BLACKLISTED;
         $this->transformer->skipRobotNoIndex = self::SKIP_ROBOT_NOINDEX;

@@ -9,9 +9,9 @@ declare(strict_types=1);
 
 namespace App\Domain\ExternLink;
 
+use App\Application\InfrastructurePorts\HttpClientInterface;
 use App\Domain\ExternLink\Validators\RobotNoIndexValidator;
 use App\Domain\InfrastructurePorts\DeadlinkArchiverInterface;
-use App\Domain\InfrastructurePorts\ExternHttpClientInterface;
 use App\Domain\InfrastructurePorts\InternetDomainParserInterface;
 use App\Domain\Models\Summary;
 use App\Domain\Models\Wiki\AbstractWikiTemplate;
@@ -61,7 +61,7 @@ class ExternRefTransformer implements ExternRefTransformerInterface
 
     public function __construct(
         protected ExternMapper $mapper,
-        protected ExternHttpClientInterface $httpClient,
+        protected HttpClientInterface $httpClient,
         protected InternetDomainParserInterface $domainParser,
         protected LoggerInterface $log = new NullLogger(),
         protected ?DeadlinkArchiverInterface $deadlinkArchiver = null
@@ -192,7 +192,8 @@ class ExternRefTransformer implements ExternRefTransformerInterface
     protected function extractPageDataFromUrl(string $url): array
     {
         sleep(self::HTTP_REQUEST_LOOP_DELAY);
-        $this->externalPage = ExternPageFactory::fromURL($url, $this->domainParser, $this->httpClient, $this->log);
+        $externPageFactory = new ExternPageFactory($this->httpClient, $this->log);
+        $this->externalPage = $externPageFactory->fromURL($url, $this->domainParser);
         $pageData = $this->externalPage->getData();
         $this->log->debug('metaData', $pageData);
 

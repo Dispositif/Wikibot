@@ -10,11 +10,11 @@ declare(strict_types=1);
 
 namespace App\Infrastructure;
 
+use App\Application\InfrastructurePorts\HttpClientInterface;
 use App\Application\InfrastructurePorts\PageListForAppInterface;
 use App\Domain\Exceptions\ConfigException;
 use App\Domain\InfrastructurePorts\PageListInterface;
 use Exception;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 
 /**
@@ -38,11 +38,11 @@ class CirrusSearch implements PageListInterface, PageListForAppInterface
             'srnamespace' => '0',
             'srlimit' => '100',
         ];
-    private readonly ClientInterface $client;
+    private readonly HttpClientInterface $client;
 
     public function __construct(private readonly array $params, private ?array $options = [])
     {
-        $this->client = ServiceFactory::httpClient(['timeout' => 300]);
+        $this->client = ServiceFactory::getHttpClient();
     }
 
     /**
@@ -105,6 +105,7 @@ class CirrusSearch implements PageListInterface, PageListForAppInterface
             throw new ConfigException('CirrusSearch null URL');
         }
 
+        // improve with curl options ?
         $response = $this->client->get($this->getURL());
         /**
          * @var $response Response

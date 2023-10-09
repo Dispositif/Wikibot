@@ -9,12 +9,12 @@ declare(strict_types=1);
 
 namespace App\Application\CLI;
 
-use App\Application\Http\ExternHttpClient;
 use App\Domain\ExternLink\ExternRefTransformer;
 use App\Domain\Models\Summary;
 use App\Domain\Publisher\ExternMapper;
 use App\Infrastructure\ConsoleLogger;
 use App\Infrastructure\InternetDomainParser;
+use App\Infrastructure\ServiceFactory;
 use App\Infrastructure\WikiwixAdapter;
 use Codedungeon\PHPCliColors\Color;
 use Exception;
@@ -32,15 +32,16 @@ $logger = new ConsoleLogger();
 $logger->debug = true;
 $logger->verbose = true;
 $summary = new Summary('test');
-$httpClient = new ExternHttpClient($logger);
-//$httpClient = new ExternHttpClient($log);
+
+$torEnabled = true;
+echo "TOR enabled : ".($torEnabled ? "oui" : "non"). "\n";
 
 $trans = new ExternRefTransformer(
     new ExternMapper($logger),
-    $httpClient,
+    ServiceFactory::getHttpClient($torEnabled),
     new InternetDomainParser(),
     $logger,
-    new WikiwixAdapter($httpClient, $logger)
+    new WikiwixAdapter(ServiceFactory::getHttpClient(), $logger)
 );
 $trans->skipSiteBlacklisted = false;
 $trans->skipRobotNoIndex = false;
@@ -51,8 +52,7 @@ try {
     $result = "EXCEPTION ". $e->getMessage().$e->getFile().$e->getLine();
 }
 
-echo $result."\n";
-//dump($summary);
+echo '>>> '. $result."\n";
 
 
 

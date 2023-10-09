@@ -9,17 +9,15 @@ declare(strict_types=1);
 
 namespace App\Infrastructure;
 
+use App\Application\InfrastructurePorts\HttpClientInterface;
 use App\Domain\InfrastructurePorts\DeadlinkArchiverInterface;
-use App\Domain\InfrastructurePorts\ExternHttpClientInterface;
 use App\Domain\Models\WebarchiveDTO;
 use DateTimeImmutable;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 /**
  * Get archive url from Wikiwix webarchiver API.
- *
  *  JSON response example:
  * "status": 200,
  * "contenttype": "text\/html; charset=utf-8",
@@ -33,8 +31,8 @@ class WikiwixAdapter implements DeadlinkArchiverInterface
     private const API_URL = 'https://archive.wikiwix.com/cache/index2.php?apiresponse=1&url=';
 
     public function __construct(
-        protected readonly ExternHttpClientInterface $externHttpClient,
-        protected readonly LoggerInterface $log = new NullLogger()
+        protected readonly HttpClientInterface $externHttpClient,
+        protected readonly LoggerInterface     $log = new NullLogger()
     )
     {
     }
@@ -50,21 +48,23 @@ class WikiwixAdapter implements DeadlinkArchiverInterface
         return new WebarchiveDTO(
             self::ARCHIVER_NAME,
             $url,
-            (string) $archiveData['longformurl'],
+            (string)$archiveData['longformurl'],
             $archiveData['timestamp']
                 ? DateTimeImmutable::createFromFormat('U', (string)$archiveData['timestamp'])
                 : null
-        ); // todo factory ?
+        );
     }
 
     protected function requestWikiwixApi(string $url): array
     {
-        $response = $this->externHttpClient->getClient()->request(
-            'GET',
-            self::API_URL . urlencode($url)
-        );
+        $response = $this->externHttpClient->get(self::API_URL . urlencode($url), [
+            'timeout' => 20,
+            'allow_redirects' => true,
+            'headers' => ['User-Agent' => getenv('USER_AGENT')],
+            'verify' => false,
+        ]);
 
-        if (!$response instanceof ResponseInterface || $response->getStatusCode() !== 200) {
+        if ($response->getStatusCode() !== 200) {
             $this->log->debug('WikiwixAdapter: incorrect response', [
                 'status' => $response->getStatusCode(),
                 'content-type' => $response->getHeader('Content-Type'),

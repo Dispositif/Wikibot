@@ -9,22 +9,22 @@ declare(strict_types=1);
 
 namespace App\Domain\ExternLink;
 
-use App\Application\Http\ExternHttpClient;
 use App\Domain\InfrastructurePorts\DeadlinkArchiverInterface;
 use App\Domain\InfrastructurePorts\InternetDomainParserInterface;
 use App\Domain\Models\Summary;
 use App\Domain\Models\WebarchiveDTO;
 use App\Domain\Publisher\ExternMapper;
 use App\Infrastructure\InternetDomainParser;
+use App\Infrastructure\ServiceFactory;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 /**
- * Transform dead link url in {lien brisé}.
- * TODO : check wikiwix and return {lien web|url=wikiwix…
+ * Transform dead link url in {lien brisé} or import web archive URL
  */
 class DeadLinkTransformer
 {
+    private const USE_TOR_FOR_ARCHIVE = false;
     private const DELAY_PARSE_ARCHIVE = 3;
     private const REPLACE_RAW_WIKIWIX_BY_LIENWEB = false;
 
@@ -99,7 +99,7 @@ class DeadLinkTransformer
         if (!$this->externRefTransformer instanceof ExternRefTransformerInterface) {
             $this->externRefTransformer = new ExternRefTransformer(
                 new ExternMapper($this->log),
-                new ExternHttpClient($this->log),
+                ServiceFactory::getHttpClient(self::USE_TOR_FOR_ARCHIVE),
                 new InternetDomainParser(),
                 $this->log,
                 null

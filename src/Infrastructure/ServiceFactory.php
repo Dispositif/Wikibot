@@ -9,10 +9,9 @@ declare(strict_types=1);
 
 namespace App\Infrastructure;
 
+use App\Application\InfrastructurePorts\HttpClientInterface;
 use App\Application\WikiPageAction;
 use Exception;
-use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
 use Mediawiki\Api\ApiUser;
 use Mediawiki\Api\MediawikiApi;
 use Mediawiki\Api\MediawikiFactory;
@@ -21,9 +20,7 @@ use Mediawiki\DataModel\EditInfo;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 
-/**
- * Class ServiceFactory.
- */
+// TODO move into /Application
 class ServiceFactory
 {
     private static ?AMQPStreamConnection $AMQPConnection = null;
@@ -118,7 +115,7 @@ class ServiceFactory
     }
 
     /**
-     * @param bool   $forceLogin
+     * @param bool $forceLogin
      *
      * @throws UsageException
      * @throws Exception
@@ -135,19 +132,8 @@ class ServiceFactory
         return new EditInfo($summary, $minor, $bot, $maxLag);
     }
 
-    public static function httpClient(?array $option = null): ClientInterface
+    public static function getHttpClient(bool $torEnabled = false): HttpClientInterface
     {
-        $option ??= [];
-        $defaultOption = [
-            'timeout' => 60,
-            'allow_redirects' => true,
-            'headers' => ['User-Agent' => getenv('USER_AGENT')],
-            'verify' => false, // CURLOPT_SSL_VERIFYHOST
-            //                'proxy'           => '192.168.16.1:10',
-        ];
-        $option = array_merge($defaultOption, $option);
-
-        return new Client($option);
+        return HttpClientFactory::create($torEnabled);
     }
-
 }
