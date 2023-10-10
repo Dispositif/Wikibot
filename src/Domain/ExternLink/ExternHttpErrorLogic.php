@@ -12,13 +12,17 @@ namespace App\Domain\ExternLink;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
+/**
+ * todo Refac
+ * Doc : https://developer.mozilla.org/fr/docs/Web/HTTP/Status/503
+ */
 class ExternHttpErrorLogic
 {
     public const LOG_REQUEST_ERROR = __DIR__ . '/../../Application/resources/external_request_error.log';
     protected const LOOSE = true;
 
     public function __construct(
-        protected DeadLinkTransformer $deadLinkTransformer,
+        protected DeadLinkTransformer    $deadLinkTransformer,
         private readonly LoggerInterface $log = new NullLogger()
     )
     {
@@ -34,9 +38,14 @@ class ExternHttpErrorLogic
                 return $this->deadLinkTransformer->formatFromUrl($url);
             }
             return $url;
-        } // 403
-        if (preg_match('#403 Forbidden#i', $errorMessage)) {
-            $this->log403($url);
+        }
+        if (preg_match('#400 Bad Request#i', $errorMessage)) {
+            $this->log->warning('400 Bad Request : ' . $url);
+
+            return $url;
+        }
+        if (preg_match('#(403 Forbidden|403 Access Forbidden)#i', $errorMessage)) {
+            $this->log->warning('403 Forbidden : ' . $url);
 
             return $url;
         }
@@ -48,7 +57,7 @@ class ExternHttpErrorLogic
             }
             return $url;
         }
-        if (preg_match('#401 Unauthorized#i', $errorMessage)) {
+        if (preg_match('#401 (Unauthorized|Authorization Required)#i', $errorMessage)) {
             $this->log->notice('401 Unauthorized : skip ' . $url);
 
             return $url;
@@ -60,29 +69,39 @@ class ExternHttpErrorLogic
 
             return $this->deadLinkTransformer->formatFromUrl($url);
         }
-        if (self::LOOSE && preg_match("#cURL error 97: Can't complete SOCKS5 connection#i", $errorMessage)) {
-            $this->log->notice('error 97: Can\'t complete SOCKS5');
+        if (self::LOOSE && preg_match('#502 Bad Gateway#i', $errorMessage)) {
+            $this->log->notice('502 Bad Gateway');
+
+            return $this->deadLinkTransformer->formatFromUrl($url);
+        }
+        if (self::LOOSE && preg_match('#cURL error 52: Empty reply from server#i', $errorMessage)) {
+            $this->log->notice('cURL error 52: Empty reply from server');
+
+            return $this->deadLinkTransformer->formatFromUrl($url);
+        }
+
+        // Faux-positif : cURL error 7: Failed to receive SOCKS5 connect request ack
+        if (self::LOOSE
+            && (
+                preg_match("#cURL error 97: Can't complete SOCKS5 connection#i", $errorMessage)
+                || preg_match("#cURL error 7: Can't complete SOCKS5 connection to 0.0.0.0:0#i", $errorMessage)
+            )
+        ) {
+            // remote endpoint connection failure
+            $this->log->notice("Can't complete SOCKS5 connection");
 
             return $this->deadLinkTransformer->formatFromUrl($url);
         }
 
         // DEFAULT (not filtered)
-            //  autre : ne pas générer de {lien brisé}, car peut-être 404 temporaire
-            // "URL rejected: No host part in the URL (see https://curl.haxx.se/libcurl/c/libcurl-errors.html)
-            // "cURL error 28: Connection timed out after 20005 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html)
-            //"cURL error 28: Connection timed out after 20005 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html)
-            //"cURL error 97: Can't complete SOCKS5 connection to www.ewppp.org. (4) (see https://curl.haxx.se/libcurl/c/libcurl-errors.html)
-            // "cURL error 97: Can't complete SOCKS5 connection to www.dzhand.net
-            $this->log->notice('erreur non gérée sur extractWebData: "' . $errorMessage . "\" URL: ".$url);
+        //  autre : ne pas générer de {lien brisé}, car peut-être 404 temporaire
+        // "URL rejected: No host part in the URL (see https://curl.haxx.se/libcurl/c/libcurl-errors.html)
+        // "cURL error 28: Connection timed out after 20005 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html)
+        //"cURL error 28: Connection timed out after 20005 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html)
+        $this->log->notice('erreur non gérée sur extractWebData: "' . $errorMessage . "\" URL: " . $url);
 
-            //file_put_contents(self::LOG_REQUEST_ERROR, $this->domain."\n", FILE_APPEND);
+        //file_put_contents(self::LOG_REQUEST_ERROR, $this->domain."\n", FILE_APPEND);
 
         return $url;
-    }
-
-    protected function log403(string $url): void
-    {
-        $this->log->warning('403 Forbidden : ' . $url);
-        //file_put_contents(self::LOG_REQUEST_ERROR, '403 Forbidden : ' . $url . "\n", FILE_APPEND);
     }
 }
