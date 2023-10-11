@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Models;
 
-use DateTimeImmutable;
+use DateTimeInterface;
 
 class WebarchiveDTO
 {
@@ -17,7 +17,7 @@ class WebarchiveDTO
         protected string             $archiver,
         protected string             $originalUrl,
         protected string             $archiveUrl,
-        protected ?DateTimeImmutable $archiveDate
+        protected ?DateTimeInterface $archiveDate
     )
     {
     }
@@ -37,7 +37,7 @@ class WebarchiveDTO
         return $this->archiveUrl;
     }
 
-    public function getArchiveDate(): ?DateTimeImmutable
+    public function getArchiveDate(): ?DateTimeInterface
     {
         return $this->archiveDate;
     }

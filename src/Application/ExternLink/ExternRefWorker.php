@@ -14,15 +14,13 @@ use App\Domain\Exceptions\ConfigException;
 use App\Domain\ExternLink\ExternRefTransformer;
 use App\Domain\InfrastructurePorts\InternetDomainParserInterface;
 use App\Domain\Publisher\ExternMapper;
+use App\Infrastructure\InternetArchiveAdapter;
 use App\Infrastructure\ServiceFactory;
 use App\Infrastructure\WikiwixAdapter;
 use Throwable;
 
 /**
  * TODO add construct arguments for TOR-Enabled
- *
- * Class Ref2ArticleWorker
- * @package App\Application\Examples
  */
 class ExternRefWorker extends AbstractRefBotWorker
 {
@@ -40,6 +38,8 @@ class ExternRefWorker extends AbstractRefBotWorker
     public const DEAD_LINK_NO_BOTFLAG = 5;
     public const SKIP_SITE_BLACKLISTED = true;
     public const SKIP_ROBOT_NOINDEX = true;
+    protected const STRING_WAYBACK_URL = '://web.archive.org/web/';
+    protected const STRING_WIKIWIX_URL = 'https://archive.wikiwix.com/cache/';
 
     protected $modeAuto = true;
     /**
@@ -60,7 +60,7 @@ class ExternRefWorker extends AbstractRefBotWorker
         try {
             $result = $this->transformer->process($refContent, $this->summary);
         } catch (Throwable $e) {
-            $this->log->critical('Error patate34 '. $e->getMessage() . " " . $e->getFile() . ":" . $e->getLine());
+            $this->log->critical('Error patate34 ' . $e->getMessage() . " " . $e->getFile() . ":" . $e->getLine());
             // TODO : parse $e->message -> variable process, taskName, botflag...
 
             return $refContent;
@@ -85,9 +85,16 @@ class ExternRefWorker extends AbstractRefBotWorker
             }
         }
 
-        if (str_contains($result, 'https://archive.wikiwix.com/cache/')) {
+        if (str_contains($result, self::STRING_WIKIWIX_URL)) {
             $this->summary->memo['wikiwix'] = 1 + ($this->summary->memo['wikiwix'] ?? 0);
             if ($this->summary->memo['wikiwix'] >= self::DEAD_LINK_NO_BOTFLAG) {
+                $this->summary->setBotFlag(false);
+            }
+        }
+        // not httpS in 2023
+        if (str_contains($result, self::STRING_WAYBACK_URL)) {
+            $this->summary->memo['wayback'] = 1 + ($this->summary->memo['wayback'] ?? 0);
+            if ($this->summary->memo['wayback'] >= self::DEAD_LINK_NO_BOTFLAG) {
                 $this->summary->setBotFlag(false);
             }
         }
@@ -109,12 +116,15 @@ class ExternRefWorker extends AbstractRefBotWorker
             throw new ConfigException('DomainParser not set');
         }
         // TODO extract ExternRefTransformerInterface
+        // todo inverse dependency archivers
+        $wikiwix = new WikiwixAdapter(ServiceFactory::getHttpClient(), $this->log);
+        $internetArchive = new InternetArchiveAdapter(ServiceFactory::getHttpClient(), $this->log);
         $this->transformer = new ExternRefTransformer(
             new ExternMapper($this->log),
             ServiceFactory::getHttpClient(self::TOR_ENABLED_FOR_WEB_CRAWL),
             $this->domainParser,
             $this->log,
-            new WikiwixAdapter(ServiceFactory::getHttpClient())
+            [$wikiwix, $internetArchive]
         );
         $this->transformer->skipSiteBlacklisted = self::SKIP_SITE_BLACKLISTED;
         $this->transformer->skipRobotNoIndex = self::SKIP_ROBOT_NOINDEX;
@@ -151,9 +161,16 @@ class ExternRefWorker extends AbstractRefBotWorker
         if (isset($this->summary->memo['wikiwix'])) {
             $suffix .= ' ';
             $suffix .= ($this->summary->memo['wikiwix'] > 1)
-                ? $this->summary->memo['wikiwix'].'x '
+                ? $this->summary->memo['wikiwix'] . 'x '
                 : '';
-            $suffix .= '🥝Wikiwix'; //⚠ 🥝📂
+            $suffix .= '🥝Wikiwix';
+        }
+        if (isset($this->summary->memo['wayback'])) {
+            $suffix .= ' ';
+            $suffix .= ($this->summary->memo['wayback'] > 1)
+                ? $this->summary->memo['wayback'] . 'x '
+                : '';
+            $suffix .= '🏛️InternetArchive';
         }
 
         if (isset($this->summary->memo['accès url non libre'])) {

@@ -59,17 +59,20 @@ class ExternRefTransformer implements ExternRefTransformerInterface
     private readonly ExternHttpErrorLogic $externHttpErrorLogic;
     private readonly CheckURL $urlChecker;
 
+    /**
+     * @param DeadlinkArchiverInterface[] $deadlinkArchivers
+     */
     public function __construct(
         protected ExternMapper $mapper,
         protected HttpClientInterface $httpClient,
         protected InternetDomainParserInterface $domainParser,
         protected LoggerInterface $log = new NullLogger(),
-        protected ?DeadlinkArchiverInterface $deadlinkArchiver = null
+        protected array $deadlinkArchivers = []
     )
     {
         $this->importConfigAndData();
         $this->externHttpErrorLogic = new ExternHttpErrorLogic(
-            new DeadLinkTransformer($deadlinkArchiver, $domainParser, null, $log),
+            new DeadLinkTransformer($deadlinkArchivers, $domainParser, null, $log),
             $log
         );
         $this->urlChecker = new CheckURL($domainParser, $log);

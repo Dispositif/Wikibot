@@ -19,7 +19,8 @@ Lots of data cleaning and post-processing, because bibliographic data is sooo se
 - Completion of "external links" from the World Wide Web : the bot acts like a web crawler and transforms the 
 raw links (http://...) into detailed references with page's title, author, site name, date, etc. It uses metadata from 
 OpenGraph, JSON-LD, DublinCore, TwitterCard or naive prediction from HTML. Not a lot of data postprocessing, because web
-data is cool but rather consistent (SEO). It manages also dead links (404, DNS, etc.) and redirects.
+data is cool but rather consistent (SEO). 
+- Detection of dead links (404, DNS, etc.) and replacement by web archives (provided by Wikiwix or Internet Archive).
 
 Please do not play with this package. These programs can actually modify the live Wikipedias, and proper
 wiki-etiquette should be followed before running it on any wiki. See https://en.wikipedia.org/wiki/WP:Bot for rules and

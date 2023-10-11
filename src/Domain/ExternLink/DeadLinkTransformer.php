@@ -16,6 +16,7 @@ use App\Domain\Models\WebarchiveDTO;
 use App\Domain\Publisher\ExternMapper;
 use App\Infrastructure\InternetDomainParser;
 use App\Infrastructure\ServiceFactory;
+use DateTimeImmutable;
 use DateTimeInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -29,8 +30,11 @@ class DeadLinkTransformer
     private const DELAY_PARSE_ARCHIVE = 3;
     private const REPLACE_RAW_WIKIWIX_BY_LIENWEB = false;
 
+    /**
+     * @param DeadlinkArchiverInterface[] $archivers
+     */
     public function __construct(
-        protected ?DeadlinkArchiverInterface     $archiver = null,
+        protected array $archivers = [],
         protected ?InternetDomainParserInterface $domainParser = null,
         protected ?ExternRefTransformerInterface $externRefTransformer = null,
         protected LoggerInterface                $log = new NullLogger()
@@ -38,16 +42,25 @@ class DeadLinkTransformer
     {
     }
 
-    public function formatFromUrl(string $url, DateTimeInterface $now = new \DateTimeImmutable()): string
+    public function formatFromUrl(string $url, DateTimeInterface $now = new DateTimeImmutable()): string
     {
-        if ($this->archiver instanceof DeadlinkArchiverInterface) {
-            $webarchive = $this->archiver->searchWebarchive($url);
-            if ($webarchive instanceof WebarchiveDTO) {
-                $this->log->notice('🥝wikiwix found');
-                $this->log->debug('archive url: ' . $webarchive->getArchiveUrl());
-                return $this->generateLienWebFromArchive($webarchive);
+        // choose randomly one archiver
+        $oneArchiver = !empty($this->archivers) ? $this->archivers[array_rand($this->archivers)] : null;
+
+        if ($oneArchiver instanceof DeadlinkArchiverInterface) {
+            $webarchiveDTO = $oneArchiver->searchWebarchive($url);
+            if ($webarchiveDTO instanceof WebarchiveDTO) {
+                if ($webarchiveDTO->getArchiver() === '[[Wikiwix]]') {
+                    $this->log->notice('🥝 Wikiwix found');
+                }
+                if ($webarchiveDTO->getArchiver() === '[[Internet Archive]]') {
+                    $this->log->notice('🏛️ InternetArchive found');
+                }
+                $this->log->debug('archive url: ' . $webarchiveDTO->getArchiveUrl());
+
+                return $this->generateLienWebFromArchive($webarchiveDTO);
             }
-            $this->log->notice('wikiwix not found');
+            $this->log->notice('web archive not found');
         }
 
         return $this->generateLienBrise($url, $now);
@@ -70,8 +83,8 @@ class DeadLinkTransformer
             return sprintf(
                 '{{Lien web |url= %s |titre=%s |site= %s |consulté le=%s |archive-date=%s}}',
                 $dto->getArchiveUrl(),
-                'Archive ' . $this->generateTitleFromURLText($dto->getOriginalUrl()).'<!-- titre à compléter -->',
-                'via '.$dto->getArchiver(),
+                'Archive ' . $this->generateTitleFromURLText($dto->getOriginalUrl()) . '<!-- titre à compléter -->',
+                'via ' . $dto->getArchiver(),
                 date('d-m-Y'),
                 $dto->getArchiveDate() instanceof DateTimeInterface ? $dto->getArchiveDate()->format('d-m-Y') : ''
             );
@@ -103,7 +116,7 @@ class DeadLinkTransformer
                 ServiceFactory::getHttpClient(self::USE_TOR_FOR_ARCHIVE),
                 new InternetDomainParser(),
                 $this->log,
-                null
+                []
             ); // todo inverse dependency
         }
 

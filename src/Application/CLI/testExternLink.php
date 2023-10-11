@@ -13,6 +13,7 @@ use App\Domain\ExternLink\ExternRefTransformer;
 use App\Domain\Models\Summary;
 use App\Domain\Publisher\ExternMapper;
 use App\Infrastructure\ConsoleLogger;
+use App\Infrastructure\InternetArchiveAdapter;
 use App\Infrastructure\InternetDomainParser;
 use App\Infrastructure\ServiceFactory;
 use App\Infrastructure\WikiwixAdapter;
@@ -31,17 +32,23 @@ echo Color::BG_LIGHT_RED.$url.Color::NORMAL."\n";
 $logger = new ConsoleLogger();
 $logger->debug = true;
 $logger->verbose = true;
+$logger->colorMode = true;
 $summary = new Summary('test');
 
-$torEnabled = true;
+// todo command --tor --wikiwix --internetarchive
+$torEnabled = false;
 echo "TOR enabled : ".($torEnabled ? "oui" : "non"). "\n";
+
+$client = ServiceFactory::getHttpClient();
+$wikiwix = new WikiwixAdapter($client, $logger);
+$internetArchive = new InternetArchiveAdapter($client, $logger);
 
 $trans = new ExternRefTransformer(
     new ExternMapper($logger),
-    ServiceFactory::getHttpClient($torEnabled),
+    $torEnabled ? ServiceFactory::getHttpClient($torEnabled) : $client,
     new InternetDomainParser(),
     $logger,
-    new WikiwixAdapter(ServiceFactory::getHttpClient(), $logger)
+    [$wikiwix, $internetArchive]
 );
 $trans->skipSiteBlacklisted = false;
 $trans->skipRobotNoIndex = false;

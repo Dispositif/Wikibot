@@ -46,11 +46,29 @@ class DeadLinkTransformerTest extends TestCase
         $finalArchiverSerialized = '{lien web via wikiwix}';
         $externRefTransformer->method('process')->willReturn($finalArchiverSerialized);
 
-        $transformer = new DeadLinkTransformer($archiver, $domainParser, $externRefTransformer);
+        $transformer = new DeadLinkTransformer([$archiver], $domainParser, $externRefTransformer);
         $now = new \DateTimeImmutable();
 
         $this::assertSame(
             $finalArchiverSerialized,
+            $transformer->formatFromUrl('bla', $now)
+        );
+    }
+
+    public function testFormatFromUrlWithArchiverReturnNull()
+    {
+        $archiver = $this->createMock(DeadlinkArchiverInterface::class);
+        $now = new \DateTimeImmutable();
+
+        $archiver->method('searchWebarchive')->willReturn(null);
+
+        $domainParser = $this->createMock(InternetDomainParserInterface::class);
+        $externRefTransformer = $this->createMock(ExternRefTransformerInterface::class);
+
+        $transformer = new DeadLinkTransformer([$archiver], $domainParser, $externRefTransformer);
+
+        $this::assertStringContainsString(
+            '{{Lien brisé |url= bla |titre=bla |brisé le=',
             $transformer->formatFromUrl('bla', $now)
         );
     }

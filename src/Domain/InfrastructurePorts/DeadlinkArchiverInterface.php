@@ -10,11 +10,12 @@ declare(strict_types=1);
 namespace App\Domain\InfrastructurePorts;
 
 use App\Domain\Models\WebarchiveDTO;
+use DateTimeInterface;
 
 /**
  * Wikiwix, archive.org, etc.
  */
 interface DeadlinkArchiverInterface
 {
-    public function searchWebarchive(string $url): ?WebarchiveDTO;
+    public function searchWebarchive(string $url, ?DateTimeInterface $date = null): ?WebarchiveDTO;
 }

@@ -13,6 +13,7 @@ use App\Application\InfrastructurePorts\HttpClientInterface;
 use App\Domain\InfrastructurePorts\DeadlinkArchiverInterface;
 use App\Domain\Models\WebarchiveDTO;
 use DateTimeImmutable;
+use DateTimeInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
@@ -37,7 +38,7 @@ class WikiwixAdapter implements DeadlinkArchiverInterface
     {
     }
 
-    public function searchWebarchive(string $url): ?WebarchiveDTO
+    public function searchWebarchive(string $url, ?DateTimeInterface $date = null): ?WebarchiveDTO
     {
         $archiveData = $this->requestWikiwixApi($url);
         if (empty($archiveData['longformurl'])) {
