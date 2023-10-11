@@ -91,17 +91,6 @@ class DeadLinkTransformer
         }
 
         return $externRefProcessOnArchive;
-
-
-        // OLD SOLUTION without a second GET request to wikiwix (todo make an switch option to the current class?)
-//        return sprintf(
-//            '{{Lien web |url= %s |titre=%s |site= %s |consulté le=%s |archive-date=%s}}',
-//            $dto->getArchiveUrl(),
-//            'Archive '. $this->generateTitleFromURLText($dto->getOriginalUrl()),
-//            $dto->getArchiver(),
-//            date('d-m-Y'),
-//            $dto->getArchiveDate() ? $dto->getArchiveDate()->format('d-m-Y') : ''
-//        );
     }
 
     /**
@@ -141,9 +130,20 @@ class DeadLinkTransformer
     {
         return sprintf(
             '{{Lien brisé |url= %s |titre=%s |brisé le=%s}}',
-            $url,
+            $this->stripWebArchivePrefix($url),
             $this->generateTitleFromURLText($url),
             $now->format('d-m-Y')
         );
+    }
+
+    /**
+     * Bug https://w.wiki/7kUm
+     */
+    private function stripWebArchivePrefix(string $url): string
+    {
+        $url = preg_replace('#^https?://web\.archive\.org/web/\d+/#', '', $url);
+        $url = preg_replace('#^https?://archive\.is/\d+/#', '', $url);
+
+        return preg_replace('#^https?://archive\.wikiwix\.com/cache/\d+/#', '', $url);
     }
 }
