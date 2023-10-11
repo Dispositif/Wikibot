@@ -13,19 +13,19 @@ use PHPUnit\Framework\TestCase;
 
 class ServiceFactoryTest extends TestCase
 {
-    public function testCreateQueueChannel()
+    public function testCreateQueueChannel(): never
     {
         $this::markTestSkipped('integration webservice deactivated');
 //        $channel = ServiceFactory::queueChannel('foo');
 //        $this::assertInstanceOf(AMQPChannel::class, $channel);
     }
 
-    public function testCloseAMQPconnection()
+    public function testCloseAMQPconnection(): never
     {
         $this::markTestIncomplete();
     }
 
-    public function testWikiApi()
+    public function testWikiApi(): never
     {
         $this::markTestSkipped('integration webservice deactivated');
 //        $wiki = ServiceFactory::wikiApi();

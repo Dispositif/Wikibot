@@ -34,14 +34,14 @@ class ExternRefTransformer implements ExternRefTransformerInterface
 {
     use SummaryExternTrait, PublisherLogicTrait;
 
-    public const HTTP_REQUEST_LOOP_DELAY = 10;
-    public const SKIP_DOMAIN_FILENAME = __DIR__ . '/../resources/config_skip_domain.txt';
-    public const REPLACE_404 = true;
-    public const REPLACE_410 = true;
-    public const CONFIG_PRESSE = __DIR__ . '/../resources/config_presse.yaml';
-    public const CONFIG_NEWSPAPER_JSON = __DIR__ . '/../resources/data_newspapers.json';
-    public const CONFIG_SCIENTIFIC_JSON = __DIR__ . '/../resources/data_scientific_domain.json';
-    public const CONFIG_SCIENTIFIC_WIKI_JSON = __DIR__ . '/../resources/data_scientific_wiki.json';
+    final public const HTTP_REQUEST_LOOP_DELAY = 10;
+    final public const SKIP_DOMAIN_FILENAME = __DIR__ . '/../resources/config_skip_domain.txt';
+    final public const REPLACE_404 = true;
+    final public const REPLACE_410 = true;
+    final public const CONFIG_PRESSE = __DIR__ . '/../resources/config_presse.yaml';
+    final public const CONFIG_NEWSPAPER_JSON = __DIR__ . '/../resources/data_newspapers.json';
+    final public const CONFIG_SCIENTIFIC_JSON = __DIR__ . '/../resources/data_scientific_domain.json';
+    final public const CONFIG_SCIENTIFIC_WIKI_JSON = __DIR__ . '/../resources/data_scientific_wiki.json';
 
     public bool $skipSiteBlacklisted = true;
     public bool $skipRobotNoIndex = true;
@@ -53,8 +53,8 @@ class ExternRefTransformer implements ExternRefTransformerInterface
     protected array $publisherData = [];
     protected array $skip_domain = [];
     protected ExternPage $externalPage;
-    protected ?Summary $summary;
-    protected ?string $originDomain;
+    protected ?Summary $summary = null;
+    protected ?string $originDomain = null;
     protected array $options = [];
     private readonly ExternHttpErrorLogic $externHttpErrorLogic;
     private readonly CheckURL $urlChecker;

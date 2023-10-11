@@ -22,9 +22,9 @@ use Mediawiki\DataModel\EditInfo;
  */
 class TalkBotConfig extends WikiBotConfig
 {
-    public const BOT_TALK_SUMMARY = 'Réponse artificielle';
-    public const BOT_TALK_FILE = __DIR__ . '/resources/phrases_zizibot.txt';
-    public const TALKCONFIG_FILENAME = __DIR__ . '/resources/botTalk_config.json';
+    final public const BOT_TALK_SUMMARY = 'Réponse artificielle';
+    final public const BOT_TALK_FILE = __DIR__ . '/resources/phrases_zizibot.txt';
+    final public const TALKCONFIG_FILENAME = __DIR__ . '/resources/botTalk_config.json';
 
     /**
      * Add a freaky response in the bottom of the talk page.
@@ -146,6 +146,7 @@ class TalkBotConfig extends WikiBotConfig
      */
     public function botContribs(): string
     {
+        // TODO client
         $url
             = 'https://fr.wikipedia.org/w/api.php?action=query&list=usercontribs&ucuser=' . $this::getBotName()
             . '&ucnamespace=0&uclimit=40&ucprop=title|timestamp|comment&format=json';

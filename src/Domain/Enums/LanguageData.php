@@ -12,7 +12,7 @@ namespace App\Domain\Enums;
 abstract class LanguageData
 {
     // Data $english_to_french
-    public const ENGLISH_TO_FRENCH
+    final public const ENGLISH_TO_FRENCH
         = [
             'Abkhazian' => 'abkhaze',
             'Achinese' => 'aceh',
@@ -479,7 +479,7 @@ abstract class LanguageData
     /**
      * TODO : virer parenthèses et voir pour comparaison sans "language(s)".
      */
-    public const ISO2B_TO_FRENCH
+    final public const ISO2B_TO_FRENCH
         = [
             'aar' => 'afar',
             'aav' => '',
@@ -1343,7 +1343,7 @@ abstract class LanguageData
 //            'zu' => 'zoulou',
 //        ];
 
-    public const FRENCH_TO_FRWIKI
+    final public const FRENCH_TO_FRWIKI
         = [
             'abkhaze' => 'ab',
             'aceh' => 'ace',
@@ -1507,7 +1507,7 @@ abstract class LanguageData
             'zoulou' => 'zu',
         ];
 
-    public const LANG_FRWIKI
+    final public const LANG_FRWIKI
         = [
             'aa',
             'ab',

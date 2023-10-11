@@ -25,7 +25,7 @@ use Throwable;
 
 class WikiPageAction
 {
-    public const SKIP_LANG_INDICATOR = 'fr'; // skip {{fr}} before template
+    final public const SKIP_LANG_INDICATOR = 'fr'; // skip {{fr}} before template
 
     /**
      * @var Page

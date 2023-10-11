@@ -22,7 +22,7 @@ use GuzzleHttp\Client;
  */
 class WstatImport implements PageListInterface, PageListForAppInterface
 {
-    public const MAX_IMPORT = 50000;
+    final public const MAX_IMPORT = 50000;
 
     private array $params = [];
 

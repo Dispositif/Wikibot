@@ -24,7 +24,7 @@ use PHPUnit\Framework\TestCase;
  */
 class WstatImportTest extends TestCase
 {
-    public function testGetData()
+    public function testGetData(): never
     {
         $this::markTestSkipped('long time test (delayed http request');
         // 2 sets by json string
@@ -75,7 +75,7 @@ class WstatImportTest extends TestCase
         $this::assertFalse(isset($data[5]));
     }
 
-    public function testGetUrl()
+    public function testGetUrl(): never
     {
         // todo verify
         $this::markTestSkipped('long time test ??? HTTTP request ??? (delayed http request)');

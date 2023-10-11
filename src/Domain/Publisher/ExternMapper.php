@@ -25,16 +25,16 @@ class ExternMapper implements MapperInterface
     use ArrayProcessTrait;
 
     // Added if title extracted from HTML <title> or <h1>
-    public const TITLE_TO_VERIFY_COMMENT = '<!-- Vérifiez ce titre -->';
+    final public const TITLE_TO_VERIFY_COMMENT = '<!-- Vérifiez ce titre -->';
     // if title extracted from json-ld, or anything else
-    public const TITLE_VERY_MAX_LENGTH = 150;
+    final public const TITLE_VERY_MAX_LENGTH = 150;
     // if title extracted from HTML <title> or <h1> is too long, it's probably SEO
-    public const TITLE_HTML_MAX_LENGTH = 80;
+    final public const TITLE_HTML_MAX_LENGTH = 80;
     // if title contains too many all-caps words, it's probably SEO
-    public const TITLE_MAX_ALLCAPS = 2;
+    final public const TITLE_MAX_ALLCAPS = 2;
     // if site name extracted for meta data is too long, it's probably SEO
-    public const SITE_MAX_LENGTH = 40;
-    public const SITE_MAX_ALLCAPS = 1;
+    final public const SITE_MAX_LENGTH = 40;
+    final public const SITE_MAX_ALLCAPS = 1;
     private bool $titleFromHtmlState = false;
 
     /**

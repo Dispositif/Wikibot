@@ -12,9 +12,9 @@ namespace App\Domain\Transformers\Handlers;
 // completion automatique des paramètres manquants
 class MixAutoParams extends AbstractMixHandler
 {
-    public const WIKI_LANGUAGE = 'fr';
+    final public const WIKI_LANGUAGE = 'fr';
 
-    public const SKIP_PARAMS = [
+    final public const SKIP_PARAMS = [
             'isbn invalide',
             'auteurs',
             'auteur1',

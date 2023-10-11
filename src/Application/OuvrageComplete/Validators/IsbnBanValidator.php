@@ -16,7 +16,7 @@ class IsbnBanValidator implements CompleteValidatorInterface
      * Exclusion requête BnF/Google/etc
      * Format EAN ou ISBN10 sans tiret.
      */
-    public const ISBN_EAN_SKIP
+    final public const ISBN_EAN_SKIP
         = [
             '9782918758440', // Profils de lignes du réseau ferré français vol.2
             '9782918758341', // Profils de lignes du réseau ferré français vol.1

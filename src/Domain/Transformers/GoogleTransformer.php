@@ -34,7 +34,7 @@ use Throwable;
  */
 class GoogleTransformer
 {
-    public const SLEEP_GOOGLE_API_INTERVAL = 5;
+    final public const SLEEP_GOOGLE_API_INTERVAL = 5;
 
     /**
      * @var array OuvrageTemplate[]

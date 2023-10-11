@@ -27,7 +27,7 @@ use Psr\Log\NullLogger;
  */
 class WikiwixAdapter implements DeadlinkArchiverInterface
 {
-    public const ARCHIVER_NAME = '[[Wikiwix]]';
+    final public const ARCHIVER_NAME = '[[Wikiwix]]';
     private const API_URL = 'https://archive.wikiwix.com/cache/index2.php?apiresponse=1&url=';
 
     public function __construct(
@@ -72,7 +72,7 @@ class WikiwixAdapter implements DeadlinkArchiverInterface
             return [];
         }
         $jsonString = $response->getBody()->getContents();
-        $data = json_decode($jsonString, true) ?? [];
+        $data = json_decode($jsonString, true, 512, JSON_THROW_ON_ERROR) ?? [];
 
         // check wikiwix archive status
         if (empty($data['status']) || (int)$data['status'] !== 200) {

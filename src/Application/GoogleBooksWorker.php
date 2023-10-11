@@ -22,12 +22,12 @@ use Throwable;
  */
 class GoogleBooksWorker extends AbstractBotTaskWorker
 {
-    public const SLEEP_AFTER_EDITION        = 60;
-    public const TASK_BOT_FLAG              = true;
-    public const ARTICLE_ANALYZED_FILENAME  = __DIR__.'/resources/gooBot_edited.txt';
-    public const SKIP_LASTEDIT_BY_BOT       = false;
-    public const SKIP_NOT_IN_MAIN_WIKISPACE = true;
-    public const SKIP_ADQ                   = false;
+    final public const SLEEP_AFTER_EDITION        = 60;
+    final public const TASK_BOT_FLAG              = true;
+    final public const ARTICLE_ANALYZED_FILENAME  = __DIR__.'/resources/gooBot_edited.txt';
+    final public const SKIP_LASTEDIT_BY_BOT       = false;
+    final public const SKIP_NOT_IN_MAIN_WIKISPACE = true;
+    final public const SKIP_ADQ                   = false;
 
     protected $modeAuto = true;
 

@@ -64,7 +64,7 @@ while (true) {
             exit;
         }
 
-        if (strpos($e->getMessage(), 'SQLSTATE[HY000] [2002] Connection refused') !== false) {
+        if (str_contains($e->getMessage(), 'SQLSTATE[HY000] [2002] Connection refused')) {
             $count = 0;
             echo "SQL refusé : sleep 12h avant SMS\n";
             sleep(60 * 60 * 12);

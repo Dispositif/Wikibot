@@ -18,7 +18,7 @@ use Psr\Log\NullLogger;
  */
 class ExternHttpErrorLogic
 {
-    public const LOG_REQUEST_ERROR = __DIR__ . '/../../Application/resources/external_request_error.log';
+    final public const LOG_REQUEST_ERROR = __DIR__ . '/../../Application/resources/external_request_error.log';
     protected const LOOSE = true;
 
     public function __construct(

@@ -18,7 +18,7 @@ use Exception;
 
 class LocationHandler extends AbstractOuvrageHandler
 {
-    public const TRANSLATE_CITY_FR = __DIR__ . '/../../resources/traduction_ville.csv';
+    final public const TRANSLATE_CITY_FR = __DIR__ . '/../../resources/traduction_ville.csv';
 
     /**
      * @var PageListInterface

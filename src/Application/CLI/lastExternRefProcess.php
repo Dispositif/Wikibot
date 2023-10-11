@@ -21,7 +21,6 @@ use App\Infrastructure\ServiceFactory;
  * Traitement synchrone des URL brutes http:// transformée en {lien web} ou {article}
  */
 
-//$env = 'test';
 include __DIR__.'/../ZiziBot_Bootstrap.php';
 //include __DIR__.'/../myBootstrap.php'; // Codex
 
@@ -33,7 +32,7 @@ $logger = new ConsoleLogger();
 $logger->colorMode = true;
 //$logger->debug = true;
 $botConfig = new WikiBotConfig($wiki, $logger);
-$botConfig->taskName = "🐭 Amélioration de références : URL ⇒ "; // 🐞 🌐  🔗
+$botConfig->taskName = "🐭 Amélioration de références : URL ⇒ "; // 🐞🌐🧅🔗
 
 $botConfig->checkStopOnTalkpageOrException();
 

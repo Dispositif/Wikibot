@@ -43,16 +43,10 @@ class ArticleValidForEditionValidator implements ValidatorInterface
 
     public function validate(): bool
     {
-        if (
-            !$this->hasLastRevision()
-            || $this->botIsLastEditor()
-            || !$this->isInMainNamespace()
-            || !$this->hasWikitext()
-        ) {
-            return false;
-        }
-
-        return true;
+        return !(!$this->hasLastRevision()
+        || $this->botIsLastEditor()
+        || !$this->isInMainNamespace()
+        || !$this->hasWikitext());
     }
 
     protected function hasLastRevision(): bool

@@ -37,17 +37,17 @@ class OuvrageEditWorker
 {
     use OuvrageEditSummaryTrait, TalkPageEditTrait;
 
-    public const TASK_NAME = '📗 Amélioration bibliographique'; // 📖📔📘📗
-    public const LUCKY_MESSAGE = ' 🇺🇦'; // ☘️
+    final public const TASK_NAME = '📗 Amélioration bibliographique'; // 📖📔📘📗
+    final public const LUCKY_MESSAGE = ' 🇺🇦'; // ☘️
     /**
      * poster ou pas le message en PD signalant les erreurs à résoudre
      */
-    public const EDIT_SIGNALEMENT = true;
-    public const CITATION_LIMIT = 150;
-    public const DELAY_BOTFLAG_SECONDS = 60;
-    public const DELAY_NO_BOTFLAG_SECONDS = 60;
-    public const DELAY_MINUTES_AFTER_HUMAN_EDIT = 10;
-    public const ERROR_MSG_TEMPLATE = __DIR__ . '/templates/message_errors.wiki';
+    final public const EDIT_SIGNALEMENT = true;
+    final public const CITATION_LIMIT = 150;
+    final public const DELAY_BOTFLAG_SECONDS = 60;
+    final public const DELAY_NO_BOTFLAG_SECONDS = 60;
+    final public const DELAY_MINUTES_AFTER_HUMAN_EDIT = 10;
+    final public const ERROR_MSG_TEMPLATE = __DIR__ . '/templates/message_errors.wiki';
 
     /**
      * @var PageWorkStatus

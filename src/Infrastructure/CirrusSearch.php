@@ -28,7 +28,7 @@ use GuzzleHttp\Psr7\Response;
  */
 class CirrusSearch implements PageListInterface, PageListForAppInterface
 {
-    public const BASE_URL = 'https://fr.wikipedia.org/w/api.php';
+    final public const BASE_URL = 'https://fr.wikipedia.org/w/api.php';
     private array $defaultParams
         = [
             'action' => 'query',

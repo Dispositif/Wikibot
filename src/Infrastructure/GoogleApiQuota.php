@@ -28,10 +28,10 @@ use Throwable;
 class GoogleApiQuota implements GoogleApiQuotaInterface
 {
     /** {"date":"2020-03-23T00:19:56-07:00","count":43}  */
-    public const JSON_FILENAME   = __DIR__.'/resources/google_quota.json';
-    public const REBOOT_TIMEZONE = 'America/Los_Angeles';
-    public const REBOOT_HOUR     = 0;
-    public const DAILY_QUOTA     = 1000;
+    final public const JSON_FILENAME   = __DIR__.'/resources/google_quota.json';
+    final public const REBOOT_TIMEZONE = 'America/Los_Angeles';
+    final public const REBOOT_HOUR     = 0;
+    final public const DAILY_QUOTA     = 1000;
 
     private DateTime $lastDate;
     private int $count = 0;

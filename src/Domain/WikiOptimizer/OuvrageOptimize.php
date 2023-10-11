@@ -33,9 +33,9 @@ use App\Domain\WikiOptimizer\Handlers\TitleHandler;
  */
 class OuvrageOptimize extends AbstractTemplateOptimizer
 {
-    public const CONVERT_GOOGLEBOOK_TEMPLATE = false; // change OuvrageOptimizeTest !!
-    public const WIKI_LANGUAGE = 'fr';
-    public const PUBLISHER_FRWIKI_FILENAME = __DIR__ . '/../resources/data_editors_wiki.json';
+    final public const CONVERT_GOOGLEBOOK_TEMPLATE = false; // change OuvrageOptimizeTest !!
+    final public const WIKI_LANGUAGE = 'fr';
+    final public const PUBLISHER_FRWIKI_FILENAME = __DIR__ . '/../resources/data_editors_wiki.json';
 
     /**
      * @var OptiStatus

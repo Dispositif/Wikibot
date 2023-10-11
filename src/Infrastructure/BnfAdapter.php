@@ -23,7 +23,7 @@ use Throwable;
  */
 class BnfAdapter extends AbstractBookApiAdapter implements BookApiInterface
 {
-    public const API_URL = 'http://catalogue.bnf.fr/api/SRU?';
+    final public const API_URL = 'http://catalogue.bnf.fr/api/SRU?';
 
     protected $mapper;
 

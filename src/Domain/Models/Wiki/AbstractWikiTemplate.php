@@ -74,7 +74,7 @@ abstract class AbstractWikiTemplate extends AbstractStrictWikiTemplate implement
 
                 // MultiSpaced : espacements multiples pour style étendu : "auteur    = Bla"
                 if ($this->userSeparator
-                    && false !== strpos($this->userSeparator, "\n")
+                    && str_contains((string) $this->userSeparator, "\n")
                     && $this->userMultiSpaced
                 ) {
                     $spaceNb = max(0, $maxChars - mb_strlen($paramName));
@@ -89,7 +89,7 @@ abstract class AbstractWikiTemplate extends AbstractStrictWikiTemplate implement
             $string .= $paramValue;
         }
         // expanded model -> "\n}}"
-        if ($this->userSeparator && false !== strpos($this->userSeparator, "\n")) {
+        if ($this->userSeparator && str_contains((string) $this->userSeparator, "\n")) {
             $string .= "\n";
         }
 

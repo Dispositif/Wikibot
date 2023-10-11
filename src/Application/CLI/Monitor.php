@@ -26,7 +26,7 @@ $process->run();
  */
 class Monitor
 {
-    public const SLEEP_TIME = 60;
+    final public const SLEEP_TIME = 60;
 
     private readonly DbAdapter $db;
     private string $lastTitle = '';

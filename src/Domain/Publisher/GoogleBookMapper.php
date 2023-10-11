@@ -21,12 +21,12 @@ use Scriptotek\GoogleBooks\Volume;
 class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
 {
     // raw URL or wiki-template ?
-    public const MODE_RAW_URL = true;
+    final public const MODE_RAW_URL = true;
 
-    public const GOOGLE_URL_REPLACE = 'https://books.google.com/books?id=%s&printsec=frontcover';
+    final public const GOOGLE_URL_REPLACE = 'https://books.google.com/books?id=%s&printsec=frontcover';
 
     // sous-titre non ajoutés :
-    public const SUBTITLE_FILTER = ['roman', 'récit', 'poèmes', 'biographie'];
+    final public const SUBTITLE_FILTER = ['roman', 'récit', 'poèmes', 'biographie'];
     /**
      * @var bool|null
      */
@@ -151,7 +151,7 @@ class GoogleBookMapper extends AbstractBookMapper implements MapperInterface
      */
     private function langFilterByIsbn(Volume $volume): ?string
     {
-        if ($this->mapLanguageData !== true) {
+        if (!$this->mapLanguageData) {
             return null;
         }
 //        $isbn = $this->convertIsbn($volume);

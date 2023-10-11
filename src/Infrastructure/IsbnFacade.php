@@ -13,18 +13,18 @@ use App\Domain\InfrastructurePorts\IsbnConverterInterface;
 
 class IsbnFacade implements IsbnConverterInterface
 {
-    public const ERROR_EMPTY = 'aucun code fourni';
+    final public const ERROR_EMPTY = 'aucun code fourni';
 
-    public const ERROR_INVALID_CHARACTERS = 'caractères invalides';
+    final public const ERROR_INVALID_CHARACTERS = 'caractères invalides';
 
-    public const ERROR_INVALID_LENGTH = 'trop court ou trop long';
+    final public const ERROR_INVALID_LENGTH = 'trop court ou trop long';
 
-    public const ERROR_INVALID_PRODUCT_CODE = 'code produit devrait être 978 ou 979';
+    final public const ERROR_INVALID_PRODUCT_CODE = 'code produit devrait être 978 ou 979';
 
-    public const ERROR_INVALID_COUNTRY_CODE = 'code pays inconnu';
+    final public const ERROR_INVALID_COUNTRY_CODE = 'code pays inconnu';
 
     // TODO: complete array.
-    public const ISBN_LANGUAGE_CODES
+    final public const ISBN_LANGUAGE_CODES
         = [
             '0' => 'en',
             '1' => 'en',

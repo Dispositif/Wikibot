@@ -21,23 +21,23 @@ abstract class GoogleBooksUtil
 {
     use ArrayProcessTrait;
 
-    public const DEFAULT_GOOGLEBOOKS_URL = 'https://books.google.com/books';
+    final public const DEFAULT_GOOGLEBOOKS_URL = 'https://books.google.com/books';
     /**
      * todo refac regex with end of URL
      */
-    public const GOOGLEBOOKS_START_URL_PATTERN = '(?:https?://(?:books|play)\.google\.[a-z\.]{2,6}/(?:books)?(?:books/[^\?]+\.html)?(?:/reader)?\?(?:[a-zA-Z=&]+&)?(?:[&=A-Z0-9-_%\+]+&)?(?:id|isbn)=|https://www\.google\.[a-z\.]{2,6}/books/edition/[^/]+/)';
+    final public const GOOGLEBOOKS_START_URL_PATTERN = '(?:https?://(?:books|play)\.google\.[a-z\.]{2,6}/(?:books)?(?:books/[^\?]+\.html)?(?:/reader)?\?(?:[a-zA-Z=&]+&)?(?:[&=A-Z0-9-_%\+]+&)?(?:id|isbn)=|https://www\.google\.[a-z\.]{2,6}/books/edition/[^/]+/)';
 
-    public const GOOGLEBOOKS_NEW_START_URL_PATTERN = 'https://www\.google\.[a-z.]{2,6}/books/edition/[^/]+/';
+    final public const GOOGLEBOOKS_NEW_START_URL_PATTERN = 'https://www\.google\.[a-z.]{2,6}/books/edition/[^/]+/';
 
-    public const GOOGLEBOOKS_ID_REGEX = '[0-9A-Za-z_\-]{12}';
+    final public const GOOGLEBOOKS_ID_REGEX = '[0-9A-Za-z_\-]{12}';
 
     /**
      * todo : add frontcover ?
      * q : keywords search (may be empty) / dq : quoted phrase search
      */
-    public const GOOGLEBOOKS_KEEP_PARAMETERS = ['id', 'isbn', 'pg', 'printsec', 'q', 'dq', 'gbpv'];
+    final public const GOOGLEBOOKS_KEEP_PARAMETERS = ['id', 'isbn', 'pg', 'printsec', 'q', 'dq', 'gbpv'];
 
-    public const TRACKING_PARAMETERS = [
+    final public const TRACKING_PARAMETERS = [
         'xtor',
         'ved',
         'ots',

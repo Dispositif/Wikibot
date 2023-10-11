@@ -163,7 +163,7 @@ class OpenGraphMapper implements MapperInterface
         if (!empty($metaTitle)) {
             return $metaTitle;
         }
-        if (!empty($htmlH1) && !empty($htmlTitle) && strpos($htmlTitle, $htmlH1) !== false) {
+        if (!empty($htmlH1) && !empty($htmlTitle) && str_contains($htmlTitle, $htmlH1)) {
             return $htmlH1;
         }
 

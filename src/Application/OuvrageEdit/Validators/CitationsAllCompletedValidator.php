@@ -50,13 +50,8 @@ class CitationsAllCompletedValidator implements ValidatorInterface
     protected function isCitationCompleted(array $pageOuvrage): bool
     {
         // hack temporaire pour éviter articles dont CompleteProcess incomplet
-        if (
-            empty($pageOuvrage['opti'])
-            || empty($pageOuvrage['optidate'])
-            || $pageOuvrage['optidate'] < $this->db->getOptiValidDate()
-        ) {
-            return false;
-        }
-        return true;
+        return !(empty($pageOuvrage['opti'])
+        || empty($pageOuvrage['optidate'])
+        || $pageOuvrage['optidate'] < $this->db->getOptiValidDate());
     }
 }

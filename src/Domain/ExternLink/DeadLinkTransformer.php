@@ -16,6 +16,7 @@ use App\Domain\Models\WebarchiveDTO;
 use App\Domain\Publisher\ExternMapper;
 use App\Infrastructure\InternetDomainParser;
 use App\Infrastructure\ServiceFactory;
+use DateTimeInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
@@ -37,7 +38,7 @@ class DeadLinkTransformer
     {
     }
 
-    public function formatFromUrl(string $url, \DateTimeInterface $now = new \DateTimeImmutable()): string
+    public function formatFromUrl(string $url, DateTimeInterface $now = new \DateTimeImmutable()): string
     {
         if ($this->archiver instanceof DeadlinkArchiverInterface) {
             $webarchive = $this->archiver->searchWebarchive($url);
@@ -72,7 +73,7 @@ class DeadLinkTransformer
                 'Archive ' . $this->generateTitleFromURLText($dto->getOriginalUrl()).'<!-- titre à compléter -->',
                 'via '.$dto->getArchiver(),
                 date('d-m-Y'),
-                $dto->getArchiveDate() ? $dto->getArchiveDate()->format('d-m-Y') : ''
+                $dto->getArchiveDate() instanceof DateTimeInterface ? $dto->getArchiveDate()->format('d-m-Y') : ''
             );
         }
 
@@ -106,7 +107,7 @@ class DeadLinkTransformer
             ); // todo inverse dependency
         }
 
-        $options = $this->domainParser
+        $options = $this->domainParser instanceof InternetDomainParserInterface
             ? ['originalRegistrableDomain' => $this->domainParser->getRegistrableDomainFromURL($dto->getOriginalUrl())]
             : [];
 
@@ -123,7 +124,7 @@ class DeadLinkTransformer
         return $text;
     }
 
-    protected function generateLienBrise(string $url, \DateTimeInterface $now): string
+    protected function generateLienBrise(string $url, DateTimeInterface $now): string
     {
         return sprintf(
             '{{Lien brisé |url= %s |titre=%s |brisé le=%s}}',
