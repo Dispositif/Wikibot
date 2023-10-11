@@ -41,13 +41,12 @@ class HttpUtil
         }
 
         $charset = self::extractCharset($html) ?? 'WINDOWS-1252';
-
         if (empty($charset)) {
             throw new DomainException('normalized html error and no charset found : ' . $url);
         }
         try {
-            $html2 = iconv($charset, 'UTF-8//TRANSLIT', $html);
-//            PHP Notice:  iconv(): Detected an illegal character in input string on line 107
+            // PHP Notice:  iconv(): Detected an illegal character in input string
+            $html2 = @iconv($charset, 'UTF-8//TRANSLIT', $html);
             if (false === $html2) {
                 throw new DomainException("error iconv : $charset to UTF-8 on " . $url);
             }

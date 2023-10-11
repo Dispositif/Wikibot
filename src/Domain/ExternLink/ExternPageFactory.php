@@ -71,7 +71,8 @@ class ExternPageFactory
         }
 
         $contentType = $response->getHeader('Content-Type');
-        if (in_array('application/pdf', explode(';', $contentType[0]))) {
+        $contentType = $contentType[0] ?? ($contentType ?? '');
+        if (in_array('application/pdf', explode(';', $contentType))) {
             $this->log->debug('Incompatible application/pdf content-type');
             return null;
         }
