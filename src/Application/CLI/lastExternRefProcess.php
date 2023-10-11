@@ -38,11 +38,10 @@ $botConfig->checkStopOnTalkpageOrException();
 
 // LAST EDIT
 // TODO : \<ref[^\>]*\> et liste à puces * http://...
-// todo 1600 avec espace entre <ref> et http : "http" insource:/\<ref[^\>]*\> +https?\:\/\/[^\>]+\<\/ref>/
 $list = new CirrusSearch(
     [
         'srsearch' => '"http" insource:/\<ref[^\>]*\> ?https?\:\/\/[^\<\ ]+ *\<\/ref/',
-        'srlimit' => '5000',
+        'srlimit' => '1000',
         'srqiprofile' => 'popular_inclinks_pv',
         'srsort' => 'last_edit_desc',
     ]
