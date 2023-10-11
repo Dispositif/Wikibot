@@ -46,6 +46,7 @@ class ExternHttpErrorLogic
         }
         if (preg_match('#(403 Forbidden|403 Access Forbidden)#i', $errorMessage)) {
             $this->log->warning('403 Forbidden : ' . $url);
+            // TODO return blankLienWeb without consulté le=...
 
             return $url;
         }
@@ -76,6 +77,11 @@ class ExternHttpErrorLogic
         }
         if (self::LOOSE && preg_match('#cURL error 52: Empty reply from server#i', $errorMessage)) {
             $this->log->notice('cURL error 52: Empty reply from server');
+
+            return $this->deadLinkTransformer->formatFromUrl($url);
+        }
+        if (self::LOOSE && preg_match('#cURL error 6: Could not resolve host#i', $errorMessage)) {
+            $this->log->notice('cURL error 6: Could not resolve host');
 
             return $this->deadLinkTransformer->formatFromUrl($url);
         }
