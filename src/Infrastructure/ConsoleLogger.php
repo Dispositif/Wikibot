@@ -10,10 +10,13 @@ declare(strict_types=1);
 
 namespace App\Infrastructure;
 
+use App\Infrastructure\Monitor\NullStats;
+use App\Infrastructure\Monitor\Stats;
 use Codedungeon\PHPCliColors\Color;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LoggerInterface;
 
+// todo move /Monitor
 class ConsoleLogger extends AbstractLogger implements LoggerInterface
 {
     //    use LoggerTrait;
@@ -21,6 +24,20 @@ class ConsoleLogger extends AbstractLogger implements LoggerInterface
     public $verbose = false;
     public $debug = false;
     public $colorMode = false;
+
+    public function __construct(public Stats|NullStats $stats = new Stats())
+    {
+        try {
+            $this->stats->increment('test.consolelogger');
+        }catch (\Exception $e){
+            $this->stats = new NullStats();
+        }
+    }
+
+    public function __call(string $method, array $args): void
+    {
+        $this->notice('Call to undefined method ConsoleLogger:'.$method.'()');
+    }
 
     /**
      * Ultralight logger.
