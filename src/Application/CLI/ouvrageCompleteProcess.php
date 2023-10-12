@@ -10,10 +10,10 @@ declare(strict_types=1);
 namespace App\Application\CLI;
 
 use App\Application\OuvrageComplete\OuvrageCompleteWorker;
-use App\Infrastructure\ConsoleLogger;
 use App\Infrastructure\DbAdapter;
 use App\Infrastructure\GoogleApiQuota;
 use App\Infrastructure\Memory;
+use App\Infrastructure\Monitor\ConsoleLogger;
 use App\Infrastructure\SMS;
 use App\Infrastructure\WikidataAdapter;
 use GuzzleHttp\Client;

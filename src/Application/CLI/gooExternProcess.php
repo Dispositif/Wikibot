@@ -10,8 +10,8 @@ namespace App\Application\CLI;
 use App\Application\GoogleBooksWorker;
 use App\Application\WikiBotConfig;
 use App\Infrastructure\CirrusSearch;
-use App\Infrastructure\ConsoleLogger;
 use App\Infrastructure\GoogleApiQuota;
+use App\Infrastructure\Monitor\ConsoleLogger;
 use App\Infrastructure\PageList;
 use App\Infrastructure\ServiceFactory;
 

@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace App\Application\CLI;
 
 use App\Application\Notification\CodexNotificationWorker;
-use App\Infrastructure\ConsoleLogger;
+use App\Infrastructure\Monitor\ConsoleLogger;
 use App\Infrastructure\ServiceFactory;
 
 require_once __DIR__.'/../myBootstrap.php';

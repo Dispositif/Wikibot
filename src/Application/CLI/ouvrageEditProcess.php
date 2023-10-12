@@ -11,9 +11,9 @@ namespace App\Application\CLI;
 
 use App\Application\OuvrageEdit\OuvrageEditWorker;
 use App\Application\WikiBotConfig;
-use App\Infrastructure\ConsoleLogger;
 use App\Infrastructure\DbAdapter;
 use App\Infrastructure\Memory;
+use App\Infrastructure\Monitor\ConsoleLogger;
 use App\Infrastructure\ServiceFactory;
 use Throwable;
 

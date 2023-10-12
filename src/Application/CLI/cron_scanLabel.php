@@ -11,8 +11,8 @@ namespace App\Application\CLI;
 
 use App\Application\OuvrageScan\ScanWiki2DB;
 use App\Application\WikiBotConfig;
-use App\Infrastructure\ConsoleLogger;
 use App\Infrastructure\DbAdapter;
+use App\Infrastructure\Monitor\ConsoleLogger;
 use App\Infrastructure\PageList;
 use App\Infrastructure\ServiceFactory;
 

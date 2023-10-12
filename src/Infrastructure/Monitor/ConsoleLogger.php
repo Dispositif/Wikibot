@@ -8,11 +8,10 @@
 declare(strict_types=1);
 
 
-namespace App\Infrastructure;
+namespace App\Infrastructure\Monitor;
 
-use App\Infrastructure\Monitor\NullStats;
-use App\Infrastructure\Monitor\Stats;
 use Codedungeon\PHPCliColors\Color;
+use Exception;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LoggerInterface;
 
@@ -21,15 +20,15 @@ class ConsoleLogger extends AbstractLogger implements LoggerInterface
 {
     //    use LoggerTrait;
 
-    public $verbose = false;
-    public $debug = false;
-    public $colorMode = false;
+    public bool $verbose = false;
+    public bool $debug = false;
+    public bool $colorMode = false;
 
     public function __construct(public Stats|NullStats $stats = new Stats())
     {
         try {
             $this->stats->increment('test.consolelogger');
-        }catch (\Exception $e){
+        }catch (Exception $e){
             $this->stats = new NullStats();
         }
     }
@@ -44,7 +43,7 @@ class ConsoleLogger extends AbstractLogger implements LoggerInterface
      *
      * @inheritDoc
      */
-    public function log($level, $message, array $context = [])
+    public function log($level, $message, array $context = []): void
     {
         if (is_array($message)) {
             dump($message);
@@ -99,7 +98,7 @@ class ConsoleLogger extends AbstractLogger implements LoggerInterface
         }
     }
 
-    private function logInFile($level, string $message)
+    private function logInFile($level, string $message): void
     {
         file_put_contents(
             __DIR__.'/resources/critical.log',
@@ -108,7 +107,7 @@ class ConsoleLogger extends AbstractLogger implements LoggerInterface
         );
     }
 
-    private function echoColor(string $text, ?string $color = null)
+    private function echoColor(string $text, ?string $color = null): void
     {
         if ($this->colorMode && !empty($color)) {
             echo $color.$text.Color::NORMAL;
