@@ -15,13 +15,13 @@ use App\Domain\ExternLink\ExternRefTransformer;
 use App\Domain\Publisher\ExternMapper;
 use App\Infrastructure\InternetArchiveAdapter;
 use App\Infrastructure\InternetDomainParser;
+use App\Infrastructure\Monitor\NullLogger;
 use App\Infrastructure\PageList;
 use App\Infrastructure\ServiceFactory;
 use App\Infrastructure\WikiwixAdapter;
 use Mediawiki\Api\MediawikiApi;
 use Mediawiki\Api\SimpleRequest;
 use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 
 /**
  * refactored 2023-10 not tested

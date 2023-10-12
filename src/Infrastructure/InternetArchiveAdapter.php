@@ -12,10 +12,10 @@ namespace App\Infrastructure;
 use App\Application\InfrastructurePorts\HttpClientInterface;
 use App\Domain\InfrastructurePorts\DeadlinkArchiverInterface;
 use App\Domain\Models\WebarchiveDTO;
+use App\Infrastructure\Monitor\NullLogger;
 use DateTime;
 use DateTimeInterface;
 use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 
 /**
  * https://archive.org/help/wayback_api.php

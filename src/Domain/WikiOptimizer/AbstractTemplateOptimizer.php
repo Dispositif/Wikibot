@@ -12,9 +12,9 @@ namespace App\Domain\WikiOptimizer;
 use App\Domain\InfrastructurePorts\PageListInterface;
 use App\Domain\Models\Wiki\AbstractWikiTemplate;
 use App\Domain\SummaryLogTrait;
+use App\Infrastructure\Monitor\NullLogger;
 use Exception;
 use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 
 abstract class AbstractTemplateOptimizer implements TemplateOptimizerInterface
 {

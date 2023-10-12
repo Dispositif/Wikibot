@@ -11,7 +11,6 @@ namespace App\Infrastructure\Monitor;
 
 use Psr\Log\NullLogger as PsrNullLogger;
 
-// todo replace everywhere
 class NullLogger extends PsrNullLogger
 {
     public function __construct()

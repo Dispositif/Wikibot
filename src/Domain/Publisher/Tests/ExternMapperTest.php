@@ -11,9 +11,9 @@ namespace App\Domain\Publisher\Tests;
 
 use App\Domain\ExternLink\ExternPage;
 use App\Domain\Publisher\ExternMapper;
+use App\Infrastructure\Monitor\NullLogger;
 use App\Infrastructure\TagParser;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\NullLogger;
 
 class ExternMapperTest extends TestCase
 {

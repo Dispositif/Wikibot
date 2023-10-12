@@ -21,10 +21,10 @@ use App\Domain\Publisher\ExternMapper;
 use App\Domain\Utils\WikiTextUtil;
 use App\Domain\WikiOptimizer\OptimizerFactory;
 use App\Domain\WikiTemplateFactory;
+use App\Infrastructure\Monitor\NullLogger;
 use Exception;
 use Normalizer;
 use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 use Throwable;
 
 /**

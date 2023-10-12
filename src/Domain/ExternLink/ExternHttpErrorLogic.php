@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace App\Domain\ExternLink;
 
+use App\Infrastructure\Monitor\NullLogger;
 use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 
 /**
  * todo Refac

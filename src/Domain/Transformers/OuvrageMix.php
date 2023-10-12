@@ -13,8 +13,8 @@ use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\OptiStatus;
 use App\Domain\Transformers\Handlers\OuvrageMixComposite;
 use App\Domain\Transformers\Validator\SameBookValidator;
+use App\Infrastructure\Monitor\NullLogger;
 use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 
 class OuvrageMix
 {

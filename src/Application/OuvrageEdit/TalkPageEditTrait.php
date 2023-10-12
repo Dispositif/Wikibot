@@ -10,9 +10,9 @@ declare(strict_types=1);
 
 namespace App\Application\OuvrageEdit;
 
+use App\Infrastructure\Monitor\NullLogger;
 use App\Infrastructure\ServiceFactory;
 use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 use Throwable;
 
 trait TalkPageEditTrait

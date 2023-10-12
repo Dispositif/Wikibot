@@ -15,9 +15,9 @@ use App\Domain\InfrastructurePorts\InternetDomainParserInterface;
 use App\Domain\InfrastructurePorts\TagParserInterface;
 use App\Domain\Utils\TextUtil;
 use App\Infrastructure\InternetDomainParser;
+use App\Infrastructure\Monitor\NullLogger;
 use Exception;
 use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 
 /**
  * Représente une page web d'un Lien Externe (hors wiki)

@@ -12,11 +12,11 @@ namespace App\Domain\ExternLink;
 use App\Application\InfrastructurePorts\HttpClientInterface;
 use App\Application\Utils\HttpUtil;
 use App\Domain\InfrastructurePorts\InternetDomainParserInterface;
+use App\Infrastructure\Monitor\NullLogger;
 use App\Infrastructure\TagParser;
 use DomainException;
 use Exception;
 use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 
 class ExternPageFactory
 {

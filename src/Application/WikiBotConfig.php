@@ -13,6 +13,7 @@ use App\Application\InfrastructurePorts\SMSInterface;
 use App\Domain\Exceptions\ConfigException;
 use App\Domain\Exceptions\StopActionException;
 use App\Domain\Utils\WikiTextUtil;
+use App\Infrastructure\Monitor\NullLogger;
 use DateInterval;
 use DateTime;
 use DateTimeImmutable;
@@ -20,7 +21,6 @@ use DomainException;
 use Mediawiki\Api\MediawikiFactory;
 use Mediawiki\Api\UsageException;
 use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 use Throwable;
 
 /**

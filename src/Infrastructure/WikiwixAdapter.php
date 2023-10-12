@@ -12,10 +12,10 @@ namespace App\Infrastructure;
 use App\Application\InfrastructurePorts\HttpClientInterface;
 use App\Domain\InfrastructurePorts\DeadlinkArchiverInterface;
 use App\Domain\Models\WebarchiveDTO;
+use App\Infrastructure\Monitor\NullLogger;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 
 /**
  * Get archive url from Wikiwix webarchiver API.

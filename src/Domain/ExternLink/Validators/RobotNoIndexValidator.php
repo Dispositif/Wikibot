@@ -10,8 +10,8 @@ declare(strict_types=1);
 namespace App\Domain\ExternLink\Validators;
 
 use App\Domain\ValidatorInterface;
+use App\Infrastructure\Monitor\NullLogger;
 use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 
 /**
  * Detect if robots noindex.

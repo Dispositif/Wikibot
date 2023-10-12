@@ -19,13 +19,13 @@ use App\Application\OuvrageEdit\Validators\TalkStopValidator;
 use App\Application\OuvrageEdit\Validators\WikiTextValidator;
 use App\Application\WikiBotConfig;
 use App\Application\WikiPageAction;
+use App\Infrastructure\Monitor\NullLogger;
 use App\Infrastructure\ServiceFactory;
 use Codedungeon\PHPCliColors\Color;
 use Exception;
 use Mediawiki\Api\UsageException;
 use Normalizer;
 use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 use Throwable;
 
 /**

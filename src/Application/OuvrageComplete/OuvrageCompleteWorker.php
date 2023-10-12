@@ -27,11 +27,11 @@ use App\Domain\SummaryLogTrait;
 use App\Domain\Transformers\OuvrageMix;
 use App\Domain\WikiOptimizer\OptimizerFactory;
 use App\Domain\WikiOptimizer\OuvrageOptimize;
+use App\Infrastructure\Monitor\NullLogger;
 use DateTime;
 use Exception;
 use Normalizer;
 use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 
 /**
  * TODO Legacy class, to be refactored. To big, too many responsibilities.

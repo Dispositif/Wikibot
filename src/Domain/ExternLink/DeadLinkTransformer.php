@@ -15,11 +15,11 @@ use App\Domain\Models\Summary;
 use App\Domain\Models\WebarchiveDTO;
 use App\Domain\Publisher\ExternMapper;
 use App\Infrastructure\InternetDomainParser;
+use App\Infrastructure\Monitor\NullLogger;
 use App\Infrastructure\ServiceFactory;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 
 /**
  * Transform dead link url in {lien brisé} or import web archive URL
