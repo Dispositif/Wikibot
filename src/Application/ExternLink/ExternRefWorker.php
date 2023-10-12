@@ -10,13 +10,11 @@ declare(strict_types=1);
 namespace App\Application\ExternLink;
 
 use App\Application\AbstractRefBotWorker;
+use App\Application\InfrastructurePorts\PageListForAppInterface as PageListInterface;
+use App\Application\WikiBotConfig;
 use App\Domain\Exceptions\ConfigException;
 use App\Domain\ExternLink\ExternRefTransformer;
-use App\Domain\InfrastructurePorts\InternetDomainParserInterface;
-use App\Domain\Publisher\ExternMapper;
-use App\Infrastructure\InternetArchiveAdapter;
-use App\Infrastructure\ServiceFactory;
-use App\Infrastructure\WikiwixAdapter;
+use Mediawiki\Api\MediawikiFactory;
 use Throwable;
 
 /**
@@ -42,10 +40,27 @@ class ExternRefWorker extends AbstractRefBotWorker
     protected const STRING_WIKIWIX_URL = 'https://archive.wikiwix.com/cache/';
 
     protected $modeAuto = true;
-    /**
-     * @var ExternRefTransformer
-     */
-    protected $transformer;
+
+    protected ?ExternRefTransformer $transformer;
+    protected array $webArchivers = [];
+
+    public function __construct(
+        WikiBotConfig        $bot,
+        MediawikiFactory     $wiki,
+        ?PageListInterface   $pagesGen = null,
+        ExternRefTransformer $transformer = null
+    )
+    {
+        if (!$transformer instanceof ExternRefTransformer) {
+            throw new ConfigException('ExternRefTransformer not set');
+        }
+        $this->transformer = $transformer;
+        $this->transformer->skipSiteBlacklisted = self::SKIP_SITE_BLACKLISTED;
+        $this->transformer->skipRobotNoIndex = self::SKIP_ROBOT_NOINDEX;
+
+        parent::__construct($bot, $wiki, $pagesGen);
+    }
+
 
     /**
      * Traite contenu d'une <ref> ou bien lien externe (précédé d'une puce).
@@ -106,29 +121,6 @@ class ExternRefWorker extends AbstractRefBotWorker
         $this->summary->memo['count URL'] = 1 + ($this->summary->memo['count URL'] ?? 0);
 
         return $result;
-    }
-
-    // todo inverse dependency
-    protected function setUpInConstructor(): void
-    {
-        if (!$this->domainParser instanceof InternetDomainParserInterface) {
-            dump($this->domainParser);
-            throw new ConfigException('DomainParser not set');
-        }
-        // TODO extract ExternRefTransformerInterface
-        // todo inverse dependency archivers
-        $wikiwix = new WikiwixAdapter(ServiceFactory::getHttpClient(), $this->log);
-        $internetArchive = new InternetArchiveAdapter(ServiceFactory::getHttpClient(), $this->log);
-        $this->transformer = new ExternRefTransformer(
-            new ExternMapper($this->log),
-            ServiceFactory::getHttpClient(self::TOR_ENABLED_FOR_WEB_CRAWL),
-            $this->domainParser,
-            $this->log,
-            [$wikiwix, $internetArchive]
-        );
-        $this->transformer->skipSiteBlacklisted = self::SKIP_SITE_BLACKLISTED;
-        $this->transformer->skipRobotNoIndex = self::SKIP_ROBOT_NOINDEX;
-        //todo? move in __constructor + parent::__constructor()
     }
 
     /**

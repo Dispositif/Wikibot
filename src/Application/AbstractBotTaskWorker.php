@@ -13,7 +13,6 @@ use App\Application\InfrastructurePorts\PageListForAppInterface as PageListInter
 use App\Application\Traits\BotWorkerTrait;
 use App\Application\Traits\WorkerAnalyzedTitlesTrait;
 use App\Application\Traits\WorkerCLITrait;
-use App\Domain\AppPorts\DomainTransformerInterface;
 use App\Domain\Exceptions\ConfigException;
 use App\Domain\Exceptions\StopActionException;
 use App\Domain\InfrastructurePorts\InternetDomainParserInterface;
@@ -78,11 +77,9 @@ abstract class AbstractBotTaskWorker
     protected $domainParser;
 
     public function __construct(
-        WikiBotConfig                                $bot,
-        MediawikiFactory                             $wiki,
-        ?PageListInterface                           $pagesGen = null,
-        private readonly ?DomainTransformerInterface $domainTransformer = null,
-        ?InternetDomainParserInterface               $domainParser = null
+        WikiBotConfig      $bot,
+        MediawikiFactory   $wiki,
+        ?PageListInterface $pagesGen = null
     )
     {
         $this->log = $bot->getLogger();
@@ -91,7 +88,6 @@ abstract class AbstractBotTaskWorker
         if ($pagesGen instanceof PageListInterface) {
             $this->pageListGenerator = $pagesGen;
         }
-        $this->domainParser = $domainParser;
 
         $this->setUpInConstructor();
         $this->defaultTaskname = $bot->taskName;

@@ -11,15 +11,20 @@ declare(strict_types=1);
 namespace App\Application\ExternLink;
 
 use App\Application\WikiBotConfig;
+use App\Domain\ExternLink\ExternRefTransformer;
+use App\Domain\Publisher\ExternMapper;
+use App\Infrastructure\InternetArchiveAdapter;
 use App\Infrastructure\InternetDomainParser;
 use App\Infrastructure\PageList;
 use App\Infrastructure\ServiceFactory;
+use App\Infrastructure\WikiwixAdapter;
 use Mediawiki\Api\MediawikiApi;
 use Mediawiki\Api\SimpleRequest;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 /**
+ * refactored 2023-10 not tested
  * https://www.mediawiki.org/wiki/API:RecentChanges
  */
 class RecentChangeWorker
@@ -91,7 +96,20 @@ class RecentChangeWorker
         $botConfig = new WikiBotConfig($wiki, $this->logger);
         $botConfig->taskName = self::TASK_NAME;
 
+        // refactored not tested :
+        $httpClient = ServiceFactory::getHttpClient();
+        $wikiwix = new WikiwixAdapter($httpClient, $this->logger);
+        $internetArchive = new InternetArchiveAdapter($httpClient, $this->logger);
 
-        new ExternRefWorker($botConfig, $wiki, $list, null, new InternetDomainParser());
+        $domainParser = new InternetDomainParser();
+        $transformer = new ExternRefTransformer(
+            new ExternMapper($this->logger),
+            ServiceFactory::getHttpClient(true),
+            $domainParser,
+            $this->logger,
+            [$wikiwix, $internetArchive]
+        );
+
+        new ExternRefWorker($botConfig, $wiki, $list, $transformer);
     }
 }

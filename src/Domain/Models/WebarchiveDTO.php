@@ -11,7 +11,7 @@ namespace App\Domain\Models;
 
 use DateTimeInterface;
 
-class WebarchiveDTO
+final class WebarchiveDTO
 {
     public function __construct(
         protected string             $archiver,

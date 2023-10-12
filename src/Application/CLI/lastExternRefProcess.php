@@ -11,18 +11,21 @@ namespace App\Application\CLI;
 
 use App\Application\ExternLink\ExternRefWorker;
 use App\Application\WikiBotConfig;
+use App\Domain\ExternLink\ExternRefTransformer;
+use App\Domain\Publisher\ExternMapper;
 use App\Infrastructure\CirrusSearch;
 use App\Infrastructure\ConsoleLogger;
+use App\Infrastructure\InternetArchiveAdapter;
 use App\Infrastructure\InternetDomainParser;
 use App\Infrastructure\PageList;
 use App\Infrastructure\ServiceFactory;
+use App\Infrastructure\WikiwixAdapter;
 
 /**
  * Traitement synchrone des URL brutes http:// transformée en {lien web} ou {article}
  */
 
-include __DIR__.'/../ZiziBot_Bootstrap.php';
-//include __DIR__.'/../myBootstrap.php'; // Codex
+include __DIR__.'/../myBootstrap.php';
 
 // todo VOIR EN BAS
 
@@ -53,11 +56,25 @@ $list->setOptions(['reverse' => true]);
 $titles = $list->getPageTitles();
 unset($list);
 //echo count($titles)." titles\n";
-$edited = file(__DIR__.'/../resources/article_externRef_edited.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+$edited = file(__DIR__ . '/../resources/article_externRef_edited.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 $filtered = array_diff($titles, $edited);
-$list = new PageList( $filtered );
-echo ">".$list->count()." dans liste\n";
+$list = new PageList($filtered);
+echo ">" . $list->count() . " dans liste\n";
 
-new ExternRefWorker($botConfig, $wiki, $list, null, new InternetDomainParser());
+
+$httpClient = ServiceFactory::getHttpClient();
+$wikiwix = new WikiwixAdapter($httpClient, $logger);
+$internetArchive = new InternetArchiveAdapter($httpClient, $logger);
+
+$domainParser = new InternetDomainParser();
+$transformer = new ExternRefTransformer(
+    new ExternMapper($logger),
+    ServiceFactory::getHttpClient(true),
+    $domainParser,
+    $logger,
+    [$wikiwix, $internetArchive]
+);
+
+new ExternRefWorker($botConfig, $wiki, $list, $transformer);
 
 echo "END of process\n";

@@ -34,7 +34,7 @@ class DeadLinkTransformer
      * @param DeadlinkArchiverInterface[] $archivers
      */
     public function __construct(
-        protected array $archivers = [],
+        protected array                          $archivers = [],
         protected ?InternetDomainParserInterface $domainParser = null,
         protected ?ExternRefTransformerInterface $externRefTransformer = null,
         protected LoggerInterface                $log = new NullLogger()
@@ -105,7 +105,6 @@ class DeadLinkTransformer
                 ServiceFactory::getHttpClient(self::USE_TOR_FOR_ARCHIVE),
                 new InternetDomainParser(),
                 $this->log,
-                []
             ); // todo inverse dependency
         }
 
