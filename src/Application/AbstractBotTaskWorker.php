@@ -110,7 +110,7 @@ abstract class AbstractBotTaskWorker
      */
     final public function run(): void
     {
-        echo date('d-m-Y H:i:s') . " *** NEW WORKER ***\n";
+        $this->log->notice('*** New worker ' . $this->defaultTaskname, ['stats' => 'bottaskworker.instance']);
         foreach ($this->getTitles() as $title) {
             try {
                 $this->titleProcess($title);
@@ -148,7 +148,7 @@ abstract class AbstractBotTaskWorker
 
         // move up ?
         if ($this->checkAlreadyAnalyzed($title)) {
-            echo "Skip : déjà analysé\n";
+            $this->log->notice("Skip : déjà analysé", ['stats' => 'bottaskworker.skip.dejaanalyse']);
 
             return;
         }
@@ -206,19 +206,20 @@ abstract class AbstractBotTaskWorker
             );
         } catch (Throwable $e) {
             if (preg_match('#Invalid CSRF token#', $e->getMessage())) {
+                $this->log->stats->increment('bottaskworker.exception.invalidCSRFtoken');
+
                 throw new Exception('Invalid CSRF token', $e->getCode(), $e);
             }
 
             // If not a critical edition error
             // example : Wiki Conflict : Page has been edited after getText()
-            echo "Error : " . $e->getMessage() . "\n";
             $this->log->warning($e->getMessage());
 
             return;
         }
 
-        dump($result);
-        echo "Sleep " . static::SLEEP_AFTER_EDITION . "\n";
+        $this->log->notice($result ? '>> OK' : '>>  NOCHANGE');
+        $this->log->debug("Sleep " . static::SLEEP_AFTER_EDITION);
         sleep(static::SLEEP_AFTER_EDITION);
     }
 

@@ -69,19 +69,25 @@ class ExternRefWorker extends AbstractRefBotWorker
     {
         // todo // hack Temporary Skip URL
         if (preg_match('#books\.google#', $refContent)) {
+            $this->log->stats->increment('externref.skip.booksgoogle');
             return $refContent;
         }
 
         try {
             $result = $this->transformer->process($refContent, $this->summary);
         } catch (Throwable $e) {
-            $this->log->critical('Error patate34 ' . $e->getMessage() . " " . $e->getFile() . ":" . $e->getLine());
+            $this->log->critical(
+                'Error patate34 ' . $e->getMessage() . " " . $e->getFile() . ":" . $e->getLine(),
+                ['stats' => 'externref.exception.patate34']
+            );
             // TODO : parse $e->message -> variable process, taskName, botflag...
 
             return $refContent;
         }
 
         if (trim($result) === trim($refContent)) {
+            $this->log->stats->increment('externref.transform.same');
+
             return $refContent;
         }
 
@@ -94,6 +100,7 @@ class ExternRefWorker extends AbstractRefBotWorker
 
 
         if (preg_match('#{{lien brisé#i', $result)) {
+            $this->log->stats->increment('externref.transform.lienbrisé');
             $this->summary->memo['count lien brisé'] = 1 + ($this->summary->memo['count lien brisé'] ?? 0);
             if ($this->summary->memo['count lien brisé'] >= self::DEAD_LINK_NO_BOTFLAG) {
                 $this->summary->setBotFlag(false);
@@ -101,6 +108,7 @@ class ExternRefWorker extends AbstractRefBotWorker
         }
 
         if (str_contains($result, self::STRING_WIKIWIX_URL)) {
+            $this->log->stats->increment('externref.transform.wikiwix');
             $this->summary->memo['wikiwix'] = 1 + ($this->summary->memo['wikiwix'] ?? 0);
             if ($this->summary->memo['wikiwix'] >= self::DEAD_LINK_NO_BOTFLAG) {
                 $this->summary->setBotFlag(false);
@@ -108,6 +116,7 @@ class ExternRefWorker extends AbstractRefBotWorker
         }
         // not httpS in 2023
         if (str_contains($result, self::STRING_WAYBACK_URL)) {
+            $this->log->stats->increment('externref.transform.wayback');
             $this->summary->memo['wayback'] = 1 + ($this->summary->memo['wayback'] ?? 0);
             if ($this->summary->memo['wayback'] >= self::DEAD_LINK_NO_BOTFLAG) {
                 $this->summary->setBotFlag(false);
@@ -118,6 +127,7 @@ class ExternRefWorker extends AbstractRefBotWorker
             $this->summary->setBotFlag(false);
         }
 
+        $this->log->stats->increment('externref.transform.total');
         $this->summary->memo['count URL'] = 1 + ($this->summary->memo['count URL'] ?? 0);
 
         return $result;
@@ -133,18 +143,23 @@ class ExternRefWorker extends AbstractRefBotWorker
         $prefixSummary = ($this->summary->isBotFlag()) ? 'bot ' : '';
         $suffix = '';
         if (isset($this->summary->memo['count article'])) {
+            $this->log->stats->increment('externref.count.article');
             $suffix .= ' ' . $this->summary->memo['count article'] . 'x {article}';
         }
         if (isset($this->summary->memo['count lien web'])) {
+            $this->log->stats->increment('externref.count.lienweb');
             $suffix .= ' ' . $this->summary->memo['count lien web'] . 'x {lien web}';
         }
         if (isset($this->summary->memo['presse'])) {
+            $this->log->stats->increment('externref.count.presse');
             $suffix .= ' 🗞️'; // 🗞️ 📰
         }
         if (isset($this->summary->memo['science'])) {
+            $this->log->stats->increment('externref.count.science');
             $suffix .= ' 🧪'; // 🧪 🔬
         }
         if (isset($this->summary->memo['count lien brisé'])) {
+            $this->log->stats->increment('externref.count.lienbrisé');
             $suffix .= ' ⚠️️️lien brisé'; //⚠️💩
             $suffix .= ($this->summary->memo['count lien brisé'] > 1)
                 ? ' x' . $this->summary->memo['count lien brisé']
@@ -175,5 +190,4 @@ class ExternRefWorker extends AbstractRefBotWorker
 
         return $prefixSummary . $this->summary->taskName . $suffix;
     }
-
 }

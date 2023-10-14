@@ -14,6 +14,8 @@ use ErrorException;
 use PhpAmqpLib\Message\AMQPMessage;
 
 /**
+ * @notused
+ * todo not used
  * Consume RabbitMQ queue and acknowledge each message.
  * Class AbstractWorker.
  */

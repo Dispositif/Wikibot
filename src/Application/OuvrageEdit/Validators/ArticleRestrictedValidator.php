@@ -47,7 +47,9 @@ class ArticleRestrictedValidator implements ValidatorInterface
     {
         if (WikiBotConfig::isEditionTemporaryRestrictedOnWiki($this->wikiPageAction->getText())) {
             // new feature ? Gestion d'une repasse dans X jours
-            $this->log->info("SKIP : protection/3R/travaux.\n");
+            $this->log->info(
+                "SKIP : protection/3R/travaux", ['stats' => 'ouvrageedit.skip.protection3Rtravaux']
+            );
             $this->db->skipArticle($this->title);
 
             return false;

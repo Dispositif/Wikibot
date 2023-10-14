@@ -63,11 +63,11 @@ class ExternRefTransformer implements ExternRefTransformerInterface
      * @param DeadlinkArchiverInterface[] $deadlinkArchivers
      */
     public function __construct(
-        protected ExternMapper $mapper,
-        protected HttpClientInterface $httpClient,
+        protected ExternMapper                  $mapper,
+        protected HttpClientInterface           $httpClient,
         protected InternetDomainParserInterface $domainParser,
-        protected LoggerInterface $log = new NullLogger(),
-        protected array $deadlinkArchivers = []
+        protected LoggerInterface               $log = new NullLogger(),
+        protected array                         $deadlinkArchivers = []
     )
     {
         $this->importConfigAndData();
@@ -96,12 +96,15 @@ class ExternRefTransformer implements ExternRefTransformerInterface
         }
         $this->registrableDomain = $this->urlChecker->getRegistrableDomain($url); // hack
         if ($this->isSiteBlackListed()) {
-            $this->log->debug('Site blacklisted : ' . $this->registrableDomain);
+            $this->log->debug('Site blacklisted : ' . $this->registrableDomain, ['stats' => 'externref.skip.blacklisted']);
             return $url;
         }
 
         if (!$this->validateConfigWebDomain($this->registrableDomain)) {
-            $this->log->debug('Domain not validate by config : ' . $this->registrableDomain);
+            $this->log->debug(
+                'Domain blocked by config : ' . $this->registrableDomain,
+                ['stats' => 'externref.skip.domainDisabledByConfig']
+            );
             return $url;
         }
 
@@ -112,12 +115,12 @@ class ExternRefTransformer implements ExternRefTransformerInterface
             return $this->externHttpErrorLogic->manageByHttpErrorMessage($exception->getMessage(), $url);
         }
         if ($this->emptyPageData($pageData, $url)) {
-            $this->log->debug('Empty page data');
+            $this->log->debug('Empty page data', ['stats' => 'externref.skip.emptyPageData']);
             return $url;
         }
         $noIndexValidator = new RobotNoIndexValidator($pageData, $url, $this->log); // todo inject
         if ($noIndexValidator->validate() && $this->skipRobotNoIndex) {
-            $this->log->debug('NOINDEX detected');
+            $this->log->debug('NOINDEX detected', ['stats' => 'externref.skip.robotNoIndex']);
             // TODO ? return {lien web| titre=Titre inconnu... |note=noindex }
             // http://www.nydailynews.com/entertainment/jessica-barth-details-alleged-harvey-weinstein-encounter-article-1.3557986
             return $url;
@@ -125,6 +128,7 @@ class ExternRefTransformer implements ExternRefTransformerInterface
 
         $mappedData = $this->mapper->process($pageData); // only json-ld or only meta, after postprocess
         if ($this->emptyMapData($mappedData, $url)) {
+            $this->log->stats->increment('externref.skip.emptyMapData');
             // TODO ? return {lien web| titre=Titre inconnu... site=prettydomain ...
             return $url;
         }
@@ -315,6 +319,15 @@ class ExternRefTransformer implements ExternRefTransformerInterface
         return $mapData;
     }
 
+    protected function correctSiteViaWebarchiver(array $mapData): array
+    {
+        if (!empty($this->options['originalRegistrableDomain']) && $mapData['site']) {
+            $mapData['site'] = $this->options['originalRegistrableDomain'] . ' via ' . $mapData['site'];
+        }
+
+        return $mapData;
+    }
+
     protected function replaceURLbyOriginal(array $mapData): array
     {
         $mapData['url'] = $this->url;
@@ -323,7 +336,6 @@ class ExternRefTransformer implements ExternRefTransformerInterface
     }
 
     /**
-     *
      * @throws Exception
      */
     protected function optimizeAndSerialize(AbstractWikiTemplate $template, array $mapData): string
@@ -336,14 +348,5 @@ class ExternRefTransformer implements ExternRefTransformerInterface
         $serialized = $templateOptimized->serialize(true);
         $this->log->info('Serialized 444: ' . $serialized . "\n");
         return $serialized;
-    }
-
-    protected function correctSiteViaWebarchiver(array $mapData): array
-    {
-        if (!empty($this->options['originalRegistrableDomain']) && $mapData['site']) {
-            $mapData['site'] = $this->options['originalRegistrableDomain'].' via '.$mapData['site'];
-        }
-
-        return $mapData;
     }
 }

@@ -49,40 +49,18 @@ class CheckURL
         $this->url = $url;
         $this->registrableDomain = null;
         if (!HttpUtil::isHttpURL($url)) {
-            $this->log->debug('Skip : not a valid URL : ' . $url);
+            $this->log->debug('Skip : not Http URL : ' . $url, ['stats' => 'externref.skip.notRawURL']);
             return false;
         }
 
         if ($this->hasForbiddenFilenameExtension()) {
+            $this->log->debug('Skip : ForbiddenFilenameExtension : ' . $url, ['stats' => 'externref.skip.forbiddenFilenameExtension']);
             return false;
-        }
-        if (!HttpUtil::isHttpURL($url)) {
-            throw new Exception('string is not an URL ' . $url);
         }
 
         $this->findRegistrableDomain();
 
         return true;
-    }
-
-    public function getRegistrableDomain($url): ?string
-    {
-        if ($url === $this->url && $this->registrableDomain) {
-            return $this->registrableDomain;
-        }
-        $this->url = $url;
-        return $this->findRegistrableDomain();
-    }
-
-    protected function findRegistrableDomain(): ?string
-    {
-        try {
-            $this->registrableDomain = $this->internetDomainParser->getRegistrableDomainFromURL($this->url);
-        } catch (Exception) {
-            $this->log->warning('Skip : not a valid URL : ' . $this->url);
-            return null;
-        }
-        return $this->registrableDomain;
     }
 
     /**
@@ -96,5 +74,28 @@ class CheckURL
             '#\.(pdf|jpg|jpeg|gif|png|webp|xls|xlsx|xlr|xml|xlt|txt|csv|js|docx|exe|gz|zip|ini|movie|mp3|mp4|ogg|raw|rss|tar|tgz|wma)$#i',
             $this->url
         );
+    }
+
+    protected function findRegistrableDomain(): ?string
+    {
+        try {
+            $this->registrableDomain = $this->internetDomainParser->getRegistrableDomainFromURL($this->url);
+        } catch (Exception) {
+            $this->log->warning('Skip : not a valid URL : ' . $this->url,
+                ['stats' => 'externref.skip.URLAuthorized.exception2']
+            );
+            return null;
+        }
+        return $this->registrableDomain;
+    }
+
+    public function getRegistrableDomain($url): ?string
+    {
+        if ($url === $this->url && $this->registrableDomain) {
+            return $this->registrableDomain;
+        }
+        $this->url = $url;
+
+        return $this->findRegistrableDomain();
     }
 }
