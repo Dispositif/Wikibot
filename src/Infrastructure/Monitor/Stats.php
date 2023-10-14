@@ -12,9 +12,14 @@ namespace App\Infrastructure\Monitor;
 use Exception;
 use SQLite3;
 
+/**
+ * SQLite3 base: stats.db
+ * tables: tagnum, tagnum_daily, tagnum_monthly
+ */
 class Stats
 {
     protected const DEFAULT_FILEPATH = __DIR__ . '/../../../log/stats.db';
+    protected const MAX_TAG_LENGTH = 100;
 
     protected SQLite3 $db;
 
@@ -27,29 +32,38 @@ class Stats
         $this->createTableIfNotExists();
     }
 
-    public function increment(string $key): bool
+    public function increment(string $tag): bool
     {
-        // upsert :)
+        $tag = $this->formatTag($tag);
+
+        $this->upsertTag(sprintf('%s.%s', date('Ymd'), $tag), 'tagnum_daily');
+        $this->upsertTag(sprintf('%s.%s', date('Ym'), $tag), 'tagnum_monthly');
+
+        return $this->upsertTag($tag);
+    }
+
+    private function formatTag(string $tag)
+    {
+        return mb_substr($tag, 0, self::MAX_TAG_LENGTH);
+    }
+
+    public function set(string $tag, int $num): bool
+    {
+        $tag = $this->formatTag($tag);
         try {
-            return $this->db->exec('INSERT INTO tagnum (tag) VALUES("' . $key . '") ON CONFLICT(tag) DO UPDATE SET num=num+1');
+            return $this->db->exec('INSERT OR REPLACE INTO tagnum (tag,num) VALUES("' . $tag . '", ' . $num . ')');
         } catch (Exception $e) {
             return false;
         }
     }
 
-    public function set(string $key, int $num): bool
+    public function decrement(string $tag): bool
     {
+        $tag = $this->formatTag($tag);
         try {
-            return $this->db->exec('INSERT OR REPLACE INTO tagnum (tag,num) VALUES("' . $key . '", ' . $num . ')');
-        } catch (Exception $e) {
-            return false;
-        }
-    }
-
-    public function decrement(string $key): bool
-    {
-        try {
-            return $this->db->exec('INSERT INTO tagnum (tag) VALUES("' . $key . '") ON CONFLICT(tag) DO UPDATE SET num=num-1');
+            return $this->db->exec(
+                'INSERT INTO tagnum (tag) VALUES("' . $tag . '") ON CONFLICT(tag) DO UPDATE SET num=num-1'
+            );
         } catch (Exception $e) {
             return false;
         }
@@ -57,6 +71,7 @@ class Stats
 
     public function select(string $tag): ?int
     {
+        $tag = $this->formatTag($tag);
         try {
             $stmt = $this->db->prepare('SELECT tag,num FROM tagnum WHERE tag LIKE :tag');
             $stmt->bindValue(':tag', $tag, SQLITE3_TEXT);
@@ -71,10 +86,33 @@ class Stats
     protected function createTableIfNotExists(): bool
     {
         try {
-            return $this->db->exec("CREATE TABLE if not exists tagnum (
-                tag VARCHAR(50) NOT NULL PRIMARY KEY,
+            $this->db->exec('CREATE TABLE if not exists tagnum_monthly (
+                tag VARCHAR(' . self::MAX_TAG_LENGTH . ') NOT NULL PRIMARY KEY,
                 num int(11) NOT NULL DEFAULT 1
-            )");
+            )');
+
+            $this->db->exec('CREATE TABLE if not exists tagnum_daily (
+                tag VARCHAR(' . self::MAX_TAG_LENGTH . ') NOT NULL PRIMARY KEY,
+                num int(11) NOT NULL DEFAULT 1
+            )');
+
+            return $this->db->exec('CREATE TABLE if not exists tagnum (
+                tag VARCHAR(' . self::MAX_TAG_LENGTH . ') NOT NULL PRIMARY KEY,
+                num int(11) NOT NULL DEFAULT 1
+            )');
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    protected function upsertTag(string $tag, string $table = 'tagnum'): bool
+    {
+        // `num` default value is 1 so insert is enough to set num=1
+        try {
+            // upsert :)
+            return $this->db->exec(
+                'INSERT INTO '.$table.' (tag) VALUES("' . $tag . '") ON CONFLICT(tag) DO UPDATE SET num=num+1'
+            );
         } catch (Exception $e) {
             return false;
         }

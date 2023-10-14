@@ -13,6 +13,8 @@ use Psr\Log\NullLogger as PsrNullLogger;
 
 class NullLogger extends PsrNullLogger
 {
+    public NullStats $stats;
+
     public function __construct()
     {
         $this->stats = new NullStats();

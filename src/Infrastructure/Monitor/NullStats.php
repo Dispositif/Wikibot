@@ -9,6 +9,9 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Monitor;
 
+/**
+ * @method increment(string $string)
+ */
 class NullStats
 {
     public function __call(string $method, array $args): void

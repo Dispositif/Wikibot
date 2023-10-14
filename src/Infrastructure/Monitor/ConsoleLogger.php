@@ -28,36 +28,40 @@ class ConsoleLogger extends AbstractLogger implements LoggerInterface
     {
         try {
             $this->stats->increment('test.consolelogger');
-        }catch (Exception $e){
+        } catch (Exception $e) {
             $this->stats = new NullStats();
         }
     }
 
     public function __call(string $method, array $args): void
     {
-        $this->notice('Call to undefined method ConsoleLogger:'.$method.'()');
+        $this->notice('Call to undefined method ConsoleLogger:' . $method . '()');
     }
 
     /**
      * Ultralight logger.
-     *
      * @inheritDoc
      */
     public function log($level, $message, array $context = []): void
     {
         if (is_array($message)) {
-            dump($message);
-            echo "Envoi de array comme message de log...\n";
+            $this->error('Array comme message de log...', ['message' => $message]);
 
             return;
         }
         $message = trim($message);
         $date = date('Y-m-d H:i:s');
+
+        $this->incrementStatsFromContext($context);
+        if (isset($context['stats'])) {
+            unset($context['stats']);
+        }
+
         switch ($level) {
             case 'emergency':
             case 'alert':
             case 'critical':
-                $this->echoColor("[$level] ".$date.' : '.$message."\n", Color::BG_RED.Color::WHITE);
+                $this->echoColor("[$level] " . $date . ' : ' . $message . "\n", Color::BG_RED . Color::WHITE);
                 if ($context !== []) {
                     dump($context);
                 }
@@ -65,20 +69,20 @@ class ConsoleLogger extends AbstractLogger implements LoggerInterface
                 break;
             case 'error':
             case 'warning':
-                $this->echoColor("[$level] ".$date.' : '.$message."\n", Color::BG_YELLOW.Color::BLACK);
+                $this->echoColor("[$level] " . $date . ' : ' . $message . "\n", Color::BG_YELLOW . Color::BLACK);
                 if ($context !== []) {
                     dump($context);
                 }
                 break;
             case 'notice':
-                $this->echoColor("[$level] ".$message."\n");
+                $this->echoColor("[$level] " . $message . "\n");
                 if ($context !== []) {
                     dump($context);
                 }
                 break;
             case 'info':
                 if ($this->verbose || $this->debug) {
-                    $this->echoColor("[$level] ".$message."\n", Color::GRAY);
+                    $this->echoColor("[$level] " . $message . "\n", Color::GRAY);
                     if ($context !== []) {
                         dump($context);
                     }
@@ -86,35 +90,49 @@ class ConsoleLogger extends AbstractLogger implements LoggerInterface
                 break;
             case 'debug':
                 if ($this->debug) {
-                    $this->echoColor("[$level] ".$message."\n", Color::GRAY);
+                    $this->echoColor("[$level] " . $message . "\n", Color::GRAY);
                     if ($context !== []) {
                         dump($context);
                     }
                 }
                 break;
             case 'echo':
-                $this->echoColor($message."\n");
+                $this->echoColor($message . "\n");
                 break;
         }
     }
 
-    private function logInFile($level, string $message): void
+    protected function incrementStatsFromContext(array $context): void
     {
-        file_put_contents(
-            __DIR__.'/resources/critical.log',
-            date('d-m-Y H:i:s')." : $level : ".$message.PHP_EOL,
-            FILE_APPEND
-        );
+        if (!isset($context['stats'])) {
+            return;
+        }
+        if (is_string($context['stats']) && $context['stats'] !== '') {
+            $this->stats->increment($context['stats']);
+        }
+        if (is_array($context['stats'])) {
+            foreach ($context['stats'] as $tag) {
+                $this->stats->increment($tag);
+            }
+        }
     }
 
     private function echoColor(string $text, ?string $color = null): void
     {
         if ($this->colorMode && !empty($color)) {
-            echo $color.$text.Color::NORMAL;
+            echo $color . $text . Color::NORMAL;
 
             return;
         }
         echo $text;
     }
 
+    private function logInFile($level, string $message): void
+    {
+        file_put_contents(
+            __DIR__ . '/resources/critical.log',
+            date('d-m-Y H:i:s') . " : $level : " . $message . PHP_EOL,
+            FILE_APPEND
+        );
+    }
 }
