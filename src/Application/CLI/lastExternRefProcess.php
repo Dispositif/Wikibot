@@ -35,7 +35,7 @@ $logger = new ConsoleLogger();
 $logger->colorMode = true;
 //$logger->debug = true;
 $botConfig = new WikiBotConfig($wiki, $logger);
-$botConfig->taskName = "🐭 Amélioration de références : URL ⇒ "; // 🐞🌐🧅🔗
+$botConfig->setTaskName("🐭 Amélioration de références : URL ⇒ "); // 🐞🌐🧅🔗
 
 $botConfig->checkStopOnTalkpageOrException();
 

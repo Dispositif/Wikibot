@@ -33,7 +33,7 @@ $logger = new ConsoleLogger();
 //$logger->colorMode = true;
 //$logger->debug = true;
 $botConfig = new WikiBotConfig($wiki, $logger);
-$botConfig->taskName = "🌐 Amélioration de références : URL ⇒ "; // 🐞🌐🔗🧅
+$botConfig->setTaskName("🌐 Amélioration de références : URL ⇒ "); // 🐞🌐🔗🧅
 
 $botConfig->checkStopOnTalkpageOrException();
 
@@ -60,7 +60,7 @@ if (!empty($argv[1])) {
     if (!empty($text) && $text !== $newText) {
         @file_put_contents($file, $newText);
     }
-    $botConfig->taskName = '🐞' . $botConfig->taskName;
+    $botConfig->setTaskName('🐞' . $botConfig->getTaskName());
 }
 
 // filter titles already in edited.txt

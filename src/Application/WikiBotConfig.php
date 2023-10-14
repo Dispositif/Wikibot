@@ -47,7 +47,7 @@ class WikiBotConfig
     public const TALK_PAGE_PREFIX = 'Discussion_utilisateur:';
     public const SLEEP_BEFORE_STOP_TALKPAGE = 30;
 
-    public $taskName = 'Amélioration indéfinie';
+    protected string $taskName = 'Amélioration';
     /**
      * @var LoggerInterface
      */
@@ -56,11 +56,9 @@ class WikiBotConfig
      * @var DateTimeImmutable
      */
     protected $lastCheckStopDate;
-    /**
-     * @var SMSInterface|null
-     */
-    protected $SMSClient;
+    protected SMSInterface|null $SMSClient;
     protected $mediawikiFactory;
+    protected ?string $gitCommitHash = null;
 
     public function __construct(MediawikiFactory $mediawikiFactory, ?LoggerInterface $logger = null, ?SMSInterface $SMSClient = null)
     {
@@ -68,11 +66,6 @@ class WikiBotConfig
         ini_set('user_agent', getenv('USER_AGENT'));
         $this->SMSClient = $SMSClient;
         $this->mediawikiFactory = $mediawikiFactory;
-    }
-
-    public function getLogger(): LoggerInterface
-    {
-        return $this->log;
     }
 
     /**
@@ -102,14 +95,56 @@ class WikiBotConfig
         return preg_match('#({{nobots}}|{{bots ?\| ?(optout|deny) ?= ?all ?}}' . $denyReg . ')#i', $text) > 0;
     }
 
+    /**
+     * @throws ConfigException
+     */
+    public static function getBotName(): string
+    {
+        if (empty(getenv('BOT_NAME'))) {
+            throw new ConfigException('BOT_NAME is not defined.');
+        }
+        return getenv('BOT_NAME') ?? '';
+    }
+
     protected static function getBotOwner()
     {
         return getenv('BOT_OWNER');
     }
 
+    public function getTaskName(): string
+    {
+        return $this->taskName;
+    }
+
+    public function setTaskName(string $taskName): WikiBotConfig
+    {
+        $this->taskName = $taskName;
+        return $this;
+    }
+
+    public function getCurrentGitCommitHash(): ?string
+    {
+        if ($this->gitCommitHash) {
+            return $this->gitCommitHash;
+        }
+        $path = __DIR__ . '/../../.git/';
+        if (!file_exists($path)) {
+            return null;
+        }
+        $head = trim(substr(file_get_contents($path . 'HEAD'), 4));
+        $hash = trim(file_get_contents(sprintf($path . $head)));
+        $this->gitCommitHash = $hash; // cached
+
+        return $hash;
+    }
+
+    public function getLogger(): LoggerInterface
+    {
+        return $this->log;
+    }
+
     /**
      * Throws Exception if "{{stop}}" or "STOP" on talk page.
-     *
      * @throws StopActionException
      */
     public function checkStopOnTalkpageOrException(?bool $botTalk = false): void
@@ -156,17 +191,6 @@ class WikiBotConfig
     protected function getBotTalkPageTitle(): string
     {
         return self::TALK_PAGE_PREFIX . $this::getBotName();
-    }
-
-    /**
-     * @throws ConfigException
-     */
-    protected static function getBotName(): string
-    {
-        if (empty(getenv('BOT_NAME'))) {
-            throw new ConfigException('BOT_NAME is not defined.');
-        }
-        return getenv('BOT_NAME') ?? '';
     }
 
     protected function sendSMSandFunnyTalk(string $lastEditor, ?bool $botTalk): void

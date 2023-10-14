@@ -37,6 +37,7 @@ abstract class AbstractBotTaskWorker
     public const SKIP_NOT_IN_MAIN_WIKISPACE = true;
     public const SKIP_ADQ = true;
     public const THROTTLE_DELAY_AFTER_EACH_TITLE = 1; //secs
+    protected const GIT_COMMIT_HASH_PATH = __DIR__ . '/resources/commithash.txt';
 
     /**
      * @var PageListInterface
@@ -55,7 +56,6 @@ abstract class AbstractBotTaskWorker
      */
     protected $pageAction;
     protected $defaultTaskname;
-    protected $titleTaskname;
     protected $modeAuto = false;
     protected $maxLag = 5;
     /**
@@ -85,22 +85,15 @@ abstract class AbstractBotTaskWorker
         $this->log = $bot->getLogger();
         $this->wiki = $wiki;
         $this->bot = $bot;
+        $this->defaultTaskname = $bot->getTaskName();
         if ($pagesGen instanceof PageListInterface) {
             $this->pageListGenerator = $pagesGen;
         }
-
-        $this->setUpInConstructor();
-        $this->defaultTaskname = $bot->taskName;
 
         $this->initializePastAnalyzedTitles();
 
         // @throw exception on "Invalid CSRF token"
         $this->run();//todo delete that and use (Worker)->run($duration) or process management
-    }
-
-    protected function setUpInConstructor(): void
-    {
-        // optional implementation
     }
 
     /**
@@ -110,7 +103,13 @@ abstract class AbstractBotTaskWorker
      */
     final public function run(): void
     {
-        $this->log->notice('*** New worker ' . $this->defaultTaskname, ['stats' => 'bottaskworker.instance']);
+        $this->log->notice('*** New BotTaskWorker: ' . $this->defaultTaskname, ['stats' => 'bottaskworker.instance']);
+        $this->log->notice(sprintf(
+            '*** Bot: %s - commit: %s',
+            $this->bot::getBotName(),
+            $this->bot->getCurrentGitCommitHash() ?? '??'
+        ));
+
         foreach ($this->getTitles() as $title) {
             try {
                 $this->titleProcess($title);
@@ -143,7 +142,6 @@ abstract class AbstractBotTaskWorker
 
     protected function titleProcess(string $title): void
     {
-        $this->titleTaskname = $this->defaultTaskname;
         $this->printTitle($title);
 
         // move up ?
@@ -230,5 +228,22 @@ abstract class AbstractBotTaskWorker
     protected function generateSummaryText(): string
     {
         return $this->summary->serializePrefixAndTaskname();
+    }
+
+    /**
+     * todo @notused
+     * First instanciation on new commit: append git commit hash to taskname.
+     * Exemple : "Bot 4a1b2c3 Améliorations bibliographiques"
+     */
+    protected function appendOneTimeGitCommitToTaskname(string $taskname): string
+    {
+        $commitHash = $this->bot->getCurrentGitCommitHash();
+        $commitHashFromFile = @file_get_contents(self::GIT_COMMIT_HASH_PATH);
+        if ($commitHash && $commitHashFromFile !== $commitHash) {
+            file_put_contents(self::GIT_COMMIT_HASH_PATH, $commitHash);
+            $taskname = sprintf('[%s] %s', substr($commitHash, 0, 6), $taskname, );
+        }
+
+        return $taskname;
     }
 }

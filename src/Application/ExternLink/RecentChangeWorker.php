@@ -94,7 +94,7 @@ class RecentChangeWorker
     {
         $wiki = ServiceFactory::getMediawikiFactory();
         $botConfig = new WikiBotConfig($wiki, $this->logger);
-        $botConfig->taskName = self::TASK_NAME;
+        $botConfig->setTaskName(self::TASK_NAME);
 
         // refactored not tested :
         $httpClient = ServiceFactory::getHttpClient();
