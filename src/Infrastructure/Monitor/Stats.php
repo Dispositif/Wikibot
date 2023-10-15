@@ -91,14 +91,14 @@ class Stats
     {
         $retry = 0;
         while ($retry < $maxRetry) {
-            $success = $this->db->exec($query);
+            $success = @$this->db->exec($query);
             if ($success) {
                 return true;
             }
-            echo "DEBUG: Sqlite retry : wait 100000 µs...\n"; // todo remove
             $retry++;
             usleep(100000); // 100000 µs = 0.1 s
         }
+        echo "DEBUG: Sqlite retry : max retry reached\n"; // todo remove
 
         return false;
     }
