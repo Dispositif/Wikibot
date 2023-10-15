@@ -20,11 +20,12 @@ class ConsoleLogger extends AbstractLogger implements LoggerInterface
 {
     //    use LoggerTrait;
 
+    protected const CRITICAL_LOG_PATH = __DIR__ . '/../../../log/critical.log';
     public bool $verbose = false;
     public bool $debug = false;
     public bool $colorMode = false;
 
-    public function __construct(public Stats|NullStats $stats = new Stats())
+    public function __construct(public StatsInterface $stats = new NullStats())
     {
         try {
             $this->stats->increment('test.consolelogger');
@@ -130,7 +131,7 @@ class ConsoleLogger extends AbstractLogger implements LoggerInterface
     private function logInFile($level, string $message): void
     {
         file_put_contents(
-            __DIR__ . '/resources/critical.log',
+            self::CRITICAL_LOG_PATH,
             date('d-m-Y H:i:s') . " : $level : " . $message . PHP_EOL,
             FILE_APPEND
         );

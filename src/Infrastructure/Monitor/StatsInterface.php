@@ -9,15 +9,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Monitor;
 
-class NullStats implements StatsInterface
+interface StatsInterface
 {
-    public function increment(string $tag): bool
-    {
-        return false;
-    }
-
-    public function __call(string $method, array $args)
-    {
-        return false;
-    }
+    public function increment(string $tag): bool;
 }

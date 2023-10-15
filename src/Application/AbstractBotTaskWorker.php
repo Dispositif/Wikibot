@@ -109,6 +109,7 @@ abstract class AbstractBotTaskWorker
             $this->bot::getBotName(),
             $this->bot->getCurrentGitCommitHash() ?? '??'
         ));
+        $this->log->notice('*** Stats: ' . $this->log->stats::class);
 
         foreach ($this->getTitles() as $title) {
             try {
@@ -241,7 +242,7 @@ abstract class AbstractBotTaskWorker
         $commitHashFromFile = @file_get_contents(self::GIT_COMMIT_HASH_PATH);
         if ($commitHash && $commitHashFromFile !== $commitHash) {
             file_put_contents(self::GIT_COMMIT_HASH_PATH, $commitHash);
-            $taskname = sprintf('[%s] %s', substr($commitHash, 0, 6), $taskname, );
+            $taskname = sprintf('[%s] %s', substr($commitHash, 0, 6), $taskname);
         }
 
         return $taskname;
