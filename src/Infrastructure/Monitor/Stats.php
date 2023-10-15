@@ -32,6 +32,29 @@ class Stats
         $this->createTableIfNotExists();
     }
 
+    protected function createTableIfNotExists(): bool
+    {
+        // note : Sqlite VARCHAR(X) do not truncate to the supposed X max chars. VARCHAR is TEXT.
+        try {
+            $this->db->exec('CREATE TABLE if not exists tagnum_monthly (
+                tag TEXT NOT NULL PRIMARY KEY,
+                num int(11) NOT NULL DEFAULT 1
+            )');
+
+            $this->db->exec('CREATE TABLE if not exists tagnum_daily (
+                tag TEXT NOT NULL PRIMARY KEY,
+                num int(11) NOT NULL DEFAULT 1
+            )');
+
+            return $this->db->exec('CREATE TABLE if not exists tagnum (
+                tag TEXT NOT NULL PRIMARY KEY,
+                num int(11) NOT NULL DEFAULT 1
+            )');
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
     public function increment(string $tag): bool
     {
         $tag = $this->formatTag($tag);
@@ -47,11 +70,46 @@ class Stats
         return mb_substr($tag, 0, self::MAX_TAG_LENGTH);
     }
 
+    protected function upsertTag(string $tag, string $table = 'tagnum'): bool
+    {
+        // `num` default value is 1 so insert is enough to set num=1
+        try {
+            // upsert :)
+            return $this->sqliteExecWriteOrWait(
+                'INSERT INTO ' . $table . ' (tag) VALUES("' . $tag . '") ON CONFLICT(tag) DO UPDATE SET num=num+1'
+            );
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Sqlite do not allow concurrent write from different process.
+     * So wait a little and retry.
+     */
+    protected function sqliteExecWriteOrWait(string $query, int $maxRetry = 10): bool
+    {
+        $retry = 0;
+        while ($retry < $maxRetry) {
+            $success = $this->db->exec($query);
+            if ($success) {
+                return true;
+            }
+            echo "DEBUG: Sqlite retry : wait 100000 µs...\n"; // todo remove
+            $retry++;
+            usleep(100000); // 100000 µs = 0.1 s
+        }
+
+        return false;
+    }
+
     public function set(string $tag, int $num): bool
     {
         $tag = $this->formatTag($tag);
         try {
-            return $this->db->exec('INSERT OR REPLACE INTO tagnum (tag,num) VALUES("' . $tag . '", ' . $num . ')');
+            return $this->sqliteExecWriteOrWait(
+                'INSERT OR REPLACE INTO tagnum (tag,num) VALUES("' . $tag . '", ' . $num . ')'
+            );
         } catch (Exception $e) {
             return false;
         }
@@ -61,7 +119,7 @@ class Stats
     {
         $tag = $this->formatTag($tag);
         try {
-            return $this->db->exec(
+            return $this->sqliteExecWriteOrWait(
                 'INSERT INTO tagnum (tag) VALUES("' . $tag . '") ON CONFLICT(tag) DO UPDATE SET num=num-1'
             );
         } catch (Exception $e) {
@@ -80,41 +138,6 @@ class Stats
             return $result ? $result->fetchArray(SQLITE3_ASSOC)['num'] : null;
         } catch (Exception $e) {
             return null;
-        }
-    }
-
-    protected function createTableIfNotExists(): bool
-    {
-        try {
-            $this->db->exec('CREATE TABLE if not exists tagnum_monthly (
-                tag VARCHAR(' . self::MAX_TAG_LENGTH . ') NOT NULL PRIMARY KEY,
-                num int(11) NOT NULL DEFAULT 1
-            )');
-
-            $this->db->exec('CREATE TABLE if not exists tagnum_daily (
-                tag VARCHAR(' . self::MAX_TAG_LENGTH . ') NOT NULL PRIMARY KEY,
-                num int(11) NOT NULL DEFAULT 1
-            )');
-
-            return $this->db->exec('CREATE TABLE if not exists tagnum (
-                tag VARCHAR(' . self::MAX_TAG_LENGTH . ') NOT NULL PRIMARY KEY,
-                num int(11) NOT NULL DEFAULT 1
-            )');
-        } catch (Exception $e) {
-            return false;
-        }
-    }
-
-    protected function upsertTag(string $tag, string $table = 'tagnum'): bool
-    {
-        // `num` default value is 1 so insert is enough to set num=1
-        try {
-            // upsert :)
-            return $this->db->exec(
-                'INSERT INTO '.$table.' (tag) VALUES("' . $tag . '") ON CONFLICT(tag) DO UPDATE SET num=num+1'
-            );
-        } catch (Exception $e) {
-            return false;
         }
     }
 }
