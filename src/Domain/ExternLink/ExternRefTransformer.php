@@ -48,7 +48,7 @@ class ExternRefTransformer implements ExternRefTransformerInterface
     public array $summaryLog = [];
 
     protected $config;
-    protected string $registrableDomain;
+    protected ?string $registrableDomain = null;
     protected string $url;
     protected array $publisherData = [];
     protected array $skip_domain = [];
@@ -100,7 +100,7 @@ class ExternRefTransformer implements ExternRefTransformerInterface
             return $url;
         }
 
-        if (!$this->validateConfigWebDomain($this->registrableDomain)) {
+        if ($this->registrableDomain && !$this->validateConfigWebDomain($this->registrableDomain)) {
             $this->log->debug(
                 'Domain blocked by config : ' . $this->registrableDomain,
                 ['stats' => 'externref.skip.domainDisabledByConfig']
@@ -137,7 +137,9 @@ class ExternRefTransformer implements ExternRefTransformerInterface
         $this->addSummaryLog($mappedData, $summary);
         $this->tagAndLog($mappedData);
 
-        $template = $this->chooseTemplateByData($this->registrableDomain, $mappedData);
+        $template = $this->instanciateTemplate(
+            $this->chooseTemplateNameByData($this->registrableDomain, $mappedData)
+        );
 
         $mappedData = $this->replaceSomeData($mappedData, $template); // template specif + data + url
 
@@ -156,7 +158,7 @@ class ExternRefTransformer implements ExternRefTransformerInterface
 
     protected function isSiteBlackListed(): bool
     {
-        if ($this->skipSiteBlacklisted && in_array($this->registrableDomain, $this->skip_domain)) {
+        if ($this->registrableDomain && $this->skipSiteBlacklisted && in_array($this->registrableDomain, $this->skip_domain)) {
             $this->log->notice("Skip web site " . $this->registrableDomain);
             return true;
         }
@@ -254,9 +256,11 @@ class ExternRefTransformer implements ExternRefTransformerInterface
      * todo refac lisible
      * @throws Exception
      */
-    protected function chooseTemplateByData(string $domain, array $mapData): AbstractWikiTemplate
+    protected function chooseTemplateNameByData(?string $domain, array $mapData): string
     {
-        // Logique : choix template
+        if (!$domain) {
+            return 'lien web';
+        }
         $this->config[$domain]['template'] ??= [];
         $mapData['DATA-ARTICLE'] ??= false;
 
@@ -280,11 +284,7 @@ class ExternRefTransformer implements ExternRefTransformerInterface
             $templateName = 'lien web';
         }
 
-        $template = WikiTemplateFactory::create($templateName);
-        $template->userSeparator = " |";
-        $this->summary->memo['count ' . $templateName] = 1 + ($this->summary->memo['count ' . $templateName] ?? 0);
-
-        return $template;
+        return $templateName;
     }
 
     protected function replaceSomeData(array $mapData, AbstractWikiTemplate $template): array
@@ -348,5 +348,14 @@ class ExternRefTransformer implements ExternRefTransformerInterface
         $serialized = $templateOptimized->serialize(true);
         $this->log->info('Serialized 444: ' . $serialized . "\n");
         return $serialized;
+    }
+
+    private function instanciateTemplate(string $templateName): AbstractWikiTemplate
+    {
+        $template = WikiTemplateFactory::create($templateName);
+        $template->userSeparator = " |";
+        $this->summary->memo['count ' . $templateName] = 1 + ($this->summary->memo['count ' . $templateName] ?? 0);
+
+        return $template;
     }
 }
