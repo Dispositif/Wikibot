@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of dispositif/wikibot application (@github)
- * 2019/2020 © Philippe/Irønie  <dispositif@gmail.com>
+ * 2019/2023 © Philippe/Irønie  <dispositif@gmail.com>
  * For the full copyright and MIT license information, view the license file.
  */
 
@@ -11,7 +11,6 @@ namespace App\Domain\Utils;
 
 use DateTime;
 use DateTimeZone;
-use Exception;
 
 /**
  * see TYPO https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:AutoWikiBrowser/Typos#Dates
@@ -20,13 +19,20 @@ use Exception;
 class DateUtil
 {
     /**
-     * todo
-     *
-     *
-     * @return DateTime
-     * @throws Exception
+     * "09 mai 2019" => DateTime
      */
-    public static function fromWikiSignature(string $string)
+    public static function simpleFrench2object(string $string): ?DateTime
+    {
+        $string = self::french2English(trim($string));
+        $dateTime = DateTime::createFromFormat('d F Y', $string);
+
+        return $dateTime ?: null;
+    }
+
+    /**
+     * "01 janvier 2020 à 17:44 (CET)" => DateTime.
+     */
+    public static function fromWikiSignature(string $string): ?DateTime
     {
         // 1 janvier 2020 à 17:44 (CET) => 1 January 2020 à 17:44 (CET)
         $string = self::french2English(trim($string));
@@ -35,18 +41,14 @@ class DateUtil
         if (preg_match('/\(UTC\)/', (string) $string)) {
             $timezone = new DateTimeZone('UTC');
         }
-        $string = preg_replace('/\([A-Z]{3,4}\)/', '', (string) $string); // strip CET,CEST,UTC
+        // strip "(CET)", "(CEST)", "(UTC)"...
+        $string = preg_replace('/\([A-Z]{3,4}\)/', '', (string) $string);
         // convert fuseau ? https://stackoverflow.com/questions/5746531/utc-date-time-string-to-timezone
 
-        return DateTime::createFromFormat('d M Y \à H\:i', trim($string), $timezone);
+        return DateTime::createFromFormat('d F Y \à H\:i', trim($string), $timezone) ?: null;
     }
 
-    public function cleanDate(string $date)
-    {
-        return static::english2french($date);
-    }
-
-    public static function english2french(string $date)
+    public static function english2french(string $dateStr): string
     {
         return str_replace(
             [
@@ -77,11 +79,11 @@ class DateUtil
                 'novembre',
                 'décembre',
             ],
-            $date
+            $dateStr
         );
     }
 
-    public static function french2English(string $date)
+    public static function french2English(string $date): string
     {
         return str_replace(
             [
