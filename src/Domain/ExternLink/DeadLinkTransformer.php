@@ -45,7 +45,14 @@ class DeadLinkTransformer
     public function formatFromUrl(string $url, DateTimeInterface $now = new DateTimeImmutable()): string
     {
         // choose randomly one archiver
+        // TODO choose IA sur url IA, Wikiwix sur url Wikiwix, etc
         $oneArchiver = !empty($this->archivers) ? $this->archivers[array_rand($this->archivers)] : null;
+
+        // HACK : Temporary skip transform on archiver URL (éviter archive IA sur url Wikiwix)
+        if ($this->isWebArchiveUrl($url)) {
+            $this->log->notice('Skip {lien brisé} on web archive url', ['stats' => 'externref.skip.lienBriseOnwebarchiveurl']);
+            return $url;
+        }
 
         if ($oneArchiver instanceof DeadlinkArchiverInterface) {
             $webarchiveDTO = $oneArchiver->searchWebarchive($url);
@@ -127,6 +134,12 @@ class DeadLinkTransformer
 
     protected function generateLienBrise(string $url, DateTimeInterface $now): string
     {
+        if ($this->isWebArchiveUrl($url)) {
+            $this->notice('Skip {lien brisé} on web archive url', ['stats' => 'externref.skip.lienBriseOnwebarchiveurl']);
+
+            return $url;
+        }
+
         return sprintf(
             '{{Lien brisé |url= %s |titre=%s |brisé le=%s}}',
             $this->stripWebArchivePrefix($url),
@@ -144,5 +157,16 @@ class DeadLinkTransformer
         $url = preg_replace('#^https?://archive\.is/\d+/#', '', $url);
 
         return preg_replace('#^https?://archive\.wikiwix\.com/cache/\d+/#', '', $url);
+    }
+
+    /**
+     * todo move
+     */
+    protected function isWebArchiveUrl(string $url): bool
+    {
+        return str_starts_with($url, 'http://web.archive.org/web/')
+            || str_starts_with($url, 'https://web.archive.org/web/')
+            || str_starts_with($url, 'https://archive.is/')
+            || str_starts_with($url, 'https://archive.wikiwix.com/cache/');
     }
 }
