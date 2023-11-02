@@ -31,8 +31,8 @@ use App\Infrastructure\WikiwixAdapter;
 include __DIR__.'/../myBootstrap.php';
 
 // --page="Skateboard" --stats=redis --stats=sqlite --debug --verbose
-$options = getopt('', ['page::', 'debug', 'verbose', 'stats::']);
-var_dump($options);
+echo "OPTIONS: --debug --verbose --stats=redis --stats=sqlite --page=\"Skateboard\" --offset=1000 \n";
+$options = getopt('', ['page::', 'debug', 'verbose', 'stats::', 'offset::']);
 
 /** @noinspection PhpUnhandledExceptionInspection */
 $wiki = ServiceFactory::getMediawikiFactory();
@@ -44,6 +44,7 @@ if (isset($options["stats"]) && $options["stats"] === 'redis') {
 if (isset($options["stats"]) && $options["stats"] === 'sqlite') {
     $stats = new StatsSqlite3();
 }
+$offset = $options['offset'] ?? 0;
 
 $logger = new ConsoleLogger($stats);
 //$logger->colorMode = true;
@@ -69,24 +70,47 @@ if (!empty($options['page'])) {
 } else {
     // TODO : liste à puces * http://...
     // RANDOM :
+    // https://www.mediawiki.org/wiki/API:Search
     $list = new CirrusSearch(
         [
-            'srsearch' => '"http" insource:/\<ref[^\>]*\> ?https?\:\/\/[^\<\ ]+ *\<\/ref/',
-            'srlimit' => '1000',
-            'srsort' => 'random',
+            'srnamespace' => 0,
+            'srsearch' => '"http" insource:/\<ref[^\>]*\> ?http/',
+            'srlimit' => '500', // 500 max
+            'srsort' => 'none', //'random',
+//            'sroffset' => $offset, //default: 0
             'srqiprofile' => 'popular_inclinks_pv', /* Notation basée principalement sur le nombre de vues de la page */
-        ]
+        ],
+        ['continue' => true]
     );
 
     // filter titles already in edited.txt
     $titles = $list->getPageTitles();
+    echo '> before filtering: '. count($titles)." articles.\n";
     unset($list);
     $edited = file(__DIR__ . '/../resources/article_externRef_edited.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     $titles = array_diff($titles, $edited);
     $list = new PageList($titles);
 }
 
+
+//// HACK list manuelle
+//$filename = __DIR__ . '/../../../resources/wikiwix-log-11-01.txt';
+//echo "LISTE FROM " . $filename . "\n";
+//$titles = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+//// filtering
+//echo '> before filtering: ' . count($titles) . " articles.\n";
+//$edited = file(__DIR__ . '/../resources/article_externRef_edited.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+//$titles = array_diff($titles, $edited);
+//$list = new PageList($titles);
+//// end HACK list manuelle
+
+
 echo ">" . $list->count() . " dans liste\n";
+if ($list->count() === 0) {
+    echo "END of process: EMPTY ARTICLE LIST\n";
+    sleep(120);
+    exit(1);
+}
 
 $httpClient = ServiceFactory::getHttpClient();
 $wikiwix = new WikiwixAdapter($httpClient, $logger);
@@ -104,3 +128,4 @@ $transformer = new ExternRefTransformer(
 new ExternRefWorker($botConfig, $wiki, $list, $transformer);
 
 echo "END of process\n";
+sleep(60);

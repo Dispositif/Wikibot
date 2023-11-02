@@ -103,7 +103,8 @@ abstract class AbstractBotTaskWorker
      */
     final public function run(): void
     {
-        $this->log->notice('*** New BotTaskWorker: ' . $this->defaultTaskname, ['stats' => 'bottaskworker.instance']);
+        $this->log->notice('*** '.date('Y-m-d H:i')
+            .' New BotTaskWorker: ' . $this->defaultTaskname, ['stats' => 'bottaskworker.instance']);
         $this->log->notice(sprintf(
             '*** Bot: %s - commit: %s',
             $this->bot::getBotName(),
