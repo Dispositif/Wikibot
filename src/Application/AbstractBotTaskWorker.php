@@ -153,7 +153,13 @@ abstract class AbstractBotTaskWorker
             return;
         }
 
-        $text = $this->getTextFromWikiAction($title);
+        try {
+            $text = $this->getTextFromWikiAction($title);
+        } catch (Exception $e) {
+            $this->log->error($e->getMessage());
+            return;
+        }
+
         if (!$this->canProcessTitleArticle($title, $text)) {
             return;
         }
