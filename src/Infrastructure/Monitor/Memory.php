@@ -5,11 +5,12 @@
  * For the full copyright and MIT license information, view the license file.
  */
 
-namespace App\Infrastructure;
+namespace App\Infrastructure\Monitor;
 
 use App\Application\InfrastructurePorts\MemoryInterface;
 
 /**
+ * todo move /Monitor
  * php -i | grep memory
  * Class Memory.
  */
