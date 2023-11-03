@@ -102,14 +102,12 @@ abstract class TextUtil
         $first = mb_strtoupper(mb_substr($str, 0, 1, $e), $e);
         $rest = mb_substr($str, 1, mb_strlen($str, $e), $e);
 
-        return $first.$rest;
+        return $first . $rest;
     }
 
     /**
      * UTF8 first letter in lower case.
      * "Économie" => "économie".
-     *
-     *
      * @return string
      */
     public static function mb_lowerfirst(string $str, ?string $e = 'UTF-8'): string
@@ -117,7 +115,7 @@ abstract class TextUtil
         $first = mb_strtolower(mb_substr($str, 0, 1, $e), $e);
         $rest = mb_substr($str, 1, mb_strlen($str, $e), $e);
 
-        return $first.$rest;
+        return $first . $rest;
     }
 
     public static function replaceNonBreakingSpaces(string $text): string
@@ -130,7 +128,7 @@ abstract class TextUtil
      */
     public static function trim(string $string): string
     {
-        return trim($string, self::NO_BREAK_SPACE.self::NO_BREAK_THIN_SPACE."\n\t\r");
+        return trim($string, self::NO_BREAK_SPACE . self::NO_BREAK_THIN_SPACE . "\n\t\r");
     }
 
     /**
@@ -150,7 +148,7 @@ abstract class TextUtil
      * levenshtein('notre','nôtre') => 2
      * TODO move.
      *
-     * @param int    $max Maximum number of permutation/add/subtraction)
+     * @param int $max Maximum number of permutation/add/subtraction)
      *
      * @return string|null
      */
@@ -180,8 +178,6 @@ abstract class TextUtil
 
     /**
      * For predictCorrectParam().
-     *
-     *
      * @return string
      */
     private static function sanitizeParamForPredict(string $str): string
@@ -210,8 +206,6 @@ abstract class TextUtil
      * Strip accents
      * OK : grec, cyrillique, macron, hatchek, brève, rond en chef, tilde
      * UTF-8 compatible.
-     *
-     *
      * @return string
      */
     public static function stripAccents(string $string): string
@@ -229,8 +223,6 @@ abstract class TextUtil
 
     /**
      * Like PHP8 str_ends_with(). Multibytes ok.
-     *
-     *
      * @return bool
      */
     public static function str_ends_with(string $haystack, string $needle): bool
@@ -245,8 +237,6 @@ abstract class TextUtil
 
     /**
      * Like PHP8 str_starts_with().
-     *
-     *
      * @return bool
      */
     public static function str_starts_with(string $haystack, string $needle): bool
@@ -281,5 +271,55 @@ abstract class TextUtil
         }
 
         return $count;
+    }
+
+    /**
+     * code source:  https://github.com/devgeniem/wp-sanitize-accented-uploads/blob/master/plugin.php#L152
+     * table source: http://www.i18nqa.com/debug/utf8-debug.html
+     */
+    public static function fixWrongUTF8Encoding($inputString)
+    {
+        $fix_list = [
+            // 3 char errors first
+            'â€š' => '‚', 'â€ž' => '„', 'â€¦' => '…', 'â€¡' => '‡',
+            'â€°' => '‰', 'â€¹' => '‹', 'â€˜' => '‘', 'â€™' => '’',
+            'â€œ' => '“', 'â€¢' => '•', 'â€“' => '–', 'â€”' => '—',
+            'â„¢' => '™', 'â€º' => '›', 'â‚¬' => '€',
+            // 2 char errors
+            'Ã‚' => 'Â', 'Æ’' => 'ƒ', 'Ãƒ' => 'Ã', 'Ã„' => 'Ä',
+            'Ã…' => 'Å', 'â€' => '†', 'Ã†' => 'Æ', 'Ã‡' => 'Ç',
+            'Ë†' => 'ˆ', 'Ãˆ' => 'È', 'Ã‰' => 'É', 'ÃŠ' => 'Ê',
+            'Ã‹' => 'Ë', 'Å’' => 'Œ', 'ÃŒ' => 'Ì', 'Å½' => 'Ž',
+            'ÃŽ' => 'Î', 'Ã‘' => 'Ñ', 'Ã’' => 'Ò', 'Ã“' => 'Ó',
+            'â€' => '”', 'Ã”' => 'Ô', 'Ã•' => 'Õ', 'Ã–' => 'Ö',
+            'Ã—' => '×', 'Ëœ' => '˜', 'Ã˜' => 'Ø', 'Ã™' => 'Ù',
+            'Å¡' => 'š', 'Ãš' => 'Ú', 'Ã›' => 'Û', 'Å“' => 'œ',
+            'Ãœ' => 'Ü', 'Å¾' => 'ž', 'Ãž' => 'Þ', 'Å¸' => 'Ÿ',
+            'ÃŸ' => 'ß', 'Â¡' => '¡', 'Ã¡' => 'á', 'Â¢' => '¢',
+            'Ã¢' => 'â', 'Â£' => '£', 'Ã£' => 'ã', 'Â¤' => '¤',
+            'Ã¤' => 'ä', 'Â¥' => '¥', 'Ã¥' => 'å', 'Â¦' => '¦',
+            'Ã¦' => 'æ', 'Â§' => '§', 'Ã§' => 'ç', 'Â¨' => '¨',
+            'Ã¨' => 'è', 'Â©' => '©', 'Ã©' => 'é', 'Âª' => 'ª',
+            'Ãª' => 'ê', 'Â«' => '«', 'Ã«' => 'ë', 'Â¬' => '¬',
+            'Ã¬' => 'ì', 'Â®' => '®', 'Ã®' => 'î', 'Â¯' => '¯',
+            'Ã¯' => 'ï', 'Â°' => '°', 'Ã°' => 'ð', 'Â±' => '±',
+            'Ã±' => 'ñ', 'Â²' => '²', 'Ã²' => 'ò', 'Â³' => '³',
+            'Ã³' => 'ó', 'Â´' => '´', 'Ã´' => 'ô', 'Âµ' => 'µ',
+            'Ãµ' => 'õ', 'Â¶' => '¶', 'Ã¶' => 'ö', 'Â·' => '·',
+            'Ã·' => '÷', 'Â¸' => '¸', 'Ã¸' => 'ø', 'Â¹' => '¹',
+            'Ã¹' => 'ù', 'Âº' => 'º', 'Ãº' => 'ú', 'Â»' => '»',
+            'Ã»' => 'û', 'Â¼' => '¼', 'Ã¼' => 'ü', 'Â½' => '½',
+            'Ã½' => 'ý', 'Â¾' => '¾', 'Ã¾' => 'þ', 'Â¿' => '¿',
+            'Ã¿' => 'ÿ', 'Ã€' => 'À',
+            '  ' => ' ', // double space
+            // 1 char errors last
+            'Ã' => 'Á', 'Å' => 'Š', 'Ã' => 'Í', 'Ã' => 'Ï',
+            'Ã' => 'Ð', 'Ã' => 'Ý', 'Ã' => 'à', 'Ã­' => 'í',
+        ];
+
+        $error_chars = array_keys($fix_list);
+        $real_chars = array_values($fix_list);
+
+        return str_replace($error_chars, $real_chars, $inputString);
     }
 }
