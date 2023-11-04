@@ -73,14 +73,14 @@ if (!empty($options['page'])) {
     // https://www.mediawiki.org/wiki/API:Search
     $list = new CirrusSearch(
         [
-            'srnamespace' => 0,
+            'srnamespace' => '0',
             'srsearch' => '"http" insource:/\<ref[^\>]*\> ?http/',
-            'srlimit' => '500', // 500 max
-            'srsort' => 'none', //'random',
+            'srlimit' => '500',
+            'srsort' => CirrusSearch::SRSORT_NONE,
 //            'sroffset' => $offset, //default: 0
-            'srqiprofile' => 'popular_inclinks_pv', /* Notation basée principalement sur le nombre de vues de la page */
+            'srqiprofile' => CirrusSearch::SRQIPROFILE_POPULAR_INCLINKS_PV, // nombre de vues de la page
         ],
-        ['continue' => true]
+        [CirrusSearch::OPTION_CONTINUE => true]
     );
 
     // filter titles already in edited.txt

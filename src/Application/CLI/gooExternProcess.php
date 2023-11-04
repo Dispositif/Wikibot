@@ -24,7 +24,7 @@ use App\Infrastructure\ServiceFactory;
 include __DIR__.'/../myBootstrap.php';
 
 $quota = new GoogleApiQuota();
-dump('Google quota : '.$quota->getCount());
+echo 'Google quota: '.$quota->getCount();
 
 if ($quota->isQuotaReached()) {
     throw new \Exception("Google Books API quota reached => exit");
@@ -45,11 +45,15 @@ $list = new CirrusSearch(
         'srsearch' => '"https://books.google" insource:/\<ref[^\>]*\> *https\:\/\/books\.google/',
 //        'srsearch' => 'https://books.google" insource:/\* *https\:\/\/books\.google/', // liste à puces
         'srnamespace' => '0',
-        'srlimit' => '1000',
-        //        'srqiprofile' => 'popular_inclinks_pv',
-        'srsort' => 'last_edit_desc',
-    ]
+        'srlimit' => '500',
+        // 'srqiprofile' => CirrusSearch::SRQIPROFILE_POPULAR_INCLINKS_PV,
+        'srsort' => CirrusSearch::SRSORT_LAST_EDIT_DESC,
+    ],
+    [CirrusSearch::OPTION_CONTINUE => true]
 );
+$titles = $list->getPageTitles();
+echo 'CirrusSearch: '.count($titles).' titles found';
+$list = new PageList($titles);
 // TODO : https://www.google.com/books/edition/A_Wrinkle_in_Time/r119-dYq0mwC
 
 if (!empty($argv[1])) {
@@ -57,4 +61,4 @@ if (!empty($argv[1])) {
 }
 
 new GoogleBooksWorker($bot, $wiki, $list);
-// todo desactivate "Skip : déjà analysé"
+// todo 2023 : desactivate "Skip : déjà analysé"

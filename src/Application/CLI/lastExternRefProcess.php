@@ -44,12 +44,13 @@ $botConfig->checkStopOnTalkpageOrException();
 $list = new CirrusSearch(
     [
         'srsearch' => '"http" insource:/\<ref[^\>]*\> ?https?\:\/\/[^\<\ ]+ *\<\/ref/',
-        'srlimit' => '1000',
-        'srqiprofile' => 'popular_inclinks_pv',
-        'srsort' => 'last_edit_desc',
-    ]
+        'srlimit' => '500',
+        'srqiprofile' => CirrusSearch::SRQIPROFILE_POPULAR_INCLINKS_PV,
+        'srsort' => CirrusSearch::SRSORT_LAST_EDIT_DESC,
+    ],
+    // continue: false because last_edit_desc sorting
+    [CirrusSearch::OPTION_REVERSE => true, CirrusSearch::OPTION_CONTINUE => false]
 );
-$list->setOptions(['reverse' => true]);
 
 
 // filter titles already in edited.txt
