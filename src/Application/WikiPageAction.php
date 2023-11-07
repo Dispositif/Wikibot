@@ -327,7 +327,12 @@ class WikiPageAction
     public function extractRefFromText(string $text): ?array
     {
         $parser = new TagParser(); // todo ParserFactory
-        $refs = $parser->importHtml($text)->getRefValues(); // []
+        try {
+            $refs = $parser->importHtml($text)->getRefValues();
+        } catch (Exception $e) {
+            echo "Error extractRefFromText: ".$e->getMessage()."\n";
+            return [];
+        }
 
         return $refs;
     }

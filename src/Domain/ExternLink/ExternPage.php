@@ -89,9 +89,15 @@ class ExternPage
             return [];
         }
 
-        $results = $this->tagParser->importHtml($html)->xpathResults(
-            '//script[@type="application/ld+json"]'
-        );
+        try {
+            $results = $this->tagParser->importHtml($html)->xpathResults(
+                '//script[@type="application/ld+json"]'
+            );
+        } catch (Exception $e) {
+            $this->log->warning('TagParser->xpathResults NULL ' . $this->url);
+
+            return [];
+        }
 
         foreach ($results as $result) {
             $json = trim((string) $result);
