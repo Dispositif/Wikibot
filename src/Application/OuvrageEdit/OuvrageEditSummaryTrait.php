@@ -35,7 +35,7 @@ trait OuvrageEditSummaryTrait
         );
 
         $summary = $this->shrinkLongSummaryIfNoImportantDetailsToVerify($summary);
-        $summary = $this->couldAddLuckMessage($summary);
+//        $summary = $this->couldAddLuckMessage($summary);
         $this->log->notice($summary);
 
         return $summary;

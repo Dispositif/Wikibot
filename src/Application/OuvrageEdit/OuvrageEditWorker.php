@@ -44,8 +44,8 @@ class OuvrageEditWorker
      */
     final public const EDIT_SIGNALEMENT = true;
     final public const CITATION_LIMIT = 150;
-    final public const DELAY_BOTFLAG_SECONDS = 60;
-    final public const DELAY_NO_BOTFLAG_SECONDS = 60;
+    final public const DELAY_BOTFLAG_SECONDS = 120;
+    final public const DELAY_NO_BOTFLAG_SECONDS = 120;
     final public const DELAY_MINUTES_AFTER_HUMAN_EDIT = 10;
     final public const ERROR_MSG_TEMPLATE = __DIR__ . '/templates/message_errors.wiki';
 
@@ -174,7 +174,7 @@ class OuvrageEditWorker
         }
         if (preg_match('#{{ ?En-tête label ?\| ?BA#i', (string) $this->pageWorkStatus->wikiText)) {
             $this->db->setLabel($title, 1);
-            $this->pageWorkStatus->botFlag = false;
+//            $this->pageWorkStatus->botFlag = false;
             $this->pageWorkStatus->featured_article = true; // to add star in edit summary
             $this->log->warning("Bon article !!\n");
         }
