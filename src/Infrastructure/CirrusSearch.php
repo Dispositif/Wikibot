@@ -20,6 +20,7 @@ use InvalidArgumentException;
 use Throwable;
 
 /**
+ * https://www.mediawiki.org/wiki/Help:CirrusSearch
  * https://fr.wikipedia.org/w/api.php?action=help&modules=query%2Bsearch
  * https://www.mediawiki.org/wiki/Help:CirrusSearch#Insource
  * raw https://fr.wikipedia.org/w/api.php?action=query&list=search&srsearch=%22https://books.google%22%20insource:/\%3Cref\%3Ehttps\:\/\/books\.google/&formatversion=2&format=json

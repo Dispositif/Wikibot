@@ -209,8 +209,9 @@ abstract class AbstractWikiTemplate extends AbstractStrictWikiTemplate implement
      */
     public function detectUserSeparator($text): void
     {
-        $this->userSeparator = TemplateParser::findUserStyleSeparator($text);
-        $this->userMultiSpaced = TemplateParser::isMultispacedTemplate($text);
+        // TODO : retirer styles personnels
+        $this->userSeparator = TemplateParser::findUserStyleSeparator($text); // ou ' |'
+        $this->userMultiSpaced = TemplateParser::isMultispacedTemplate($text); // ou false
     }
 
     /**
