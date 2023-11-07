@@ -9,16 +9,14 @@ declare(strict_types=1);
 
 namespace App\Application;
 
+use App\Application\InfrastructurePorts\PageListForAppInterface as PageListInterface;
 use App\Domain\Transformers\GoogleTransformer;
 use App\Infrastructure\GoogleApiQuota;
 use App\Infrastructure\GoogleBooksAdapter;
-use Throwable;
+use Mediawiki\Api\MediawikiFactory;
 
 /**
- * externe goo
- * Class GoogleBooksWorker
- *
- * @package App\Application\Examples
+ * Parse and transform Google Books URL.
  */
 class GoogleBooksWorker extends AbstractBotTaskWorker
 {
@@ -30,19 +28,21 @@ class GoogleBooksWorker extends AbstractBotTaskWorker
     final public const SKIP_ADQ                   = false;
 
     protected $modeAuto = true;
+    protected GoogleTransformer $transformer;
 
-    /**
-     * @param string      $title
-     * @param string|null $text
-     *
-     * @return string|null
-     * @throws Throwable
-     */
+    public function __construct(
+        WikiBotConfig      $bot,
+        MediawikiFactory   $wiki,
+        ?PageListInterface $pagesGen = null
+    )
+    {
+        $this->transformer = new GoogleTransformer(new GoogleApiQuota(), new GoogleBooksAdapter(), $bot->getLogger());
+        parent::__construct($bot, $wiki, $pagesGen);
+    }
+
     protected function processWithDomainWorker(string $title, string $text): ?string
     {
-        $ref = new GoogleTransformer(new GoogleApiQuota(), new GoogleBooksAdapter());
-
-        return $ref->process($text);
+        return $this->transformer->process($text);
     }
 }
 

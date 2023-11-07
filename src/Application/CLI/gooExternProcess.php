@@ -14,11 +14,11 @@ use App\Infrastructure\GoogleApiQuota;
 use App\Infrastructure\Monitor\ConsoleLogger;
 use App\Infrastructure\PageList;
 use App\Infrastructure\ServiceFactory;
-
+use Exception;
 
 /**
- * Cherche des liens bruts Google Books (<ref> et liste * ) et les transforme en {ouvrage}
- * Consomme du quota journalier GB
+ * Searches for raw Google Books links (<ref…> and bullet list * ) and transforms them into {ouvrage}
+ * Consumes GoogleBooks API daily quota
  */
 
 include __DIR__.'/../myBootstrap.php';
@@ -27,12 +27,16 @@ $quota = new GoogleApiQuota();
 echo 'Google quota: '.$quota->getCount();
 
 if ($quota->isQuotaReached()) {
-    throw new \Exception("Google Books API quota reached => exit");
+    throw new Exception("Google Books API quota reached => exit");
 }
 
 
 $wiki = ServiceFactory::getMediawikiFactory();
-$bot = new WikiBotConfig($wiki, new ConsoleLogger());
+$logger = new ConsoleLogger();
+//$logger->debug = true; // todo option
+//$logger->verbose = true;
+//$logger->colorMode = true;
+$bot = new WikiBotConfig($wiki, $logger);
 $bot->setTaskName("🌐📘 Amélioration bibliographique : lien Google Books ⇒ {ouvrage}");
 
 // les "* https://..." en biblio et liens externes
