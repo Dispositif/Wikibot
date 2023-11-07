@@ -52,7 +52,6 @@ class ImportantSummaryCreator
             foreach ($matches[0] as $line) {
                 $this->addErrorWarning($line);
             }
-            //  $this->pageWorkStatus->botFlag = false;
             $this->addSummaryTag('paramètre non corrigé');
         }
     }
@@ -72,7 +71,6 @@ class ImportantSummaryCreator
         // ISBN invalide
         if (preg_match("#isbn invalide ?=[^|}]+#i", $opti, $matches) > 0) {
             $this->addErrorWarning($matches[0]);
-            $this->pageWorkStatus->botFlag = false;
             $this->addSummaryTag('ISBN invalide 💩');
         }
     }
@@ -86,11 +84,9 @@ class ImportantSummaryCreator
         }
         // prédiction paramètre correct
         if (preg_match('#[^,]+(=>|⇒)[^,]+#', $modifs, $matches) > 0) {
-            $this->pageWorkStatus->botFlag = false;
             $this->addSummaryTag($matches[0]);
         }
         if (preg_match('#\+\+sous-titre#', $modifs) > 0) {
-            $this->pageWorkStatus->botFlag = false;
             $this->addSummaryTag('+sous-titre');
         }
         if (preg_match('#\+lieu#', $modifs) > 0) {

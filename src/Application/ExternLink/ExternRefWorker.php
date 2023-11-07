@@ -170,14 +170,14 @@ class ExternRefWorker extends AbstractRefBotWorker
             $suffix .= ($this->summary->memo['wikiwix'] > 1)
                 ? $this->summary->memo['wikiwix'] . 'x '
                 : '';
-            $suffix .= '🥝Wikiwix';
+            $suffix .= 'Wikiwix';
         }
         if (isset($this->summary->memo['wayback'])) {
             $suffix .= ' ';
             $suffix .= ($this->summary->memo['wayback'] > 1)
                 ? $this->summary->memo['wayback'] . 'x '
                 : '';
-            $suffix .= '🏛️InternetArchive';
+            $suffix .= 'InternetArchive';
         }
 
         if (isset($this->summary->memo['accès url non libre'])) {

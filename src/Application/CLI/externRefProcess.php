@@ -56,6 +56,9 @@ $botConfig->setTaskName("🌐 Amélioration de références : URL ⇒ "); // �
 
 $botConfig->checkStopOnTalkpageOrException();
 
+// instanciate TorClient now, so there is no CirrusSearch request if there is a Tor connection error
+$torClient = ServiceFactory::getHttpClient(true);
+
 if (!empty($options['page'])) {
     $list = new PageList([trim($options['page'])]);
 
@@ -71,9 +74,12 @@ if (!empty($options['page'])) {
     // TODO : liste à puces * http://...
     // RANDOM :
     // https://www.mediawiki.org/wiki/API:Search
+    // 5 nov 2023 :  54'045 https://w.wiki/83rQ
+    // https://www.mediawiki.org/wiki/Help:CirrusSearch#Explicit_sort_orders
     $list = new CirrusSearch(
         [
             'srnamespace' => '0',
+            // intitle:bla* prefix:bla incategory;bla insource
             'srsearch' => '"http" insource:/\<ref[^\>]*\> ?http/',
             'srlimit' => '500',
             'srsort' => CirrusSearch::SRSORT_NONE,
@@ -119,7 +125,7 @@ $internetArchive = new InternetArchiveAdapter($httpClient, $logger);
 $domainParser = new InternetDomainParser();
 $transformer = new ExternRefTransformer(
     new ExternMapper($logger),
-    ServiceFactory::getHttpClient(true),
+    $torClient,
     $domainParser,
     $logger,
     [$wikiwix, $internetArchive, $wikiwix]
