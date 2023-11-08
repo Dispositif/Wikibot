@@ -58,11 +58,6 @@ class TemplateParserTest extends TestCase
         ];
     }
 
-    public function testFindAllTemplatesByName(): never
-    {
-        $this::markTestIncomplete('not implemented');
-    }
-
     /**
      * @dataProvider provideParseDataFromTemplate
      *
@@ -91,8 +86,26 @@ class TemplateParserTest extends TestCase
         ];
     }
 
-    public function testParseAllTemplateByName(): never
+    /**
+     * @dataProvider providePageTemplate
+     */
+    public function testExtractPageTemplateContent(string $text, $expected)
     {
-        $this::markTestIncomplete('not implemented');
+        $this::assertSame(
+            $expected,
+            TemplateParser::extractPageTemplateContent($text)
+        );
+    }
+
+    public static function providePageTemplate(): array
+    {
+        return [
+            ['bla', null],
+            ['bla {{P.}}250 bla', ['{{P.}}250', '250']],
+            ['bla {{p.|125-133}} bla', ['{{p.|125-133}}', '125-133']],
+            ['bla {{p.}}125-133 bla', ['{{p.}}125-133', '125-133']],
+            ['bla {{p.}}10, 20, 35-36 bla', ['{{p.}}10, 20, 35-36', '10, 20, 35-36']],
+            ['{{p.|125-133}} bla {{p.|55}}', ['{{p.|125-133}}', '125-133']],
+        ];
     }
 }

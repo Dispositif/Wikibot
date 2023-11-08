@@ -284,4 +284,24 @@ abstract class TemplateParser extends WikiTextUtil
         // detect 4 spaces chars
         return (bool) preg_match('#{{[^}]+ {4}[^}]+}}#i', $tplText);
     }
+
+    /**
+     * https://fr.wikipedia.org/wiki/Mod%C3%A8le:P.
+     * Examples:
+     * 'bla {{p.|125-133}} bla' => ['{{p.|125-133}}', '125-133']
+     * 'bla {{p.}}10, 20, 35-36 bla' => ['{{p.}}10, 20, 35-36', '10, 20, 35-36']
+     */
+    public static function extractPageTemplateContent(string $text): ?array
+    {
+        if (preg_match('#\{\{p\.(?:\|([0-9,\-—\/ ]+))?\}\}([0-9,\-—\/ ]+)?#i', $text, $matches) !== false) {
+            if (!empty($matches[1]) && trim($matches[1]) !== '') { // {{p.|125}}
+                return [trim($matches[0]), trim($matches[1])];
+            }
+            if (!empty($matches[2]) && trim($matches[2]) !== '') { // {{p.}}125
+                return [trim($matches[0]), trim($matches[2])];
+            }
+        }
+
+        return null;
+    }
 }
