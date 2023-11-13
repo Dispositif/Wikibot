@@ -22,7 +22,7 @@ class HttpUtil
      */
     public static function isHttpURL(string $url): bool
     {
-        return (bool)preg_match('#^https?://[^ ]+$#i', $url);
+        return (bool) preg_match('#^https?://[^ \n\t\r]+$#i', $url);
     }
 
     /**
