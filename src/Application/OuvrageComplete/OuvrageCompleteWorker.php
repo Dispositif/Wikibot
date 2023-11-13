@@ -41,7 +41,6 @@ class OuvrageCompleteWorker
 {
     use SummaryLogTrait;
 
-
     /**
      * @var MemoryInterface
      */

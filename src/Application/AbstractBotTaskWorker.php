@@ -224,7 +224,7 @@ abstract class AbstractBotTaskWorker
             return;
         }
 
-        $this->log->notice($result ? '>> OK' : '>>  NOCHANGE');
+        $this->log->notice($result ? '>> EDIT OK' : '>>  NOCHANGE');
         $this->log->debug("Sleep " . static::SLEEP_AFTER_EDITION);
         sleep(static::SLEEP_AFTER_EDITION);
     }

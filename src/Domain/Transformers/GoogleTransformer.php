@@ -43,10 +43,9 @@ class GoogleTransformer
     public function __construct(
         protected readonly GoogleApiQuotaInterface $quota,
         protected readonly GoogleBooksInterface    $googleBooksAdapter,
-        protected ?LoggerInterface                 $logger = null
+        protected LoggerInterface                  $logger = new NullLogger()
     )
     {
-        $this->logger = $logger ?: new NullLogger();
     }
 
     /**
@@ -192,7 +191,7 @@ class GoogleTransformer
             }
         }
 
-        $optimizer = OptimizerFactory::fromTemplate($ouvrage, null, $this->logger = null);
+        $optimizer = OptimizerFactory::fromTemplate($ouvrage, null, $this->logger);
         $optimizer->doTasks();
         $ouvrage2 = $optimizer->getOptiTemplate();
 

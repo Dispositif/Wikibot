@@ -49,7 +49,7 @@ abstract class AbstractTemplateOptimizer implements TemplateOptimizerInterface
         $this->originTemplate = $template;
         $this->optiTemplate = clone $template;
         $this->wikiPageTitle = ($wikiPageTitle) ?? null;
-        $this->log = $log ?? new NullLogger();
+        $this->log = $log instanceof LoggerInterface ? $log : new NullLogger();
         $this->pageListManager = $pageListManager;
     }
 

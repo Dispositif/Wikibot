@@ -14,6 +14,7 @@ use App\Domain\Models\Wiki\LienWebTemplate;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\Models\Wiki\WikiTemplateInterface;
 use App\Infrastructure\FileManager;
+use App\Infrastructure\Monitor\NullLogger;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -25,7 +26,7 @@ class OptimizerFactory
     public static function fromTemplate(
         WikiTemplateInterface $template,
         ?string $wikiPageTitle = null,
-        ?LoggerInterface $log = null
+        LoggerInterface $log = new NullLogger()
     ): ?TemplateOptimizerInterface {
         if ($template instanceof OuvrageTemplate) {
             return new OuvrageOptimize($template, $wikiPageTitle, $log, new FileManager());

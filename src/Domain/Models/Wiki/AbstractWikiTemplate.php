@@ -29,11 +29,13 @@ abstract class AbstractWikiTemplate extends AbstractStrictWikiTemplate implement
 {
     use ArrayProcessTrait, WikiArrayTrait, InfoTrait;
 
+    protected const ALLOW_USER_MULTI_SPACED = true;
+
     public $parametersErrorFromHydrate;
 
     public $userSeparator;
 
-    public $userMultiSpaced = false;
+    public bool $userMultiSpaced = false;
 
     /**
      * optional
@@ -75,6 +77,7 @@ abstract class AbstractWikiTemplate extends AbstractStrictWikiTemplate implement
                 // MultiSpaced : espacements multiples pour style étendu : "auteur    = Bla"
                 if ($this->userSeparator
                     && str_contains((string) $this->userSeparator, "\n")
+                    && self::ALLOW_USER_MULTI_SPACED
                     && $this->userMultiSpaced
                 ) {
                     $spaceNb = max(0, $maxChars - mb_strlen($paramName));

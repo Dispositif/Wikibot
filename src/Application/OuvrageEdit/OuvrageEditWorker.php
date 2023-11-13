@@ -48,6 +48,8 @@ class OuvrageEditWorker
     final public const DELAY_NO_BOTFLAG_SECONDS = 120;
     final public const DELAY_MINUTES_AFTER_HUMAN_EDIT = 10;
     final public const ERROR_MSG_TEMPLATE = __DIR__ . '/templates/message_errors.wiki';
+    protected const ALWAYS_NO_BOTFLAG_ON_BA = true;
+    protected const ALWAYS_NO_BOTFLAG_ON_ADQ = true;
 
     /**
      * @var PageWorkStatus
@@ -169,12 +171,17 @@ class OuvrageEditWorker
         if (preg_match('#{{ ?En-tête label ?\| ?AdQ#i', (string) $this->pageWorkStatus->wikiText)) {
             $this->db->setLabel($title, 2);
             $this->log->warning("Article de Qualité !\n");
-            $this->pageWorkStatus->botFlag = false;
+            if (self::ALWAYS_NO_BOTFLAG_ON_ADQ) {
+                $this->pageWorkStatus->botFlag = false;
+            }
             $this->pageWorkStatus->featured_article = true; // to add star in edit summary
         }
         if (preg_match('#{{ ?En-tête label ?\| ?BA#i', (string) $this->pageWorkStatus->wikiText)) {
             $this->db->setLabel($title, 1);
-//            $this->pageWorkStatus->botFlag = false;
+            if (self::ALWAYS_NO_BOTFLAG_ON_BA) {
+                $this->pageWorkStatus->botFlag = false;
+            }
+            $this->pageWorkStatus->botFlag = false;
             $this->pageWorkStatus->featured_article = true; // to add star in edit summary
             $this->log->warning("Bon article !!\n");
         }

@@ -22,7 +22,7 @@ use Mediawiki\DataModel\EditInfo;
  */
 class TalkBotConfig extends WikiBotConfig
 {
-    final public const BOT_TALK_SUMMARY = 'Réponse artificielle';
+    final public const BOT_TALK_SUMMARY = 'Réponse artificielle[[User:Irønie|.]]';
     final public const BOT_TALK_FILE = __DIR__ . '/resources/phrases_zizibot.txt';
     final public const TALKCONFIG_FILENAME = __DIR__ . '/resources/botTalk_config.json';
 
@@ -72,9 +72,9 @@ class TalkBotConfig extends WikiBotConfig
         $indentation = $this->predictTalkIndentation($page->getText() ?? '', $last->getUser()); // ':::'
         $addText = $this->generateTalkText($last->getUser(), $indentation);
 
-        echo "Prepare to talk on $pageTitle / Sleep 3 min...\n";
+        echo "Prepare to talk on $pageTitle / Sleep 2 min...\n";
         echo sprintf("-> %s \n", $addText);
-        sleep(180);
+        sleep(120);
 
         $editInfo = new EditInfo(static::BOT_TALK_SUMMARY);
         $success = $page->addToBottomOfThePage($addText, $editInfo);
