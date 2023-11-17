@@ -80,7 +80,8 @@ if (!empty($options['page'])) {
         [
             'srnamespace' => '0',
             // intitle:bla* prefix:bla incategory;bla insource
-            'srsearch' => '"http" insource:/\<ref[^\>]*\> ?http/',
+            // TODO "https:" insource:/\<ref[^\>]*\> ?\[https\:[^\<]+\</i
+            'srsearch' => '"https:" insource:/\<ref[^\>]*\> ?https\:/',
             'srlimit' => '500',
             'srsort' => CirrusSearch::SRSORT_NONE,
 //            'sroffset' => $offset, //default: 0
