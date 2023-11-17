@@ -127,12 +127,12 @@ abstract class GoogleBooksUtil
      * Extract domain from google URL.
      * return '.fr', '.com,'.co.uk', '.co.ma' or null
      */
-    private static function parseGoogleDomain(string $url): ?string
+    private static function extractGoogleDomain(string $url): ?string
     {
-        $host = parse_url($url, PHP_URL_HOST);
-        if (!empty($host) && preg_match('#\.[a-z]{2,3}$#', $host, $matches) > 0) {
-            // Maroc : google.co.ma (sous-domaine!!)
-            return str_replace(['.ma', '.uk', '.au'], ['.co.ma', '.co.uk', '.com.au'], $matches[0]); // .fr
+        $host = parse_url($url, PHP_URL_HOST); // "books.google.fr"
+        if (!empty($host) && preg_match('#google((?:\.[a-z]{2,3})?\.[a-z]{2,3})$#', $host, $matches) > 0) {
+
+            return $matches[1] ?? null; // .fr
         }
 
         return null;
@@ -210,17 +210,18 @@ abstract class GoogleBooksUtil
     }
 
     /**
+     * Changed : do not replace '.com' Googledomain name. This method is useless.
      * Naive replacement of Google domain name.
      */
     protected static function modifyGoogleDomainURL(string $url): string
     {
         $defaultGoogleDomainURL = self::DEFAULT_GOOGLEBOOKS_URL;
+        $gooDomain = self::extractGoogleDomain($url); // '.fr', '.co.uk'…
 
-        // domain .com .fr
-        $gooDomain = self::parseGoogleDomain($url);
         if ($gooDomain) {
             $defaultGoogleDomainURL = str_replace('.com', $gooDomain, $defaultGoogleDomainURL);
         }
+
         return $defaultGoogleDomainURL;
     }
 

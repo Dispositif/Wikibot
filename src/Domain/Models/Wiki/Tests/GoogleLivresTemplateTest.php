@@ -66,6 +66,11 @@ class GoogleLivresTemplateTest extends TestCase
     {
         return [
             [
+                // before fix nov 2023
+                'https://books.google.com.br/books?id=tERyAAAAMAAJ',
+                'https://books.google.com.br/books?id=tERyAAAAMAAJ'
+            ],
+            [
                 // new Google Book format (nov 2019)
                 'https://www.google.fr/books/edition/_/U4NmPwAACAAJ?hl=en',
                 'https://www.google.fr/books/edition/_/U4NmPwAACAAJ?hl=en',
