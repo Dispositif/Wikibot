@@ -37,6 +37,7 @@ $logger = new ConsoleLogger();
 //$logger->verbose = true;
 //$logger->colorMode = true;
 $bot = new WikiBotConfig($wiki, $logger);
+$bot->checkStopOnTalkpageOrException();
 $bot->setTaskName("🌐📘 Amélioration bibliographique : lien Google Books ⇒ {ouvrage}");
 
 // les "* https://..." en biblio et liens externes

@@ -29,8 +29,10 @@ while (true) {
             $logger->verbose = true;
 //            $logger->debug = true;
         }
+        $bot = new WikiBotConfig(ServiceFactory::getMediawikiFactory(), $logger);
+        $bot->checkStopOnTalkpageOrException();
         $process = new OuvrageEditWorker(
-            new DbAdapter(), new WikiBotConfig(ServiceFactory::getMediawikiFactory(), $logger), new Memory(), $logger
+            new DbAdapter(), $bot, new Memory(), $logger
         );
         $process->run();
         $count = 0;

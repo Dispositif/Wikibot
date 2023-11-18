@@ -46,6 +46,7 @@ class WikiBotConfig
     public const TALK_STOP_CHECK_INTERVAL = 'PT2M';
     public const TALK_PAGE_PREFIX = 'Discussion_utilisateur:';
     public const SLEEP_BEFORE_STOP_TALKPAGE = 30;
+    protected const BOT_DAY = '2306'; // 23 june
 
     protected string $taskName = 'Amélioration';
     /**
@@ -152,6 +153,7 @@ class WikiBotConfig
         if ($this->isLastCheckStopDateRecent()) {
             return;
         }
+        $this->sleepAndExitOnBotDay();
 
         // don't catch Exception (stop process if error)
         $pageAction = $this->getWikiBotPageAction();
@@ -169,6 +171,18 @@ class WikiBotConfig
         }
 
         $this->lastCheckStopDate = new DateTimeImmutable();
+    }
+
+    /**
+     * Exit script on annual bot day.
+     */
+    public function sleepAndExitOnBotDay(): void
+    {
+        if (date('dm') === self::BOT_DAY) {
+            echo "BOT DAY ! Sleep before exit. \n";
+            sleep(60 * 60);
+            exit;
+        }
     }
 
     protected function isLastCheckStopDateRecent(): bool
