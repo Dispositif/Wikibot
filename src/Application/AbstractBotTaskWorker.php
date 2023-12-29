@@ -36,7 +36,7 @@ abstract class AbstractBotTaskWorker
     public const SKIP_LASTEDIT_BY_BOT = true;
     public const SKIP_NOT_IN_MAIN_WIKISPACE = true;
     public const SKIP_ADQ = false;
-    public const THROTTLE_DELAY_AFTER_EACH_TITLE = 1; //secs
+    public const THROTTLE_DELAY_AFTER_EACH_TITLE = 2; //secs
     protected const GIT_COMMIT_HASH_PATH = __DIR__ . '/resources/commithash.txt';
 
     /**

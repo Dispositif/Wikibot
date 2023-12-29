@@ -7,6 +7,14 @@
 
 // Instructions on pulling and using this list can be found at https://publicsuffix.org/list/.
 
+
+// CUSTOM ENTRIES START HERE
+# allowing gallica.bnf.fr fine resolution
+bnf.fr
+
+// END CUSTOM ENTRIES
+
+
 // ===BEGIN ICANN DOMAINS===
 
 // ac : http://nic.ac/rules.htm

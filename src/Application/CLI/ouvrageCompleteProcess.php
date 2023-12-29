@@ -84,6 +84,7 @@ while (true) {
         if ($count > 2) {
             echo "\n3 erreurs à la suite => exit. Sleep 10min. \n";
             sleep(10 * 60);
+            // GuzzleClient error require new Php process => supervisor/cron
             exit;
         }
         dump($e);

@@ -99,7 +99,7 @@ class ImportantSummaryCreator
             $this->addSummaryTag('+présentation en ligne✨');
         }
         if (preg_match('#distinction auteurs#', $modifs) > 0) {
-            $this->addSummaryTag('distinction auteurs 🧠');
+            $this->addSummaryTag('auteurs 🧠');
         }
         if (preg_match('#\+lire en ligne#', $modifs) > 0) {
             $this->addSummaryTag('+lire en ligne✨');
@@ -108,7 +108,10 @@ class ImportantSummaryCreator
             $this->addSummaryTag('wikif');
         }
         if (preg_match('#\+éditeur#', $modifs) > 0) {
-            $this->addSummaryTag('éditeur');
+            $this->addSummaryTag('+éditeur');
+        }
+        if (preg_match('#\+lien éditeur#', $modifs) > 0) {
+            $this->addSummaryTag('wikif');
         }
         $this->parseBNFdata($modifs);
     }
