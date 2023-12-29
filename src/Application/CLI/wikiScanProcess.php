@@ -11,7 +11,9 @@ namespace App\Application\CLI;
 
 use App\Application\OuvrageScan\ScanWiki2DB;
 use App\Application\WikiBotConfig;
+use App\Infrastructure\CirrusSearch;
 use App\Infrastructure\DbAdapter;
+use App\Infrastructure\Monitor\ConsoleLogger;
 use App\Infrastructure\PageList;
 use App\Infrastructure\ServiceFactory;
 
@@ -43,23 +45,25 @@ if (!empty($argv[1])) {
 
 
 // 100 dernier articles édités contenant un {ouvrage}
-//echo "1000 dernier articles édités contenant un {ouvrage} \n";
-//$list = new CirrusSearch(
-//    [
-//        'srsearch' => '"{{ouvrage" insource:/\{\{[oO]uvrage/',
-//        'srnamespace' => '0',
-//        'srlimit' => '1000',
+echo "dernier articles édités contenant un {ouvrage} \n";
+$list = new CirrusSearch(
+    [
+        'srsearch' => '"{{ouvrage" insource:/\{\{[oO]uvrage/ prefix:j',
+        'srnamespace' => '0',
+        'srlimit' => '500',
 //        'srqiprofile' => 'popular_inclinks_pv',
-//        'srsort' => 'last_edit_desc',
-//    ]
-//);
-//new ScanWiki2DB($wiki, new DbAdapter(), new WikiBotConfig(), $list, 11);
+        'srsort' => 'last_edit_desc',
+    ],
+    [CirrusSearch::OPTION_CONTINUE => true]
+);
+$logger = new ConsoleLogger();
+new ScanWiki2DB($wiki, new DbAdapter(), new WikiBotConfig($wiki, $logger), $list, 11);
 
+exit;
 
-
-// utilise une liste d'import wstat.fr
- echo "Liste d'après wstat.fr\n";
-$list = PageList::FromFile(__DIR__.'/../resources/importISBN_nov.txt');
-new ScanWiki2DB($wiki, new DbAdapter(), new WikiBotConfig($wiki), $list, 0);
+//// utilise une liste d'import wstat.fr
+// echo "Liste d'après wstat.fr\n";
+//$list = PageList::FromFile(__DIR__.'/../resources/importISBN_nov.txt');
+//new ScanWiki2DB($wiki, new DbAdapter(), new WikiBotConfig($wiki), $list, 11);
 
 

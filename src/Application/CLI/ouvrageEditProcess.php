@@ -17,7 +17,7 @@ use App\Infrastructure\Monitor\Memory;
 use App\Infrastructure\ServiceFactory;
 use Throwable;
 
-include __DIR__.'/../myBootstrap.php';
+include __DIR__.'/../CodexBot2_Bootstrap.php';
 
 // sort of process management
 $count = 0; // erreurs successives
