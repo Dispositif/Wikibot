@@ -81,11 +81,12 @@ if (!empty($options['page'])) {
             'srnamespace' => '0',
             // intitle:bla* prefix:bla incategory;bla insource
             // TODO "https:" insource:/\<ref[^\>]*\> ?\[https\:[^\<]+\</i
-            'srsearch' => '"https:" insource:/\<ref[^\>]*\> ?https\:/',
+            'srsearch' => '"https" insource:/\<ref[^\>]*\> ?https?\:/',
             'srlimit' => '500',
             'srsort' => CirrusSearch::SRSORT_NONE,
 //            'sroffset' => $offset, //default: 0
-            'srqiprofile' => CirrusSearch::SRQIPROFILE_POPULAR_INCLINKS_PV, // nombre de vues de la page
+//            'srqiprofile' => CirrusSearch::SRQIPROFILE_POPULAR_INCLINKS_PV, // nombre de vues de la page
+	      'srqiprofile' => 'popular_inclinks',
         ],
         [CirrusSearch::OPTION_CONTINUE => true]
     );
@@ -119,20 +120,22 @@ if ($list->count() === 0) {
     exit(1);
 }
 
-$httpClient = ServiceFactory::getHttpClient();
-$wikiwix = new WikiwixAdapter($httpClient, $logger);
-$internetArchive = new InternetArchiveAdapter($httpClient, $logger);
+try {
+    $httpClient = ServiceFactory::getHttpClient();
+    $wikiwix = new WikiwixAdapter($httpClient, $logger);
+    $internetArchive = new InternetArchiveAdapter($httpClient, $logger);
 
-$domainParser = new InternetDomainParser();
-$transformer = new ExternRefTransformer(
-    new ExternMapper($logger),
-    $torClient,
-    $domainParser,
-    $logger,
-    [$wikiwix, $internetArchive, $wikiwix]
-);
+    $domainParser = new InternetDomainParser();
+    $transformer = new ExternRefTransformer(
+        new ExternMapper($logger),
+        $torClient,
+        $domainParser,
+        $logger,
+        [$wikiwix, $internetArchive, $wikiwix]
+    );
 
-new ExternRefWorker($botConfig, $wiki, $list, $transformer);
-
-echo "END of process\n";
-sleep(60);
+    new ExternRefWorker($botConfig, $wiki, $list, $transformer);
+} finally {
+    echo "END of process\n";
+    sleep(120);
+}

@@ -20,6 +20,7 @@ use InvalidArgumentException;
 use Throwable;
 
 /**
+ * TODO injecter API session sinon limité à 500 results !
  * https://www.mediawiki.org/wiki/Help:CirrusSearch
  * https://fr.wikipedia.org/w/api.php?action=help&modules=query%2Bsearch
  * https://www.mediawiki.org/wiki/Help:CirrusSearch#Insource
@@ -31,6 +32,7 @@ class CirrusSearch implements PageListInterface, PageListForAppInterface
 {
     public const OPTION_CONTINUE = 'continue';
     public const OPTION_REVERSE = 'reverse';
+    public const OPTION_APILOGIN = 'apilogin';
     public const SRSORT_NONE = 'none';
     public const SRSORT_RANDOM = 'random';
     public const SRSORT_LAST_EDIT_DESC = 'last_edit_desc';
@@ -48,7 +50,7 @@ class CirrusSearch implements PageListInterface, PageListForAppInterface
             'formatversion' => '2',
             'format' => 'json',
             'srnamespace' => 0,
-            'srlimit' => '10', // default 10, max 500
+            'srlimit' => '500', // max 500 péon, 5000 bot/admin
             'srprop' => 'size|wordcount|timestamp', // default 'size|wordcount|timestamp|snippet'
         ];
     protected readonly HttpClientInterface $client;
@@ -109,7 +111,7 @@ class CirrusSearch implements PageListInterface, PageListForAppInterface
         }
 
         // improve with curl options ?
-        $response = $this->client->get($url);
+        $response = $this->client->get($url); // TODO refac with wiki API login
         /**
          * @var $response Response
          */
@@ -140,7 +142,7 @@ class CirrusSearch implements PageListInterface, PageListForAppInterface
         $this->requestParams = array_merge($this->defaultParams, $this->params);
         if ($this->options[self::OPTION_CONTINUE] ?? false) {
             $this->requestParams['sroffset'] = $this->getOffsetFromFile($this->requestParams);
-            //echo sprintf("Extract offset %s from file \n", $this->requestParams['sroffset']);
+            echo sprintf("Extract offset %s from file \n", $this->requestParams['sroffset']);
         }
         // RFC3986 : space => %20
         $query = http_build_query($this->requestParams, 'bla', '&', PHP_QUERY_RFC3986);

@@ -45,16 +45,45 @@ $list = new CirrusSearch(
     [
         'srsearch' => '"http" insource:/\<ref[^\>]*\> ?https?\:\/\/[^\<\ ]+ *\<\/ref/',
         'srlimit' => '500',
-        'srqiprofile' => CirrusSearch::SRQIPROFILE_POPULAR_INCLINKS_PV,
+        'srqiprofile' => CirrusSearch::SRQIPROFILE_DEFAULT,
         'srsort' => CirrusSearch::SRSORT_LAST_EDIT_DESC,
     ],
     // continue: false because last_edit_desc sorting
     [CirrusSearch::OPTION_REVERSE => true, CirrusSearch::OPTION_CONTINUE => false]
 );
+$titles = $list->getPageTitles();
 
+// sroffset 500
+sleep(3);
+$list = new CirrusSearch(
+    [
+        'srsearch' => '"http" insource:/\<ref[^\>]*\> ?https?\:\/\/[^\<\ ]+ *\<\/ref/',
+        'srlimit' => '500',
+        'sroffset' => '500',
+        'srqiprofile' => CirrusSearch::SRQIPROFILE_DEFAULT,
+        'srsort' => CirrusSearch::SRSORT_LAST_EDIT_DESC,
+    ],
+    // continue: false because last_edit_desc sorting
+    [CirrusSearch::OPTION_REVERSE => true, CirrusSearch::OPTION_CONTINUE => false]
+);
+$titles = array_merge($titles, $list->getPageTitles());
+
+// sroffset 1000
+sleep(3);
+$list = new CirrusSearch(
+    [
+        'srsearch' => '"http" insource:/\<ref[^\>]*\> ?https?\:\/\/[^\<\ ]+ *\<\/ref/',
+        'srlimit' => '500',
+        'sroffset' => '1000',
+        'srqiprofile' => CirrusSearch::SRQIPROFILE_DEFAULT,
+        'srsort' => CirrusSearch::SRSORT_LAST_EDIT_DESC,
+    ],
+    // continue: false because last_edit_desc sorting
+    [CirrusSearch::OPTION_REVERSE => true, CirrusSearch::OPTION_CONTINUE => false]
+);
+$titles = array_merge($titles, $list->getPageTitles());
 
 // filter titles already in edited.txt
-$titles = $list->getPageTitles();
 unset($list);
 //echo count($titles)." titles\n";
 $edited = file(__DIR__ . '/../resources/article_externRef_edited.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
