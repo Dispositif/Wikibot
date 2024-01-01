@@ -81,7 +81,7 @@ class ExternRefTransformer implements ExternRefTransformerInterface
     /**
      * Transform "http://bla" => "{lien web|...}}", "{article}" or "{lien brisé}".
      *
-     * TODO Refac : chain of responsibility or composite pattern
+     * TODO Refac : chain of responsibility
      * todo refac : return data DTO ? to much responsability!
      *
      * @throws Exception

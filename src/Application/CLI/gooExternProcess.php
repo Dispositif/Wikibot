@@ -21,7 +21,7 @@ use Exception;
  * Consumes GoogleBooks API daily quota
  */
 
-include __DIR__.'/../myBootstrap.php';
+include __DIR__.'/../CodexBot2_Bootstrap.php';
 
 $quota = new GoogleApiQuota();
 echo 'Google quota: '.$quota->getCount();
@@ -29,7 +29,6 @@ echo 'Google quota: '.$quota->getCount();
 if ($quota->isQuotaReached()) {
     throw new Exception("Google Books API quota reached => exit");
 }
-
 
 $wiki = ServiceFactory::getMediawikiFactory();
 $logger = new ConsoleLogger();
@@ -40,26 +39,20 @@ $bot = new WikiBotConfig($wiki, $logger);
 $bot->checkStopOnTalkpageOrException();
 $bot->setTaskName("🌐📘 Amélioration bibliographique : lien Google Books ⇒ {ouvrage}");
 
-// les "* https://..." en biblio et liens externes
-// "https://books.google" insource:/\* https\:\/\/books\.google[^ ]+/
+// TODO : https://www.google.com/books/edition/A_Wrinkle_in_Time/r119-dYq0mwC
 $list = new CirrusSearch(
     [
-        //        'srsearch' => '"https://books.google" insource:/\* ?https\:\/\/books\.google/', // liste à puce
-        //        'srsearch' => '"https://books.google" insource:/\<ref[^\>]*\> *https\:\/\/books\.google/[^\ <]+ *<\/ref/',
-        //        'srsearch' => '"https://books.google" insource:/\<ref[^\>]*\> ?https\:\/\/books\.google[^\ <]+ *[^<]+\<\/ref/',
         'srsearch' => '"https://books.google" insource:/\<ref[^\>]*\> *https\:\/\/books\.google/',
 //        'srsearch' => 'https://books.google" insource:/\* *https\:\/\/books\.google/', // liste à puces
         'srnamespace' => '0',
         'srlimit' => '500',
-        // 'srqiprofile' => CirrusSearch::SRQIPROFILE_POPULAR_INCLINKS_PV,
-        'srsort' => CirrusSearch::SRSORT_LAST_EDIT_DESC,
+        'srqiprofile' => CirrusSearch::SRQIPROFILE_POPULAR_INCLINKS_PV,
     ],
     [CirrusSearch::OPTION_CONTINUE => true]
 );
 $titles = $list->getPageTitles();
 echo 'CirrusSearch: '.count($titles).' titles found';
 $list = new PageList($titles);
-// TODO : https://www.google.com/books/edition/A_Wrinkle_in_Time/r119-dYq0mwC
 
 if (!empty($argv[1])) {
     $list = new PageList([trim($argv[1])]);
