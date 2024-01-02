@@ -30,7 +30,7 @@ use Throwable;
  */
 class WikiBotConfig
 {
-    public const VERSION = '2.1';
+    public const VERSION = '2.2';
     public const WATCHPAGE_FILENAME = __DIR__ . '/resources/watch_pages.json';
     public const EXIT_ON_CHECK_WATCHPAGE = false;
     // do not stop if they play with {stop} on bot talk page

@@ -17,23 +17,6 @@ use PHPUnit\Framework\TestCase;
 
 class OuvrageOptimizeTest extends TestCase
 {
-    /**
-     * @group skipci
-     * @dataProvider provideSomeParam
-     * @throws Exception
-     */
-    public function testSomeParam(array $data, string $expected): void
-    {
-        $ouvrage = WikiTemplateFactory::create('ouvrage');
-        $ouvrage->hydrate($data);
-
-        $optimized = (OptimizerFactory::fromTemplate($ouvrage))->doTasks()->getOptiTemplate();
-        $this::assertSame(
-            $expected,
-            $optimized->serialize(true)
-        );
-    }
-
     public static function provideSomeParam(): array
     {
         return [
@@ -176,6 +159,11 @@ class OuvrageOptimizeTest extends TestCase
                 '{{Ouvrage|titre=|lieu=Fu|éditeur=|année=|isbn=}}',
             ],
             [
+                // 2024 : only one location
+                ['lieu' => 'Fu / Bar'],
+                '{{Ouvrage|titre=|lieu=Fu|éditeur=|année=|isbn=}}',
+            ],
+            [
                 // date
                 ['date' => '[[1995]]'],
                 '{{Ouvrage|titre=|éditeur=|année=1995|isbn=}}',
@@ -186,38 +174,6 @@ class OuvrageOptimizeTest extends TestCase
                 '{{Ouvrage|titre=|éditeur=|année=|isbn=|bnf=30279779}}',
             ],
         ];
-    }
-
-    public function testGetOuvrage()
-    {
-        $raw
-            = '{{Ouvrage|languX=anglais|id=ZE|prénom1=Ernest|nom1=Nègre|nom2|titre=Toponymie:France|tome=3|passage=15-27|isbn=2600028846}}';
-
-        $parse = TemplateParser::parseAllTemplateByName('ouvrage', $raw);
-        $origin = $parse['ouvrage'][0]['model'];
-
-        $optimized = (OptimizerFactory::fromTemplate($origin))->doTasks()->getOptiTemplate();
-        $this::assertSame(
-            '{{Ouvrage|langue=en|prénom1=Ernest|nom1=Nègre|titre=Toponymie|sous-titre=France|tome=3|éditeur=|année=|passage=15-27|isbn=2600028846|id=ZE}}',
-// Expected with ISBN converter:   '{{Ouvrage|langue=en|prénom1=Ernest|nom1=Nègre|titre=Toponymie|sous-titre=France|tome=3|éditeur=|année=|passage=15-27|isbn=978-2-600-02884-4|isbn2=2-600-02884-6|id=ZE}}',
-            $optimized->serialize(true)
-        );
-    }
-
-    /**
-     * @dataProvider provideProcessTitle
-     * @throws Exception
-     */
-    public function testProcessTitle(array $data, string $expected): void
-    {
-        $ouvrage = WikiTemplateFactory::create('ouvrage');
-        $ouvrage->hydrate($data);
-
-        $optimized = (OptimizerFactory::fromTemplate($ouvrage))->doTasks()->getOptiTemplate();
-        $this::assertSame(
-            $expected,
-            $optimized->serialize(true)
-        );
     }
 
     public static function provideProcessTitle(): array
@@ -289,22 +245,6 @@ class OuvrageOptimizeTest extends TestCase
                 '{{Ouvrage|titre=Toponymie 1914-1918 super|éditeur=|année=|isbn=}}',
             ],
         ];
-    }
-
-    /**
-     * @dataProvider provideIsbnNoConversion
-     * @throws Exception
-     */
-    public function testIsbn(array $data, string $expected): void
-    {
-        $origin = WikiTemplateFactory::create('ouvrage');
-        $origin->hydrate($data);
-
-        $optimized = (OptimizerFactory::fromTemplate($origin))->doTasks()->getOptiTemplate();
-        $this::assertSame(
-            $expected,
-            $optimized->serialize(true)
-        );
     }
 
     public static function provideIsbnNoConversion(): array
@@ -398,6 +338,71 @@ class OuvrageOptimizeTest extends TestCase
                 '{{Ouvrage|titre=|éditeur=|année=|isbn=978-2-600-028-0|isbn invalide=978-2-600-028-0 Code is too short or too long}}',
             ],
         ];
+    }
+
+    /**
+     * @group skipci
+     * @dataProvider provideSomeParam
+     * @throws Exception
+     */
+    public function testSomeParam(array $data, string $expected): void
+    {
+        $ouvrage = WikiTemplateFactory::create('ouvrage');
+        $ouvrage->hydrate($data);
+
+        $optimized = (OptimizerFactory::fromTemplate($ouvrage))->doTasks()->getOptiTemplate();
+        $this::assertSame(
+            $expected,
+            $optimized->serialize(true)
+        );
+    }
+
+    public function testGetOuvrage()
+    {
+        $raw
+            = '{{Ouvrage|languX=anglais|id=ZE|prénom1=Ernest|nom1=Nègre|nom2|titre=Toponymie:France|tome=3|passage=15-27|isbn=2600028846}}';
+
+        $parse = TemplateParser::parseAllTemplateByName('ouvrage', $raw);
+        $origin = $parse['ouvrage'][0]['model'];
+
+        $optimized = (OptimizerFactory::fromTemplate($origin))->doTasks()->getOptiTemplate();
+        $this::assertSame(
+            '{{Ouvrage|langue=en|prénom1=Ernest|nom1=Nègre|titre=Toponymie|sous-titre=France|tome=3|éditeur=|année=|passage=15-27|isbn=2600028846|id=ZE}}',
+        // Expected with ISBN converter:   '{{Ouvrage|langue=en|prénom1=Ernest|nom1=Nègre|titre=Toponymie|sous-titre=France|tome=3|éditeur=|année=|passage=15-27|isbn=978-2-600-02884-4|isbn2=2-600-02884-6|id=ZE}}',
+            $optimized->serialize(true)
+        );
+    }
+
+    /**
+     * @dataProvider provideProcessTitle
+     * @throws Exception
+     */
+    public function testProcessTitle(array $data, string $expected): void
+    {
+        $ouvrage = WikiTemplateFactory::create('ouvrage');
+        $ouvrage->hydrate($data);
+
+        $optimized = (OptimizerFactory::fromTemplate($ouvrage))->doTasks()->getOptiTemplate();
+        $this::assertSame(
+            $expected,
+            $optimized->serialize(true)
+        );
+    }
+
+    /**
+     * @dataProvider provideIsbnNoConversion
+     * @throws Exception
+     */
+    public function testIsbn(array $data, string $expected): void
+    {
+        $origin = WikiTemplateFactory::create('ouvrage');
+        $origin->hydrate($data);
+
+        $optimized = (OptimizerFactory::fromTemplate($origin))->doTasks()->getOptiTemplate();
+        $this::assertSame(
+            $expected,
+            $optimized->serialize(true)
+        );
     }
 
     public function testDistinguishAuthors(): void

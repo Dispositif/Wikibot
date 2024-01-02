@@ -16,19 +16,16 @@ use App\Domain\Utils\TextUtil;
 use App\Domain\Utils\WikiTextUtil;
 use Exception;
 
+/**
+ * TODO Fix unit test depending on CSV file.
+ */
 class LocationHandler extends AbstractOuvrageHandler
 {
     final public const TRANSLATE_CITY_FR = __DIR__ . '/../../resources/traduction_ville.csv';
 
-    /**
-     * @var PageListInterface
-     */
-    protected $pageListManager;
-
-    public function __construct(OuvrageTemplate $ouvrage, OptiStatus $optiStatus, PageListInterface $pageListManager)
+    public function __construct(OuvrageTemplate $ouvrage, OptiStatus $optiStatus, protected PageListInterface $pageListManager)
     {
         parent::__construct($ouvrage, $optiStatus);
-        $this->pageListManager = $pageListManager;
     }
 
     /**
@@ -36,30 +33,48 @@ class LocationHandler extends AbstractOuvrageHandler
      * Todo : "[s. l.]" sans lieu "s.l.n.d." sans lieu ni date.
      * @throws Exception
      */
-    public function handle()
+    public function handle(): void
     {
         $location = $this->getParam('lieu');
         if (empty($location)) {
             return;
         }
-
-        // typo and unwikify
         $memo = $location;
+
         $location = WikiTextUtil::unWikify($location);
         $location = TextUtil::mb_ucfirst($location);
+        $location = $this->keepOnlyFirstCity($location);
+        $location = $this->findFrenchTranslation($location);
+        $location = trim($location);
+
         if ($memo !== $location) {
             $this->setParam('lieu', $location);
             $this->addSummaryLog('±lieu');
             $this->optiStatus->setNotCosmetic(true);
         }
+    }
 
-        // translation : "London"->"Londres"
-        // todo fix polymorphic call to pageListManager::findCSVline
-        $row = $this->pageListManager->findCSVline(self::TRANSLATE_CITY_FR, $location);
-        if ($row !== [] && !empty($row[1])) {
-            $this->setParam('lieu', $row[1]);
-            $this->addSummaryLog('lieu francisé');
-            $this->optiStatus->setNotCosmetic(true);
+    protected function keepOnlyFirstCity(string $location): string
+    {
+        if (str_contains($location, '/')) {
+            $location = explode('/', $location)[0];
         }
+        return $location;
+    }
+
+    /**
+     * Translation of famous cities from CSV file : "London"->"Londres"
+     */
+    protected function findFrenchTranslation(string $location): string
+    {
+        if (!method_exists($this->pageListManager, 'findCSVline')) {
+            return $location;
+        }
+        $row = $this->pageListManager->findCSVline(self::TRANSLATE_CITY_FR, $location);
+        if ($row !== [] && !empty($row[1]) && is_string($row[1])) {
+            $location = $row[1];
+        }
+
+        return $location;
     }
 }
