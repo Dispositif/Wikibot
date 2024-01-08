@@ -46,6 +46,8 @@ class WikiBotConfig
     public const TALK_STOP_CHECK_INTERVAL = 'PT2M';
     public const TALK_PAGE_PREFIX = 'Discussion_utilisateur:';
     public const SLEEP_BEFORE_STOP_TALKPAGE = 30;
+    public const DELAY_MINUTES_AFTER_HUMAN_EDIT = 15;
+
     protected const BOT_DAY = '2306'; // 23 june
 
     protected string $taskName = 'Amélioration';

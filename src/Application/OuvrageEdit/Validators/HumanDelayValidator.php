@@ -7,11 +7,8 @@
 
 declare(strict_types=1);
 
-
 namespace App\Application\OuvrageEdit\Validators;
 
-
-use App\Application\OuvrageEdit\OuvrageEditWorker;
 use App\Application\WikiBotConfig;
 use Psr\Log\LoggerInterface;
 
@@ -39,15 +36,14 @@ class HumanDelayValidator implements ValidatorInterface
 
     public function validate(): bool
     {
-        if ($this->bot->minutesSinceLastEdit($this->title) < 10) {
+        if ($this->bot->minutesSinceLastEdit($this->title) < WikiBotConfig::DELAY_MINUTES_AFTER_HUMAN_EDIT) {
             // to improve : Gestion d'une repasse dans X jours
             $this->log->notice(
                 sprintf(
                     "SKIP : édition humaine dans les dernières %s minutes.\n",
-                    OuvrageEditWorker::DELAY_MINUTES_AFTER_HUMAN_EDIT
+                    WikiBotConfig::DELAY_MINUTES_AFTER_HUMAN_EDIT
                 )
             );
-            sleep(60 * OuvrageEditWorker::DELAY_MINUTES_AFTER_HUMAN_EDIT); // hack: waiting cycles
 
             return false;
         }

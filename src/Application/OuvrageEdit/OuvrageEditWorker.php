@@ -47,7 +47,6 @@ class OuvrageEditWorker
     final public const CITATION_LIMIT = 150;
     final public const DELAY_BOTFLAG_SECONDS = 120;
     final public const DELAY_NO_BOTFLAG_SECONDS = 120;
-    final public const DELAY_MINUTES_AFTER_HUMAN_EDIT = 10;
     final public const ERROR_MSG_TEMPLATE = __DIR__ . '/templates/message_errors.wiki';
     protected const ALWAYS_NO_BOTFLAG_ON_BA = true;
     protected const ALWAYS_NO_BOTFLAG_ON_ADQ = true;

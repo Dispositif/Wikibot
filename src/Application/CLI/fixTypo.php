@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Application\CLI;
 
+use App\Application\OuvrageEdit\Validators\HumanDelayValidator;
 use App\Application\WikiBotConfig;
 use App\Application\WikiPageAction;
 use App\Domain\Utils\WikiTextUtil;
@@ -25,7 +26,7 @@ include __DIR__ . '/../CodexBot2_Bootstrap.php';
  */
 
 $wiki = ServiceFactory::getMediawikiFactory();
-$taskName = "🖋³ correction syntaxique (séparateur références)"; // 🧹📗🐵 ²³⁴⁵⁶⁷⁸⁹⁰
+$taskName = "🖋³ correction syntaxique (séparateur de références)"; // 🧹📗🐵 ²³⁴⁵⁶⁷⁸⁹⁰
 $botflag = true;
 $auto = true;
 
@@ -59,6 +60,10 @@ foreach ($titles as $title) {
         echo "La page n'est pas dans Main (ns!==0)\n";
         continue;
     }
+
+    if ((new HumanDelayValidator($title, $bot))->validate() === false) {
+        continue;
+    }
     $text = $pageAction->getText();
     $newText = $text;
 
@@ -83,7 +88,7 @@ foreach ($titles as $title) {
     if ($botflag) {
         $currentTaskName = 'bot ' . $taskName;
     }
-    $result = $pageAction->editPage($newText, new EditInfo($currentTaskName, false, $botflag));
+    $result = $pageAction->editPage($newText, new EditInfo($currentTaskName, true, $botflag));
     echo "Edit result : " . ($result ? "OK" : "ERREUR") . "\n";
     sleep(5);
 }
