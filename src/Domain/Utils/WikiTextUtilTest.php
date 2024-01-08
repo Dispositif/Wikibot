@@ -13,6 +13,56 @@ use PHPUnit\Framework\TestCase;
 
 class WikiTextUtilTest extends TestCase
 {
+    public static function provideExternalLink(): array
+    {
+        return [
+            ['[[fu]] [http://google.fr bla] [http://google.com blo]', '[[fu]] bla blo'],
+            ['bla [http://google.fr]', 'bla'],
+        ];
+    }
+
+    public static function provideWikilink()
+    {
+        return [
+            [['fu_bar'], '[[fu bar]]'],
+            [['fu', 'Fu'], '[[fu]]'],
+            [['fu', 'bar'], '[[Bar|fu]]'],
+            [['fu', '[[Bar]]'], '[[Bar|fu]]'], // Erreur "|lien auteur=[[Bla]]"
+        ];
+    }
+
+    public static function provideWikify()
+    {
+        return [
+            ['blabla<!-- fu -->', 'blabla'],
+            ['{{lang|en|fubar}}', 'fubar'],
+            ['{{langue|en|fubar}}', 'fubar'],
+            ['[[wikilien]', 'wikilien'],
+            ['[[wiki|wikilien]]', 'wikilien'],
+            ['{{en}}', '{{en}}'],
+            ['{{Lien|Jeffrey Robinson}}', 'Jeffrey Robinson'],
+        ];
+    }
+
+    /**
+     * @dataProvider provideConcatenatedRefFixture
+     */
+    public function testFixConcatenatedRefs($text, $expected)
+    {
+        $this::assertSame($expected, WikiTextUtil::fixConcatenatedRefsSyntax($text));
+    }
+
+    public static function provideConcatenatedRefFixture(): array
+    {
+        return [
+            ['<ref>fu</ref><ref name="1">bar</ref>', '<ref>fu</ref>{{,}}<ref name="1">bar</ref>'],
+            ['<ref>fu</ref>  <ref name="1">bar</ref>', '<ref>fu</ref>{{,}}<ref name="1">bar</ref>'],
+            ['<ref>fu</ref>{{,}}<ref name="1">bar</ref>', '<ref>fu</ref>{{,}}<ref name="1">bar</ref>'],
+            ['<ref name="A" /> <ref name="B">', '<ref name="A" />{{,}}<ref name="B">'],
+            ['<ref name=A /><ref name="B">', '<ref name=A />{{,}}<ref name="B">'],
+        ];
+    }
+
     /**
      * @dataProvider provideExternalLink
      */
@@ -22,14 +72,6 @@ class WikiTextUtilTest extends TestCase
             $expected,
             WikiTextUtil::stripExternalLink($text)
         );
-    }
-
-    public static function provideExternalLink(): array
-    {
-        return [
-            ['[[fu]] [http://google.fr bla] [http://google.com blo]', '[[fu]] bla blo'],
-            ['bla [http://google.fr]', 'bla'],
-        ];
     }
 
     public function testExtractAllRefs()
@@ -70,16 +112,6 @@ EOF;
             $expected,
             WikiTextUtil::wikilink($data[0], $data[1] ?? null)
         );
-    }
-
-    public static function provideWikilink()
-    {
-        return [
-            [['fu_bar'], '[[fu bar]]'],
-            [['fu', 'Fu'], '[[fu]]'],
-            [['fu', 'bar'], '[[Bar|fu]]'],
-            [['fu', '[[Bar]]'], '[[Bar|fu]]'], // Erreur "|lien auteur=[[Bla]]"
-        ];
     }
 
     public function testUpperfirst()
@@ -143,18 +175,5 @@ EOF;
             $expected,
             WikiTextUtil::unWikify($text)
         );
-    }
-
-    public static function provideWikify()
-    {
-        return [
-            ['blabla<!-- fu -->', 'blabla'],
-            ['{{lang|en|fubar}}', 'fubar'],
-            ['{{langue|en|fubar}}', 'fubar'],
-            ['[[wikilien]', 'wikilien'],
-            ['[[wiki|wikilien]]', 'wikilien'],
-            ['{{en}}', '{{en}}'],
-            ['{{Lien|Jeffrey Robinson}}', 'Jeffrey Robinson'],
-        ];
     }
 }

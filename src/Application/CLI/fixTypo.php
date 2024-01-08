@@ -11,6 +11,7 @@ namespace App\Application\CLI;
 
 use App\Application\WikiBotConfig;
 use App\Application\WikiPageAction;
+use App\Domain\Utils\WikiTextUtil;
 use App\Infrastructure\CirrusSearch;
 use App\Infrastructure\Monitor\ConsoleLogger;
 use App\Infrastructure\ServiceFactory;
@@ -24,7 +25,7 @@ include __DIR__ . '/../CodexBot2_Bootstrap.php';
  */
 
 $wiki = ServiceFactory::getMediawikiFactory();
-$taskName = "🖋 Correction syntaxique (séparateur de références)"; // 🧹📗🐵
+$taskName = "🖋³ correction syntaxique (séparateur références)"; // 🧹📗🐵 ²³⁴⁵⁶⁷⁸⁹⁰
 $botflag = true;
 $auto = true;
 
@@ -32,7 +33,11 @@ $bot = new WikiBotConfig($wiki, new ConsoleLogger());
 
 $list = new CirrusSearch(
     [
-        'srsearch' => 'insource:/\<\/ref\>\<ref/',
+        // Regex \s seems not recognized as space by CirrusSearch parser
+        // Timeout error with too complex regex
+        // 'srsearch' => 'insource:/\<ref name=\"[^\/\>]+\" ?\/\>[ \r\n]*\<ref/', // OK. Rare "<ref name="A"/><ref…" (TIMEOUT SEARCH)
+        'srsearch' => 'insource:/\<\/ref\>[ \r\n]*\<ref/', // OK. The classical "</ref><ref…"
+
         'srnamespace' => '0',
         'srlimit' => '500',
         'srqiprofile' => CirrusSearch::SRQIPROFILE_POPULAR_INCLINKS_PV,
@@ -51,14 +56,13 @@ foreach ($titles as $title) {
 
     $pageAction = new WikiPageAction($wiki, $title);
     if ($pageAction->getNs() !== 0) {
-        //throw new Exception("La page n'est pas dans Main (ns!==0)");
         echo "La page n'est pas dans Main (ns!==0)\n";
         continue;
     }
     $text = $pageAction->getText();
     $newText = $text;
 
-    $newText = str_replace('</ref><ref', '</ref>{{,}}<ref', $newText);
+    $newText = WikiTextUtil::fixConcatenatedRefsSyntax($newText);
 
     if ($newText === $text) {
         echo "Skip identique\n";

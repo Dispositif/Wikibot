@@ -236,4 +236,19 @@ class WikiTextUtil extends TextUtil
 
         return str_replace(array_keys($searchReplace), array_values($searchReplace), $url);
     }
+
+    /**
+     * Add reference separator {{,}} between reference tags.
+     * Example :
+     * "<ref>A</ref><ref>B</ref>" => "<ref>A</ref>{{,}}<ref>B</ref>".
+     * "<ref name="A" /> <ref>" => "<ref name="A" />{{,}}<ref>".
+     *
+     * TODO : allow carriage return between refs ? See https://w.wiki/8n7K
+     */
+    public static function fixConcatenatedRefsSyntax(string $wikiText): string
+    {
+        $wikiText = preg_replace('#</ref>[\n\r\s]*<ref#', '</ref>{{,}}<ref', $wikiText);
+
+        return preg_replace('#(<ref name=[^\/\>\r\n]+ ?/>)[\n\r\s]*<ref#', "$1".'{{,}}<ref', $wikiText);
+    }
 }

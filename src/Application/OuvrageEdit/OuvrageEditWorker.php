@@ -19,6 +19,7 @@ use App\Application\OuvrageEdit\Validators\TalkStopValidator;
 use App\Application\OuvrageEdit\Validators\WikiTextValidator;
 use App\Application\WikiBotConfig;
 use App\Application\WikiPageAction;
+use App\Domain\Utils\WikiTextUtil;
 use App\Infrastructure\Monitor\NullLogger;
 use App\Infrastructure\ServiceFactory;
 use Codedungeon\PHPCliColors\Color;
@@ -255,7 +256,8 @@ class OuvrageEditWorker
 
         try {
             $editInfo = ServiceFactory::editInfo($miniSummary, $this->pageWorkStatus->minorFlag, $this->pageWorkStatus->botFlag);
-            $success = $this->wikiPageAction->editPage(Normalizer::normalize($this->pageWorkStatus->wikiText), $editInfo);
+            $cleanWikiText = $this->normalizeAndFixWikiTypo($this->pageWorkStatus->wikiText);
+            $success = $this->wikiPageAction->editPage($cleanWikiText, $editInfo);
         } catch (Throwable $e) {
             // Invalid CSRF token.
             if (str_contains($e->getMessage(), 'Invalid CSRF token')) {
@@ -296,5 +298,10 @@ class OuvrageEditWorker
             $this->log->debug("sleep " . self::DELAY_BOTFLAG_SECONDS);
             sleep(self::DELAY_BOTFLAG_SECONDS);
         }
+    }
+
+    protected function normalizeAndFixWikiTypo(string $newText): string
+    {
+        return Normalizer::normalize(WikiTextUtil::fixConcatenatedRefsSyntax($newText));
     }
 }

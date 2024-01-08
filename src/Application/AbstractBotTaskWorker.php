@@ -17,6 +17,7 @@ use App\Domain\Exceptions\ConfigException;
 use App\Domain\Exceptions\StopActionException;
 use App\Domain\InfrastructurePorts\InternetDomainParserInterface;
 use App\Domain\Models\Summary;
+use App\Domain\Utils\WikiTextUtil;
 use App\Infrastructure\ServiceFactory;
 use Exception;
 use Mediawiki\Api\MediawikiFactory;
@@ -167,6 +168,7 @@ abstract class AbstractBotTaskWorker
         $this->summary = new Summary($this->defaultTaskname);
         $this->summary->setBotFlag(static::TASK_BOT_FLAG);
         $newText = $this->processWithDomainWorker($title, $text);
+        $newText = $this->fixGenericWikiSyntax($newText);
         $this->memorizeAndSaveAnalyzedTitle($title); // improve : optionnal ?
 
         if ($this->isSomethingToChange($text, $newText) && $this->autoOrYesConfirmation()) {
@@ -253,5 +255,10 @@ abstract class AbstractBotTaskWorker
         }
 
         return $taskname;
+    }
+
+    protected function fixGenericWikiSyntax(?string $newText): string
+    {
+        return WikiTextUtil::fixConcatenatedRefsSyntax($newText);
     }
 }
