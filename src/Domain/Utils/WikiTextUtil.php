@@ -241,14 +241,49 @@ class WikiTextUtil extends TextUtil
      * Add reference separator {{,}} between reference tags.
      * Example :
      * "<ref>A</ref><ref>B</ref>" => "<ref>A</ref>{{,}}<ref>B</ref>".
-     * "<ref name="A" /> <ref>" => "<ref name="A" />{{,}}<ref>".
-     *
-     * TODO : allow carriage return between refs ? See https://w.wiki/8n7K
+     * "<ref name="A" /> <ref>…" => "<ref name="A" />{{,}}<ref>…".
+     * "{{Sfn|...}}<ref name=B>..." => "{{Sfn|...}}{{,}}<ref name=B>...".
+     * Skip replacement if {Références | références=...} or {Références nombreuses} or {Références discussion}
+     * TODO : {{note}}
      */
     public static function fixConcatenatedRefsSyntax(string $wikiText): string
     {
-        $wikiText = preg_replace('#</ref>[\n\r\s]*<ref#', '</ref>{{,}}<ref', $wikiText);
+        // Skip on the rare {Références nombreuses} et {Références discussion} and param "références=..."
+        if (preg_match(
+                '#\{\{ ?(Références nombreuses|Références discussion)[\s\r\n\t]*\|[^}]*(références|refs)[\s\r\n\t]*=#i',
+                $wikiText
+            ) > 0) {
+            return $wikiText;
+        }
 
-        return preg_replace('#(<ref name=[^\/\>\r\n]+ ?/>)[\n\r\s]*<ref#', "$1".'{{,}}<ref', $wikiText);
+        // old style <references><ref name=…>... </references>
+        if (preg_match('#<references>[\s\r\n\t]*<ref name=#i', $wikiText) > 0) {
+            return $wikiText;
+        }
+
+
+        // Skip if {{Références | références= ... }}
+        if (preg_match(
+                '#\{\{ ?Références[\s\r\n\t]*\|[^\}]*(références|refs)[\s\r\n\t]*=#i',
+                $wikiText
+            ) > 0) {
+            return $wikiText;
+        }
+
+        // carriage return only fund between refs inside {{Références | références= ... }}
+        // if carriage return </ref>\n<ref… outside that template, the ref-link appears on a new line => \n deleted
+        $wikiText = preg_replace('#</ref>[\n\r\s]*<ref#', '</ref>{{,}}<ref', $wikiText);
+        $wikiText = preg_replace('#(<ref name=[^\/\>\r\n]+/>)[\n\r\s]*<ref#', "$1" . '{{,}}<ref', $wikiText);
+
+        // {{Sfn|...}}{{Sfn|...}}
+        $wikiText = preg_replace('#(\{\{sfn[\s\|\n\r][^\{\}]+}})\s*(\{\{sfn[\s\|\n\r])#i', '$1{{,}}$2', $wikiText);
+        // </ref>{{Sfn|...}} => </ref>{{,}}{{Sfn|...}}
+        $wikiText = preg_replace('#</ref>\s*(\{\{sfn[\s\|\n\r])#i', '</ref>{{,}}$1', $wikiText);
+        // <ref name="A" />{{Sfn|...}} => <ref name="A" />{{,}}{{Sfn|...}}
+        $wikiText = preg_replace('#(<ref name=[^\/\>]+/>)\s*(\{\{sfn[\s\|\n\r])#i', "$1{{,}}$2", $wikiText);
+        // {{Sfn|...}}<ref… => {{Sfn|...}}{{,}}<ref…
+        $wikiText = preg_replace('#(\{\{sfn[\s\|\n\r][^\{\}]+}})\s*<ref#i', '$1{{,}}<ref', $wikiText);
+
+        return $wikiText;
     }
 }

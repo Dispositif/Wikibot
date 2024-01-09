@@ -26,7 +26,7 @@ include __DIR__ . '/../CodexBot2_Bootstrap.php';
  */
 
 $wiki = ServiceFactory::getMediawikiFactory();
-$taskName = "🖋³ correction syntaxique (séparateur de références)"; // 🧹📗🐵 ²³⁴⁵⁶⁷⁸⁹⁰
+$taskName = "🖋⁶ correction syntaxique (séparateur de références)"; // 🧹📗🐵 ²³⁴⁵⁶⁷⁸⁹⁰
 $botflag = true;
 $auto = true;
 
@@ -37,6 +37,7 @@ $list = new CirrusSearch(
         // Regex \s seems not recognized as space by CirrusSearch parser
         // Timeout error with too complex regex
         // 'srsearch' => 'insource:/\<ref name=\"[^\/\>]+\" ?\/\>[ \r\n]*\<ref/', // OK. Rare "<ref name="A"/><ref…" (TIMEOUT SEARCH)
+        // 'srsearch' => 'insource:/\>\{\{sfn/i', // OK. The classical "</ref><ref…" // OK
         'srsearch' => 'insource:/\<\/ref\>[ \r\n]*\<ref/', // OK. The classical "</ref><ref…"
 
         'srnamespace' => '0',

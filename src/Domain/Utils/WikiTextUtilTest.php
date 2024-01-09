@@ -44,23 +44,82 @@ class WikiTextUtilTest extends TestCase
         ];
     }
 
+    public static function provideConcatenatedRefFixture(): array
+    {
+        return [
+            [
+                // skip
+                '<references>
+                <ref name="A">fu</ref>
+                <ref name="B">fu</ref>',
+                '<references>
+                <ref name="A">fu</ref>
+                <ref name="B">fu</ref>',
+            ],
+            [
+                // skip
+                '{{{Références | références=
+                <ref name="A">fu</ref>
+                <ref name="B">fu</ref>}}',
+                '{{{Références | références=
+                <ref name="A">fu</ref>
+                <ref name="B">fu</ref>}}',
+            ],
+            [
+                '{{Références nombreuses|taille=30 | références=
+                <!-- :0 -->
+                <ref name="A">fu</ref>
+                <ref name="B">fu</ref>',
+                '{{Références nombreuses|taille=30 | références=
+                <!-- :0 -->
+                <ref name="A">fu</ref>
+                <ref name="B">fu</ref>'
+            ],
+            ['<ref>fu</ref><ref name="1">bar</ref>', '<ref>fu</ref>{{,}}<ref name="1">bar</ref>'],
+            ['<ref>fu</ref>  <ref name="1">bar</ref>', '<ref>fu</ref>{{,}}<ref name="1">bar</ref>'],
+            [
+                // carriage return
+                '<ref>fu</ref>
+            <ref name="1">bar</ref>', '<ref>fu</ref>{{,}}<ref name="1">bar</ref>'],
+            ['<ref>fu</ref>{{,}}<ref name="1">bar</ref>', '<ref>fu</ref>{{,}}<ref name="1">bar</ref>'],
+            ['<ref name="A" /> <ref name="B">', '<ref name="A" />{{,}}<ref name="B">'],
+            ['<ref name=A /><ref name="B">', '<ref name=A />{{,}}<ref name="B">'],
+            ['<ref name=A/><ref name="B">', '<ref name=A/>{{,}}<ref name="B">'],
+            // sfn
+            [
+                '<ref name=A/>{{Sfn|O. Teissier|1860|p=42-43}}<ref name=B/>',
+                '<ref name=A/>{{,}}{{Sfn|O. Teissier|1860|p=42-43}}{{,}}<ref name=B/>'
+            ],
+            [
+                '</ref>{{Sfn|O. Teissier|1860|p=42-43}}<ref name=B>',
+                '</ref>{{,}}{{Sfn|O. Teissier|1860|p=42-43}}{{,}}<ref name=B>'
+            ],
+            [
+                '{{Sfn|O. Teissier}}{{Sfn|O. Teissier}}',
+                '{{Sfn|O. Teissier}}{{,}}{{Sfn|O. Teissier}}'
+            ],
+            ['</ref><ref group=n>fu</ref>', '</ref>{{,}}<ref group=n>fu</ref>'],
+            [
+                // inchanged with {{Références|références=
+                '<ref name="A">fu</ref><ref name="B">bar</ref><ref name="C"/> bla {{Références|références=  <ref name="C">fu</ref><ref name="D">bar</ref> bla',
+                '<ref name="A">fu</ref><ref name="B">bar</ref><ref name="C"/> bla {{Références|références=  <ref name="C">fu</ref><ref name="D">bar</ref> bla',
+            ],
+            [
+                // inchanged with multilines {{Références|références=
+                '<ref name="A">fu</ref><ref name="B">bar</ref><ref name="C"/> bla {{Références
+                |références=<ref name="C">fu</ref><ref name="D">bar</ref> bla',
+                '<ref name="A">fu</ref><ref name="B">bar</ref><ref name="C"/> bla {{Références
+                |références=<ref name="C">fu</ref><ref name="D">bar</ref> bla',
+            ],
+        ];
+    }
+
     /**
      * @dataProvider provideConcatenatedRefFixture
      */
     public function testFixConcatenatedRefs($text, $expected)
     {
         $this::assertSame($expected, WikiTextUtil::fixConcatenatedRefsSyntax($text));
-    }
-
-    public static function provideConcatenatedRefFixture(): array
-    {
-        return [
-            ['<ref>fu</ref><ref name="1">bar</ref>', '<ref>fu</ref>{{,}}<ref name="1">bar</ref>'],
-            ['<ref>fu</ref>  <ref name="1">bar</ref>', '<ref>fu</ref>{{,}}<ref name="1">bar</ref>'],
-            ['<ref>fu</ref>{{,}}<ref name="1">bar</ref>', '<ref>fu</ref>{{,}}<ref name="1">bar</ref>'],
-            ['<ref name="A" /> <ref name="B">', '<ref name="A" />{{,}}<ref name="B">'],
-            ['<ref name=A /><ref name="B">', '<ref name=A />{{,}}<ref name="B">'],
-        ];
     }
 
     /**
