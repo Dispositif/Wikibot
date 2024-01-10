@@ -26,7 +26,7 @@ include __DIR__ . '/../CodexBot2_Bootstrap.php';
  */
 
 $wiki = ServiceFactory::getMediawikiFactory();
-$taskName = "🖋⁶ correction syntaxique (séparateur de références)"; // 🧹📗🐵 ²³⁴⁵⁶⁷⁸⁹⁰
+$taskName = "🖋⁸ correction syntaxique (séparateur de références)"; // 🧹📗🐵 ²³⁴⁵⁶⁷⁸⁹⁰
 $botflag = true;
 $auto = true;
 
@@ -38,11 +38,13 @@ $list = new CirrusSearch(
         // Timeout error with too complex regex
         // 'srsearch' => 'insource:/\<ref name=\"[^\/\>]+\" ?\/\>[ \r\n]*\<ref/', // OK. Rare "<ref name="A"/><ref…" (TIMEOUT SEARCH)
         // 'srsearch' => 'insource:/\>\{\{sfn/i', // OK. The classical "</ref><ref…" // OK
+        // 'srsearch' => 'insource:/ \<ref\>/', // OK space before <ref>
         'srsearch' => 'insource:/\<\/ref\>[ \r\n]*\<ref/', // OK. The classical "</ref><ref…"
 
         'srnamespace' => '0',
         'srlimit' => '500',
         'srqiprofile' => CirrusSearch::SRQIPROFILE_POPULAR_INCLINKS_PV,
+        'srsort' => CirrusSearch::SRSORT_RANDOM,
     ]
 );
 $titles = $list->getPageTitles();
@@ -68,7 +70,7 @@ foreach ($titles as $title) {
     $text = $pageAction->getText();
     $newText = $text;
 
-    $newText = WikiTextUtil::fixConcatenatedRefsSyntax($newText);
+    $newText = WikiTextUtil::fixGenericWikiSyntax($newText);
 
     if ($newText === $text) {
         echo "Skip identique\n";

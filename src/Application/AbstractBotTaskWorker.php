@@ -257,8 +257,11 @@ abstract class AbstractBotTaskWorker
         return $taskname;
     }
 
-    protected function fixGenericWikiSyntax(?string $newText): string
+    protected function fixGenericWikiSyntax(?string $text): ?string
     {
-        return WikiTextUtil::fixConcatenatedRefsSyntax($newText);
+        if (empty($text)) {
+            return null;
+        }
+        return WikiTextUtil::fixGenericWikiSyntax($text);
     }
 }

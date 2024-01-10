@@ -238,7 +238,7 @@ class WikiTextUtil extends TextUtil
     }
 
     /**
-     * Add reference separator {{,}} between reference tags.
+     * Add reference separator {{,}} between reference tags. Not-cosmetic changes.
      * Example :
      * "<ref>A</ref><ref>B</ref>" => "<ref>A</ref>{{,}}<ref>B</ref>".
      * "<ref name="A" /> <ref>…" => "<ref name="A" />{{,}}<ref>…".
@@ -285,5 +285,34 @@ class WikiTextUtil extends TextUtil
         $wikiText = preg_replace('#(\{\{sfn[\s\|\n\r][^\{\}]+}})\s*<ref#i', '$1{{,}}<ref', $wikiText);
 
         return $wikiText;
+    }
+
+    /**
+     * Fix some generic wiki syntax. Not-cosmetic changes.
+     * todo : final . in ref
+     * todo punctuation before ref ".<ref…" (mais exclure abbréviations "etc.<ref")
+     */
+    public static function fixRefSpacingSyntax(string $text): string
+    {
+        // space before ref. (also <ref name=A/>) todo : exlure 1234<ref>... qui complique lecture ?
+
+        // spaces before ref, not preceded by "|" (cosmetic in wiki-tables) or 0-9 number (reading confusion)
+        // Regex : negative-lookbehind (?<!fubar) for not preceded by fubar
+        $text = preg_replace('#(?<![\|\d])\s+<ref>#', '<ref>', $text); // not cosmetic
+        $text = preg_replace('#(?<![\|\d])\s+(<ref name=[^>]+>)#', '$1', $text); // not cosmetic
+
+        // space+punctuation after ref
+        $text = preg_replace('#</ref>\s+\.#', '</ref>.', $text); // not cosmetic
+
+        return preg_replace('#</ref>\s+\,#', '</ref>,', $text);
+    }
+
+    /**
+     * TODO move
+     */
+    public static function fixGenericWikiSyntax(string $text): string
+    {
+        $text = self::fixConcatenatedRefsSyntax($text);
+        return self::fixRefSpacingSyntax($text);
     }
 }

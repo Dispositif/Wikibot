@@ -114,12 +114,35 @@ class WikiTextUtilTest extends TestCase
         ];
     }
 
+    public static function provideFixRefSpacingSyntax(): array
+    {
+        return [
+            ['bla <ref>A</ref>.', 'bla<ref>A</ref>.'],
+            ['bla <ref name="C"/>', 'bla<ref name="C"/>'],
+            ['| <ref>', '| <ref>'], // unchanged
+            ['| <ref name="C"/>', '| <ref name="C"/>'], // unchanged
+            ['5 <ref>', '5 <ref>'], // unchanged
+            ['9 <ref name="C"/>', '9 <ref name="C"/>'], // unchanged
+            ['<ref> A </ref>', '<ref> A </ref>'],
+            ['bla <ref name="B">A</ref>', 'bla<ref name="B">A</ref>'],
+            ['bla <ref name="C"/> bla', 'bla<ref name="C"/> bla'],
+        ];
+    }
+
     /**
      * @dataProvider provideConcatenatedRefFixture
      */
     public function testFixConcatenatedRefs($text, $expected)
     {
         $this::assertSame($expected, WikiTextUtil::fixConcatenatedRefsSyntax($text));
+    }
+
+    /**
+     * @dataProvider provideFixRefSpacingSyntax
+     */
+    public function testFixRefSpacingSyntax($text, $expected)
+    {
+        $this::assertSame($expected, WikiTextUtil::fixRefSpacingSyntax($text));
     }
 
     /**

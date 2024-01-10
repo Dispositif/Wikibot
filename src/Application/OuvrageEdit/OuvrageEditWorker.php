@@ -301,6 +301,6 @@ class OuvrageEditWorker
 
     protected function normalizeAndFixWikiTypo(string $newText): string
     {
-        return Normalizer::normalize(WikiTextUtil::fixConcatenatedRefsSyntax($newText));
+        return Normalizer::normalize(WikiTextUtil::fixGenericWikiSyntax($newText));
     }
 }
