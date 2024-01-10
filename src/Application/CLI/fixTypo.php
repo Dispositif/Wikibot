@@ -1,7 +1,7 @@
 <?php
 /*
  * This file is part of dispositif/wikibot application (@github)
- * 2019-2023 © Philippe M./Irønie  <dispositif@gmail.com>
+ * 2019-2024 © Philippe M./Irønie  <dispositif@gmail.com>
  * For the full copyright and MIT license information, view the license file.
  */
 
@@ -12,7 +12,7 @@ namespace App\Application\CLI;
 use App\Application\OuvrageEdit\Validators\HumanDelayValidator;
 use App\Application\WikiBotConfig;
 use App\Application\WikiPageAction;
-use App\Domain\Utils\WikiTextUtil;
+use App\Domain\Utils\WikiRefsFixer;
 use App\Infrastructure\CirrusSearch;
 use App\Infrastructure\Monitor\ConsoleLogger;
 use App\Infrastructure\ServiceFactory;
@@ -26,7 +26,7 @@ include __DIR__ . '/../CodexBot2_Bootstrap.php';
  */
 
 $wiki = ServiceFactory::getMediawikiFactory();
-$taskName = "🖋⁸ correction syntaxique (séparateur de références)"; // 🧹📗🐵 ²³⁴⁵⁶⁷⁸⁹⁰
+$taskName = "🖋²⁵ correction syntaxique (séparateur de références)"; // 🧹📗🐵 ²³⁴⁵⁶⁷⁸⁹⁰
 $botflag = true;
 $auto = true;
 
@@ -70,7 +70,7 @@ foreach ($titles as $title) {
     $text = $pageAction->getText();
     $newText = $text;
 
-    $newText = WikiTextUtil::fixGenericWikiSyntax($newText);
+    $newText = WikiRefsFixer::fixRefWikiSyntax($newText);
 
     if ($newText === $text) {
         echo "Skip identique\n";
@@ -95,4 +95,3 @@ foreach ($titles as $title) {
     echo "Edit result : " . ($result ? "OK" : "ERREUR") . "\n";
     sleep(5);
 }
-

@@ -19,7 +19,7 @@ use App\Application\OuvrageEdit\Validators\TalkStopValidator;
 use App\Application\OuvrageEdit\Validators\WikiTextValidator;
 use App\Application\WikiBotConfig;
 use App\Application\WikiPageAction;
-use App\Domain\Utils\WikiTextUtil;
+use App\Domain\Utils\WikiRefsFixer;
 use App\Infrastructure\Monitor\NullLogger;
 use App\Infrastructure\ServiceFactory;
 use Codedungeon\PHPCliColors\Color;
@@ -301,6 +301,6 @@ class OuvrageEditWorker
 
     protected function normalizeAndFixWikiTypo(string $newText): string
     {
-        return Normalizer::normalize(WikiTextUtil::fixGenericWikiSyntax($newText));
+        return Normalizer::normalize(WikiRefsFixer::fixRefWikiSyntax($newText));
     }
 }
