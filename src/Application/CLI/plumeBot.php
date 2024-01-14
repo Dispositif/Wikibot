@@ -11,59 +11,53 @@ namespace App\Application\CLI;
 
 use App\Application\WikiBotConfig;
 use App\Application\WikiPageAction;
-use App\Domain\Transformers\GoogleTransformer;
-use App\Infrastructure\GoogleApiQuota;
-use App\Infrastructure\GoogleBooksAdapter;
+use App\Infrastructure\CirrusSearch;
+use App\Infrastructure\DiffAdapter;
 use App\Infrastructure\Monitor\ConsoleLogger;
 use App\Infrastructure\ServiceFactory;
 use Codedungeon\PHPCliColors\Color;
 use Mediawiki\DataModel\EditInfo;
 
-include __DIR__.'/../ZiziBot_Bootstrap.php'; // myBootstrap.php';
+include __DIR__ . '/../ZiziBot_Bootstrap.php';
 
 /**
- * Stupid bot for replacement task
+ * Stupid bot for replacement task (manual or auto)
  */
 
 $wiki = ServiceFactory::getMediawikiFactory();
-$taskName = "🧹📗 Correction de référence (lanouvellerepublique.fr : titre manquant)"; // 🧹📗🐵
-$botflag = false;
-
-$bot = new WikiBotConfig($wiki, new ConsoleLogger());
-
-// Get raw list of articles
-$filename = __DIR__.'/../resources/plume.txt';
-
-
-$titles = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-$titles = $titles ?: [];
+$taskName = "🐵 style : début de vie → jeunesse"; // 🧹📗🐵
+$botFlag = false;
+$minor = false;
 $auto = false;
+$bot = new WikiBotConfig($wiki, new ConsoleLogger());
+$diffAdapter = new diffAdapter();
 
-////// Liste "Lettre patente" <ref>http+ google.books Lettres patentes
-//$list = new CirrusSearch(
-//    [
-//        //'srsearch' => '"https://books.google" insource:/\<ref[^\>]*\> ?https\:\/\/books\.google/[^\ ]+ *\<\/ref/',
-//        'srsearch' => '""https://books.google" insource:/\<ref[^\>]*\> *https\:\/\/books\.google/',
-//        'srnamespace' => '0',
-//        'srlimit' => '1000',
-//        'srqiprofile' => 'popular_inclinks_pv',
-//        'srsort' => 'random', //'last_edit_desc',
-//    ]
-//);
-//$titles = $list->getPageTitles();
+//// Get raw list of articles
+//$filename = __DIR__.'/../resources/plume.txt';
+//$titles = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+//$titles = $titles ?: [];
+// ------
 
-echo count($titles)." articles !\n";
+//// Liste "Lettre patente" <ref>http+ google.books Lettres patentes
+$list = new CirrusSearch(
+    [
+        'srsearch' => '"début de vie"',
+        'srnamespace' => '0',
+        'srlimit' => '1000',
+        'srqiprofile' => 'popular_inclinks_pv',
+        'srsort' => CirrusSearch::SRSORT_RANDOM,
+    ]
+);
+$titles = $list->getPageTitles();
+// ------
 
-// Google Books
-$trans = new GoogleTransformer(new GoogleApiQuota(), new GoogleBooksAdapter());
-
+echo count($titles) . " articles !\n";
 foreach ($titles as $title) {
-    sleep(3);
-
-    //    $bot->checkStopOnTalkpage(true);
+    sleep(1);
+    $bot->checkStopOnTalkpageOrException();
 
     $title = trim($title);
-    echo Color::BG_GREEN.$title.Color::NORMAL."\n";
+    echo Color::BG_YELLOW . $title . Color::NORMAL . "\n";
 
     $pageAction = new WikiPageAction($wiki, $title);
     if ($pageAction->getNs() !== 0) {
@@ -72,87 +66,36 @@ foreach ($titles as $title) {
         continue;
     }
     $text = $pageAction->getText();
-
     $newText = $text;
 
-    // preg_replace : 1ere occurrence = ${1} !!
-    // https://wstat.fr/template/info/Ouvrage
+    // ------
 
-    // <ref>https://books.google.fr/books?id=KYbiAwAAQBAJ&pg=PA42 p. 41 - 42</ref>
-    //    if (!preg_match_all("#(<ref[^>]*>) *(https?://books\.google[^ <]+[a-z0-9_])[^a-z0-9_]? +([^<]+)</ref>#i",
-    //        $newText, $all,
-    //        PREG_SET_ORDER)) {
-    //
-    //        echo "not match\n";
-    //
-    //        continue;
-    //    }
-    //    echo count($all)." citations\n";
-    //
-    //    foreach($all as $matches) {
-    //
-    //
-    //        echo $matches[0]."\n";
-    //        echo Color::YELLOW.$matches[3].Color::NORMAL."\n";
-    //
-    //
-    //        try {
-    //            $template = $trans->convertGBurl2OuvrageCitation($matches[2]);
-    //        } catch (\Throwable $e) {
-    //            echo "Erreur avec ".$matches[0]."\n";
-    //            echo $e->getMessage();
-    //            continue;
-    //        }
-    //        echo ">> ".$template."\n";
-    //
-    //
-    //
-    //        $ask = readline(">> supprime [s], comment biblio [c], recycle [r], manuel [m], quit [q]");
-    //        if ('s' === $ask) {
-    //            $append = '';
-    //        }elseif ('cancel' === $ask){
-    //            continue 2;
-    //        }elseif ('c' === $ask){
-    //            $append = ' {{Commentaire biblio|'.trim($matches[3]).'}}';
-    //        }
-    //        elseif ('m' === $ask){
-    //            $manuel = readline(">> Quelle texte pour le commentaire biblio ?");
-    //            $append = ' {{Commentaire biblio|'.trim($manuel).'}}';
-    //        }
-    //        elseif ('q' === $ask){
-    //            continue;
-    //        }
-    //        else {
-    //            $append = '<!-- Bot: description à recycler : '.$matches[3].' -->';
-    //            $botflag = false;
-    //        }
-    //
-    //
-    //        $citation = sprintf(
-    //            '%s%s.%s</ref>',
-    //            $matches[1],
-    //            $template,
-    //            $append
-    //        );
-    //        echo $citation."\n";
-    //        $newText = str_replace($matches[0], $citation, $newText);
-    //    }
+    $replacements = [
+        'Début de vie' => 'Jeunesse',
+        'début de vie' => 'jeunesse',
+        'son jeunesse' => 'sa jeunesse',
+        'un jeunesse' => 'une jeunesse',
+        'le jeunesse' => 'la jeunesse',
+        'en jeunesse' => 'pendant la jeunesse',
+        'Jeunesse et de carrière' => 'Jeunesse et carrière',
+        'ce jeunesse' => 'cette jeunesse',
+        'Jeunesse et carrière' => 'Jeunesse et début de carrière',
+    ];
+    foreach ($replacements as $old => $new) {
+        $newText = str_replace($old, $new, $newText);
+    }
 
-    //    $newText = preg_replace(
-    //        "#(<ref[^>]*>) ?(https?:\/\/[^ <\]\[\"]+) *\"?\]+\.?<\/ref>#i",
-    //        '$1$2</ref>',
-    //        $newText
-    //    );
-
-    $newText = str_replace('{{rubedo.current.page.title}}', '[titre manquant]', $newText);
-
-//    $newText = preg_replace('#(\{\{article[^}]+)\| *via( *= ?[^}|]+)#i', '$1', $newText);
-
+    // ------
 
     if ($newText === $text) {
         echo "Skip identique\n";
         continue;
     }
+
+    echo $diffAdapter->getDiff(
+            str_replace('. ', ".\n", $text),
+            str_replace('. ', ".\n", $newText),
+        ) . "\n";
 
     if (!$auto) {
         $ask = readline("*** ÉDITION ? [y/n/auto]");
@@ -165,11 +108,11 @@ foreach ($titles as $title) {
     }
 
     $currentTaskName = $taskName;
-    if ($botflag) {
-        $currentTaskName = 'Bot '.$taskName;
+    if ($botFlag) {
+        $currentTaskName = 'Bot ' . $taskName;
     }
-    $result = $pageAction->editPage($newText, new EditInfo($currentTaskName, false, $botflag));
+    $result = $pageAction->editPage($newText, new EditInfo($currentTaskName, $minor, $botFlag));
     dump($result);
-    sleep(10);
+    sleep(2);
 }
 
