@@ -35,7 +35,8 @@
     "jeremykendall/php-domain-parser": "^6.1",
     "ext-curl": "*",
     "addwiki/mediawiki-api-base": "*",
-    "megahertz/guzzle-tor": "^1.1"
+    "megahertz/guzzle-tor": "^1.1",
+    "jfcherng/php-diff": "^6.15"
   },
   "autoload": {
     "psr-4": {
