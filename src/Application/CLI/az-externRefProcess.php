@@ -51,7 +51,7 @@ $logger->debug = isset($options['debug']);
 $logger->verbose = isset($options['verbose']);
 
 $botConfig = new WikiBotConfig($wiki, $logger);
-$botConfig->setTaskName("🔡 Amélioration de références : URL ⇒ "); // 🐞🌐🔗🧅
+$botConfig->setTaskName("🔡⁴ Amélioration de références : URL ⇒ "); // 🐞🌐🔗🧅
 
 $botConfig->checkStopOnTalkpageOrException();
 
@@ -59,7 +59,7 @@ $botConfig->checkStopOnTalkpageOrException();
 $torClient = ServiceFactory::getHttpClient(true);
 
 
-$list = PageList::FromFile(__DIR__ . '/../../../resources/titles/titles100kag');
+$list = PageList::FromFile(__DIR__ . '/../../../resources/titles/titles100kan');
 
 // filter titles already in edited.txt
 $titles = $list->getPageTitles();

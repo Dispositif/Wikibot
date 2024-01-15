@@ -26,7 +26,7 @@ include __DIR__ . '/../CodexBot2_Bootstrap.php';
  */
 
 $wiki = ServiceFactory::getMediawikiFactory();
-$taskName = "🖋²⁵ correction syntaxique (séparateur de références)"; // 🧹📗🐵 ²³⁴⁵⁶⁷⁸⁹⁰
+$taskName = "🖋²⁶ correction syntaxique (séparateur de références)"; // 🧹📗🐵 ²³⁴⁵⁶⁷⁸⁹⁰
 $botflag = true;
 $auto = true;
 

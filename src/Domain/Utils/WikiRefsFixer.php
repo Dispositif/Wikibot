@@ -24,12 +24,12 @@ class WikiRefsFixer
 
     protected static function beforeSpecialRefsList(string $text): string
     {
-        // regex option /s for dot matches carriage return
-        if (preg_match('#(.*)\{\{ ?(?:Références|Références nombreuses|Références discussion)[\s\r\n\t]*\|[^\{\}]*(références|refs)[\s\r\n\t]*=#si', $text, $matches)) {
+        // regex option /s for dot matches carriage return.
+        if (preg_match('#(.*)\{\{ ?(?:Références|Références nombreuses|Références discussion)[\s\r\n\t]*\|[^\{\}]*(références|refs)[\s\r\n\t]*=#usi', $text, $matches)) {
             return trim($matches[1]);
         }
 
-        if (preg_match('#(.*)<references>.*<ref name=#si', $text, $matches)) {
+        if (preg_match('#(.*)<references>.*<ref name=#usi', $text, $matches)) {
             return trim($matches[1]);
         }
 
@@ -53,17 +53,18 @@ class WikiRefsFixer
 
         // carriage return only fund between refs inside {{Références | références= ... }}
         // if carriage return </ref>\n<ref… outside that template, the ref-link appears on a new line => \n deleted
-        $wikiText = preg_replace('#</ref>[\n\r\s]*<ref#', '</ref>{{,}}<ref', $wikiText);
-        $wikiText = preg_replace('#(<ref name=[^\/\>\r\n]+/>)[\n\r\s]*<ref#', "$1" . '{{,}}<ref', $wikiText);
+        // regex option /u for unicode char catch "à<ref>"
+        $wikiText = preg_replace('#</ref>[\n\r\s]*<ref#u', '</ref>{{,}}<ref', $wikiText);
+        $wikiText = preg_replace('#(<ref name=[^\/\>\r\n]+/>)[\n\r\s]*<ref#u', "$1" . '{{,}}<ref', $wikiText);
 
         // {{Sfn|...}}{{Sfn|...}}
-        $wikiText = preg_replace('#(\{\{sfn[\s\|\n\r][^\{\}]+}})\s*(\{\{sfn[\s\|\n\r])#i', '$1{{,}}$2', $wikiText);
+        $wikiText = preg_replace('#(\{\{sfn[\s\|\n\r][^\{\}]+}})\s*(\{\{sfn[\s\|\n\r])#ui', '$1{{,}}$2', $wikiText);
         // </ref>{{Sfn|...}} => </ref>{{,}}{{Sfn|...}}
-        $wikiText = preg_replace('#</ref>\s*(\{\{sfn[\s\|\n\r])#i', '</ref>{{,}}$1', $wikiText);
+        $wikiText = preg_replace('#</ref>\s*(\{\{sfn[\s\|\n\r])#ui', '</ref>{{,}}$1', $wikiText);
         // <ref name="A" />{{Sfn|...}} => <ref name="A" />{{,}}{{Sfn|...}}
-        $wikiText = preg_replace('#(<ref name=[^\/\>]+/>)\s*(\{\{sfn[\s\|\n\r])#i', "$1{{,}}$2", $wikiText);
+        $wikiText = preg_replace('#(<ref name=[^\/\>]+/>)\s*(\{\{sfn[\s\|\n\r])#ui', "$1{{,}}$2", $wikiText);
         // {{Sfn|...}}<ref… => {{Sfn|...}}{{,}}<ref…
-        $wikiText = preg_replace('#(\{\{sfn[\s\|\n\r][^\{\}]+}})\s*<ref#i', '$1{{,}}<ref', $wikiText);
+        $wikiText = preg_replace('#(\{\{sfn[\s\|\n\r][^\{\}]+}})\s*<ref#ui', '$1{{,}}<ref', $wikiText);
 
         return $wikiText;
     }
@@ -108,13 +109,13 @@ class WikiRefsFixer
         // space before ref. (also <ref name=A/>) todo : exlure 1234<ref>... qui complique lecture ?
 
         // spaces before ref, not preceded by "|", "=" (cosmetic in wiki-tables) or 0-9 number (reading confusion)
-        // Regex : negative-lookbehind (?<!fubar) for not preceded by fubar
-        $text = preg_replace('#(?<![\|\d=])\s+<ref>#', '<ref>', $text); // not cosmetic
-        $text = preg_replace('#(?<![\|\d=])\s+(<ref name=[^>]+>)#', '$1', $text); // not cosmetic
+        // Regex : negative-lookbehind (?<!fubar) for not preceded by fubar. option /u for unicode char catch "à<ref>"
+        $text = preg_replace('#(?<![\|\d=])\s+<ref>#u', '<ref>', $text); // not cosmetic
+        $text = preg_replace('#(?<![\|\d=])\s+(<ref name=[^>]+>)#u', '$1', $text); // not cosmetic
 
         // space+punctuation after ref
-        $text = preg_replace('#</ref>\s+\.#', '</ref>.', $text); // not cosmetic
+        $text = preg_replace('#</ref>\s+\.#u', '</ref>.', $text); // not cosmetic
 
-        return preg_replace('#</ref>\s+\,#', '</ref>,', $text);
+        return preg_replace('#</ref>\s+\,#u', '</ref>,', $text);
     }
 }

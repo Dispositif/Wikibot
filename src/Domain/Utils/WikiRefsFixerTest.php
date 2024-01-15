@@ -88,6 +88,8 @@ class WikiRefsFixerTest extends TestCase
         return [
             ['bla <ref>A</ref>.', 'bla<ref>A</ref>.'],
             ['bla <ref name="C"/>', 'bla<ref name="C"/>'],
+            ['à<ref name="C"/>', 'à<ref name="C"/>'], // unicode option
+            ['à <ref name="C"/>', 'à<ref name="C"/>'], // unicode option
             ['| <ref>', '| <ref>'], // unchanged
             ['| <ref name="C"/>', '| <ref name="C"/>'], // unchanged
             ['= <ref>', '= <ref>'], // unchanged
