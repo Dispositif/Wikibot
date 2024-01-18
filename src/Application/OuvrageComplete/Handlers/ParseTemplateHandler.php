@@ -40,6 +40,9 @@ class ParseTemplateHandler implements CompleteHandlerInterface
         $this->queueAdapter = $queueAdapter;
     }
 
+    /**
+     * TODO skip if WikiTextUtil::hasFilteredComment(raw) === true
+     */
     public function handle(): ?OuvrageTemplate
     {
         try {

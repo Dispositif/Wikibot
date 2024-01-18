@@ -37,14 +37,11 @@ abstract class AbstractRefBotWorker extends AbstractBotTaskWorker
     }
 
     /**
-     * @param $text
-     *
-     * @return string|string[]
      * @throws Exception
      */
-    public function processText($text)
+    public function processText(string $text): string
     {
-        $refs = WikiTextUtil::extractRefsAndListOfLinks($text);
+        $refs = WikiTextUtil::extractRefsAndListOfLinks(WikiTextUtil::filterSensitiveCommentsInText($text));
         if ($refs === []) {
             $this->log->debug('empty extractRefsAndListOfLinks');
 
@@ -67,7 +64,7 @@ abstract class AbstractRefBotWorker extends AbstractBotTaskWorker
 
     public abstract function processRefContent(string $refContent): string;
 
-    protected function replaceRefInText(array $ref, string $replace, string $text)
+    protected function replaceRefInText(array $ref, string $replace, string $text): string
     {
         // Pas de changement
         if (WikiTextUtil::stripFinalPoint(trim($replace)) === WikiTextUtil::stripFinalPoint(trim((string)$ref[1]))) {

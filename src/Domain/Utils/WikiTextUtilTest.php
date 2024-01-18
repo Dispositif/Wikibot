@@ -157,4 +157,57 @@ EOF;
             WikiTextUtil::unWikify($text)
         );
     }
+
+    /**
+     * @dataProvider provideContainsWikiTag
+     */
+    public function testContainsWikiTag(string $text, bool $expected)
+    {
+        $this::assertSame(
+            $expected,
+            WikiTextUtil::containsWikiTag($text)
+        );
+    }
+
+    public static function provideContainsWikiTag(): array
+    {
+        return [
+            ['http://bla', false],
+            ['http://bla</ref>', true],
+            ['http://bla<ref name="bla">', true],
+            ['http://bla<nowiki>', true],
+        ];
+    }
+
+    /**
+     * @dataProvider provideExtractCommentedText
+     */
+    public function testExtractCommentedText(string $text, array $expected): void
+    {
+        $this::assertSame(
+            $expected,
+            WikiTextUtil::extractCommentedText($text)
+        );
+    }
+
+    public static function provideExtractCommentedText(): array
+    {
+        return [
+            ['bla <!-- fu --> bla <!-- bar --> bla', ['<!-- fu -->', '<!-- bar -->']],
+            ['bla <!-- fu --> pof <!-- bar --> --> bla', ['<!-- fu -->', '<!-- bar -->']],
+            ['bla <!-- fu <!-- bar --> --> bla', ['<!-- fu <!-- bar -->']],
+        ];
+    }
+
+    public function testFilterSensitiveCommentsInText(): void
+    {
+        $text = 'bla <!-- 
+        * https://skip.com 
+        --> bla2 <!-- <ref>skip comment</ref> --> bla3<!-- keep --><!-- {{skip template}} -->';
+        $expected = 'bla #FILTERED_COMMENT# bla2 #FILTERED_COMMENT# bla3<!-- keep -->#FILTERED_COMMENT#';
+        $this::assertSame(
+            $expected,
+            WikiTextUtil::filterSensitiveCommentsInText($text)
+        );
+    }
 }

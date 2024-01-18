@@ -11,10 +11,10 @@ namespace App\Domain\Utils;
 
 class WikiTextUtil extends TextUtil
 {
+    protected const FILTERED_COMMENT = '#FILTERED_COMMENT#';
+
     /**
      * todo {{ref}}
-     *
-     *
      * @return array [0=>['<ref>fu</ref>', 'fu'], 1=> ...]
      */
     public static function extractRefsAndListOfLinks(string $text): array
@@ -33,6 +33,11 @@ class WikiTextUtil extends TextUtil
         }
 
         return $result;
+    }
+
+    public static function isWikify(string $text): bool
+    {
+        return self::unWikify($text) !== $text;
     }
 
     /**
@@ -70,98 +75,15 @@ class WikiTextUtil extends TextUtil
         return strip_tags($text, '<sup><sub>');
     }
 
-    public static function isWikify(string $text): bool
-    {
-        return self::unWikify($text) !== $text;
-    }
-
-    /**
-     * Generate wikilink from string.
-     *
-     *
-     * @return string
-     */
-    public static function wikilink(string $label, ?string $page = null): string
-    {
-        $label = trim(str_replace('_', ' ', self::unWikify($label)));
-        $page = ($page) ? trim(self::unWikify($page)) : null;
-
-        // fu_bar => [[fu_bar]] / Fu, fu => [[fu]]
-        if (empty($page) || self::str2WikiTitle($label) === self::str2WikiTitle($page)) {
-            return '[['.$label.']]';
-        }
-
-        // fu, bar => [[Bar|fu]]
-        return sprintf(
-            '[[%s|%s]]',
-            self::str2WikiTitle($page),
-            $label
-        );
-    }
-
-    /**
-     * "fu_bar_ " => "Fu bar".
-     *
-     * @return string
-     */
-    private static function str2WikiTitle(string $str): string
-    {
-        return TextUtil::mb_ucfirst(trim(str_replace('_', ' ', $str)));
-    }
-
-    /**
-     * Get page titles from wiki encoded links.
-     * (but not others projects links like [[wikt:bla]].
-     *
-     *
-     * @return array|null
-     */
-    public static function getWikilinkPages(string $text): ?array
-    {
-        if (preg_match_all('#\[\[([^:|\]]+)(?:\|[^|\]]*)?]]#', $text, $matches) > 0) {
-            return $matches[1];
-        }
-
-        return null;
-    }
-
-    /**
-     * Strip external links (http://) from wiki text.
-     * "[http://google.fr Google]" => "Google"
-     * "bla [http://google.fr]" => "bla"
-     *
-     *
-     * @return string
-     */
-    public static function stripExternalLink(string $text): string
-    {
-        $text = preg_replace('#\[(https?://[^][<>\s"]+) *((?<= )[^\n\]]*|)\]#i', '${2}', $text);
-
-        return trim($text);
-    }
-
-    /**
-     * @return bool
-     */
-    public static function isCommented(string $text): bool
-    {
-        $text = str_replace('<!-- Paramètre obligatoire -->', '', $text);
-
-        //ou preg_match('#<\!--(?!-->).*-->#s', '', $text); // plus lourd mais précis
-        return preg_match('#<!--[^>]*-->#', $text) > 0;
-    }
-
     /**
      * Remove '<!--', '-->', and everything between.
      * To avoid leaving blank lines, when a comment is both preceded
      * and followed by a newline (ignoring spaces), trim leading and
      * trailing spaces and one of the newlines.
+     * See also self::filterSensitiveCommentInText().
      * (c) WikiMedia /includes/parser/Sanitizer.php.
-     *
-     *
-     * @return string
      */
-    public static function removeHTMLcomments(string $text)
+    public static function removeHTMLcomments(string $text): string
     {
         while (false !== ($start = mb_strpos($text, '<!--'))) {
             $end = mb_strpos($text, '-->', $start + 4);
@@ -193,13 +115,80 @@ class WikiTextUtil extends TextUtil
             }
         }
 
-        return (string) $text;
+        return (string)$text;
+    }
+
+    /**
+     * Generate wikilink from string.
+     * @return string
+     */
+    public static function wikilink(string $label, ?string $page = null): string
+    {
+        $label = trim(str_replace('_', ' ', self::unWikify($label)));
+        $page = ($page) ? trim(self::unWikify($page)) : null;
+
+        // fu_bar => [[fu_bar]] / Fu, fu => [[fu]]
+        if (empty($page) || self::str2WikiTitle($label) === self::str2WikiTitle($page)) {
+            return '[[' . $label . ']]';
+        }
+
+        // fu, bar => [[Bar|fu]]
+        return sprintf(
+            '[[%s|%s]]',
+            self::str2WikiTitle($page),
+            $label
+        );
+    }
+
+    /**
+     * "fu_bar_ " => "Fu bar".
+     * @return string
+     */
+    private static function str2WikiTitle(string $str): string
+    {
+        return TextUtil::mb_ucfirst(trim(str_replace('_', ' ', $str)));
+    }
+
+    /**
+     * Get page titles from wiki encoded links.
+     * (but not others projects links like [[wikt:bla]].
+     * @return array|null
+     */
+    public static function getWikilinkPages(string $text): ?array
+    {
+        if (preg_match_all('#\[\[([^:|\]]+)(?:\|[^|\]]*)?]]#', $text, $matches) > 0) {
+            return $matches[1];
+        }
+
+        return null;
+    }
+
+    /**
+     * Strip external links (http://) from wiki text.
+     * "[http://google.fr Google]" => "Google"
+     * "bla [http://google.fr]" => "bla"
+     * @return string
+     */
+    public static function stripExternalLink(string $text): string
+    {
+        $text = preg_replace('#\[(https?://[^][<>\s"]+) *((?<= )[^\n\]]*|)\]#i', '${2}', $text);
+
+        return trim($text);
+    }
+
+    /**
+     * @return bool
+     */
+    public static function isCommented(string $text): bool
+    {
+        $text = str_replace('<!-- Paramètre obligatoire -->', '', $text);
+
+        //ou preg_match('#<\!--(?!-->).*-->#s', '', $text); // plus lourd mais précis
+        return preg_match('#<!--[^>]*-->#', $text) > 0;
     }
 
     /**
      * Strip the final point (".") as in <ref> ending.
-     *
-     *
      * @return string
      */
     public static function stripFinalPoint(string $str): string
@@ -214,8 +203,6 @@ class WikiTextUtil extends TextUtil
     /**
      * Normalize URL for inclusion as a wiki-template value.
      * https://en.wikipedia.org/wiki/Template:Citation_Style_documentation/url
-     *
-     *
      * @return string
      */
     public static function normalizeUrlForTemplate(string $url): string
@@ -235,5 +222,52 @@ class WikiTextUtil extends TextUtil
         ];
 
         return str_replace(array_keys($searchReplace), array_values($searchReplace), $url);
+    }
+
+    /**
+     * Detect if contains HTML or WIKI tag, like </ref>, <ref>, <nowiki>, <ref name="bla" />
+     */
+    public static function containsWikiTag(string $text): bool
+    {
+        return
+            // find </ref> or <ref>
+            preg_match('#<\/?[a-z]+ ?\/?>#', $text)
+            // find <ref name="dfs" />
+            || preg_match('#<ref name=[^>]+>#', $text);
+    }
+
+    /**
+     * Extract all HTML commented string like "<!-- fu -->".
+     * @return string[] like ['<!-- fu -->', '<!-- bar -->']
+     */
+    public static function extractCommentedText(string $text): array
+    {
+        if (!preg_match_all('#<!--((?:(?!-->).)*)-->#is', $text, $matches, PREG_PATTERN_ORDER)) {
+            return [];
+        }
+
+        return $matches[0];
+    }
+
+    /**
+     * Replace HTML comment containing '<ref' or 'http' or '{{' by '#COMMENT#'.
+     */
+    public static function filterSensitiveCommentsInText(string $text): string
+    {
+        $comments = self::extractCommentedText($text); // ['<!-- blabla -->']
+
+        // filtering commented string containing <ref> or http
+        foreach ($comments as $comment) {
+            if (preg_match('#<ref|</ref>|https?\:\/\/|\{\{#i', $comment)) {
+                $text = str_replace($comment, self::FILTERED_COMMENT, $text);
+            }
+        }
+
+        return $text;
+    }
+
+    public static function hasFilteredComment(string $text): bool
+    {
+        return str_contains($text, self::FILTERED_COMMENT);
     }
 }

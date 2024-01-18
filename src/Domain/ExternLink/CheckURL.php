@@ -10,7 +10,9 @@ declare(strict_types=1);
 namespace App\Domain\ExternLink;
 
 use App\Application\Utils\HttpUtil;
+use App\Domain\ExternLink\Validators\URLWithoutTagValidator;
 use App\Domain\InfrastructurePorts\InternetDomainParserInterface;
+use App\Domain\Utils\WikiTextUtil;
 use App\Infrastructure\Monitor\NullLogger;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -55,6 +57,11 @@ class CheckURL
 
         if ($this->hasForbiddenFilenameExtension()) {
             $this->log->debug('Skip : ForbiddenFilenameExtension : ' . $url, ['stats' => 'externref.skip.forbiddenFilenameExtension']);
+            return false;
+        }
+
+        if (WikiTextUtil::containsWikiTag($url)) {
+            $this->log->debug('Skip : URL contains HTML tag : ' . $url, ['stats' => 'externref.skip.URLcontainsTag']);
             return false;
         }
 
