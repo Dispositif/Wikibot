@@ -38,7 +38,6 @@ $diffAdapter = new diffAdapter();
 //$titles = $titles ?: [];
 // ------
 
-//// Liste "Lettre patente" <ref>http+ google.books Lettres patentes
 $list = new CirrusSearch(
     [
         'srsearch' => '"début de vie"',

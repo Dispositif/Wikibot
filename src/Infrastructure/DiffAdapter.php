@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Infrastructure;
 
 use App\Application\InfrastructurePorts\DiffInterface;
+use Exception;
 use Jfcherng\Diff\DiffHelper;
 use Jfcherng\Diff\Renderer\RendererConstant;
 
@@ -24,13 +25,15 @@ class DiffAdapter implements DiffInterface
     protected const DEFAULT_STYLE = self::STYLE_UNIFIED;
     protected const DIFF_STYLES = [self::STYLE_UNIFIED, self::STYLE_CONTEXT];
     protected array $colorStyles;
-    protected array $diffOptions;
-    protected array $rendererOptions;
-    protected string $diffStyle;
+    protected array $diffOptions = [];
+    protected array $rendererOptions = [];
+    protected string $diffStyle = 'Unified';
+    protected int $contextLines = 1;
 
-    public function __construct(string $diffStyle = self::DEFAULT_STYLE)
+    public function __construct(string $diffStyle = self::DEFAULT_STYLE, int $contextLines = 1)
     {
         $this->diffStyle = in_array($diffStyle, self::DIFF_STYLES) ? $diffStyle : 'Unified';
+        $this->contextLines = $contextLines;
         $this->initialize();
     }
 
@@ -44,7 +47,7 @@ class DiffAdapter implements DiffInterface
         $this->diffOptions = [
             // show how many neighbor lines
             // Differ::CONTEXT_ALL can be used to show the whole file
-            'context' => 2,
+            'context' => $this->contextLines,
             // ignore case difference
             'ignoreCase' => false,
             // ignore line ending difference
@@ -109,15 +112,17 @@ class DiffAdapter implements DiffInterface
 
     public function getDiff(string $oldText, string $newText): string
     {
-        //echo CliColor::color("$diffStyle Diff\n============", $this->colorStyles['section']) . "\n\n";
-        $unifiedResult = DiffHelper::calculate(
-            $oldText,
-            $newText,
-            $this->diffStyle,
-            $this->diffOptions,
-            $this->rendererOptions,
-        );
-
-        return $unifiedResult . "\n\n";
+        try {
+            return DiffHelper::calculate(
+                $oldText,
+                $newText,
+                $this->diffStyle,
+                $this->diffOptions,
+                $this->rendererOptions,
+            );
+        } catch (Exception $e) {
+            //echo "DiffAdapter error: " . $e->getMessage() . "\n";
+            return '';
+        }
     }
 }

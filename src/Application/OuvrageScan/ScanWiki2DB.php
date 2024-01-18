@@ -16,6 +16,7 @@ use App\Application\WikiPageAction;
 use App\Domain\Utils\TemplateParser;
 use Exception;
 use Mediawiki\Api\MediawikiFactory;
+use Psr\Log\LoggerInterface;
 
 
 /**
@@ -23,25 +24,28 @@ use Mediawiki\Api\MediawikiFactory;
  */
 class ScanWiki2DB
 {
+    protected LoggerInterface $logger;
+
     public function __construct(
         private readonly MediawikiFactory   $wiki,
         private readonly DbAdapterInterface $db,
         private readonly WikiBotConfig      $bot,
         private readonly PageListInterface  $pageList,
-        private readonly ?int               $priority
-        = 0
-    ) {
+        private readonly int                $priority = 0
+    )
+    {
+        $this->logger = $this->bot->getLogger();
         $this->process();
     }
 
     /**
      * @throws Exception
      */
-    public function process():void
+    public function process(): void
     {
         $titles = $this->pageList->getPageTitles();
         if ($titles === []) {
-            echo "pageList vide.\n";
+            $this->logger->info("pageList vide.");
 
             return;
         }
@@ -57,20 +61,18 @@ class ScanWiki2DB
     public function pageScan(string $title): bool
     {
         sleep(2);
-        echo "\n-------------------------------------\n\n";
-        echo date("Y-m-d H:i:s")."\n";
-        echo $title."\n";
+        $this->logger->notice(sprintf('%s - %s', date("Y-m-d H:i:s"), $title));
 
         $page = new WikiPageAction($this->wiki, $title); // todo injection
         $ns = $page->getNs();
         if ($ns !== 0) {
-            echo "SKIP : namespace $ns";
+            $this->logger->debug("SKIP : namespace $ns");
 
             return false;
         }
         $text = $page->getText();
         if (empty($text)) {
-            echo "SKIP : texte vide\n";
+            $this->logger->debug("SKIP : empty text");
 
             return false;
         }
@@ -78,12 +80,12 @@ class ScanWiki2DB
         try {
             $parsedTemplates = TemplateParser::parseAllTemplateByName('ouvrage', $text);
         } catch (Exception $e) {
-            dump($e);
+            $this->logger->error("SKIP : parse error " . $e->getMessage());
 
             return false;
         }
 
-        if ($parsedTemplates === []) {
+        if (empty($parsedTemplates)) {
             return false;
         }
 
@@ -92,12 +94,7 @@ class ScanWiki2DB
         return !empty($result);
     }
 
-    /**
-     * @param        $ouvrages
-     *
-     * @return mixed
-     */
-    protected function insertDB($ouvrages, string $title)
+    protected function insertDB(array $ouvrages, string $title): bool|array
     {
         $data = [];
         foreach ($ouvrages as $res) {
@@ -106,16 +103,31 @@ class ScanWiki2DB
                 'raw' => $res['raw'],
                 'priority' => $this->priority,
             ];
-            // filtre doublon
+
+            if ((strlen($title) > 250) || empty($oneData['raw']) || strlen($oneData['raw']) > 2500) {
+                $this->logger->warning("Skip : string to long : ", $oneData);
+                continue;
+            }
+
+            // filter duplicates
             if (!in_array($oneData, $data)) {
                 $data[] = $oneData;
             }
         }
 
+        if (empty($data)) {
+            $this->logger->notice("Skip : empty data");
+            return false;
+        }
+
         $result = $this->db->insertPageOuvrages($data);
-        print_r($result);
+
+        if ($result === false) {
+            $this->logger->error("Insert DB failed");
+        } else {
+            $this->logger->notice("Insert DB : ", $result);
+        }
 
         return $result;
     }
-
 }
