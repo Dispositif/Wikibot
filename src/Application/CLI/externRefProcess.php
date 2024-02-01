@@ -31,7 +31,7 @@ use App\Infrastructure\WikiwixAdapter;
 include __DIR__.'/../myBootstrap.php';
 
 // --page="Skateboard" --stats=redis --stats=sqlite --debug --verbose
-echo "OPTIONS: --debug --verbose --stats=redis --stats=sqlite --page=\"Skateboard\" --offset=1000 \n";
+echo "OPTIONS: --debug --verbose --stats=redis --stats=sqlite --page=\"Skateboard\" --offset=1000 --nofilter \n";
 $options = getopt('', ['page::', 'debug', 'verbose', 'stats::', 'offset::']);
 
 /** @noinspection PhpUnhandledExceptionInspection */
@@ -52,7 +52,7 @@ $logger->debug = isset($options['debug']);
 $logger->verbose = isset($options['verbose']);
 
 $botConfig = new WikiBotConfig($wiki, $logger);
-$botConfig->setTaskName("🌐 Amélioration de références : URL ⇒ "); // 🐞🌐🔗🧅
+$botConfig->setTaskName("🌐⁵ Amélioration de références : URL ⇒ "); // 🐞🌐🔗🧅
 
 $botConfig->checkStopOnTalkpageOrException();
 
@@ -92,12 +92,14 @@ if (!empty($options['page'])) {
     );
 
     // filter titles already in edited.txt
-    $titles = $list->getPageTitles();
-    echo '> before filtering: '. count($titles)." articles.\n";
-    unset($list);
-    $edited = file(__DIR__ . '/../resources/article_externRef_edited.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    $titles = array_diff($titles, $edited);
-    $list = new PageList($titles);
+    if (!isset($options['nofilter'])) {
+        $titles = $list->getPageTitles();
+        echo '> before filtering: '. count($titles)." articles.\n";
+        unset($list);
+        $edited = file(__DIR__ . '/../resources/article_externRef_edited.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        $titles = array_diff($titles, $edited);
+        $list = new PageList($titles);
+    }
 }
 
 

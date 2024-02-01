@@ -72,6 +72,13 @@ abstract class AbstractRefBotWorker extends AbstractBotTaskWorker
         }
         $replace = $this->addFinalPeriod($ref[0], $replace);
         $result = str_replace($ref[1], $replace, (string)$ref[0]);
+
+        // Skip if only trim() difference (no cosmetic edit with only trailing space or \n inside <ref>)
+        if ($replace === trim($ref[1])) {
+            $this->log->debug('Skip cosmetic trim ref difference', ['stats' => 'refbotworker.skip.trimdifference']);
+            return $text;
+        }
+
         $this->printDiff($ref[0], $result);
 
         return str_replace($ref[0], $result, $text);
