@@ -32,12 +32,13 @@ class ImportantSummaryCreator
         if ($this->pageWorkStatus->getTitle() !== $ouvrageData['page']) {
             throw new LogicException('Title mismatch between PageWorkStatus and ouvrageData');
         }
-
-        $this->parseParamNotCorrected($ouvrageData['opti']);
-
-        $this->parseOpti($ouvrageData['opti']);
-
-        $this->parseModifs($ouvrageData['modifs']);
+        try {
+            $this->parseParamNotCorrected($ouvrageData['opti']);
+            $this->parseOpti($ouvrageData['opti']);
+            $this->parseModifs($ouvrageData['modifs']);
+        } catch (\Throwable $e) {
+            // nothing
+        }
     }
 
     protected function parseParamNotCorrected(string $opti)
