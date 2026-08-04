@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Domain\ExternLink;
 
 use App\Application\InfrastructurePorts\HttpClientInterface;
+use App\Domain\ExternLink\Validators\InterstitialPageValidator;
 use App\Domain\ExternLink\Validators\RobotNoIndexValidator;
 use App\Domain\InfrastructurePorts\DeadlinkArchiverInterface;
 use App\Domain\InfrastructurePorts\InternetDomainParserInterface;
@@ -123,6 +124,9 @@ class ExternRefTransformer implements ExternRefTransformerInterface
             $this->log->debug('NOINDEX detected', ['stats' => 'externref.skip.robotNoIndex']);
             // TODO ? return {lien web| titre=Titre inconnu... |note=noindex }
             // http://www.nydailynews.com/entertainment/jessica-barth-details-alleged-harvey-weinstein-encounter-article-1.3557986
+            return $url;
+        }
+        if ((new InterstitialPageValidator($pageData, $url, $this->log))->validate()) {
             return $url;
         }
 
