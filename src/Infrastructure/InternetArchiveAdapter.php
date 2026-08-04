@@ -15,6 +15,7 @@ use App\Domain\Models\WebarchiveDTO;
 use App\Infrastructure\Monitor\NullLogger;
 use DateTime;
 use DateTimeInterface;
+use JsonException;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -71,7 +72,15 @@ class InternetArchiveAdapter implements DeadlinkArchiverInterface
             return [];
         }
         $jsonString = $response->getBody()->getContents();
-        $data = json_decode($jsonString, true, 512, JSON_THROW_ON_ERROR) ?? [];
+        try {
+            $data = json_decode($jsonString, true, 512, JSON_THROW_ON_ERROR) ?? [];
+        } catch (JsonException $e) {
+            $this->log->debug('InternetArchive: non-JSON response: ' . $e->getMessage(), [
+                'url' => $url,
+                'body' => $jsonString,
+            ]);
+            return [];
+        }
 
         if (!isset($data['archived_snapshots']['closest'])) {
             $this->log->info('InternetArchive: no closest snapshot', [

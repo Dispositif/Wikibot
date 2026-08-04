@@ -15,6 +15,7 @@ use App\Domain\Models\WebarchiveDTO;
 use App\Infrastructure\Monitor\NullLogger;
 use DateTimeImmutable;
 use DateTimeInterface;
+use JsonException;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -73,7 +74,15 @@ class WikiwixAdapter implements DeadlinkArchiverInterface
             return [];
         }
         $jsonString = $response->getBody()->getContents();
-        $data = json_decode($jsonString, true, 512, JSON_THROW_ON_ERROR) ?? [];
+        try {
+            $data = json_decode($jsonString, true, 512, JSON_THROW_ON_ERROR) ?? [];
+        } catch (JsonException $e) {
+            $this->log->debug('WikiwixAdapter: non-JSON response: ' . $e->getMessage(), [
+                'url' => $url,
+                'body' => $jsonString,
+            ]);
+            return [];
+        }
 
         // check wikiwix archive status
         if (empty($data['status']) || (int)$data['status'] !== 200) {
