@@ -197,7 +197,7 @@ trait OuvrageTemplateParams
             'mois',
             'jour',
             'date',
-            "numéro d'édition",
+            'numéro édition',
             'année première édition',
             'réimpression',
             'pages totales',

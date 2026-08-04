@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace App\Domain\WikiOptimizer\Handlers;
 
 /**
- * {Cite book}:"edition" [ordinal number] => {ouvrage}::"numéro d'édition" (ou "réimpression" [année])
+ * {Cite book}:"edition" [ordinal number] => {ouvrage}::"numéro édition" (ou "réimpression" [année])
  * {Cite book}:origyear => {ouvrage}:"année première édition"
  * https://wstat.fr/template/index.php?title=Ouvrage&query=paramvalue&param=edition&limit=5000&searchtext=.&searchre=1
  * Pas mal de corrupted sur "éditions"
@@ -21,21 +21,21 @@ class EditionCitebookHandler extends AbstractOuvrageHandler
 {
     public function handle()
     {
-        // "édition" alias de "éditeur", mais OuvrageTemplateAlias:"édition"=>"numéro d'édition" à cause des doublons
-        if (!empty($this->ouvrage->getParam("numéro d'édition"))) {
-            $numeroEdition = $this->ouvrage->getParam("numéro d'édition");
+        // "édition" alias de "éditeur", mais OuvrageTemplateAlias:"édition"=>"numéro édition" à cause des doublons
+        if (!empty($this->ouvrage->getParam('numéro édition'))) {
+            $numeroEdition = $this->ouvrage->getParam('numéro édition');
             if (empty($this->ouvrage->getParam('éditeur'))
                 && $this->getEditionOrdinalNumber($numeroEdition) === null
                 && !$this->isEditionYear($numeroEdition)
             ) {
                 $this->ouvrage->setParam('éditeur', $numeroEdition);
-                $this->ouvrage->unsetParam("numéro d'édition");
+                $this->ouvrage->unsetParam('numéro édition');
                 $this->optiStatus->addSummaryLog('±éditeur');
             }
         }
 
         // Correction nom de paramètre selon type de valeur
-        $this->correctReimpressionByParam("numéro d'édition");
+        $this->correctReimpressionByParam('numéro édition');
         $this->correctReimpressionByParam("éditeur");
         $this->correctReimpressionByParam("édition");
     }
@@ -82,8 +82,8 @@ class EditionCitebookHandler extends AbstractOuvrageHandler
         $editionOrdinal = $this->getEditionOrdinalNumber($editionNumber);
         if (!empty($editionNumber) && !$this->isEditionYear($editionNumber) && $editionOrdinal) {
             $this->ouvrage->unsetParam($param);
-            $this->ouvrage->setParam("numéro d'édition", $editionOrdinal);
-            $this->optiStatus->addSummaryLog("±numéro d'édition");
+            $this->ouvrage->setParam('numéro édition', $editionOrdinal);
+            $this->optiStatus->addSummaryLog('±numéro édition');
             $this->optiStatus->setNotCosmetic(true);
         }
     }

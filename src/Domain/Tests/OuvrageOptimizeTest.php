@@ -20,7 +20,7 @@ class OuvrageOptimizeTest extends TestCase
     public static function provideSomeParam(): array
     {
         return [
-            // "edition" [ordinal number] from {Cite book} => "réimpression" (année) ou "numéro d'édition"
+            // "edition" [ordinal number] from {Cite book} => "réimpression" (année) ou "numéro édition"
             // (origyear=>"année première édition")
             [
                 [
@@ -31,7 +31,7 @@ class OuvrageOptimizeTest extends TestCase
                     'année' => '2013',
                     'isbn' => '978-2-200-27262-3',
                 ],
-                "{{Ouvrage|auteur1=Laurence|titre=Le cinéma italien|éditeur=[[Armand Colin]]|année=2013|numéro d'édition=3|isbn=978-2-200-27262-3}}",
+                "{{Ouvrage|auteur1=Laurence|titre=Le cinéma italien|éditeur=[[Armand Colin]]|année=2013|numéro édition=3|isbn=978-2-200-27262-3}}",
             ],
             //            [
             //                // TODO : erreur : prénom1 mais auteur1 (incompatible)
@@ -48,7 +48,7 @@ class OuvrageOptimizeTest extends TestCase
             ],
             [
                 ['edition' => '3rd'],
-                "{{Ouvrage|titre=|éditeur=|année=|numéro d'édition=3|isbn=}}",
+                "{{Ouvrage|titre=|éditeur=|année=|numéro édition=3|isbn=}}",
             ],
             [
                 ['edition' => '1985'],

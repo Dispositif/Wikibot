@@ -52,11 +52,12 @@ abstract class OuvrageTemplateAlias extends AbstractWikiTemplate
             'titre vo' => 'titre original',
             'location' => 'lieu',
             'year' => 'année',
-            // édition = alias de "éditeur", mais OuvrageOptimize: numéro d'édition, réimpression, éditeur
-            'édition' => "numéro d'édition",
-            'edition' => "numéro d'édition", // {cite book}. si année => "réimpression"
+            // édition = alias de "éditeur", mais OuvrageOptimize: numéro édition, réimpression, éditeur
+            'édition' => 'numéro édition',
+            'edition' => 'numéro édition', // {cite book}. si année => "réimpression"
             'publisher' => 'éditeur',
-            'numéro édition' => "numéro d'édition",
+            // update 2026-08 : "numéro édition" (sans apostrophe) est la forme canonique du TemplateData
+            "numéro d'édition" => 'numéro édition',
             'origyear' => 'année première édition',
             'publi' => 'réimpression',
             'pages' => 'pages totales', // doc - mis temporairement en paramètre normal
