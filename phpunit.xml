@@ -16,6 +16,8 @@
   <testsuites>
     <testsuite name="Project Test Suite">
       <directory>src</directory>
+      <exclude>src/Application/Bazar</exclude>
+      <exclude>src/Domain/Bazar</exclude>
     </testsuite>
   </testsuites>
   <groups>

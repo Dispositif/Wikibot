@@ -39,13 +39,14 @@ src/Domain/TALN/
 src/Application/Web/
 src/Infrastructure/unused/
 
-# Dev/CI, not needed in the prod image (--no-dev)
-tests/
+# tests/ IS included now (one image runs both workers and tests, see
+# docker/php/Dockerfile) — only its generated artifacts stay out.
 .run/
 .idea/
 *.log
 tests/coverage.txt
 tests/clover.xml
+.phpunit.cache/
 
 # Tooling that has no business being in the image
 bin/backup-private.sh

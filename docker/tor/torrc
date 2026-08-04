@@ -1,0 +1,21 @@
+# Minimal Tor client config for the external-link crawlers (extern-ref,
+# last-extern-ref). Not a relay/exit node — just a local SOCKS proxy so the
+# bot doesn't hammer third-party sites (Cloudflare etc.) from one static IP.
+
+SocksPort 0.0.0.0:9050
+
+# Loopback only: Tor refuses an unauthenticated ControlPort on any other
+# address (a real safety check, not a Docker quirk). Not a problem here —
+# the app's current code path never actually dials the control port (the
+# NEWNYM "new identity" option is never set in the Guzzle calls), it just
+# checks that TOR_CONTROL is a non-empty string. Revisit if that changes.
+ControlPort 127.0.0.1:9051
+
+# No control-port password: TorClientAdapter (app code) never sends one.
+# Fine here since the control port is only reachable from the compose
+# network, not exposed to the host or the internet.
+CookieAuthentication 0
+
+DataDirectory /var/lib/tor
+Log notice stdout
+RunAsDaemon 0

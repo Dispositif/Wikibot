@@ -20,21 +20,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         sockets \
     && rm -rf /var/lib/apt/lists/*
 
-# ext-sqlite3 (composer.json: require-dev only, for PHPUnit) intentionally not
-# rebuilt here: this image is for prod workers, not tests.
-# (sqlite3/pdo_sqlite/readline are already shipped precompiled in the
+# ext-sqlite3/pdo_sqlite/readline are already shipped precompiled in the
 # php:8.3-cli-bookworm base image — no need, and even risky, to rebuild them:
-# running "docker-php-ext-install readline" on this base fails on a known
-# readline/libedit compile bug on Debian bookworm. Leave them alone.)
+# running "docker-php-ext-install readline" (or sqlite3) on this base fails
+# on a real compile bug (readline needs libedit; sqlite3 has no buildable
+# ext/ source in this image). Leave them alone.
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 COPY docker/php/php.ini /usr/local/etc/php/conf.d/wikibot.ini
 
 WORKDIR /app
 
+# One image for both workers and tests
+# `docker compose run --rm <any-service> vendor/bin/phpunit`
 COPY composer.json composer.lock ./
-RUN composer install --no-scripts --no-interaction --no-progress --prefer-dist --no-autoloader \
-        --no-dev
+RUN composer install --no-scripts --no-interaction --no-progress --prefer-dist --no-autoloader
 
 COPY . .
 RUN composer dump-autoload --optimize

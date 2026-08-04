@@ -43,6 +43,17 @@ services:
       - ./src/Infrastructure/resources/google_quota.json:/app/src/Infrastructure/resources/google_quota.json
     mem_limit: 256m
 
+  # Local Tor SOCKS proxy for the external-link crawlers below. Not for
+  # Wikipedia itself (login/edits go through the normal API) — only for
+  # fetching arbitrary third-party sites, so a single static OVH IP doesn't
+  # get flagged/blocked by Cloudflare and similar bot defenses.
+  tor:
+    build:
+      context: .
+      dockerfile: docker/tor/Dockerfile
+    restart: unless-stopped
+    mem_limit: 128m
+
   # External link crawling ({{lien web}} / {{article}} generation from raw
   # URLs) — main/current version, matches the "externref" Makefile target.
   # Supports: --page/--debug/
@@ -58,6 +69,8 @@ services:
       - .env
     volumes:
       - ./src/Application/resources/article_externRef_edited.txt:/app/src/Application/resources/article_externRef_edited.txt
+    depends_on:
+      - tor
     mem_limit: 256m
 
   # Same external link crawling, but sorted by most-recently-edited pages
@@ -74,6 +87,8 @@ services:
       - .env
     volumes:
       - ./src/Application/resources/article_externRef_edited.txt:/app/src/Application/resources/article_externRef_edited.txt
+    depends_on:
+      - tor
     mem_limit: 256m
 
 volumes:
