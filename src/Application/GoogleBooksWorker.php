@@ -33,11 +33,12 @@ class GoogleBooksWorker extends AbstractBotTaskWorker
     public function __construct(
         WikiBotConfig      $bot,
         MediawikiFactory   $wiki,
-        ?PageListInterface $pagesGen = null
+        ?PageListInterface $pagesGen = null,
+        bool               $dryRun = false
     )
     {
         $this->transformer = new GoogleTransformer(new GoogleApiQuota(), new GoogleBooksAdapter(), $bot->getLogger());
-        parent::__construct($bot, $wiki, $pagesGen);
+        parent::__construct($bot, $wiki, $pagesGen, $dryRun);
     }
 
     protected function processWithDomainWorker(string $title, string $text): ?string

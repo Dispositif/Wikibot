@@ -59,6 +59,7 @@ abstract class AbstractBotTaskWorker
     protected $defaultTaskname;
     protected $modeAuto = false;
     protected $maxLag = 5;
+    protected bool $dryRun = false;
     /**
      * @var LoggerInterface
      */
@@ -80,13 +81,15 @@ abstract class AbstractBotTaskWorker
     public function __construct(
         WikiBotConfig      $bot,
         MediawikiFactory   $wiki,
-        ?PageListInterface $pagesGen = null
+        ?PageListInterface $pagesGen = null,
+        bool               $dryRun = false
     )
     {
         $this->log = $bot->getLogger();
         $this->wiki = $wiki;
         $this->bot = $bot;
         $this->defaultTaskname = $bot->getTaskName();
+        $this->dryRun = $dryRun;
         if ($pagesGen instanceof PageListInterface) {
             $this->pageListGenerator = $pagesGen;
         }
@@ -173,6 +176,17 @@ abstract class AbstractBotTaskWorker
 
         if ($this->isSomethingToChange($text, $newText) && $this->autoOrYesConfirmation()) {
             $newText = $this->fixGenericWikiSyntax($newText);
+            if ($this->dryRun) {
+                $this->log->notice(sprintf(
+                    '[DRY-RUN] Would edit "%s" (summary: %s, %d -> %d chars) — skipping real edit',
+                    $title,
+                    $this->generateSummaryText(),
+                    mb_strlen((string)$text),
+                    mb_strlen((string)$newText)
+                ));
+
+                return;
+            }
             $this->doEdition($newText);
         }
     }

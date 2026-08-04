@@ -30,9 +30,10 @@ use App\Infrastructure\WikiwixAdapter;
 
 include __DIR__.'/../myBootstrap.php';
 
-// --page="Skateboard" --stats=redis --stats=sqlite --debug --verbose
-echo "OPTIONS: --debug --verbose --stats=redis --stats=sqlite --page=\"Skateboard\" --offset=1000 --nofilter \n";
-$options = getopt('', ['page::', 'debug', 'verbose', 'stats::', 'offset::']);
+// --page="Skateboard" --stats=redis --stats=sqlite --debug --verbose --dry-run
+echo "OPTIONS: --debug --verbose --stats=redis --stats=sqlite --page=\"Skateboard\" --offset=1000 --nofilter --dry-run \n";
+$options = getopt('', ['page::', 'debug', 'verbose', 'stats::', 'offset::', 'dry-run']);
+$dryRun = isset($options['dry-run']);
 
 /** @noinspection PhpUnhandledExceptionInspection */
 $wiki = ServiceFactory::getMediawikiFactory();
@@ -136,7 +137,7 @@ try {
         [$wikiwix, $internetArchive, $wikiwix]
     );
 
-    new ExternRefWorker($botConfig, $wiki, $list, $transformer);
+    new ExternRefWorker($botConfig, $wiki, $list, $transformer, $dryRun);
 } finally {
     echo "END of process\n";
     sleep(120);

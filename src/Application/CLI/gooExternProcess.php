@@ -54,9 +54,12 @@ $titles = $list->getPageTitles();
 echo 'CirrusSearch: '.count($titles).' titles found';
 $list = new PageList($titles);
 
-if (!empty($argv[1])) {
-    $list = new PageList([trim($argv[1])]);
+// --dry-run can appear anywhere; strip it before reading the positional page title.
+$dryRun = in_array('--dry-run', $argv, true);
+$positionalArgs = array_values(array_filter($argv, static fn ($a) => $a !== '--dry-run'));
+if (!empty($positionalArgs[1])) {
+    $list = new PageList([trim($positionalArgs[1])]);
 }
 
-new GoogleBooksWorker($bot, $wiki, $list);
+new GoogleBooksWorker($bot, $wiki, $list, $dryRun);
 // todo 2023 : desactivate "Skip : déjà analysé"

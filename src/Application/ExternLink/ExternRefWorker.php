@@ -48,7 +48,8 @@ class ExternRefWorker extends AbstractRefBotWorker
         WikiBotConfig        $bot,
         MediawikiFactory     $wiki,
         ?PageListInterface   $pagesGen = null,
-        ExternRefTransformer $transformer = null
+        ExternRefTransformer $transformer = null,
+        bool                 $dryRun = false
     )
     {
         if (!$transformer instanceof ExternRefTransformer) {
@@ -58,7 +59,7 @@ class ExternRefWorker extends AbstractRefBotWorker
         $this->transformer->skipSiteBlacklisted = self::SKIP_SITE_BLACKLISTED;
         $this->transformer->skipRobotNoIndex = self::SKIP_ROBOT_NOINDEX;
 
-        parent::__construct($bot, $wiki, $pagesGen);
+        parent::__construct($bot, $wiki, $pagesGen, $dryRun);
     }
 
 

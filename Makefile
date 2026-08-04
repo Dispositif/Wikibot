@@ -69,6 +69,8 @@ logs:
 build:
 	docker compose build
 
+# To dry-run a worker instead, replaces the default rather than appending to it, e.g.:
+#   docker compose run --rm extern-ref php src/Application/CLI/externRefProcess.php --dry-run --page="Some Title"
 .PHONY: run # 	Run a one-shot worker for real: make run service=goo-extern|extern-ref|last-extern-ref|zizibot-talk
 run:
 	docker compose run --rm $(service)

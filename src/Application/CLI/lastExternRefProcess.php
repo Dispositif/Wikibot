@@ -105,6 +105,7 @@ $transformer = new ExternRefTransformer(
     [$wikiwix, $internetArchive]
 );
 
-new ExternRefWorker($botConfig, $wiki, $list, $transformer);
+$dryRun = in_array('--dry-run', $argv, true);
+new ExternRefWorker($botConfig, $wiki, $list, $transformer, $dryRun);
 
 echo "END of process\n";
