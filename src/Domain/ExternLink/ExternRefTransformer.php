@@ -302,7 +302,17 @@ class ExternRefTransformer implements ExternRefTransformerInterface
         unset($mapData['DATA-ARTICLE']); // ugly
         unset($mapData['url-access']);
 
-        return $mapData;
+        return $this->stripParamsNotSupportedByTemplate($mapData, $template);
+    }
+
+    /**
+     * OpenGraphMapper/JsonLDMapper produce fields shared by {article} and {lien web} (e.g. 'volume', 'numéro'),
+     * but a field absent from the chosen template would be serialized as an "user error" param
+     * (HTML comment "PARAMETRE N'EXISTE PAS"), which is wrong since it's bot-generated data, not user input.
+     */
+    protected function stripParamsNotSupportedByTemplate(array $mapData, AbstractWikiTemplate $template): array
+    {
+        return array_intersect_key($mapData, array_flip($template->getParamsAndAlias()));
     }
 
     // postprocess data
