@@ -3,13 +3,6 @@ services:
     image: mysql:8.0
     restart: unless-stopped
     environment:
-      # Root is reserved for admin/init only (schema import, manual maintenance).
-      # The app itself connects as a dedicated, least-privilege user, scoped to
-      # this one database only — the official image creates MYSQL_USER
-      # automatically at init when it is anything other than "root". Values
-      # here must match MYSQL_USER/MYSQL_PASSWORD/MYSQL_DATABASE in the
-      # .env.* files. This is a fresh, empty, Docker-only database; none of
-      # these passwords leave the local Docker network.
       MYSQL_ROOT_PASSWORD: wikibot-docker-dev
       MYSQL_DATABASE: wikibot
       MYSQL_USER: wikibot_app
@@ -20,11 +13,6 @@ services:
       - ./src/Infrastructure/resources/database_schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
     mem_limit: 300m
 
-  # First worker wired up, to validate the whole circuit (env vars, network,
-  # DB) end to end. Not restart:always on purpose: this script runs once and
-  # exits, it is not a daemon like the ouvrage* workers — how it should
-  # actually be scheduled (host cron vs. a supervisor loop) is a separate
-  # decision for later.
   zizibot-talk:
     build:
       context: .
@@ -42,7 +30,6 @@ services:
   # Google Books link completion (raw books.google URLs -> {ouvrage}).
   # Batch script: processes up to 500 pages then exits, does not loop or
   # depend on MySQL — its own state (daily API quota) lives in a JSON file
-  # bind-mounted below so it survives across container runs.
   goo-extern:
     build:
       context: .
@@ -51,14 +38,31 @@ services:
     profiles: ["workers"]
     command: ["php", "src/Application/CLI/gooExternProcess.php"]
     env_file:
-      - .env.codexbot2
+      - .env
     volumes:
       - ./src/Infrastructure/resources/google_quota.json:/app/src/Infrastructure/resources/google_quota.json
     mem_limit: 256m
 
   # External link crawling ({{lien web}} / {{article}} generation from raw
-  # URLs). Same one-shot batch pattern as goo-extern; its own "already
-  # processed" dedup list is bind-mounted so it survives across runs.
+  # URLs) — main/current version, matches the "externref" Makefile target.
+  # Supports: --page/--debug/
+  # --verbose/--stats/--offset options via `command:` override at run time.
+  extern-ref:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    restart: "no"
+    profiles: ["workers"]
+    command: ["php", "src/Application/CLI/externRefProcess.php"]
+    env_file:
+      - .env
+    volumes:
+      - ./src/Application/resources/article_externRef_edited.txt:/app/src/Application/resources/article_externRef_edited.txt
+    mem_limit: 256m
+
+  # Same external link crawling, but sorted by most-recently-edited pages
+  # instead of relevance — a distinct entry point, not a replacement for
+  # extern-ref. Shares the same dedup file.
   last-extern-ref:
     build:
       context: .

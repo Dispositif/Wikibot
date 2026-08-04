@@ -13,6 +13,9 @@ tests/build/
 # Config
 .env.*
 !/.env.dist
+
+# Ops reference material (old prod crontab, etc.) — not for the public repo
+/ops/
 /src/Application/ZiziBot_Bootstrap.php
 /src/Application/CodexBot2_Bootstrap.php
 /src/Application/Ironie_Bootstrap.php

@@ -33,22 +33,46 @@ rector:
 rector-hard:
 	php ./vendor/bin/rector process ${path}
 
-.PHONY: externref # 	extern reference wikipedia
-externref:
-	php ./src/Application/CLI/externRefprocess.php
-
-.PHONY: googleExtern # 	extern reference google
-googleExtern:
-	php ./src/Application/CLI/gooExternProcess.php
-
 .PHONY: cleanError # 	clean error reports on wiki
 cleanError:
 	php ./src/Application/CLI/cleanErrorReport.php
 
-.PHONY: ouvrageComplete # 	complete ouvrage
+.PHONY: ouvrageComplete # 	complete ouvrage (not yet dockerized)
 ouvrageComplete:
 	php ./src/Application/CLI/ouvrageCompleteProcess.php
 
-.PHONY: ouvrageEdit # 	edit ouvrage
+.PHONY: ouvrageEdit # 	edit ouvrage (not yet dockerized)
 ouvrageEdit:
 	php ./src/Application/CLI/ouvrageEditProcess.php
+
+# externref/googleExtern direct-call targets removed: superseded by the
+# Docker workers below (extern-ref, goo-extern), which is now how these
+# pipelines actually run.
+
+.PHONY: up # 	Start MySQL (persistent, safe default: does not touch the workers)
+up:
+	docker compose up -d mysql
+
+.PHONY: down # 	Stop containers (keeps MySQL data)
+down:
+	docker compose down
+
+.PHONY: ps # 	Show running containers
+ps:
+	docker compose ps
+
+.PHONY: logs # 	Follow logs of a service, e.g. make logs service=mysql
+logs:
+	docker compose logs -f $(service)
+
+.PHONY: build # 	(Re)build worker images after a code/Dockerfile change
+build:
+	docker compose build
+
+.PHONY: run # 	Run a one-shot worker for real: make run service=goo-extern|extern-ref|last-extern-ref|zizibot-talk
+run:
+	docker compose run --rm $(service)
+
+.PHONY: restart-mysql # 	Restart the MySQL container only
+restart-mysql:
+	docker compose restart mysql
