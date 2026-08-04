@@ -82,6 +82,9 @@ abstract class OuvrageTemplateAlias extends AbstractWikiTemplate
             'chapter-url' => 'lire en ligne',
             'accessdate' => 'consulté le',
             'access-date' => 'consulté le',
+            'Consulté le' => 'consulté le',
+            'consulté' => 'consulté le',
+            'consultée le' => 'consulté le',
             'numéro' => 'numéro chapitre',
             'chapitre' => 'numéro chapitre',
             'chap' => 'titre chapitre',
@@ -169,6 +172,7 @@ abstract class OuvrageTemplateAlias extends AbstractWikiTemplate
             'orig-year' => 'année première édition',
             // erreurs fréquentes
             'coauteur' => 'co-auteur',
+            'coauteurs' => 'co-auteur', // co-auteur lui-même déconseillé, cf. auteur2/auteur3...
             "nature de l'ouvrage" => 'nature ouvrage',
             "nature de l’ouvrage" => 'nature ouvrage',
             "nature document" => 'nature ouvrage',

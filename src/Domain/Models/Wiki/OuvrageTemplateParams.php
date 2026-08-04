@@ -190,6 +190,7 @@ trait OuvrageTemplateParams
             'lien éditeur', // obsolète
             'collection',
             'nature ouvrage',
+            'établissement', // pour les thèses
             'série',
             'numéro dans collection',
             'année',
@@ -215,15 +216,19 @@ trait OuvrageTemplateParams
             'e-issn',
             'ismn',
             'ean',
-            'asin',
+            'asin', // retiré du modèle Wikipédia le 26/08/2025, conservé ici en lecture pour anciens articles
             'oclc',
             'bnf',
+            'sbn',
             'lccn',
             'dnb',
+            'hdl',
+            'accès hdl',
             'doi',
             'accès doi', // non-officiel
             'pmid',
             'pmcid',
+            's2cid',
             'jstor',
             'bibcode',
             'math reviews',
@@ -231,6 +236,9 @@ trait OuvrageTemplateParams
             'arxiv',
             'sudoc',
             'hal',
+            'libris',
+            'citeseerx',
+            'jfm',
             'wikisource',
             'présentation en ligne',
             'lire en ligne',
@@ -254,6 +262,7 @@ trait OuvrageTemplateParams
             'brisé le',
 
             /* paramètres non officiel 😁  */
+            'nocat', // désactive la catégorisation d'erreur (officiel Wikipédia)
             'note', // pour afficher message bot ?
         ];
 }

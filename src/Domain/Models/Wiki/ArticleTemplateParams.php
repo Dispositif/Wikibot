@@ -23,6 +23,8 @@ trait ArticleTemplateParams
         = [
             'langue',
             'langue originale',
+            'auteurs', // depuis 2025-04 : remplace intégralement la chaîne d'auteurs générée (pas un simple alias)
+            'co-auteur', // déconseillé, cf. auteur2/auteur3...
             'auteur1',
             'prénom1',
             'nom1',
@@ -161,6 +163,8 @@ trait ArticleTemplateParams
             'et al.',
             'auteur institutionnel',
             'traducteur',
+            'préface',
+            'postface',
             'illustrateur',
             'photographe',
             'champ libre',
@@ -170,10 +174,14 @@ trait ArticleTemplateParams
             'traduction titre',
             'nature article',
             'périodique', //<!-- Paramètre obligatoire -->
+            'lien périodique',
+            'langue périodique',
             'lieu',
             'éditeur',
+            'lien éditeur', // obsolète (wikilien direct désormais recommandé dans "éditeur")
             'série',
             'volume',
+            'tome',
             'titre volume',
             'numéro',
             'titre numéro',
@@ -198,8 +206,11 @@ trait ArticleTemplateParams
             'consulté le', // 16 mars 2020
             'oclc',
             'bnf',
+            'hdl',
+            'accès hdl',
             'pmid',
             'pmcid',
+            's2cid',
             'doi',
             'accès doi',
             'jstor',
@@ -209,7 +220,11 @@ trait ArticleTemplateParams
             'arxiv',
             'sudoc',
             'hal',
+            'libris',
+            'citeseerx',
             'wikisource',
+            'extrait',
+            'commentaire',
             'id',
             'libellé',
             'plume',

@@ -21,6 +21,7 @@ abstract class ArticleTemplateAlias extends AbstractWikiTemplate
         = [
             'revue' => 'périodique',
             'journal' => 'périodique',
+            'magazine' => 'périodique', // compatibilité {{cite magazine}}, ajouté 2026-07-23
             'page' => 'pages',
             'passage' => 'pages',
             'p.' => 'pages',
@@ -86,9 +87,19 @@ abstract class ArticleTemplateAlias extends AbstractWikiTemplate
 
             'accessdate' => 'consulté le',
             'access-date' => 'consulté le',
+            'Consulté le' => 'consulté le',
+            'consulté' => 'consulté le',
+            'consultée le' => 'consulté le',
 
             'chap' => 'titre chapitre',
             'chapter' => 'titre chapitre',
+            'mathreviews' => 'math reviews',
+            'mr' => 'math reviews',
+            'illustrations' => 'illustrateur',
+            'photographies' => 'photographe',
+            'titre original' => 'traduction titre',
+            'coauteurs' => 'co-auteur',
+            'coauteur' => 'co-auteur',
             'ref' => 'référence simplifiée',
             // TODO: desactive ?
             /*
