@@ -50,7 +50,7 @@ while (true) {
         if (preg_match('#no more queue to process#', $e->getMessage())) {
             echo "\nno more queue to process. Sleep 6h avant SMS\n";
             sleep(60 * 60 * 6);
-            (new SMS())->send('no more queue to process');
+//            (new SMS())->send('no more queue to process');
             exit;
         }
         if (preg_match('#DNS refusé#', $e->getMessage())) {
@@ -81,8 +81,8 @@ while (true) {
             sleep(60 * 60 * 6);
             exit;
         }
-        if ($count > 2) {
-            echo "\n3 erreurs à la suite => exit. Sleep 10min. \n";
+        if ($count > 10) {
+            echo "\n10 erreurs à la suite => exit. Sleep 10min. \n";
             sleep(10 * 60);
             // GuzzleClient error require new Php process => supervisor/cron
             exit;
@@ -91,6 +91,6 @@ while (true) {
         unset($e);
     }
     unset($process);
-    echo "Sleep 10 min\n";
-    sleep(60 * 10);
+    echo "Sleep 5 min\n";
+    sleep(60 * 5);
 }

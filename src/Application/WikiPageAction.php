@@ -217,6 +217,39 @@ class WikiPageAction
     }
 
     /**
+     * DIRTY - Get interwiki title from enwiki.
+     * Doc: https://fr.wikipedia.org/w/api.php?action=help&modules=query%2Blanglinks
+     * Example with "Chien" -> "Dog"
+     * Todo move to InterwikiMachine ?
+     */
+    public function getInterwikiEnwiki(): ?string
+    {
+        // https://fr.wikipedia.org/w/api.php?action=query&prop=langlinks&titles=Pseudotropheus+johannii&format=json
+        $titleAPIencoded = str_replace(' ', '+', $this->title);
+        try {
+            // &lllang=en  // &lllimit=500
+            $json = file_get_contents('https://fr.wikipedia.org/w/api.php?action=query&prop=langlinks&titles=' . $titleAPIencoded . '&lllang=en&format=json');
+            $array = json_decode($json, true, 10, JSON_THROW_ON_ERROR);
+        } catch (Throwable $e) {
+            echo 'Error getInterwiki : ' . $e->getMessage() . "\n";
+            return null;
+        }
+
+        if (empty($array['query']['pages'])) {
+            return null;
+        }
+        $interwiki = [];
+        $firstResult = array_shift($array['query']['pages']);
+        foreach ($firstResult['langlinks'] as $langlink) {
+            if (isset($langlink['lang']) && isset($langlink['*'])) {
+                $interwiki[$langlink['lang']] = $langlink['*'];
+            }
+        }
+
+        return $interwiki['en'] ?? null;
+    }
+
+    /**
      * @return bool success
      * @throws Exception
      */

@@ -270,4 +270,16 @@ class WikiTextUtil extends TextUtil
     {
         return str_contains($text, self::FILTERED_COMMENT);
     }
+
+    public static function deleteCategory(string $text, string $category): string
+    {
+        $category = preg_quote($category, '#'); // parentheses !
+        $replaced = preg_replace(
+            '#\[\[Catégorie:'.$category.'( ?\|[^\]]*)?\]\][\s\n\r\t]*#i',
+            '',
+            $text
+        );
+
+        return $replaced ?? $text;
+    }
 }

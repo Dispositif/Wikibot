@@ -142,7 +142,10 @@ class CirrusSearch implements PageListInterface, PageListForAppInterface
         $this->requestParams = array_merge($this->defaultParams, $this->params);
         if ($this->options[self::OPTION_CONTINUE] ?? false) {
             $this->requestParams['sroffset'] = $this->getOffsetFromFile($this->requestParams);
-            echo sprintf("Extract offset %s from file \n", $this->requestParams['sroffset']);
+            echo sprintf(
+                "Extract offset %s from file %s \n",
+                $this->requestParams['sroffset'], $this->hashSearchParams($this->requestParams)
+            );
         }
         // RFC3986 : space => %20
         $query = http_build_query($this->requestParams, 'bla', '&', PHP_QUERY_RFC3986);

@@ -11,7 +11,100 @@ tests/build/
 /src/Application/resources/typo_patterns/
 
 # Config
-/.env.zizibot
+.env.*
+!/.env.dist
 /src/Application/ZiziBot_Bootstrap.php
+/src/Application/CodexBot2_Bootstrap.php
+/src/Application/Ironie_Bootstrap.php
 
 /src/Application/resources/article_externRef_edited.txt
+
+# SQL data dumps (trop lourds pour git — structure schema conservée)
+resources/wikibot-data-dump-*.sql
+
+# Code non public — à terme dans un repo privé séparé (2026-08-04)
+/src/Application/Bazar/
+/src/Domain/Bazar/
+/src/Domain/TALN/
+/src/Application/Web/
+/src/Infrastructure/unused/
+/src/Application/CLI/cron_electionAdmin.php
+/src/Application/CLI/userTrack.php
+
+# Brouillon non fonctionnel (2026-08-04)
+/src/Application/CLI/tor.php
+
+# Données runtime (corpus, listes, configs perso) — hors repo par choix (2026-08-04)
+/src/Application/resources/WPCleaner-typos.xml
+/src/Application/resources/analysis_pattern_auteurs.csv
+/src/Application/resources/article_edited.txt
+/src/Application/resources/blacklist.txt
+/src/Application/resources/botTalk_config.json
+/src/Application/resources/commithash.txt
+/src/Application/resources/gooBot_edited.txt
+/src/Application/resources/importISBN_nov.txt
+/src/Application/resources/importManual.txt
+/src/Application/resources/merci-codexbot.txt
+/src/Application/resources/phrases_haiku.wiki
+/src/Application/resources/phrases_voteAdmin_pour.txt
+/src/Application/resources/phrases_zizibot.txt
+/src/Application/resources/plume-astrovalley.txt
+/src/Application/resources/plume.txt
+/src/Application/resources/plume_google_dq.txt
+/src/Application/resources/polarity-PDDcontre.txt
+/src/Application/resources/polarity-PDDpour.txt
+/src/Application/resources/temp/
+/src/Application/resources/temp_ref_http.wiki
+/src/Application/resources/watch_pages.json
+/src/Application/resources/wd_journaux.json
+/src/Application/resources/wikidata_editeurs.json
+/src/Domain/resources/analysis_pattern_auteurs.csv
+/src/Domain/resources/config_presse.yaml
+/src/Domain/resources/config_skip_domain.txt
+/src/Domain/resources/corpus_article_url.txt
+/src/Domain/resources/corpus_firstname.txt
+/src/Domain/resources/corpus_unknow_firstname.txt
+/src/Domain/resources/data_editors_wiki.json
+/src/Domain/resources/data_newspapers.json
+/src/Domain/resources/data_scientific_domain.json
+/src/Domain/resources/data_scientific_journals.json
+/src/Domain/resources/data_scientific_wiki.json
+/src/Domain/resources/editeurs.csv
+/src/Domain/resources/example_BnF.xml
+/src/Domain/resources/example_bnf_noresult.xml
+/src/Domain/resources/public_suffix_list.dat.txt
+/src/Infrastructure/resources/google_quota.json
+
+# Docs/notes personnelles — hors repo (2026-08-04)
+/docs/API.txt
+/docs/CodexBot-portrait.png
+/docs/MAMP.txt
+/docs/SQL.txt
+/docs/WP_SEARCH_SQL_API.txt
+/docs/_help-docker.txt
+/docs/config.txt
+/docs/infra-wikibot.excalidraw
+/docs/insultes.txt
+/docs/insultes2.txt
+/docs/rules.txt
+/docs/stats.txt
+/docs/wikiapi.txt
+/docs/wikidata.txt
+/todo-cirrus.md
+
+# Artefacts locaux / IDE / build (2026-08-04)
+/.run/
+/public_html/
+/src/Application/CLI/dump.rdb
+/src/Application/CLI/userprofiling-ironie.html
+/src/Application/CLI/userprofiling-koreller.html
+/src/Application/CLI/userprofiling-test.html
+/src/Application/CLI/voteadq.txt
+/tests/clover.xml
+/tests/coverage.txt
+/resources/cirrusSearch-*.txt
+/resources/corpus_lienWeb_url.txt
+/resources/titles/
+/resources/wikibot_structure_2021-02-06.sql
+/resources/wikiprofiling-dump-20260706.sql
+/resources/wikiwix-log-11-01.txt

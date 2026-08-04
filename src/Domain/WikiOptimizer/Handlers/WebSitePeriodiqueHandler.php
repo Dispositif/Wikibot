@@ -70,7 +70,7 @@ class WebSitePeriodiqueHandler implements OptimizeHandlerInterface
             return;
         }
         $newTitle = preg_replace(
-            '#[- ]*(vidéo|site de|site|sur) ?' . $siteName . '$#i',
+            '#[- ]*(vidéo|site de|site|sur) ?' . preg_quote($siteName, '#') . '$#i',
             '',
             $this->template->getParam('titre')
         );
