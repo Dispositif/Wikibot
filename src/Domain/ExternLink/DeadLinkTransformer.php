@@ -149,12 +149,21 @@ class DeadLinkTransformer
     }
 
     /**
+     * archive.today et ses domaines miroirs (archive.is/.ph/.md/.vn/.li/.fo/.ec) : mis en liste noire
+     * par fr.wikipedia le 23/02/2026 (DDoS via captcha + altération de contenu constatée), cf.
+     * https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Le_Bistro/21_f%C3%A9vrier_2026#archive.today
+     * On garde la reconnaissance de ces domaines (pour ne pas re-traiter des liens déjà archivés
+     * existants) mais on ne les utilise plus comme archiveur (cf. DeadlinkArchiverInterface).
+     */
+    private const ARCHIVE_TODAY_DOMAINS_REGEX = 'archive\.(today|is|ph|md|vn|li|fo|ec)';
+
+    /**
      * Bug https://w.wiki/7kUm
      */
     private function stripWebArchivePrefix(string $url): string
     {
         $url = preg_replace('#^https?://web\.archive\.org/web/\d+/#', '', $url);
-        $url = preg_replace('#^https?://archive\.is/\d+/#', '', $url);
+        $url = preg_replace('#^https?://' . self::ARCHIVE_TODAY_DOMAINS_REGEX . '/\d+/#', '', $url);
 
         return preg_replace('#^https?://archive\.wikiwix\.com/cache/\d+/#', '', $url);
     }
@@ -166,7 +175,7 @@ class DeadLinkTransformer
     {
         return str_starts_with($url, 'http://web.archive.org/web/')
             || str_starts_with($url, 'https://web.archive.org/web/')
-            || str_starts_with($url, 'https://archive.is/')
+            || (bool)preg_match('#^https?://' . self::ARCHIVE_TODAY_DOMAINS_REGEX . '/#', $url)
             || str_starts_with($url, 'https://archive.wikiwix.com/cache/');
     }
 }
