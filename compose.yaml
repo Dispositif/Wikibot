@@ -30,12 +30,46 @@ services:
       context: .
       dockerfile: docker/php/Dockerfile
     restart: "no"
+    profiles: ["workers"]
     command: ["php", "src/Application/CLI/cron_ziziBotTalk.php"]
     env_file:
       # MYSQL_* values in here already point at the "mysql" service above.
       - .env.zizibot
     depends_on:
       - mysql
+    mem_limit: 256m
+
+  # Google Books link completion (raw books.google URLs -> {ouvrage}).
+  # Batch script: processes up to 500 pages then exits, does not loop or
+  # depend on MySQL — its own state (daily API quota) lives in a JSON file
+  # bind-mounted below so it survives across container runs.
+  goo-extern:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    restart: "no"
+    profiles: ["workers"]
+    command: ["php", "src/Application/CLI/gooExternProcess.php"]
+    env_file:
+      - .env.codexbot2
+    volumes:
+      - ./src/Infrastructure/resources/google_quota.json:/app/src/Infrastructure/resources/google_quota.json
+    mem_limit: 256m
+
+  # External link crawling ({{lien web}} / {{article}} generation from raw
+  # URLs). Same one-shot batch pattern as goo-extern; its own "already
+  # processed" dedup list is bind-mounted so it survives across runs.
+  last-extern-ref:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    restart: "no"
+    profiles: ["workers"]
+    command: ["php", "src/Application/CLI/lastExternRefProcess.php"]
+    env_file:
+      - .env
+    volumes:
+      - ./src/Application/resources/article_externRef_edited.txt:/app/src/Application/resources/article_externRef_edited.txt
     mem_limit: 256m
 
 volumes:

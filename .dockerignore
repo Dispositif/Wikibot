@@ -22,6 +22,12 @@ resources/corpus_lienWeb_url.txt
 resources/titles/
 resources/wikiwix-log-11-01.txt
 docs/
+
+# Stateful runtime files (dedup lists, API quota counters): must be bind-mounted
+# as volumes so state persists across container runs, never baked into the
+# image as a stale snapshot of whatever exists locally at build time.
+src/Application/resources/article_externRef_edited.txt
+src/Infrastructure/resources/google_quota.json
 src/Application/CLI/*.html
 src/Application/CLI/dump.rdb
 src/Application/CLI/voteadq.txt
