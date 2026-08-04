@@ -1,0 +1,45 @@
+# Never in the image: large local dumps, .git, secrets, dev artifacts.
+# (COPY . . does not respect .gitignore, only .dockerignore — hence this
+# separate file, otherwise large local files end up in the image unintentionally.)
+
+.git
+.dockerignore
+docker-compose.yml
+
+vendor/
+node_modules/
+
+# Secrets: provided to the container via env_file/environment at runtime, never
+# copied into an image (Docker layers are easy to inspect/leak).
+.env
+.env.*
+!.env.dist
+
+# Large/local data (see .gitignore for the detailed reasoning)
+resources/*.sql
+resources/cirrusSearch-*.txt
+resources/corpus_lienWeb_url.txt
+resources/titles/
+resources/wikiwix-log-11-01.txt
+docs/
+src/Application/CLI/*.html
+src/Application/CLI/dump.rdb
+src/Application/CLI/voteadq.txt
+
+# Private code (see .gitignore): not needed in the prod image
+src/Application/Bazar/
+src/Domain/Bazar/
+src/Domain/TALN/
+src/Application/Web/
+src/Infrastructure/unused/
+
+# Dev/CI, not needed in the prod image (--no-dev)
+tests/
+.run/
+.idea/
+*.log
+tests/coverage.txt
+tests/clover.xml
+
+# Tooling that has no business being in the image
+bin/backup-private.sh

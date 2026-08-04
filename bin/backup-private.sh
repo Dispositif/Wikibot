@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Backup chiffré des fichiers privés Wikibot (code non public + .env + data perso).
-# Pas de git, pas d'historique : juste une archive .tar.gz.enc horodatée,
-# à copier ensuite manuellement sur un disque externe / cloud privé.
+# Encrypted backup of private Wikibot files (non-public code + .env + personal data).
+# No git, no history: just a timestamped .tar.gz.enc archive, to be copied
+# manually afterwards to an external drive / private cloud.
 #
-# Usage    : ./bin/backup-private.sh
-# Restaurer: openssl enc -d -aes-256-cbc -pbkdf2 -in ARCHIVE.tar.gz.enc -out ARCHIVE.tar.gz && tar -xzf ARCHIVE.tar.gz
+# Usage  : ./bin/backup-private.sh
+# Restore: openssl enc -d -aes-256-cbc -pbkdf2 -in ARCHIVE.tar.gz.enc -out ARCHIVE.tar.gz && tar -xzf ARCHIVE.tar.gz
 
 set -euo pipefail
 
