@@ -1,0 +1,42 @@
+services:
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      # Root is reserved for admin/init only (schema import, manual maintenance).
+      # The app itself connects as a dedicated, least-privilege user, scoped to
+      # this one database only — the official image creates MYSQL_USER
+      # automatically at init when it is anything other than "root". Values
+      # here must match MYSQL_USER/MYSQL_PASSWORD/MYSQL_DATABASE in the
+      # .env.* files. This is a fresh, empty, Docker-only database; none of
+      # these passwords leave the local Docker network.
+      MYSQL_ROOT_PASSWORD: wikibot-docker-dev
+      MYSQL_DATABASE: wikibot
+      MYSQL_USER: wikibot_app
+      MYSQL_PASSWORD: wikibot-docker-dev
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./docker/mysql/low-memory.cnf:/etc/mysql/conf.d/low-memory.cnf:ro
+      - ./src/Infrastructure/resources/database_schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    mem_limit: 300m
+
+  # First worker wired up, to validate the whole circuit (env vars, network,
+  # DB) end to end. Not restart:always on purpose: this script runs once and
+  # exits, it is not a daemon like the ouvrage* workers — how it should
+  # actually be scheduled (host cron vs. a supervisor loop) is a separate
+  # decision for later.
+  zizibot-talk:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    restart: "no"
+    command: ["php", "src/Application/CLI/cron_ziziBotTalk.php"]
+    env_file:
+      # MYSQL_* values in here already point at the "mysql" service above.
+      - .env.zizibot
+    depends_on:
+      - mysql
+    mem_limit: 256m
+
+volumes:
+  mysql-data:
