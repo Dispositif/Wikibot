@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Domain\WikiOptimizer;
 
 use App\Domain\OptiStatus;
+use App\Domain\WikiOptimizer\Handlers\AsinHandler;
 use App\Domain\WikiOptimizer\Handlers\AuthorLinkHandler;
 use App\Domain\WikiOptimizer\Handlers\BnfParamHandler;
 use App\Domain\WikiOptimizer\Handlers\DateHandler;
@@ -64,6 +65,7 @@ class OuvrageOptimize extends AbstractTemplateOptimizer
             new ExternalTemplateHandler($this->optiTemplate, $optiStatus),
             new OuvrageFormatHandler($this->optiTemplate, $optiStatus),
             new OuvrageIsbnHandler($this->optiTemplate, $optiStatus),
+            new AsinHandler($this->optiTemplate, $optiStatus),
             new BnfParamHandler($this->optiTemplate, $optiStatus),
             new LocationHandler($this->optiTemplate, $optiStatus, $this->pageListManager),
             new GoogleBooksUrlHandler($this->optiTemplate, $optiStatus),
