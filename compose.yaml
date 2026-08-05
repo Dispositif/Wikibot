@@ -13,20 +13,6 @@ services:
       - ./src/Infrastructure/resources/database_schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
     mem_limit: 300m
 
-  zizibot-talk:
-    build:
-      context: .
-      dockerfile: docker/php/Dockerfile
-    restart: "no"
-    profiles: ["workers"]
-    command: ["php", "src/Application/CLI/cron_ziziBotTalk.php"]
-    env_file:
-      # MYSQL_* values in here already point at the "mysql" service above.
-      - .env.zizibot
-    depends_on:
-      - mysql
-    mem_limit: 256m
-
   # Google Books link completion (raw books.google URLs -> {ouvrage}).
   # Batch script: processes up to 500 pages then exits, does not loop or
   # depend on MySQL — its own state (daily API quota) lives in a JSON file.
