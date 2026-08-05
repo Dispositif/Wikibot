@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Domain\WikiOptimizer;
 
 use App\Domain\Models\Wiki\ArticleTemplate;
+use App\Domain\Models\Wiki\LienBriseTemplate;
 use App\Domain\Models\Wiki\LienWebTemplate;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\Models\Wiki\WikiTemplateInterface;
@@ -34,6 +35,14 @@ class OptimizerFactory
         }
         if ($template instanceof ArticleTemplate) {
             return new ArticleOptimizer($template, $wikiPageTitle, $log);
+        }
+        // LienBriseTemplate extends LienWebTemplate (2026-08): branch explicitly BEFORE the
+        // LienWebTemplate check, otherwise "instanceof LienWebTemplate" also matches Lien brisé and
+        // routes it through LienWebOptimizer (WebSitePeriodiqueHandler, WebCleanAuthorsHandler),
+        // which was never designed or tested for that case. No dedicated optimizer yet
+        // (see docs/audit-backlog-ameliorations-2026-08.md, section 7).
+        if ($template instanceof LienBriseTemplate) {
+            return null;
         }
         if ($template instanceof LienWebTemplate) {
             return new LienWebOptimizer($template, $wikiPageTitle, $log);
