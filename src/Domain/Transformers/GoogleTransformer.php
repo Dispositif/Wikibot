@@ -141,7 +141,7 @@ class GoogleTransformer
             throw new DomainException('Pas de URL Google Books');
         }
 
-        $gooDat = GoogleBooksUtil::parseGoogleBookQuery($url);
+        $gooDat = GoogleBooksUtil::extractGoogleBookData($url);
         if (empty($gooDat['isbn']) && empty($gooDat['id'])) {
             throw new DomainException('Pas de ISBN ou ID Google Books');
         }
@@ -163,7 +163,7 @@ class GoogleTransformer
             throw $e;
         }
 
-        $cleanUrl = GoogleBooksUtil::simplifyGoogleUrl($url);
+        $cleanUrl = GoogleBooksUtil::simplifyGoogleUrl($url, $gooDat);
         $ouvrage->unsetParam('présentation en ligne');
         $ouvrage->setParam('lire en ligne', $cleanUrl);
         $ouvrage->userSeparator = ' |';

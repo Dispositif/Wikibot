@@ -71,9 +71,9 @@ class GoogleLivresTemplateTest extends TestCase
                 'https://books.google.com.br/books?id=tERyAAAAMAAJ'
             ],
             [
-                // new Google Book format (nov 2019)
+                // new Google Book format (nov 2019) : trailing query string stripped
                 'https://www.google.fr/books/edition/_/U4NmPwAACAAJ?hl=en',
-                'https://www.google.fr/books/edition/_/U4NmPwAACAAJ?hl=en',
+                'https://www.google.fr/books/edition/_/U4NmPwAACAAJ',
             ],
             [
                 // new Google Book format (nov 2019)

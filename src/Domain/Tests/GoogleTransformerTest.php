@@ -13,6 +13,7 @@ use App\Domain\Transformers\GoogleTransformer;
 use App\Infrastructure\GoogleApiQuota;
 use App\Infrastructure\GoogleBooksAdapter;
 use PHPUnit\Framework\TestCase;
+use Scriptotek\GoogleBooks\Volume;
 
 class GoogleTransformerTest extends TestCase
 {
@@ -69,5 +70,37 @@ class GoogleTransformerTest extends TestCase
             ],
             $trans->extractAllGoogleRefs($wikiText)
         );
+    }
+
+    /**
+     * Lock in behavior for the new-format Google Books URL (id in the path, e.g.
+     * .../edition/<titre>/<id>) : it must be recognized instead of throwing
+     * "Pas de ISBN ou ID Google Books".
+     */
+    public function testConvertGBurl2OuvrageCitationWithNewFormatUrl()
+    {
+        $text = file_get_contents(__DIR__ . '/../Publisher/Tests/googleBook.json');
+        $json = json_decode($text, null, 512, JSON_THROW_ON_ERROR);
+        $volume = new Volume('KApgwgEACAAJ', $json->items[0]->volumeInfo);
+
+        $apiQuotaMock = $this->createMock(GoogleApiQuota::class);
+        $googleBooksAdapterMock = $this->createMock(GoogleBooksAdapter::class);
+        $googleBooksAdapterMock->expects($this->once())
+            ->method('getDataByGoogleId')
+            ->with('KApgwgEACAAJ')
+            ->willReturn($volume);
+
+        $trans = new GoogleTransformer($apiQuotaMock, $googleBooksAdapterMock);
+
+        $url = 'https://www.google.com/books/edition/Histoire_de_la_Provence/KApgwgEACAAJ?hl=fr';
+        $citation = $trans->convertGBurl2OuvrageCitation($url);
+
+        $this::assertStringContainsString('{{Ouvrage', $citation);
+        $this::assertStringContainsString(
+            'lire en ligne=https://www.google.com/books/edition/Histoire_de_la_Provence/KApgwgEACAAJ',
+            $citation
+        );
+        // tracking/query params stripped from the cleaned URL
+        $this::assertStringNotContainsString('hl=fr', $citation);
     }
 }

@@ -75,15 +75,34 @@ abstract class GoogleBooksUtil
     }
 
     /**
+     * Extract 'id'/'isbn'/... data from a Google Book URL, whatever its format.
+     * New URL format (nov 2019) : 'id' is in the path, not the query string.
+     *
+     * @return string[]
+     */
+    public static function extractGoogleBookData(string $url): array
+    {
+        $gooDat = self::parseGoogleBookQuery($url);
+
+        if (self::isNewGoogleBookUrl($url)) {
+            $gooDat['id'] = self::getIDFromNewGBurl($url);
+        }
+
+        return $gooDat;
+    }
+
+    /**
      * TODO refac (responsability).
      *
      * Clean the google book old URL : delete tracking and user optional params,
      * also redondat search query params.
-     * Skip the process for new URL 2019 format.
+     * For new URL 2019 format : just strip trailing query string/fragment (tracking params, hl=...).
+     *
+     * @param array|null $gooDat Pass an already-extracted extractGoogleBookData() result to avoid re-parsing $url.
      *
      * @throws Exception
      */
-    public static function simplifyGoogleUrl(string $url): string
+    public static function simplifyGoogleUrl(string $url, ?array $gooDat = null): string
     {
         if (!self::isGoogleBookURL($url)) {
             // not DomainException for live testing with OuvrageOptimize
@@ -91,14 +110,15 @@ abstract class GoogleBooksUtil
         }
 
         if (self::isNewGoogleBookUrl($url)) {
-            if (!self::getIDFromNewGBurl($url)) {
+            $id = $gooDat['id'] ?? self::getIDFromNewGBurl($url);
+            if (empty($id)) {
                 throw new DomainException('no Google Book ID in URL');
             }
 
-            return $url;
+            return (string) preg_replace('~[?#].*$~', '', $url);
         }
 
-        $gooDat = self::parseGoogleBookQuery($url);
+        $gooDat ??= self::parseGoogleBookQuery($url);
 
         if (empty($gooDat['id']) && empty($gooDat['isbn'])) {
             throw new DomainException("no GoogleBook 'id' or 'isbn' in URL");
@@ -243,8 +263,8 @@ abstract class GoogleBooksUtil
         return null;
     }
 
-    protected static function validateGoogleBooksId(string $id): bool
+    public static function validateGoogleBooksId(string $id): bool
     {
-        return preg_match('#' . self::GOOGLEBOOKS_ID_REGEX . '#', $id) > 0;
+        return preg_match('#^' . self::GOOGLEBOOKS_ID_REGEX . '$#', $id) > 0;
     }
 }
