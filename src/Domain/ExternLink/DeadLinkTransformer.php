@@ -135,7 +135,7 @@ class DeadLinkTransformer
     protected function generateLienBrise(string $url, DateTimeInterface $now): string
     {
         if ($this->isWebArchiveUrl($url)) {
-            $this->notice('Skip {lien brisé} on web archive url', ['stats' => 'externref.skip.lienBriseOnwebarchiveurl']);
+            $this->log->notice('Skip {lien brisé} on web archive url', ['stats' => 'externref.skip.lienBriseOnwebarchiveurl']);
 
             return $url;
         }
