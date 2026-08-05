@@ -1,7 +1,7 @@
 CREATE TABLE `page_ouvrages`
 (
     `id`            int(11) unsigned NOT NULL AUTO_INCREMENT,
-    `page`          varchar(150)     NOT NULL DEFAULT '',
+    `page`          varchar(250)     NOT NULL DEFAULT '',
     `raw`           text,
     `opti`          text,
     `opticorrected` text,
@@ -13,7 +13,7 @@ CREATE TABLE `page_ouvrages`
     `major`         int(11)                   DEFAULT NULL,
     `isbn`          varchar(20)               DEFAULT NULL,
     `edited`        timestamp        NULL     DEFAULT NULL,
-    `priority`      int(11)                   DEFAULT '0',
+    `priority`      tinyint(4)                DEFAULT '0',
     `tocorrect`     tinyint(4)                DEFAULT '0',
     `corrected`     timestamp        NULL     DEFAULT NULL,
     `torevert`      tinyint(4)                DEFAULT '0',
@@ -21,7 +21,11 @@ CREATE TABLE `page_ouvrages`
     `row`           timestamp        NULL     DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
     `verify`        timestamp        NULL     DEFAULT NULL,
     `altered`       int(11)                   DEFAULT NULL,
-    PRIMARY KEY (`id`)
+    `label`         tinyint(1)                DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    KEY `page` (`page`),
+    KEY `isbn` (`isbn`),
+    KEY `priority` (`priority`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 16037
   DEFAULT CHARSET = utf8;

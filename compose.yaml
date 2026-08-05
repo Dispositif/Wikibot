@@ -7,11 +7,25 @@ services:
       MYSQL_DATABASE: wikibot
       MYSQL_USER: wikibot_app
       MYSQL_PASSWORD: wikibot-docker-dev
+
+    # Bound to loopback only: local dev DB access, not meant
+    # to be reachable from outside this machine.
+    ports:
+      - "127.0.0.1:3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
       - ./docker/mysql/low-memory.cnf:/etc/mysql/conf.d/low-memory.cnf:ro
       - ./src/Infrastructure/resources/database_schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
     mem_limit: 300m
+
+    # healthcheck lets the `depends_on: condition: service_healthy` avoid
+    # racing a cold container (schema.sql import on first boot takes a few
+    # seconds, during which MySQL accepts TCP but rejects queries).
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pwikibot-docker-dev"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
   # Google Books link completion (raw books.google URLs -> {ouvrage}).
   # Batch script: processes up to 500 pages then exits, does not loop or
@@ -83,6 +97,62 @@ services:
       - ./src/Application/resources/article_externRef_edited.txt:/app/src/Application/resources/article_externRef_edited.txt
     depends_on:
       - tor
+    mem_limit: 256m
+
+  # ISBN completion pipeline (raw {{Ouvrage}} -> completed, via BnF/Google
+  # Books/OpenLibrary/Wikidata). Loops internally (10000 rows per PHP
+  # process, sleeps/retries on error) until the MySQL queue is empty
+  ouvrage-complete:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    restart: "no"
+    profiles: ["workers"]
+    command: ["php", "src/Application/CLI/ouvrageCompleteProcess.php"]
+    env_file:
+      - .env.zizibot
+    volumes:
+      - ./src/Infrastructure/resources:/app/src/Infrastructure/resources
+    depends_on:
+      mysql:
+        condition: service_healthy
+    mem_limit: 256m
+
+  # Second half of the ISBN pipeline: takes completed rows from
+  # ouvrage-complete's queue and actually edits fr.wikipedia.org.
+  ouvrage-edit:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    restart: "no"
+    profiles: ["workers"]
+    command: ["php", "src/Application/CLI/ouvrageEditProcess.php"]
+    env_file:
+      - .env.zizibot
+    depends_on:
+      mysql:
+        condition: service_healthy
+    mem_limit: 256m
+
+  # First stage of the ISBN pipeline, upstream of ouvrage-complete: finds
+  # {{Ouvrage}} citations on fr.wikipedia.org (CirrusSearch, 500 most
+  # recently-edited matching articles) and inserts them as raw rows into
+  # MySQL for ouvrage-complete/ouvrage-edit to pick up. One-shot batch
+  # Takes an optional page title argument for a manual one-off
+  # import instead of the CirrusSearch batch, e.g.:
+  #   docker compose run --rm wiki-scan php src/Application/CLI/wikiScanProcess.php "Some Title"
+  wiki-scan:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    restart: "no"
+    profiles: ["workers"]
+    command: ["php", "src/Application/CLI/wikiScanProcess.php"]
+    env_file:
+      - .env.zizibot
+    depends_on:
+      mysql:
+        condition: service_healthy
     mem_limit: 256m
 
 volumes:

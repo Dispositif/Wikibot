@@ -55,7 +55,7 @@ while (true) {
 //            (new SMS())->send('no more queue to process');
             exit;
         }
-        if (preg_match('#DNS refusé#', $e->getMessage())) {
+        if (str_contains($e->getMessage(), 'Could not resolve host')) {
             echo "\nDNS refusé (curl error 6). Sleep 10min and EXIT\n";
             sleep(60 * 10);
             exit;
