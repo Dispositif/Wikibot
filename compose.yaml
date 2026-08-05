@@ -15,6 +15,15 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
       - ./docker/mysql/low-memory.cnf:/etc/mysql/conf.d/low-memory.cnf:ro
+      - ./docker/mysql/slow-query.cnf:/etc/mysql/conf.d/slow-query.cnf:ro
+      # Directory, not a single file: MySQL creates slow.log itself on
+      # first write, and a nonexistent host file path would make Docker
+      # bind-mount a root-owned directory in its place instead (same
+      # gotcha as google_quota.json — see Makefile). No rotation here yet
+      # (unlike Docker's own container log driver, which this bypasses
+      # entirely since MySQL writes the file directly) — fine for
+      # local/dev, needs logrotate before running unattended on matou.
+      - ./docker/mysql/log:/var/log/mysql-slow
       - ./src/Infrastructure/resources/database_schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
     mem_limit: 300m
 

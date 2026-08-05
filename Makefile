@@ -38,8 +38,14 @@ cleanError:
 	php ./src/Application/CLI/cleanErrorReport.php
 
 .PHONY: up # 	Start MySQL (persistent, safe default: does not touch the workers)
-up:
+up: docker/mysql/log
 	docker compose up -d mysql
+
+# Same gotcha as the google_quota files below: this dir must exist BEFORE
+# `docker compose up`, otherwise Docker bind-mounts a root-owned directory
+# in its place and MySQL can't write its slow query log there.
+docker/mysql/log:
+	mkdir -p $@
 
 .PHONY: down # 	Stop containers (keeps MySQL data)
 down:
