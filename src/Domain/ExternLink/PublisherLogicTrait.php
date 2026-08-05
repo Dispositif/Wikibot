@@ -156,7 +156,7 @@ trait PublisherLogicTrait
             && isset($this->config[$this->registrableDomain][$configParam])
             && !empty($mapData[$templateParam])) {
             $stripText = $this->config[$this->registrableDomain][$configParam]; // string|array
-            $mapData[$templateParam] = trim(str_ireplace((string) $stripText, '', (string) $mapData[$templateParam]));
+            $mapData[$templateParam] = trim(str_ireplace($stripText, '', (string) $mapData[$templateParam]));
             if (empty($mapData[$templateParam])) {
                 unset($mapData[$templateParam]);
             }
