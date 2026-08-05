@@ -9,8 +9,11 @@ declare(strict_types=1);
 
 namespace App\Application\OuvrageComplete\Handlers;
 
+use App\Domain\Exceptions\QuotaExceededException;
 use App\Domain\Models\Wiki\OuvrageTemplate;
 use App\Domain\OuvrageFactory;
+use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\ServerException;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
@@ -37,11 +40,15 @@ class GoogleBooksHandler implements CompleteHandlerInterface
             $this->logger->info('GOOGLE...');
 
             return OuvrageFactory::GoogleFromIsbn($this->isbn);
+        } catch (QuotaExceededException $e) {
+            throw $e; // must propagate to the CLI's quota-sleep branch
+        } catch (ConnectException | ServerException $e) {
+            // Transient network/server-side failure (DNS, timeout, Google 5xx): skip Google for this ISBN
+            // instead of crashing the whole worker run().
+            $this->logger->warning("*** ERREUR GOOGLE Isbn Search (transient) ***" . $e->getMessage());
         } catch (Throwable $e) {
             $this->logger->warning("*** ERREUR GOOGLE Isbn Search ***" . $e->getMessage());
-            if (!str_contains($e->getMessage(), 'Could not resolve host: www.googleapis.com')) {
-                throw $e;
-            }
+            throw $e;
         }
 
         return null;
