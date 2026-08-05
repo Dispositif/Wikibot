@@ -37,7 +37,8 @@ class GoogleBooksWorker extends AbstractBotTaskWorker
         bool               $dryRun = false
     )
     {
-        $this->transformer = new GoogleTransformer(new GoogleApiQuota(), new GoogleBooksAdapter(), $bot->getLogger());
+        $quota = new GoogleApiQuota();
+        $this->transformer = new GoogleTransformer($quota, new GoogleBooksAdapter($quota), $bot->getLogger());
         parent::__construct($bot, $wiki, $pagesGen, $dryRun);
     }
 
@@ -46,11 +47,3 @@ class GoogleBooksWorker extends AbstractBotTaskWorker
         return $this->transformer->process($text);
     }
 }
-
-
-
-
-
-
-
-

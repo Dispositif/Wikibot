@@ -29,10 +29,12 @@ while (true) {
     try {
         echo "*** NEW PROCESS ouvrageCompleteProcess\n";
         echo 'Environment= '.getenv('ENV')."\n";
-        $googleQuota = (new GoogleApiQuota())->getCount();
-        dump('Google quota : ', $googleQuota);
-        if ($googleQuota >= 950) {
-            $logger->warning(' Quota Google dépassé dans ouvrageCompleteProcess ('.$googleQuota.'). Sleep 4h');
+        $googleApiQuota = new GoogleApiQuota();
+        dump('Google quota : ', $googleApiQuota->getCount());
+        if ($googleApiQuota->isQuotaReached()) {
+            $logger->warning(
+                ' Quota Google dépassé dans ouvrageCompleteProcess ('.$googleApiQuota->getCount().'). Sleep 6h'
+            );
             sleep(60 * 60 * 6);
             continue;
         }

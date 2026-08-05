@@ -11,5 +11,9 @@ namespace App\Domain\InfrastructurePorts;
 
 interface GoogleApiQuotaInterface
 {
+    public function getCount(): int;
 
+    public function isQuotaReached(): bool;
+
+    public function increment(): void;
 }

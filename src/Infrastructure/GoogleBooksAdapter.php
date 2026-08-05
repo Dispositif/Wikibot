@@ -9,10 +9,11 @@ declare(strict_types=1);
 
 namespace App\Infrastructure;
 
+use App\Domain\Exceptions\QuotaExceededException;
 use App\Domain\InfrastructurePorts\BookApiInterface;
+use App\Domain\InfrastructurePorts\GoogleApiQuotaInterface;
 use App\Domain\InfrastructurePorts\GoogleBooksInterface;
 use App\Domain\Publisher\GoogleBookMapper;
-use Exception;
 use Scriptotek\GoogleBooks\GoogleBooks as GoogleAPI;
 use Scriptotek\GoogleBooks\Volume;
 
@@ -22,19 +23,24 @@ use Scriptotek\GoogleBooks\Volume;
  */
 class GoogleBooksAdapter extends AbstractBookApiAdapter implements GoogleBooksInterface, BookApiInterface
 {
-    final public const SCRIPT_GOOGLE_QUOTA   = 900;
     final public const SCRIPT_GOOGLE_COUNTRY = 'US';
 
     protected $api;
 
     protected $mapper;
 
-    // todo inject + factory
-    private readonly GoogleApiQuota $quotaCounter;
+    private readonly GoogleApiQuotaInterface $quotaCounter;
 
-    public function __construct()
+    /**
+     * @param GoogleApiQuotaInterface|null $quota Inject a shared counter to keep it in sync with other
+     *                                             consumers of the same daily quota (e.g. GoogleTransformer).
+     *                                             Defaults to a fresh instance (re-reads the quota file).
+     * @param GoogleAPI|null $api Inject a preconfigured client (e.g. with a mock Guzzle handler) for
+     *                            network-free testing. Defaults to the real Google Books API client.
+     */
+    public function __construct(?GoogleApiQuotaInterface $quota = null, ?GoogleAPI $api = null)
     {
-        $api = new GoogleAPI(
+        $this->api = $api ?? new GoogleAPI(
             [
                 'key' => getenv('GOOGLE_BOOKS_API_KEY'),
                 'maxResults' => 5,
@@ -42,9 +48,8 @@ class GoogleBooksAdapter extends AbstractBookApiAdapter implements GoogleBooksIn
             ]
         );
         // 'country' => 'FR' (ISO-3166 Country Codes?)
-        $this->api = $api;
         $this->mapper = new GoogleBookMapper();
-        $this->quotaCounter = new GoogleApiQuota();
+        $this->quotaCounter = $quota ?? new GoogleApiQuota();
     }
 
     public function getDataByIsbn(string $isbn): ?Volume
@@ -58,17 +63,22 @@ class GoogleBooksAdapter extends AbstractBookApiAdapter implements GoogleBooksIn
         return $res;
     }
 
-    private function checkGoogleQuota()
+    /**
+     * @throws QuotaExceededException
+     */
+    private function checkGoogleQuota(): void
     {
-        if ($this->quotaCounter->getCount() > self::SCRIPT_GOOGLE_QUOTA) {
-            throw new Exception('Quota Google dépassé pour ce script : '.self::SCRIPT_GOOGLE_QUOTA);
+        if ($this->quotaCounter->isQuotaReached()) {
+            throw new QuotaExceededException(
+                'Quota Google dépassé pour ce script : '.GoogleApiQuota::SAFE_DAILY_QUOTA
+            );
         }
     }
 
     /**
      *
      * @return Volume
-     * @throws Exception
+     * @throws QuotaExceededException
      */
     public function getDataByGoogleId(string $googleId)
     {

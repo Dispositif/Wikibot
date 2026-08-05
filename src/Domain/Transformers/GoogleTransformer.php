@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Transformers;
 
+use App\Domain\Exceptions\QuotaExceededException;
 use App\Domain\InfrastructurePorts\GoogleApiQuotaInterface;
 use App\Domain\InfrastructurePorts\GoogleBooksInterface;
 use App\Domain\Models\Wiki\OuvrageTemplate;
@@ -55,7 +56,7 @@ class GoogleTransformer
     {
         if ($this->quota->isQuotaReached()) {
             $this->logger->debug('Quota Google atteint');
-            throw new DomainException('Quota Google atteint');
+            throw new QuotaExceededException('Quota Google atteint');
         }
 
         $refsData = $this->extractAllGoogleRefs($text);
@@ -104,11 +105,14 @@ class GoogleTransformer
             $this->logger->info('Process GoogleBooks ref: ' . $ref[1]);
             if ($this->quota->isQuotaReached()) {
                 $this->logger->debug('Quota Google atteint');
-                throw new DomainException('Quota Google atteint');
+                throw new QuotaExceededException('Quota Google atteint');
             }
             try {
                 $citation = $this->convertGBurl2OuvrageCitation(WikiTextUtil::stripFinalPoint($ref[1]));
                 sleep(2);
+            } catch (QuotaExceededException $e) {
+                // stop the whole run
+                throw $e;
             } catch (Throwable $e) {
                 $this->logger->debug("Exception " . $e->getMessage());
                 continue;
@@ -266,10 +270,13 @@ class GoogleTransformer
             $this->logger->info('Process links: ' . $pattern[1]);
             if ($this->quota->isQuotaReached()) {
                 $this->logger->debug('Quota Google atteint');
-                throw new DomainException('Quota Google atteint');
+                throw new QuotaExceededException('Quota Google atteint');
             }
             try {
                 $citation = $this->convertGBurl2OuvrageCitation(WikiTextUtil::stripFinalPoint($pattern[1]));
+            } catch (QuotaExceededException $e) {
+                // stop the whole run instead of silently skipping every remaining link
+                throw $e;
             } catch (Exception $e) {
                 $this->logger->debug("Exception " . $e->getMessage());
                 continue;

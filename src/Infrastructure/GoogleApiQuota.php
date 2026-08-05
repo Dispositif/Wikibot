@@ -31,7 +31,11 @@ class GoogleApiQuota implements GoogleApiQuotaInterface
     final public const JSON_FILENAME   = __DIR__.'/resources/google_quota.json';
     final public const REBOOT_TIMEZONE = 'America/Los_Angeles';
     final public const REBOOT_HOUR     = 0;
+    /** Google's published daily cap for the Books API (default free tier, confirmed nov. 2025). */
     final public const DAILY_QUOTA     = 1000;
+    /** Operational ceiling checked by isQuotaReached() : safety margin below DAILY_QUOTA, single source
+     *  of truth shared by every consumer (was duplicated as 900/950 literals across the codebase). */
+    final public const SAFE_DAILY_QUOTA = 950;
 
     private DateTime $lastDate;
     private int $count = 0;
@@ -128,7 +132,7 @@ class GoogleApiQuota implements GoogleApiQuotaInterface
     public function isQuotaReached(): bool
     {
         $this->checkNewReboot();
-        return $this->count >= static::DAILY_QUOTA;
+        return $this->count >= static::SAFE_DAILY_QUOTA;
     }
 
     /**

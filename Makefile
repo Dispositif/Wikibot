@@ -69,10 +69,17 @@ logs:
 build:
 	docker compose build
 
+# Gitignored runtime state (real Google API quota count), not part of the repo.
+# Docker's file-bind-mount for goo-extern (compose.yaml) needs the file to exist
+# BEFORE `docker compose run`/`up`, otherwise Docker silently creates a directory
+# in its place on a fresh checkout/deployment, and the worker crashes reading it.
+src/Infrastructure/resources/google_quota.json:
+	echo '{"date":"2020-01-01T00:00:20-07:00","count":0}' > $@
+
 # To dry-run a worker instead, replaces the default rather than appending to it, e.g.:
 #   docker compose run --rm extern-ref php src/Application/CLI/externRefProcess.php --dry-run --page="Some Title"
 .PHONY: run # 	Run a one-shot worker for real: make run service=goo-extern|extern-ref|last-extern-ref|zizibot-talk
-run:
+run: src/Infrastructure/resources/google_quota.json
 	docker compose run --rm $(service)
 
 .PHONY: restart-mysql # 	Restart the MySQL container only
