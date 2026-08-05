@@ -58,6 +58,8 @@ class LienWebTemplate extends AbstractWikiTemplate
             'Consulté le' => 'consulté le',
             'consulté' => 'consulté le',
             'consultée le' => 'consulté le',
+            'access date' => 'consulté le',
+            'Brisé le' => 'brisé le',
             'mathreviews' => 'math reviews',
             'mr' => 'math reviews',
             'co-auteur' => 'coauteurs', // coauteurs lui-même déconseillé, cf. auteur2/auteur3...

@@ -38,8 +38,9 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
     /**
      * @var array
      */
+    // 'surligné'/'BuchID' : tolérance non officielle (import dewiki), 'note' retiré : absent du modèle réel (2026-08)
     protected $parametersByOrder
-        = ['id', 'titre', 'couv', 'page', 'romain', 'page autre', 'surligne', 'note'];
+        = ['id', 'titre', 'couv', 'page', 'romain', 'page autre', 'surligne'];
 
     /**
      * Create {Google Book} from URL.
