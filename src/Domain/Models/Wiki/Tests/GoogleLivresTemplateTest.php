@@ -220,6 +220,16 @@ class GoogleLivresTemplateTest extends TestCase
                 'https://books.google.fr/books?id=pbspjvZst5UC&pg=PA395&lpg=PA395&dq=D%C3%A9cret-Loi+10+septembre+1926&source=bl&ots=kiCzMrHO7b&sig=Jxt2Ybpig7Oo-Mtuzgp_sL5ipQ4&hl=fr&sa=X&ei=6SMLU_zIDarL0AX75YAI&ved=0CFEQ6AEwBA#v=onepage&q=D%C3%A9cret-Loi%2010%20septembre%201926&f=false',
                 '{{Google Livres|pbspjvZst5UC|page=395|surligne=Décret-Loi+10+septembre+1926}}',
             ],
+            [
+                // new Google Book format (nov 2019) : id in the URL path
+                'https://www.google.com/books/edition/A_Wrinkle_in_Time/r119-dYq0mwC',
+                '{{Google Livres|r119-dYq0mwC}}',
+            ],
+            [
+                // new Google Book format (nov 2019) : id in the URL path, with query string
+                'https://www.google.fr/books/edition/_/U4NmPwAACAAJ?hl=en',
+                '{{Google Livres|U4NmPwAACAAJ}}',
+            ],
         ];
     }
 

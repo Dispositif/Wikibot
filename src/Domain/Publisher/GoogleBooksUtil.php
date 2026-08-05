@@ -150,7 +150,7 @@ abstract class GoogleBooksUtil
      * New Google Books format (nov 2019).
      * Example : https://www.google.fr/books/edition/_/U4NmPwAACAAJ?hl=en
      */
-    private static function isNewGoogleBookUrl(string $url): bool
+    public static function isNewGoogleBookUrl(string $url): bool
     {
         return (bool)preg_match(
             '#^' . self::GOOGLEBOOKS_NEW_START_URL_PATTERN . self::GOOGLEBOOKS_ID_REGEX . '(?:&.+)?#',
@@ -229,7 +229,7 @@ abstract class GoogleBooksUtil
      * Extract ID from new Google Books URL.
      * https://www.google.fr/books/edition/_/U4NmPwAACAAJ?hl=en => U4NmPwAACAAJ
      */
-    private static function getIDFromNewGBurl(string $url): ?string
+    public static function getIDFromNewGBurl(string $url): ?string
     {
         if (preg_match(
             '#^' . self::GOOGLEBOOKS_NEW_START_URL_PATTERN . '(' . self::GOOGLEBOOKS_ID_REGEX . ')(?:&.+)?#',

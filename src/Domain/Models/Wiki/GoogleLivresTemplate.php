@@ -56,12 +56,19 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
         if (!GoogleBooksUtil::isGoogleBookURL($url)) {
             throw new DomainException('not a Google Book URL');
         }
-        $gooDat = GoogleBooksUtil::parseGoogleBookQuery($url);
+
+        if (GoogleBooksUtil::isNewGoogleBookUrl($url)) {
+            // new format (nov 2019) : id is in the URL path, not the query string
+            $gooDat = GoogleBooksUtil::parseGoogleBookQuery($url);
+            $gooDat['id'] = GoogleBooksUtil::getIDFromNewGBurl($url);
+        } else {
+            $gooDat = GoogleBooksUtil::parseGoogleBookQuery($url);
+        }
 
         if (empty($gooDat['id'])) {
             throw new DomainException("no GoogleBook 'id' in URL");
         }
-        if (!preg_match('#[0-9A-Za-z_\-]{12}#', (string) $gooDat['id'])) {
+        if (!preg_match('#' . GoogleBooksUtil::GOOGLEBOOKS_ID_REGEX . '#', (string) $gooDat['id'])) {
             throw new DomainException("GoogleBook 'id' malformed [0-9A-Za-z_\-]{12}");
         }
 
