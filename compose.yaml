@@ -29,7 +29,10 @@ services:
 
   # Google Books link completion (raw books.google URLs -> {ouvrage}).
   # Batch script: processes up to 500 pages then exits, does not loop or
-  # depend on MySQL — its own state (daily API quota) lives in a JSON file
+  # depend on MySQL — its own state (daily API quota) lives in a JSON file.
+  # Both the quota file and its .lock (flock() mutex, guards concurrent writers —
+  # e.g. a future dockerized ouvrageComplete sharing the same daily quota) are
+  # bind-mounted from the host, so the lock is effective across containers/host too.
   goo-extern:
     build:
       context: .
@@ -41,6 +44,7 @@ services:
       - .env
     volumes:
       - ./src/Infrastructure/resources/google_quota.json:/app/src/Infrastructure/resources/google_quota.json
+      - ./src/Infrastructure/resources/google_quota.lock:/app/src/Infrastructure/resources/google_quota.lock
     mem_limit: 256m
 
   # Local Tor SOCKS proxy for the external-link crawlers below. Not for

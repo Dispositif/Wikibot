@@ -77,6 +77,8 @@ resources/wikibot-data-dump-*.sql
 /src/Domain/resources/example_bnf_noresult.xml
 /src/Domain/resources/public_suffix_list.dat.txt
 /src/Infrastructure/resources/google_quota.json
+/src/Infrastructure/resources/google_quota.lock
+/src/Infrastructure/resources/google_quota.json.tmp.*
 
 # Docs/notes personnelles — hors repo (2026-08-04)
 /docs/API.txt
