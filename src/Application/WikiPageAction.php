@@ -278,7 +278,7 @@ class WikiPageAction
         $identifier = new PageIdentifier($title);
         $revision = new Revision($newContent, $identifier);
 
-        return $this->wiki->newRevisionSaver()->save($revision, $editInfo);
+        return ExtendedMediawikiFactory::newRevisionSaverExtended()->save($revision, $editInfo);
     }
 
     /**

@@ -13,6 +13,7 @@ use Mediawiki\Api\Service\RevisionSaver;
 use Mediawiki\Api\SimpleRequest;
 use Mediawiki\DataModel\EditInfo;
 use Mediawiki\DataModel\Revision;
+use Normalizer;
 use RuntimeException;
 
 /**
@@ -67,8 +68,12 @@ class ExtendedRevisionSaver extends RevisionSaver
         if (!is_string($data)) {
             throw new RuntimeException('Dont know how to save content of this model.');
         }
-        $params['text'] = $content->getData();
-        $params['md5'] = md5((string) $content->getData());
+        // MediaWiki normalizes text to NFC server-side before comparing the md5 hash,
+        // so the hash must be computed on already-NFC-normalized text or the API rejects
+        // the edit with "badmd5" whenever upstream data (ex: Google Books) is non-NFC.
+        $data = Normalizer::normalize($data) ?: $data;
+        $params['text'] = $data;
+        $params['md5'] = md5($data);
 
         $timestamp = $revision->getTimestamp();
         if (!is_null($timestamp)) {
