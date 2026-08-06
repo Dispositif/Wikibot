@@ -11,6 +11,7 @@ namespace App\Infrastructure;
 
 use App\Application\InfrastructurePorts\HttpClientInterface;
 use App\Application\WikiPageAction;
+use App\Domain\InfrastructurePorts\ExternLinkCheckRepositoryInterface;
 use Exception;
 use Mediawiki\Api\ApiUser;
 use Mediawiki\Api\MediawikiApi;
@@ -19,15 +20,25 @@ use Mediawiki\Api\UsageException;
 use Mediawiki\DataModel\EditInfo;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
+use Simplon\Mysql\Mysql;
+use Simplon\Mysql\PDOConnector;
 
 // TODO move into /Application
 class ServiceFactory
 {
+    /**
+     * Hard kill-switch for the extern_link_check persistence (§9.6) : flip to false to
+     * make every extern-ref CLI script run fully SQL-free (no connection attempted at
+     * all), independent of the per-run --no-db flag. Useful for a worker fleet where
+     * some hosts (other VPS) never have DB access at all.
+     */
+    public const EXTERN_LINK_CHECK_ENABLED = true;
+
     private static ?AMQPStreamConnection $AMQPConnection = null;
 
     private static ?MediawikiFactory $wikiApi = null;
 
-    //    private static $dbConnection;
+    private static ?Mysql $mysqlConnection = null;
     private static ?MediawikiApi $api = null;
 
     private function __construct()
@@ -135,5 +146,37 @@ class ServiceFactory
     public static function getHttpClient(bool $torEnabled = false): HttpClientInterface
     {
         return HttpClientFactory::create($torEnabled);
+    }
+
+    /**
+     * Shared MySQL connection (same credentials as DbAdapter's own, currently opened
+     * separately there — not consolidated to avoid touching the ISBN pipeline here).
+     */
+    public static function getMysqlConnection(): Mysql
+    {
+        if (!isset(self::$mysqlConnection)) {
+            $pdo = new PDOConnector(
+                getenv('MYSQL_HOST'), getenv('MYSQL_USER'), getenv('MYSQL_PASSWORD'), getenv('MYSQL_DATABASE')
+            );
+            self::$mysqlConnection = new Mysql($pdo->connect('utf8', ['port' => getenv('MYSQL_PORT')]));
+        }
+
+        return self::$mysqlConnection;
+    }
+
+    /**
+     * Skips any MySQL connection attempt entirely — not just DB writes — when disabled
+     * via EXTERN_LINK_CHECK_ENABLED or the CLI's own $argv containing --no-db. Lets a
+     * worker run on a host with no DB access at all (e.g. a crawling-only VPS).
+     *
+     * @param string[] $argv the CLI script's own $argv
+     */
+    public static function getExternLinkCheckRepository(array $argv = []): ExternLinkCheckRepositoryInterface
+    {
+        if (!self::EXTERN_LINK_CHECK_ENABLED || in_array('--no-db', $argv, true)) {
+            return new NullExternLinkCheckRepository();
+        }
+
+        return new ExternLinkCheckAdapter(self::getMysqlConnection());
     }
 }

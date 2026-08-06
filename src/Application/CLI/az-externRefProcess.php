@@ -30,7 +30,7 @@ use App\Infrastructure\WikiwixAdapter;
 include __DIR__ . '/../myBootstrap.php';
 
 // --page="Skateboard" --stats=redis --stats=sqlite --debug --verbose
-echo "OPTIONS: --debug --verbose --stats=redis --stats=sqlite --page=\"Skateboard\" --offset=1000 \n";
+echo "OPTIONS: --debug --verbose --stats=redis --stats=sqlite --page=\"Skateboard\" --offset=1000 --no-db \n";
 $options = getopt('', ['page::', 'debug', 'verbose', 'stats::', 'offset::']);
 
 /** @noinspection PhpUnhandledExceptionInspection */
@@ -87,7 +87,8 @@ $transformer = new ExternRefTransformer(
     $torClient,
     $domainParser,
     $logger,
-    [$internetArchive, $wikiwix]
+    [$internetArchive, $wikiwix],
+    ServiceFactory::getExternLinkCheckRepository($argv)
 );
 
 new ExternRefWorker($botConfig, $wiki, $list, $transformer);

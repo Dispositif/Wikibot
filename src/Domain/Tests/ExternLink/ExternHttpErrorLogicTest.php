@@ -11,8 +11,10 @@ namespace App\Domain\Tests\ExternLink;
 
 use App\Domain\ExternLink\DeadLinkTransformer;
 use App\Domain\ExternLink\ExternHttpErrorLogic;
+use App\Domain\ExternLink\ExternLinkCheckVerdict;
 use App\Domain\ExternLink\FetchErrorKind;
 use App\Domain\ExternLink\FetchResult;
+use App\Domain\InfrastructurePorts\ExternLinkCheckRepositoryInterface;
 use PHPUnit\Framework\TestCase;
 
 class ExternHttpErrorLogicTest extends TestCase
@@ -24,7 +26,7 @@ class ExternHttpErrorLogicTest extends TestCase
 
     public function testDeadLinkStatusesGoThroughDeadLinkTransformer()
     {
-        foreach ([404, 410, 500, 502] as $status) {
+        foreach ([404, 410] as $status) {
             $deadLinkTransformer = $this->createMock(DeadLinkTransformer::class);
             $deadLinkTransformer->expects($this->once())
                 ->method('formatFromUrl')
@@ -55,6 +57,51 @@ class ExternHttpErrorLogicTest extends TestCase
                 "status $status must not be turned into a dead link"
             );
         }
+    }
+
+    /**
+     * §9.5/§9.6 : 429/500/502/503 are no longer converted to a dead link on a single
+     * observation — they're recorded (for a later recheck) and the URL stays unchanged.
+     */
+    public function testTransientErrorStatusesAreRecordedNotConvertedToDeadLink()
+    {
+        foreach ([429, 500, 502, 503] as $status) {
+            $deadLinkTransformer = $this->createMock(DeadLinkTransformer::class);
+            $deadLinkTransformer->expects($this->never())->method('formatFromUrl');
+
+            $repository = $this->createMock(ExternLinkCheckRepositoryInterface::class);
+            $repository->expects($this->once())
+                ->method('recordFailure')
+                ->with('Some Page', 'https://example.com/page', 'example.com', $status, null, ExternLinkCheckVerdict::TransientError);
+
+            $logic = new ExternHttpErrorLogic($deadLinkTransformer, linkCheckRepository: $repository);
+
+            $this::assertSame(
+                'https://example.com/page',
+                $logic->manageByFetchResult($this->fetch($status), 'example.com', 'Some Page'),
+                "status $status must not be turned into a dead link on a single observation"
+            );
+        }
+    }
+
+    /**
+     * Regression test : without a page to go back to (e.g. the recursive check
+     * DeadLinkTransformer runs on an archive URL), recording a failure would be
+     * unactionable dead weight in the DB — must be skipped entirely, not stored with
+     * an empty/placeholder page.
+     */
+    public function testTransientErrorWithoutPageTitleIsNotRecorded()
+    {
+        $deadLinkTransformer = $this->createMock(DeadLinkTransformer::class);
+        $repository = $this->createMock(ExternLinkCheckRepositoryInterface::class);
+        $repository->expects($this->never())->method('recordFailure');
+
+        $logic = new ExternHttpErrorLogic($deadLinkTransformer, linkCheckRepository: $repository);
+
+        $this::assertSame(
+            'https://example.com/page',
+            $logic->manageByFetchResult($this->fetch(500), 'example.com')
+        );
     }
 
     public function testLooseNetworkFailuresGoThroughDeadLinkTransformer()
@@ -92,21 +139,28 @@ class ExternHttpErrorLogicTest extends TestCase
         );
     }
 
+    /**
+     * 451 is a legal takedown, not a transitory failure : it must not be recorded for
+     * a recheck in ExternLinkCheckRepository (the content isn't coming back).
+     */
+    public function test451IsNotRecordedForRecheck()
+    {
+        $deadLinkTransformer = $this->createMock(DeadLinkTransformer::class);
+        $deadLinkTransformer->expects($this->never())->method('formatFromUrl');
+
+        $repository = $this->createMock(ExternLinkCheckRepositoryInterface::class);
+        $repository->expects($this->never())->method('recordFailure');
+
+        $logic = new ExternHttpErrorLogic($deadLinkTransformer, linkCheckRepository: $repository);
+
+        $this::assertSame(
+            'https://example.com/page',
+            $logic->manageByFetchResult($this->fetch(451))
+        );
+    }
+
     public function testUnhandledFailuresLeaveUrlUnchanged()
     {
-        foreach ([429, 503, 451] as $status) {
-            $deadLinkTransformer = $this->createMock(DeadLinkTransformer::class);
-            $deadLinkTransformer->expects($this->never())->method('formatFromUrl');
-
-            $logic = new ExternHttpErrorLogic($deadLinkTransformer);
-
-            $this::assertSame(
-                'https://example.com/page',
-                $logic->manageByFetchResult($this->fetch($status)),
-                "status $status is not yet a confirmed dead link : must stay unchanged"
-            );
-        }
-
         $deadLinkTransformer = $this->createMock(DeadLinkTransformer::class);
         $deadLinkTransformer->expects($this->never())->method('formatFromUrl');
         $logic = new ExternHttpErrorLogic($deadLinkTransformer);

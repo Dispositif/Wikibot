@@ -14,6 +14,7 @@ use App\Domain\ExternLink\Validators\InterstitialPageValidator;
 use App\Domain\ExternLink\Validators\LinkGateInterface;
 use App\Domain\ExternLink\Validators\RobotNoIndexValidator;
 use App\Domain\InfrastructurePorts\DeadlinkArchiverInterface;
+use App\Domain\InfrastructurePorts\ExternLinkCheckRepositoryInterface;
 use App\Domain\InfrastructurePorts\InternetDomainParserInterface;
 use App\Domain\Models\Summary;
 use App\Domain\Models\Wiki\AbstractWikiTemplate;
@@ -24,6 +25,7 @@ use App\Domain\Utils\WikiTextUtil;
 use App\Domain\WikiOptimizer\OptimizerFactory;
 use App\Domain\WikiTemplateFactory;
 use App\Infrastructure\Monitor\NullLogger;
+use App\Infrastructure\NullExternLinkCheckRepository;
 use Exception;
 use Normalizer;
 use Psr\Log\LoggerInterface;
@@ -70,12 +72,13 @@ class ExternRefTransformer implements ExternRefTransformerInterface
         protected HttpClientInterface           $httpClient,
         protected InternetDomainParserInterface $domainParser,
         protected LoggerInterface               $log = new NullLogger(),
-        protected array                         $deadlinkArchivers = []
+        protected array                         $deadlinkArchivers = [],
+        private readonly ExternLinkCheckRepositoryInterface $linkCheckRepository = new NullExternLinkCheckRepository()
     )
     {
         $this->importConfigAndData();
         $this->deadLinkTransformer = new DeadLinkTransformer($deadlinkArchivers, $domainParser, null, $log);
-        $this->externHttpErrorLogic = new ExternHttpErrorLogic($this->deadLinkTransformer, $log);
+        $this->externHttpErrorLogic = new ExternHttpErrorLogic($this->deadLinkTransformer, $log, $this->linkCheckRepository);
         $this->urlChecker = new CheckURL($domainParser, $log);
     }
 
@@ -90,7 +93,11 @@ class ExternRefTransformer implements ExternRefTransformerInterface
     public function process(string $url, Summary $summary = new Summary(), array $options = []): string
     {
         $this->url = $url;
-        $this->options = $options; // used only to pass RegistrableDomain of archived deadlink
+        $this->options = $options; // used only to pass RegistrableDomain of archived deadlink, or pageTitle
+        // pageTitle absent (e.g. the recursive call DeadLinkTransformer makes on an archive
+        // URL) => no ExternLinkCheckRepository persistence : a failure without a citing
+        // page to go back to isn't actionable, see docs/audit-gestion-erreurs-crawl-2026-08.md §9.6.
+        $pageTitle = $options['pageTitle'] ?? null;
 
         if (!$this->urlChecker->isURLAuthorized($url)) {
             return $url;
@@ -114,7 +121,7 @@ class ExternRefTransformer implements ExternRefTransformerInterface
         $pageFactory = new ExternPageFactory($this->httpClient, $this->log);
         $fetch = $pageFactory->fetch($url);
         if (!$fetch->isSuccess()) {
-            return $this->externHttpErrorLogic->manageByFetchResult($fetch);
+            return $this->externHttpErrorLogic->manageByFetchResult($fetch, $this->registrableDomain, $pageTitle);
         }
 
         $this->externalPage = $pageFactory->fromFetchResult($url, $fetch, $this->domainParser);
@@ -163,11 +170,13 @@ class ExternRefTransformer implements ExternRefTransformerInterface
         $serialized = $this->optimizeAndSerialize($template, $mappedData);
 
         $normalized = Normalizer::normalize($serialized); // sometimes :bool
-        if (!empty($normalized) && is_string($normalized)) {
-            return $normalized;
-        }
-        if (!empty($serialized)) {
-            return $serialized;
+        $result = (!empty($normalized) && is_string($normalized)) ? $normalized : (!empty($serialized) ? $serialized : null);
+
+        if ($result !== null) {
+            if ($pageTitle !== null) {
+                $this->linkCheckRepository->recordSuccess($pageTitle, $url); // clears any stale transient-error record
+            }
+            return $result;
         }
 
         return $url; // error fallback

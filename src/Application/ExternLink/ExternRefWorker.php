@@ -75,7 +75,7 @@ class ExternRefWorker extends AbstractRefBotWorker
         }
 
         try {
-            $result = $this->transformer->process($refContent, $this->summary);
+            $result = $this->transformer->process($refContent, $this->summary, ['pageTitle' => $this->currentTitle]);
         } catch (Throwable $e) {
             $this->log->critical(
                 'Error patate34 ' . $e->getMessage() . " " . $e->getFile() . ":" . $e->getLine(),

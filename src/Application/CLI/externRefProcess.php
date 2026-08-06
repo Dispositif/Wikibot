@@ -31,7 +31,7 @@ use App\Infrastructure\WikiwixAdapter;
 include __DIR__.'/../myBootstrap.php';
 
 // --page="Skateboard" --stats=redis --stats=sqlite --debug --verbose --dry-run
-echo "OPTIONS: --debug --verbose --stats=redis --stats=sqlite --page=\"Skateboard\" --offset=1000 --nofilter --dry-run \n";
+echo "OPTIONS: --debug --verbose --stats=redis --stats=sqlite --page=\"Skateboard\" --offset=1000 --nofilter --dry-run --no-db \n";
 $options = getopt('', ['page::', 'debug', 'verbose', 'stats::', 'offset::', 'dry-run']);
 $dryRun = isset($options['dry-run']);
 
@@ -134,7 +134,8 @@ try {
         $torClient,
         $domainParser,
         $logger,
-        [$internetArchive, $wikiwix]
+        [$internetArchive, $wikiwix],
+        ServiceFactory::getExternLinkCheckRepository($argv)
     );
 
     new ExternRefWorker($botConfig, $wiki, $list, $transformer, $dryRun);

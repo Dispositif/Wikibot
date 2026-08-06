@@ -22,6 +22,15 @@ abstract class AbstractRefBotWorker extends AbstractBotTaskWorker
 
     protected $warning = false;
 
+    /**
+     * Current page title, so processRefContent() implementations (ExternRefWorker) can
+     * pass it down to ExternRefTransformer — needed to record which page cites a URL
+     * that failed transiently (see ExternLinkCheckRepositoryInterface). Without it, a
+     * page visited once is permanently excluded from future discovery by
+     * WorkerAnalyzedTitlesTrait, so a failure recorded without its page is unactionable.
+     */
+    protected ?string $currentTitle = null;
+
     public function hasWarning(): bool
     {
         return (bool)$this->warning;
@@ -33,6 +42,8 @@ abstract class AbstractRefBotWorker extends AbstractBotTaskWorker
      */
     protected function processWithDomainWorker(string $title, string $text): ?string
     {
+        $this->currentTitle = $title;
+
         return $this->processText($text);
     }
 

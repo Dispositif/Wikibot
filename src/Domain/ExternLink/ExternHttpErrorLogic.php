@@ -9,23 +9,28 @@ declare(strict_types=1);
 
 namespace App\Domain\ExternLink;
 
+use App\Domain\InfrastructurePorts\ExternLinkCheckRepositoryInterface;
 use App\Infrastructure\Monitor\NullLogger;
+use App\Infrastructure\NullExternLinkCheckRepository;
 use Psr\Log\LoggerInterface;
 
 /**
  * Doc : https://developer.mozilla.org/fr/docs/Web/HTTP/Status/503
- *
- * Behaviorally identical to the previous regex-on-exception-message version : same
- * status codes routed to the same outcomes. Only the input changed, from a raw
- * exception message to a typed FetchResult (see ExternPageFactory::fetch()).
  */
 class ExternHttpErrorLogic
 {
     final public const LOG_REQUEST_ERROR = __DIR__ . '/../../Application/resources/external_request_error.log';
     protected const LOOSE = true;
 
-    /** @var int[] statuses treated as a dead link only because LOOSE is enabled (server/gateway errors) */
-    private const LOOSE_STATUSES_TREATED_AS_DEAD = [500, 502];
+    /** How long a 429/500/502/503 must go unconfirmed before ExternLinkCheckRepository offers it up again. */
+    public const RECHECK_DELAY = 'P2M';
+
+    /**
+     * @var int[] statuses that might just be transient (rate-limit, overload) : not
+     * converted to a dead link on a single observation, recorded for a later re-check
+     * instead (docs/audit-gestion-erreurs-crawl-2026-08.md §9.5/§9.6).
+     */
+    private const TRANSIENT_ERROR_STATUSES = [429, 500, 502, 503];
 
     /**
      * @var FetchErrorKind[] network failures treated as a dead link only because LOOSE is enabled.
@@ -38,17 +43,21 @@ class ExternHttpErrorLogic
             FetchErrorKind::DnsResolutionFailed,
         ];
 
-    /** @var int[] statuses that stay unchanged but get their own stats label instead of the generic defaultSkip bucket */
-    private const OBSERVED_NON_DEAD_STATUSES = [429, 503, 451];
-
     public function __construct(
-        protected DeadLinkTransformer    $deadLinkTransformer,
-        private readonly LoggerInterface $log = new NullLogger()
+        protected DeadLinkTransformer                       $deadLinkTransformer,
+        private readonly LoggerInterface                    $log = new NullLogger(),
+        private readonly ExternLinkCheckRepositoryInterface  $linkCheckRepository = new NullExternLinkCheckRepository()
     )
     {
     }
 
-    public function manageByFetchResult(FetchResult $fetch): string
+    /**
+     * $registrableDomain/$pageTitle vary per call (one instance is reused across many
+     * URLs by ExternRefTransformer), so they're call-time params rather than constructor
+     * state. $pageTitle absent (recursive archive-URL check, direct unit-test call...)
+     * => nothing gets persisted : a failure without a citing page isn't actionable later.
+     */
+    public function manageByFetchResult(FetchResult $fetch, ?string $registrableDomain = null, ?string $pageTitle = null): string
     {
         $url = $fetch->requestedUrl;
 
@@ -79,10 +88,23 @@ class ExternHttpErrorLogic
             return $url;
         }
 
-        if (self::LOOSE && in_array($fetch->httpStatus, self::LOOSE_STATUSES_TREATED_AS_DEAD, true)) {
-            $this->log->notice($fetch->httpStatus . ' server error', ['stats' => 'externHttpErrorLogic.' . $fetch->httpStatus]);
+        if (in_array($fetch->httpStatus, self::TRANSIENT_ERROR_STATUSES, true)) {
+            // pas de {lien brisé} sur une seule observation : 429/503 sont des limitations
+            // temporaires, 500/502 peuvent l'être aussi. On enregistre et on revérifiera
+            // dans RECHECK_DELAY plutôt que de conclure trop vite (voir ExternLinkCheckRepository).
+            $this->log->notice($fetch->httpStatus . ' (transitoire, à revérifier) : ' . $url, ['stats' => 'externHttpErrorLogic.' . $fetch->httpStatus]);
+            if ($pageTitle !== null) {
+                $this->linkCheckRepository->recordFailure(
+                    $pageTitle,
+                    $url,
+                    $registrableDomain,
+                    $fetch->httpStatus,
+                    null,
+                    ExternLinkCheckVerdict::TransientError
+                );
+            }
 
-            return $this->deadLinkTransformer->formatFromUrl($url);
+            return $url;
         }
 
         if (self::LOOSE && $fetch->errorKind !== null && in_array($fetch->errorKind, self::LOOSE_ERROR_KINDS_TREATED_AS_DEAD, true)) {
@@ -94,22 +116,17 @@ class ExternHttpErrorLogic
             return $this->deadLinkTransformer->formatFromUrl($url);
         }
 
-        if (in_array($fetch->httpStatus, self::OBSERVED_NON_DEAD_STATUSES, true)) {
-            // pas de {lien brisé} : ces statuts n'indiquent pas un contenu disparu (429/503 :
-            // limitation temporaire ; 451 : retrait légal, pas une absence de contenu). Sortis du
-            // bucket "defaultSkip" générique pour rester mesurables ; deviendront RetryLater/
-            // NeedsHumanCheck une fois §9.6 (persistance) en place.
-            $this->log->notice(
-                $fetch->httpStatus . ' : ' . $url,
-                ['stats' => 'externHttpErrorLogic.' . $fetch->httpStatus]
-            );
+        if ($fetch->httpStatus === 451) {
+            // retrait légal, pas une absence de contenu transitoire : ne rentre pas dans
+            // TRANSIENT_ERROR_STATUSES (le contenu ne "reviendra" pas dans RECHECK_DELAY).
+            $this->log->notice('451 : ' . $url, ['stats' => 'externHttpErrorLogic.451']);
 
             return $url;
         }
 
         // DEFAULT (not filtered) : timeout, TLS error, too-many-redirects, ProxyFailure (SOCKS5)...
         // pas de {lien brisé} : peut-être temporaire, et on n'a pas encore de mécanisme
-        // de re-vérification différée (cf. docs/audit-gestion-erreurs-crawl-2026-08.md §9.6)
+        // de re-vérification différée pour ces cas-là (cf. §9.6, limité aux statuts ci-dessus)
         $this->log->notice(
             'erreur non gérée sur extractWebData: "' . $this->describeFetchFailure($fetch) . "\" URL: " . $url,
             ['stats' => 'externHttpErrorLogic.defaultSkip']
