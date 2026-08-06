@@ -142,7 +142,7 @@ services:
     profiles: ["workers"]
     command: ["php", "src/Application/CLI/fixTypo.php"]
     env_file:
-      - .env
+      - .env.codexbot2
     mem_limit: 256m
 
   # ISBN completion pipeline (raw {{Ouvrage}} -> completed, via BnF/Google
