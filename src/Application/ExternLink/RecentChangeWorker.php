@@ -107,7 +107,7 @@ class RecentChangeWorker
             ServiceFactory::getHttpClient(true),
             $domainParser,
             $this->logger,
-            [$wikiwix, $internetArchive]
+            [$internetArchive, $wikiwix]
         );
 
         new ExternRefWorker($botConfig, $wiki, $list, $transformer);

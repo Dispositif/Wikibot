@@ -59,9 +59,9 @@ ps:
 logs:
 	docker compose logs -f $(service)
 
-.PHONY: build # 	(Re)build worker images after a code/Dockerfile change
-build:
-	docker compose build
+.PHONY: build-worker # 	(Re)build worker images after a code/Dockerfile change
+build-worker:
+	docker compose --profile workers build
 
 # Gitignored runtime state (real Google API quota count + its flock() lock file), not
 # part of the repo. Docker's file-bind-mounts for goo-extern (compose.yaml) need both

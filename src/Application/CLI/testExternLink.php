@@ -48,7 +48,7 @@ $trans = new ExternRefTransformer(
     $torEnabled ? ServiceFactory::getHttpClient($torEnabled) : $client,
     new InternetDomainParser(),
     $logger,
-    [$wikiwix, $internetArchive]
+    [$internetArchive, $wikiwix]
 );
 $trans->skipSiteBlacklisted = false;
 $trans->skipRobotNoIndex = false;
