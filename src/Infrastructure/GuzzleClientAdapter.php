@@ -23,7 +23,12 @@ class GuzzleClientAdapter implements HttpClientInterface
         // https://docs.guzzlephp.org/en/6.5/request-options.html
         $this->client = new Client(
             [
-                'timeout' => 20,
+                // CirrusSearch's insource: regex queries (see fixTypo.php) can run
+                // long server-side; 20s was too tight and produced sporadic
+                // ConnectException timeouts. Per-request 'timeout' overrides below
+                // (e.g. ExternPageFactory::fetch()) already set their own shorter
+                // value, so this default only really affects CirrusSearch callers.
+                'timeout' => 60,
                 'allow_redirects' => true,
 //                or replace "true" with: [
 //                    'max'             => 5,

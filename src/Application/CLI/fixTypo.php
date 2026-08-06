@@ -17,6 +17,7 @@ use App\Infrastructure\CirrusSearch;
 use App\Infrastructure\Monitor\ConsoleLogger;
 use App\Infrastructure\ServiceFactory;
 use Codedungeon\PHPCliColors\Color;
+use GuzzleHttp\Exception\GuzzleException;
 use Mediawiki\DataModel\EditInfo;
 
 include __DIR__ . '/../CodexBot2_Bootstrap.php';
@@ -32,22 +33,28 @@ $auto = true;
 
 $bot = new WikiBotConfig($wiki, new ConsoleLogger());
 
-$list = new CirrusSearch(
-    [
-        // Regex \s seems not recognized as space by CirrusSearch parser
-        // Timeout error with too complex regex
-        // 'srsearch' => 'insource:/\<ref name=\"[^\/\>]+\" ?\/\>[ \r\n]*\<ref/', // OK. Rare "<ref name="A"/><ref…" (TIMEOUT SEARCH)
-        // 'srsearch' => 'insource:/\>\{\{sfn/i', // OK. The classical "</ref><ref…" // OK
-        // 'srsearch' => 'insource:/ \<ref\>/', // OK space before <ref>
-        'srsearch' => 'insource:/\<\/ref\>[ \r\n]*\<ref/', // OK. The classical "</ref><ref…"
+try {
+    $list = new CirrusSearch(
+        [
+            // Regex \s seems not recognized as space by CirrusSearch parser
+            // Timeout error with too complex regex
+            // 'srsearch' => 'insource:/\<ref name=\"[^\/\>]+\" ?\/\>[ \r\n]*\<ref/', // OK. Rare "<ref name="A"/><ref…" (TIMEOUT SEARCH)
+            // 'srsearch' => 'insource:/\>\{\{sfn/i', // OK. The classical "</ref><ref…" // OK
+            // 'srsearch' => 'insource:/ \<ref\>/', // OK space before <ref>
+            'srsearch' => 'insource:/\<\/ref\>[ \r\n]*\<ref/', // OK. The classical "</ref><ref…"
 
-        'srnamespace' => '0',
-        'srlimit' => '500',
-        'srqiprofile' => CirrusSearch::SRQIPROFILE_POPULAR_INCLINKS_PV,
-        'srsort' => CirrusSearch::SRSORT_RANDOM,
-    ]
-);
-$titles = $list->getPageTitles();
+            'srnamespace' => '0',
+            'srlimit' => '500',
+            'srqiprofile' => CirrusSearch::SRQIPROFILE_POPULAR_INCLINKS_PV,
+            'srsort' => CirrusSearch::SRSORT_RANDOM,
+        ]
+    );
+    $titles = $list->getPageTitles();
+} catch (GuzzleException $e) {
+    echo "Erreur réseau sur la recherche CirrusSearch : " . $e->getMessage() . "\n";
+    echo "Ça arrive de temps en temps (requête insource: un peu lourde) — relancer le worker suffit.\n";
+    exit(1);
+}
 echo count($titles) . " articles !\n";
 
 
