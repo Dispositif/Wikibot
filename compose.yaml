@@ -2,11 +2,13 @@ services:
   mysql:
     image: mysql:8.0
     restart: unless-stopped
+    # Values come from the repo-root .env
+    # docker compose auto-reads that .env for ${...} substitution here.
     environment:
-      MYSQL_ROOT_PASSWORD: wikibot-docker-dev
-      MYSQL_DATABASE: wikibot
-      MYSQL_USER: wikibot_app
-      MYSQL_PASSWORD: wikibot-docker-dev
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-wikibot-docker-dev}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-wikibot}
+      MYSQL_USER: ${MYSQL_USER:-wikibot_app}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-wikibot-docker-dev}
 
     # Bound to loopback only: local dev DB access, not meant
     # to be reachable from outside this machine.
