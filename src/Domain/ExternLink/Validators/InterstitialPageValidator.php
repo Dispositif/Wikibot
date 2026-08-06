@@ -32,6 +32,7 @@ class InterstitialPageValidator implements ValidatorInterface
             '#Please Wait\.\.\. \| Cloudflare#i',
             '#Checking your browser#i',
             '#DDoS protection by#i',
+            '#Unauthorized Request Blocked#i',
         ];
 
     public function __construct(
