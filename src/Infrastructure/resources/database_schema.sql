@@ -25,7 +25,9 @@ CREATE TABLE `page_ouvrages`
     PRIMARY KEY (`id`),
     KEY `page` (`page`),
     KEY `isbn` (`isbn`),
-    KEY `priority` (`priority`)
+    KEY `priority` (`priority`),
+    KEY `notcosmetic` (`notcosmetic`),
+    KEY `idx_queue_complete` (`skip`, `edited`, `priority`, `id`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 16037
   DEFAULT CHARSET = utf8;

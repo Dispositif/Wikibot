@@ -59,7 +59,7 @@ $data['edited pages 24H'] = (int)$monitor['n'];
 
 $monitor = $db->fetchRow(
     'SELECT count(distinct A.page) FROM page_ouvrages A
-                WHERE A.notcosmetic=1 AND A.opti IS NOT NULL
+                WHERE A.notcosmetic=1
                 AND NOT EXISTS
                     (SELECT B.* FROM page_ouvrages B
                     WHERE (

@@ -145,7 +145,7 @@ class DbAdapter implements DbAdapterInterface
             $pageInfo = $this->pdoConn->query(
                 '
                 SELECT A.page FROM page_ouvrages A
-                WHERE A.notcosmetic=1 AND A.opti IS NOT NULL
+                WHERE A.notcosmetic=1
                 AND NOT EXISTS
                     (SELECT B.* FROM page_ouvrages B
                     WHERE (
