@@ -54,7 +54,7 @@ class ExternPageFactory
 
         $stats = null;
         $options = [
-            'timeout' => 20,
+            'timeout' => 35,
             'allow_redirects' => true, /* note : marche pas en mode proxy Tor, TorClientAdapter gère lui-même */
             'headers' => ['User-Agent' => getenv('USER_AGENT')],
             'verify' => false,

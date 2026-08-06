@@ -29,7 +29,12 @@ class TorClientAdapter extends GuzzleClientAdapter implements HttpClientInterfac
     final public const FAKE_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36";
     protected const API_GET_IP = 'https://api64.ipify.org';
 
-    protected const DEFAULT_MAX_REDIRECTS = 5;
+    // Lowered from 5: each hop is a fresh getRecursive() call at the full per-request
+    // timeout (see fetch() below), so a slow redirect chain multiplies wall-clock time
+    // against the request timeout — 3 hops is enough for real-world redirect chains
+    // without letting one stuck URL stall a whole batch run.
+    protected const DEFAULT_MAX_REDIRECTS = 3;
+    public const DEFAULT_TIMEOUT = 35;
     protected int $maxRedirects = 0;
 
     public function __construct(array $options = [])
@@ -46,7 +51,9 @@ class TorClientAdapter extends GuzzleClientAdapter implements HttpClientInterfac
 
         $this->client = new Client([
             'handler' => $stack,
-            'timeout' => $options['timeout'] ?? 20,
+            // Same reasoning as ExternPageFactory's per-request override (which normally
+            // wins anyway): cold Tor circuit-building alone can take >10s (see GET_IP_TIMEOUT).
+            'timeout' => $options['timeout'] ?? self::DEFAULT_TIMEOUT,
             'allow_redirects' => $options['allow_redirects'] ?? true,
             'headers' => $options['headers'] ?? ['User-Agent' => getenv('USER_AGENT')],
             'verify' => false,
