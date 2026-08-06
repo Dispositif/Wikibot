@@ -19,13 +19,16 @@ use JsonException;
 use Psr\Log\LoggerInterface;
 
 /**
- * https://archive.org/help/wayback_api.php
- * todo closest by date
+ * https://archive.org/help/wayback_api.php (availability API, kept as a fallback)
+ * https://web.archive.org/cdx/search/cdx (CDX API, used for candidate listing : gives
+ * the *real* HTTP status of each snapshot and lets us pick one close to the actual
+ * consultation date, instead of trusting a single "closest" result to a fixed
+ * reference timestamp).
  */
 class InternetArchiveAdapter implements DeadlinkArchiverInterface
 {
     final public const ARCHIVER_NAME = '[[Internet Archive]]'; // [[Wayback Machine]] ?
-    private const SEARCH_CLOSEST_TIMESTAMP = '20220101';
+    private const CDX_URL = 'https://web.archive.org/cdx/search/cdx';
 
     public function __construct(
         protected readonly HttpClientInterface $client,
@@ -36,70 +39,115 @@ class InternetArchiveAdapter implements DeadlinkArchiverInterface
 
     public function searchWebarchive(string $url, ?DateTimeInterface $date = null): ?WebarchiveDTO
     {
-        $archiveData = $this->requestInternetArchiveApi($url, $date);
-        if (empty($archiveData)) {
-            return null;
-        }
+        $candidates = $this->searchWebarchiveCandidates($url, $date, 1);
 
-        $iaDateOrNull = $this->convertIATimestampToDateTime($archiveData['timestamp'] ?? null);
+        return $candidates[0] ?? null;
+    }
 
-        return new WebarchiveDTO(
-            self::ARCHIVER_NAME,
-            $url,
-            (string)$archiveData['url'],
-            $iaDateOrNull
+    /**
+     * @return WebarchiveDTO[] ordered closest-to-$date first (or most recent if $date is null)
+     */
+    public function searchWebarchiveCandidates(string $url, ?DateTimeInterface $date = null, int $limit = 5): array
+    {
+        $rows = $this->requestCdxApi($url, $date, $limit);
+
+        return array_map(
+            fn(array $row) => new WebarchiveDTO(
+                self::ARCHIVER_NAME,
+                $url,
+                'https://web.archive.org/web/' . $row['timestamp'] . '/' . $row['original'],
+                $this->convertIATimestampToDateTime($row['timestamp'])
+            ),
+            $rows
         );
     }
 
-    protected function requestInternetArchiveApi(string $url, ?DateTimeInterface $date = null): array
+    /**
+     * @return array<int, array{timestamp: string, original: string}>
+     */
+    protected function requestCdxApi(string $url, ?DateTimeInterface $date, int $limit): array
     {
+        // CDX expects repeated "filter=" params (not the filter[]=... bracket form
+        // http_build_query would produce for an array value), so build it by hand.
+        $queryString = implode(
+            '&',
+            [
+                'url=' . urlencode($url),
+                'output=json',
+                'filter=' . urlencode('statuscode:200'),
+                'filter=' . urlencode('!mimetype:warc/revisit'),
+                'collapse=digest', // avoid piling up many identical snapshots (e.g. a parked domain re-crawled for years)
+                'limit=' . (max(1, $limit) * 3), // over-fetch a bit : some rows get discarded below
+            ]
+        );
+
         $response = $this->client->get(
-            'https://archive.org/wayback/available?timestamp=' . self::SEARCH_CLOSEST_TIMESTAMP . '&url=' . urlencode($url),
+            self::CDX_URL . '?' . $queryString,
             [
                 'timeout' => 20,
                 'allow_redirects' => true,
                 'headers' => ['User-Agent' => getenv('USER_AGENT')],
-                'http_errors' => false, // no Exception on 4xx 5xx
+                'http_errors' => false,
                 'verify' => false,
             ]
         );
 
         if ($response->getStatusCode() !== 200) {
-            $this->log->debug('InternetArchive: incorrect response', [
-                'status' => $response->getStatusCode(),
-                'content-type' => $response->getHeader('Content-Type'),
-            ]);
+            $this->log->debug('InternetArchive CDX: incorrect response', ['status' => $response->getStatusCode()]);
+
             return [];
         }
+
         $jsonString = $response->getBody()->getContents();
+        if (trim($jsonString) === '') {
+            return []; // CDX returns an empty body (not "[]") when there's no match at all
+        }
+
         try {
             $data = json_decode($jsonString, true, 512, JSON_THROW_ON_ERROR) ?? [];
         } catch (JsonException $e) {
-            $this->log->debug('InternetArchive: non-JSON response: ' . $e->getMessage(), [
-                'url' => $url,
-                'body' => $jsonString,
-            ]);
-            return [];
-        }
-
-        if (!isset($data['archived_snapshots']['closest'])) {
-            $this->log->info('InternetArchive: no closest snapshot', [
-                'url' => $url,
-                'date' => $date,
-                'json' => $jsonString,
-            ]);
+            $this->log->debug('InternetArchive CDX: non-JSON response: ' . $e->getMessage(), ['url' => $url]);
 
             return [];
         }
 
-        // validate snapshot data
-        $closest = $data['archived_snapshots']['closest'];
-        if ($closest['status'] !== "200" || $closest['available'] !== true || empty($closest['url'])) {
-            $this->log->debug('InternetArchive: snapshot invalid', $closest);
+        // first row is the column header, e.g. ["urlkey","timestamp","original","mimetype","statuscode","digest","length"]
+        $header = array_shift($data);
+        if (!is_array($header)) {
+            return [];
+        }
+        $timestampIndex = array_search('timestamp', $header, true);
+        $originalIndex = array_search('original', $header, true);
+        if ($timestampIndex === false || $originalIndex === false) {
             return [];
         }
 
-        return $closest;
+        $rows = [];
+        foreach ($data as $row) {
+            if (!is_array($row) || !isset($row[$timestampIndex], $row[$originalIndex])) {
+                continue;
+            }
+            $rows[] = ['timestamp' => (string)$row[$timestampIndex], 'original' => (string)$row[$originalIndex]];
+        }
+
+        return $this->sortByClosenessToDate($rows, $date, $limit);
+    }
+
+    /**
+     * @param array<int, array{timestamp: string, original: string}> $rows
+     * @return array<int, array{timestamp: string, original: string}>
+     */
+    private function sortByClosenessToDate(array $rows, ?DateTimeInterface $date, int $limit): array
+    {
+        if ($date instanceof DateTimeInterface) {
+            $targetTimestamp = (int)$date->format('YmdHis');
+            usort($rows, static fn(array $a, array $b) => abs((int)$a['timestamp'] - $targetTimestamp) <=> abs((int)$b['timestamp'] - $targetTimestamp));
+        } else {
+            // most recent first
+            usort($rows, static fn(array $a, array $b) => $b['timestamp'] <=> $a['timestamp']);
+        }
+
+        return array_slice($rows, 0, $limit);
     }
 
     /**

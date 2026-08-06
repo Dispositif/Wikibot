@@ -102,7 +102,7 @@ $transformer = new ExternRefTransformer(
     ServiceFactory::getHttpClient(true),
     $domainParser,
     $logger,
-    [$wikiwix, $internetArchive]
+    [$internetArchive, $wikiwix]
 );
 
 $dryRun = in_array('--dry-run', $argv, true);

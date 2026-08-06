@@ -28,7 +28,7 @@ class DeadLinkTransformer
 {
     private const USE_TOR_FOR_ARCHIVE = false;
     private const DELAY_PARSE_ARCHIVE = 3;
-    private const REPLACE_RAW_WIKIWIX_BY_LIENWEB = false;
+    private const MAX_CANDIDATES_PER_ARCHIVER = 5;
 
     /**
      * @param DeadlinkArchiverInterface[] $archivers
@@ -44,60 +44,60 @@ class DeadLinkTransformer
 
     public function formatFromUrl(string $url, DateTimeInterface $now = new DateTimeImmutable()): string
     {
-        // choose randomly one archiver
-        // TODO choose IA sur url IA, Wikiwix sur url Wikiwix, etc
-        $oneArchiver = !empty($this->archivers) ? $this->archivers[array_rand($this->archivers)] : null;
-
         // HACK : Temporary skip transform on archiver URL (éviter archive IA sur url Wikiwix)
         if ($this->isWebArchiveUrl($url)) {
             $this->log->notice('Skip {lien brisé} on web archive url', ['stats' => 'externref.skip.lienBriseOnwebarchiveurl']);
             return $url;
         }
 
-        if ($oneArchiver instanceof DeadlinkArchiverInterface) {
-            $webarchiveDTO = $oneArchiver->searchWebarchive($url);
-            if ($webarchiveDTO instanceof WebarchiveDTO) {
-                if ($webarchiveDTO->getArchiver() === '[[Wikiwix]]') {
-                    $this->log->notice('🥝 Wikiwix found');
-                }
-                if ($webarchiveDTO->getArchiver() === '[[Internet Archive]]') {
-                    $this->log->notice('🏛️ InternetArchive found');
-                }
-                $this->log->debug('archive url: ' . $webarchiveDTO->getArchiveUrl());
-
-                return $this->generateLienWebFromArchive($webarchiveDTO);
+        foreach ($this->archivers as $archiver) {
+            if (!$archiver instanceof DeadlinkArchiverInterface) {
+                continue;
             }
-            $this->log->notice('web archive not found');
+            $candidates = $archiver->searchWebarchiveCandidates($url, $now, self::MAX_CANDIDATES_PER_ARCHIVER);
+            if (empty($candidates)) {
+                // fallback for archivers only implementing the single-result method
+                $single = $archiver->searchWebarchive($url);
+                $candidates = $single instanceof WebarchiveDTO ? [$single] : [];
+            }
+
+            foreach ($candidates as $webarchiveDTO) {
+                $this->log->debug('Trying archive candidate: ' . $webarchiveDTO->getArchiveUrl());
+                $lienWeb = $this->generateLienWebFromArchive($webarchiveDTO);
+                if ($lienWeb !== null) {
+                    if ($webarchiveDTO->getArchiver() === '[[Wikiwix]]') {
+                        $this->log->notice('🥝 Wikiwix found');
+                    }
+                    if ($webarchiveDTO->getArchiver() === '[[Internet Archive]]') {
+                        $this->log->notice('🏛️ InternetArchive found');
+                    }
+
+                    return $lienWeb;
+                }
+                $this->log->notice('Archive candidate unusable, trying next: ' . $webarchiveDTO->getArchiveUrl());
+            }
         }
+        $this->log->notice('web archive not found');
 
         return $this->generateLienBrise($url, $now);
     }
 
-    private function generateLienWebFromArchive(WebarchiveDTO $dto): string
+    /**
+     * @return string|null null when the snapshot turned out to be unusable (blank page,
+     *     parked domain, soft 404...) — caller should try the next candidate rather than
+     *     ever surface this bare archive URL in the article (see incident 2026-08-06,
+     *     docs/audit-gestion-erreurs-crawl-2026-08.md §7).
+     */
+    private function generateLienWebFromArchive(WebarchiveDTO $dto): ?string
     {
         sleep(self::DELAY_PARSE_ARCHIVE);
 
-        $externRefProcessOnArchive = $this->externRefProcessOnArchive($dto);
+        $result = $this->externRefProcessOnArchive($dto);
 
-        // Wikiwix : "Sorry, this system is overloaded. Please come back in a minute."
-        // manage content-type 'application/pdf' which is not parsed by ExternRefTransformer
-        if (
-            self::REPLACE_RAW_WIKIWIX_BY_LIENWEB
-            && str_starts_with($externRefProcessOnArchive, 'https://archive.wikiwix.com/cache/')
-        ) {
-            $this->log->notice('Replace raw wikiwix by lien web');
-
-            return sprintf(
-                '{{Lien web |url= %s |titre=%s |site= %s |consulté le=%s |archive-date=%s}}',
-                $dto->getArchiveUrl(),
-                'Archive ' . $this->generateTitleFromURLText($dto->getOriginalUrl()) . '<!-- titre à compléter -->',
-                'via ' . $dto->getArchiver(),
-                date('d-m-Y'),
-                $dto->getArchiveDate() instanceof DateTimeInterface ? $dto->getArchiveDate()->format('d-m-Y') : ''
-            );
-        }
-
-        return $externRefProcessOnArchive;
+        // ExternRefTransformer::process() only returns a template (starts with "{{")
+        // on success ; anything else (soft failure, empty metadata...) means this
+        // snapshot didn't pass SoftFailureDetector / the mapping gates.
+        return str_starts_with(trim($result), '{{') ? $result : null;
     }
 
     /**

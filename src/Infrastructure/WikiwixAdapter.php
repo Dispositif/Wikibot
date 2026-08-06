@@ -57,6 +57,19 @@ class WikiwixAdapter implements DeadlinkArchiverInterface
         );
     }
 
+    /**
+     * Wikiwix's API has no CDX-style snapshot listing : it always returns (at most)
+     * one archive, so this just wraps searchWebarchive().
+     *
+     * @return WebarchiveDTO[]
+     */
+    public function searchWebarchiveCandidates(string $url, ?DateTimeInterface $date = null, int $limit = 5): array
+    {
+        $single = $this->searchWebarchive($url, $date);
+
+        return $single instanceof WebarchiveDTO ? [$single] : [];
+    }
+
     protected function requestWikiwixApi(string $url): array
     {
         $response = $this->externHttpClient->get(self::API_URL . urlencode($url), [

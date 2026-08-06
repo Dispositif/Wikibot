@@ -95,7 +95,7 @@ $transformer = new ExternRefTransformer(
     ServiceFactory::getHttpClient(true),
     $domainParser,
     $logger,
-    [$wikiwix, $internetArchive, $wikiwix]
+    [$internetArchive, $wikiwix]
 );
 
 new ExternRefWorker($botConfig, $wiki, $list, $transformer);

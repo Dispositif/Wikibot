@@ -13,13 +13,27 @@ use App\Infrastructure\Monitor\NullLogger;
 use Psr\Log\LoggerInterface;
 
 /**
- * todo Refac
  * Doc : https://developer.mozilla.org/fr/docs/Web/HTTP/Status/503
+ *
+ * Behaviorally identical to the previous regex-on-exception-message version : same
+ * status codes routed to the same outcomes. Only the input changed, from a raw
+ * exception message to a typed FetchResult (see ExternPageFactory::fetch()).
  */
 class ExternHttpErrorLogic
 {
     final public const LOG_REQUEST_ERROR = __DIR__ . '/../../Application/resources/external_request_error.log';
     protected const LOOSE = true;
+
+    /** @var int[] statuses treated as a dead link only because LOOSE is enabled (server/gateway errors) */
+    private const LOOSE_STATUSES_TREATED_AS_DEAD = [500, 502];
+
+    /** @var FetchErrorKind[] network failures treated as a dead link only because LOOSE is enabled */
+    private const LOOSE_ERROR_KINDS_TREATED_AS_DEAD
+        = [
+            FetchErrorKind::EmptyReply,
+            FetchErrorKind::DnsResolutionFailed,
+            FetchErrorKind::ProxyFailure,
+        ];
 
     public function __construct(
         protected DeadLinkTransformer    $deadLinkTransformer,
@@ -28,95 +42,72 @@ class ExternHttpErrorLogic
     {
     }
 
-    public function manageByHttpErrorMessage(string $errorMessage, string $url): string
+    public function manageByFetchResult(FetchResult $fetch): string
     {
-        // "410 gone" => {lien brisé}
-        if (preg_match('#410 Gone#i', $errorMessage)) {
+        $url = $fetch->requestedUrl;
+
+        if ($fetch->httpStatus === 410) {
             $this->log->notice('410 Gone', ['stats' => 'externHttpErrorLogic.410']);
 
-            if (ExternRefTransformer::REPLACE_410) {
-                return $this->deadLinkTransformer->formatFromUrl($url);
-            }
-            return $url;
+            return ExternRefTransformer::REPLACE_410 ? $this->deadLinkTransformer->formatFromUrl($url) : $url;
         }
-        if (preg_match('#400 Bad Request#i', $errorMessage)) {
+        if ($fetch->httpStatus === 404) {
+            $this->log->notice('404 Not Found', ['stats' => 'externHttpErrorLogic.404']);
+
+            return ExternRefTransformer::REPLACE_404 ? $this->deadLinkTransformer->formatFromUrl($url) : $url;
+        }
+        if ($fetch->httpStatus === 400) {
             $this->log->warning('400 Bad Request : ' . $url, ['stats' => 'externHttpErrorLogic.400']);
 
             return $url;
         }
-        if (preg_match('#(403 Forbidden|403 Access Forbidden)#i', $errorMessage)) {
+        if ($fetch->httpStatus === 403) {
             $this->log->warning('403 Forbidden : ' . $url, ['stats' => 'externHttpErrorLogic.403']);
             // TODO return blankLienWeb without consulté le=...
 
             return $url;
         }
-        if (preg_match('#404 Not Found#i', $errorMessage)) {
-            $this->log->notice('404 Not Found', ['stats' => 'externHttpErrorLogic.404']);
-
-            if (ExternRefTransformer::REPLACE_404) {
-                return $this->deadLinkTransformer->formatFromUrl($url);
-            }
-            return $url;
-        }
-        if (preg_match('#401 (Unauthorized|Authorization Required)#i', $errorMessage)) {
+        if ($fetch->httpStatus === 401) {
             $this->log->notice('401 Unauthorized : skip ' . $url, ['stats' => 'externHttpErrorLogic.401']);
 
             return $url;
         }
 
-
-        if (self::LOOSE && preg_match('#500 Internal Server Error#i', $errorMessage)) {
-            $this->log->notice('500 Internal Server Error', ['stats' => 'externHttpErrorLogic.500']);
-
-            return $this->deadLinkTransformer->formatFromUrl($url);
-        }
-        if (self::LOOSE && preg_match('#502 Bad Gateway#i', $errorMessage)) {
-            $this->log->notice('502 Bad Gateway', ['stats' => 'externHttpErrorLogic.502']);
+        if (self::LOOSE && in_array($fetch->httpStatus, self::LOOSE_STATUSES_TREATED_AS_DEAD, true)) {
+            $this->log->notice($fetch->httpStatus . ' server error', ['stats' => 'externHttpErrorLogic.' . $fetch->httpStatus]);
 
             return $this->deadLinkTransformer->formatFromUrl($url);
         }
-        if (self::LOOSE && preg_match('#cURL error 52: Empty reply from server#i', $errorMessage)) {
+
+        if (self::LOOSE && $fetch->errorKind !== null && in_array($fetch->errorKind, self::LOOSE_ERROR_KINDS_TREATED_AS_DEAD, true)) {
             $this->log->notice(
-                'cURL error 52: Empty reply from server',
-                ['stats' => 'externHttpErrorLogic.curl52_emptyReply']
-            );
-
-            return $this->deadLinkTransformer->formatFromUrl($url);
-        }
-        if (self::LOOSE && preg_match('#cURL error 6: Could not resolve host#i', $errorMessage)) {
-            $this->log->notice(
-                'cURL error 6: Could not resolve host',
-                ['stats' => 'externHttpErrorLogic.curl6_resolveHost']
+                'Network failure treated as dead link: ' . $fetch->errorKind->name,
+                ['stats' => 'externHttpErrorLogic.' . strtolower($fetch->errorKind->name)]
             );
 
             return $this->deadLinkTransformer->formatFromUrl($url);
         }
 
-        if (self::LOOSE
-            && (
-                preg_match("#cURL error 97: Can't complete SOCKS5 connection#i", $errorMessage)
-                || preg_match("#cURL error 7: Can't complete SOCKS5 connection to 0.0.0.0:0#i", $errorMessage)
-            )
-        ) {
-            // remote endpoint connection failure
-            $this->log->notice("Can't complete SOCKS5 connection", ['stats' => 'externHttpErrorLogic.SOCKS5failure']);
-
-            return $this->deadLinkTransformer->formatFromUrl($url);
-        }
-
-        // DEFAULT (not filtered)
-        //  autre : ne pas générer de {lien brisé}, car peut-être 404 temporaire
-
-        // Faux-positif : cURL error 7: Failed to receive SOCKS5 connect request ack
-        // "URL rejected: No host part in the URL (see https://curl.haxx.se/libcurl/c/libcurl-errors.html)
-        // "cURL error 28: Connection timed out after 20005 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html)
-        //"cURL error 28: Connection timed out after 20005 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html)
+        // DEFAULT (not filtered) : 429, 503, 451, timeout, TLS error, too-many-redirects...
+        // pas de {lien brisé} : peut-être temporaire, et on n'a pas encore de mécanisme
+        // de re-vérification différée (cf. docs/audit-gestion-erreurs-crawl-2026-08.md §9.6)
         $this->log->notice(
-            'erreur non gérée sur extractWebData: "' . $errorMessage . "\" URL: " . $url,
+            'erreur non gérée sur extractWebData: "' . $this->describeFetchFailure($fetch) . "\" URL: " . $url,
             ['stats' => 'externHttpErrorLogic.defaultSkip']
         );
-        //file_put_contents(self::LOG_REQUEST_ERROR, $this->domain."\n", FILE_APPEND);
 
         return $url;
+    }
+
+    private function describeFetchFailure(FetchResult $fetch): string
+    {
+        if ($fetch->httpStatus !== null) {
+            return (string)$fetch->httpStatus;
+        }
+        if ($fetch->errorKind !== null) {
+            return $fetch->errorKind->name . ' (' . ($fetch->rawErrorMessage ?? '') . ')';
+        }
+
+        return $fetch->rawErrorMessage ?? 'unknown';
     }
 }

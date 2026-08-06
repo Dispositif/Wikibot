@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace App\Domain\ExternLink\Validators;
 
-use App\Domain\ValidatorInterface;
+use App\Domain\ExternLink\LinkVerdict;
 use App\Infrastructure\Monitor\NullLogger;
 use Psr\Log\LoggerInterface;
 
@@ -17,7 +17,7 @@ use Psr\Log\LoggerInterface;
  * Detect if robots noindex.
  * https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag?hl=fr
  */
-class RobotNoIndexValidator implements ValidatorInterface
+class RobotNoIndexValidator implements LinkGateInterface
 {
     public $noindexWhitelist = ['test.com']; // move to config
 
@@ -29,8 +29,7 @@ class RobotNoIndexValidator implements ValidatorInterface
     {
     }
 
-    // "NOINDEX" => true
-    public function validate(): bool
+    public function check(): LinkVerdict
     {
         $robots = $this->pageData['meta']['robots'] ?? null;
         if (
@@ -45,13 +44,15 @@ class RobotNoIndexValidator implements ValidatorInterface
             if (empty($this->pageData['meta']['prettyDomainName'])) {
                 $this->log->warning('No prettyDomainName for ' . $this->url);
 
-                return true;
+                return LinkVerdict::KeepUrlAsIs;
             }
 
-            return !$this->isNoIndexDomainWhitelisted($this->pageData['meta']['prettyDomainName']);
+            return $this->isNoIndexDomainWhitelisted($this->pageData['meta']['prettyDomainName'])
+                ? LinkVerdict::Accept
+                : LinkVerdict::KeepUrlAsIs;
         }
 
-        return false;
+        return LinkVerdict::Accept;
     }
 
     protected function isNoIndexDomainWhitelisted(?string $prettyDomain): bool

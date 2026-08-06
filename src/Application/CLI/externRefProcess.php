@@ -134,7 +134,7 @@ try {
         $torClient,
         $domainParser,
         $logger,
-        [$wikiwix, $internetArchive, $wikiwix]
+        [$internetArchive, $wikiwix]
     );
 
     new ExternRefWorker($botConfig, $wiki, $list, $transformer, $dryRun);

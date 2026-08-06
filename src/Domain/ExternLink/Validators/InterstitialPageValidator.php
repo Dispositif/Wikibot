@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace App\Domain\ExternLink\Validators;
 
-use App\Domain\ValidatorInterface;
+use App\Domain\ExternLink\LinkVerdict;
 use App\Infrastructure\Monitor\NullLogger;
 use Psr\Log\LoggerInterface;
 
@@ -18,7 +18,7 @@ use Psr\Log\LoggerInterface;
  * returned by the server (HTTP 200) instead of the real content, so their <title>
  * isn't mistakenly used as reference data (ex: "Radware Captcha Page" on aphp.fr).
  */
-class InterstitialPageValidator implements ValidatorInterface
+class InterstitialPageValidator implements LinkGateInterface
 {
     public const KNOWN_INTERSTITIAL_TITLES
         = [
@@ -43,11 +43,11 @@ class InterstitialPageValidator implements ValidatorInterface
     {
     }
 
-    public function validate(): bool
+    public function check(): LinkVerdict
     {
         $title = $this->pageData['meta']['html-title'] ?? null;
         if (empty($title)) {
-            return false;
+            return LinkVerdict::Accept;
         }
 
         foreach (self::KNOWN_INTERSTITIAL_TITLES as $pattern) {
@@ -57,10 +57,10 @@ class InterstitialPageValidator implements ValidatorInterface
                     ['stats' => 'externref.skip.interstitialPage']
                 );
 
-                return true;
+                return LinkVerdict::KeepUrlAsIs;
             }
         }
 
-        return false;
+        return LinkVerdict::Accept;
     }
 }

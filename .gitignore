@@ -97,6 +97,9 @@ resources/wikibot-data-dump-*.sql
 /docs/wikidata.txt
 /todo-cirrus.md
 
+# Audits de travail (analyses ponctuelles Claude, non maintenues) — hors repo (2026-08-06)
+/audits/
+
 # Artefacts locaux / IDE / build (2026-08-04)
 /.run/
 /public_html/

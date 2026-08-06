@@ -11,6 +11,7 @@ namespace App\Domain\ExternLink;
 
 use App\Application\InfrastructurePorts\HttpClientInterface;
 use App\Domain\ExternLink\Validators\InterstitialPageValidator;
+use App\Domain\ExternLink\Validators\LinkGateInterface;
 use App\Domain\ExternLink\Validators\RobotNoIndexValidator;
 use App\Domain\InfrastructurePorts\DeadlinkArchiverInterface;
 use App\Domain\InfrastructurePorts\InternetDomainParserInterface;
@@ -59,6 +60,7 @@ class ExternRefTransformer implements ExternRefTransformerInterface
     protected array $options = [];
     private readonly ExternHttpErrorLogic $externHttpErrorLogic;
     private readonly CheckURL $urlChecker;
+    private readonly DeadLinkTransformer $deadLinkTransformer;
 
     /**
      * @param DeadlinkArchiverInterface[] $deadlinkArchivers
@@ -72,10 +74,8 @@ class ExternRefTransformer implements ExternRefTransformerInterface
     )
     {
         $this->importConfigAndData();
-        $this->externHttpErrorLogic = new ExternHttpErrorLogic(
-            new DeadLinkTransformer($deadlinkArchivers, $domainParser, null, $log),
-            $log
-        );
+        $this->deadLinkTransformer = new DeadLinkTransformer($deadlinkArchivers, $domainParser, null, $log);
+        $this->externHttpErrorLogic = new ExternHttpErrorLogic($this->deadLinkTransformer, $log);
         $this->urlChecker = new CheckURL($domainParser, $log);
     }
 
@@ -109,25 +109,38 @@ class ExternRefTransformer implements ExternRefTransformerInterface
             return $url;
         }
 
-        try {
-            $url = WikiTextUtil::normalizeUrlForTemplate($url);
-            $pageData = $this->extractPageDataFromUrl($url); // ['JSON-LD'] & ['meta'] !!
-        } catch (Exception $exception) {
-            return $this->externHttpErrorLogic->manageByHttpErrorMessage($exception->getMessage(), $url);
+        $url = WikiTextUtil::normalizeUrlForTemplate($url);
+        sleep(self::HTTP_REQUEST_LOOP_DELAY);
+        $pageFactory = new ExternPageFactory($this->httpClient, $this->log);
+        $fetch = $pageFactory->fetch($url);
+        if (!$fetch->isSuccess()) {
+            return $this->externHttpErrorLogic->manageByFetchResult($fetch);
         }
+
+        $this->externalPage = $pageFactory->fromFetchResult($url, $fetch, $this->domainParser);
+        $pageData = $this->externalPage->getData();
+        $this->log->debug('metaData', $pageData);
+
         if ($this->emptyPageData($pageData, $url)) {
             $this->log->debug('Empty page data', ['stats' => 'externref.skip.emptyPageData']);
             return $url;
         }
-        $noIndexValidator = new RobotNoIndexValidator($pageData, $url, $this->log); // todo inject
-        if ($noIndexValidator->validate() && $this->skipRobotNoIndex) {
-            $this->log->debug('NOINDEX detected', ['stats' => 'externref.skip.robotNoIndex']);
+
+        if ($this->skipRobotNoIndex
+            && $this->runGate(new RobotNoIndexValidator($pageData, $url, $this->log)) === LinkVerdict::KeepUrlAsIs
+        ) {
             // TODO ? return {lien web| titre=Titre inconnu... |note=noindex }
             // http://www.nydailynews.com/entertainment/jessica-barth-details-alleged-harvey-weinstein-encounter-article-1.3557986
             return $url;
         }
-        if ((new InterstitialPageValidator($pageData, $url, $this->log))->validate()) {
+        if ($this->runGate(new InterstitialPageValidator($pageData, $url, $this->log)) === LinkVerdict::KeepUrlAsIs) {
             return $url;
+        }
+        $softFailureVerdict = $this->runGate(
+            new SoftFailureDetector($fetch, $pageData['meta']['html-title'] ?? null, $this->log)
+        );
+        if ($softFailureVerdict === LinkVerdict::TreatAsDead) {
+            return $this->deadLinkTransformer->formatFromUrl($url);
         }
 
         $mappedData = $this->mapper->process($pageData); // only json-ld or only meta, after postprocess
@@ -198,19 +211,9 @@ class ExternRefTransformer implements ExternRefTransformerInterface
         }
     }
 
-    /**
-     * Stay
-     * @throws Exception
-     */
-    protected function extractPageDataFromUrl(string $url): array
+    private function runGate(LinkGateInterface $gate): LinkVerdict
     {
-        sleep(self::HTTP_REQUEST_LOOP_DELAY);
-        $externPageFactory = new ExternPageFactory($this->httpClient, $this->log);
-        $this->externalPage = $externPageFactory->fromURL($url, $this->domainParser);
-        $pageData = $this->externalPage->getData();
-        $this->log->debug('metaData', $pageData);
-
-        return $pageData;
+        return $gate->check();
     }
 
     // stay
