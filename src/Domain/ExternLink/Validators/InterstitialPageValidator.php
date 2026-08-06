@@ -30,6 +30,7 @@ class InterstitialPageValidator implements LinkGateInterface
             '#Are you a (human|robot)#i',
             '#V[ée]rifi(cation|ez) que vous [êe]tes (un )?humain#i',
             '#Please Wait\.\.\. \| Cloudflare#i',
+            '#Just a moment\.\.\.#', // Cloudflare
             '#Checking your browser#i',
             '#DDoS protection by#i',
             '#Unauthorized Request Blocked#i',
