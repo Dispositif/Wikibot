@@ -121,7 +121,7 @@ class ExternRefTransformer implements ExternRefTransformerInterface
         $pageFactory = new ExternPageFactory($this->httpClient, $this->log);
         $fetch = $pageFactory->fetch($url);
         if (!$fetch->isSuccess()) {
-            return $this->externHttpErrorLogic->manageByFetchResult($fetch, $this->registrableDomain, $pageTitle);
+            return $this->externHttpErrorLogic->manageByFetchResult($fetch, $this->registrableDomain, $pageTitle, $summary);
         }
 
         $this->externalPage = $pageFactory->fromFetchResult($url, $fetch, $this->domainParser);
@@ -147,7 +147,7 @@ class ExternRefTransformer implements ExternRefTransformerInterface
             new SoftFailureDetector($fetch, $pageData['meta']['html-title'] ?? null, $this->log)
         );
         if ($softFailureVerdict === LinkVerdict::TreatAsDead) {
-            return $this->deadLinkTransformer->formatFromUrl($url);
+            return $this->deadLinkTransformer->formatFromUrl($url, summary: $summary);
         }
 
         $mappedData = $this->mapper->process($pageData); // only json-ld or only meta, after postprocess

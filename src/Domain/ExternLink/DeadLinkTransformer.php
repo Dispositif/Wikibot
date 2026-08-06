@@ -42,7 +42,14 @@ class DeadLinkTransformer
     {
     }
 
-    public function formatFromUrl(string $url, DateTimeInterface $now = new DateTimeImmutable()): string
+    /**
+     * $summary (the real, caller-owned Summary — distinct from the throwaway one used
+     * internally for the recursive archive-page fetch, see externRefProcessOnArchive())
+     * is where the outcome gets recorded, so ExternRefWorker's edit summary/botflag
+     * logic reads it directly instead of re-deriving it by string-matching the
+     * serialized result (see docs/audit-gestion-erreurs-crawl-2026-08.md §9.8).
+     */
+    public function formatFromUrl(string $url, DateTimeInterface $now = new DateTimeImmutable(), ?Summary $summary = null): string
     {
         // HACK : Temporary skip transform on archiver URL (éviter archive IA sur url Wikiwix)
         if ($this->isWebArchiveUrl($url)) {
@@ -65,12 +72,7 @@ class DeadLinkTransformer
                 $this->log->debug('Trying archive candidate: ' . $webarchiveDTO->getArchiveUrl());
                 $lienWeb = $this->generateLienWebFromArchive($webarchiveDTO);
                 if ($lienWeb !== null) {
-                    if ($webarchiveDTO->getArchiver() === '[[Wikiwix]]') {
-                        $this->log->notice('🥝 Wikiwix found');
-                    }
-                    if ($webarchiveDTO->getArchiver() === '[[Internet Archive]]') {
-                        $this->log->notice('🏛️ InternetArchive found');
-                    }
+                    $this->recordArchiverUsed($webarchiveDTO, $summary);
 
                     return $lienWeb;
                 }
@@ -79,7 +81,26 @@ class DeadLinkTransformer
         }
         $this->log->notice('web archive not found');
 
-        return $this->generateLienBrise($url, $now);
+        return $this->generateLienBrise($url, $now, $summary);
+    }
+
+    private function recordArchiverUsed(WebarchiveDTO $dto, ?Summary $summary): void
+    {
+        // Literal names, not the adapters' own ARCHIVER_NAME consts : this stays
+        // Infrastructure-agnostic (Domain shouldn't import concrete adapter classes
+        // just to compare a string already defined on the DTO).
+        if ($dto->getArchiver() === '[[Wikiwix]]') {
+            $this->log->notice('🥝 Wikiwix found');
+            if ($summary instanceof Summary) {
+                $summary->memo['wikiwix'] = 1 + ($summary->memo['wikiwix'] ?? 0);
+            }
+        }
+        if ($dto->getArchiver() === '[[Internet Archive]]') {
+            $this->log->notice('🏛️ InternetArchive found');
+            if ($summary instanceof Summary) {
+                $summary->memo['wayback'] = 1 + ($summary->memo['wayback'] ?? 0);
+            }
+        }
     }
 
     /**
@@ -132,12 +153,16 @@ class DeadLinkTransformer
         return $text;
     }
 
-    protected function generateLienBrise(string $url, DateTimeInterface $now): string
+    protected function generateLienBrise(string $url, DateTimeInterface $now, ?Summary $summary = null): string
     {
         if ($this->isWebArchiveUrl($url)) {
             $this->log->notice('Skip {lien brisé} on web archive url', ['stats' => 'externref.skip.lienBriseOnwebarchiveurl']);
 
             return $url;
+        }
+
+        if ($summary instanceof Summary) {
+            $summary->memo['count lien brisé'] = 1 + ($summary->memo['count lien brisé'] ?? 0);
         }
 
         return sprintf(

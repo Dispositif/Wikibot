@@ -53,7 +53,7 @@ $logger->debug = isset($options['debug']);
 $logger->verbose = isset($options['verbose']);
 
 $botConfig = new WikiBotConfig($wiki, $logger);
-$botConfig->setTaskName("🌐⁵ Amélioration de références : URL ⇒ "); // 🐞🌐🔗🧅
+$botConfig->setTaskName("🌐⁶ Amélioration de références : URL ⇒ "); // 🐞🌐🔗🧅
 
 $botConfig->checkStopOnTalkpageOrException();
 

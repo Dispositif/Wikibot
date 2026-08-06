@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Domain\ExternLink;
 
 use App\Domain\InfrastructurePorts\ExternLinkCheckRepositoryInterface;
+use App\Domain\Models\Summary;
 use App\Infrastructure\Monitor\NullLogger;
 use App\Infrastructure\NullExternLinkCheckRepository;
 use Psr\Log\LoggerInterface;
@@ -52,24 +53,32 @@ class ExternHttpErrorLogic
     }
 
     /**
-     * $registrableDomain/$pageTitle vary per call (one instance is reused across many
-     * URLs by ExternRefTransformer), so they're call-time params rather than constructor
-     * state. $pageTitle absent (recursive archive-URL check, direct unit-test call...)
-     * => nothing gets persisted : a failure without a citing page isn't actionable later.
+     * $registrableDomain/$pageTitle/$summary vary per call (one instance is reused
+     * across many URLs by ExternRefTransformer), so they're call-time params rather
+     * than constructor state. $pageTitle absent (recursive archive-URL check, direct
+     * unit-test call...) => nothing gets persisted : a failure without a citing page
+     * isn't actionable later. $summary lets DeadLinkTransformer report which archiver
+     * it actually used, so ExternRefWorker's edit summary doesn't have to re-derive it
+     * by string-matching the result (see docs/audit-gestion-erreurs-crawl-2026-08.md §9.8).
      */
-    public function manageByFetchResult(FetchResult $fetch, ?string $registrableDomain = null, ?string $pageTitle = null): string
+    public function manageByFetchResult(
+        FetchResult $fetch,
+        ?string     $registrableDomain = null,
+        ?string     $pageTitle = null,
+        ?Summary    $summary = null
+    ): string
     {
         $url = $fetch->requestedUrl;
 
         if ($fetch->httpStatus === 410) {
             $this->log->notice('410 Gone', ['stats' => 'externHttpErrorLogic.410']);
 
-            return ExternRefTransformer::REPLACE_410 ? $this->deadLinkTransformer->formatFromUrl($url) : $url;
+            return ExternRefTransformer::REPLACE_410 ? $this->deadLinkTransformer->formatFromUrl($url, summary: $summary) : $url;
         }
         if ($fetch->httpStatus === 404) {
             $this->log->notice('404 Not Found', ['stats' => 'externHttpErrorLogic.404']);
 
-            return ExternRefTransformer::REPLACE_404 ? $this->deadLinkTransformer->formatFromUrl($url) : $url;
+            return ExternRefTransformer::REPLACE_404 ? $this->deadLinkTransformer->formatFromUrl($url, summary: $summary) : $url;
         }
         if ($fetch->httpStatus === 400) {
             $this->log->warning('400 Bad Request : ' . $url, ['stats' => 'externHttpErrorLogic.400']);
@@ -113,7 +122,7 @@ class ExternHttpErrorLogic
                 ['stats' => 'externHttpErrorLogic.' . strtolower($fetch->errorKind->name)]
             );
 
-            return $this->deadLinkTransformer->formatFromUrl($url);
+            return $this->deadLinkTransformer->formatFromUrl($url, summary: $summary);
         }
 
         if ($fetch->httpStatus === 451) {

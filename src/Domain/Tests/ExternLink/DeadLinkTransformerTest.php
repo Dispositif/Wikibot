@@ -13,6 +13,7 @@ use App\Domain\ExternLink\DeadLinkTransformer;
 use App\Domain\ExternLink\ExternRefTransformerInterface;
 use App\Domain\InfrastructurePorts\DeadlinkArchiverInterface;
 use App\Domain\InfrastructurePorts\InternetDomainParserInterface;
+use App\Domain\Models\Summary;
 use App\Domain\Models\WebarchiveDTO;
 use PHPUnit\Framework\TestCase;
 
@@ -127,5 +128,65 @@ class DeadLinkTransformerTest extends TestCase
             '{{lien web |url=http://web.archive.org/web/2022/bla}}',
             $transformer->formatFromUrl('bla', $now)
         );
+    }
+
+    /**
+     * §9.8 : which archiver was used must be reported on the caller's own Summary
+     * object, not re-derived later by string-matching the serialized result.
+     */
+    public function testFormatFromUrlRecordsWikiwixOnSummary()
+    {
+        $archiver = $this->createMock(DeadlinkArchiverInterface::class);
+        $now = new \DateTimeImmutable();
+        $webarchiveDTO = new WebarchiveDTO('[[Wikiwix]]', 'bla', 'https://archive.wikiwix.com/cache/bla', $now);
+        $archiver->method('searchWebarchive')->willReturn($webarchiveDTO);
+
+        $domainParser = $this->createMock(InternetDomainParserInterface::class);
+        $externRefTransformer = $this->createMock(ExternRefTransformerInterface::class);
+        $externRefTransformer->method('process')->willReturn('{{lien web |url=https://archive.wikiwix.com/cache/bla}}');
+
+        $transformer = new DeadLinkTransformer([$archiver], $domainParser, $externRefTransformer);
+        $summary = new Summary();
+        $transformer->formatFromUrl('bla', $now, $summary);
+
+        $this::assertSame(1, $summary->memo['wikiwix']);
+        $this::assertArrayNotHasKey('wayback', $summary->memo);
+    }
+
+    public function testFormatFromUrlRecordsInternetArchiveOnSummary()
+    {
+        $archiver = $this->createMock(DeadlinkArchiverInterface::class);
+        $now = new \DateTimeImmutable();
+        $webarchiveDTO = new WebarchiveDTO('[[Internet Archive]]', 'bla', 'http://web.archive.org/web/2022/bla', $now);
+        $archiver->method('searchWebarchive')->willReturn($webarchiveDTO);
+
+        $domainParser = $this->createMock(InternetDomainParserInterface::class);
+        $externRefTransformer = $this->createMock(ExternRefTransformerInterface::class);
+        $externRefTransformer->method('process')->willReturn('{{lien web |url=http://web.archive.org/web/2022/bla}}');
+
+        $transformer = new DeadLinkTransformer([$archiver], $domainParser, $externRefTransformer);
+        $summary = new Summary();
+        $transformer->formatFromUrl('bla', $now, $summary);
+
+        $this::assertSame(1, $summary->memo['wayback']);
+        $this::assertArrayNotHasKey('wikiwix', $summary->memo);
+    }
+
+    public function testFormatFromUrlRecordsLienBriseOnSummary()
+    {
+        $now = new \DateTimeImmutable();
+        $summary = new Summary();
+
+        (new DeadLinkTransformer())->formatFromUrl('bla', $now, $summary);
+
+        $this::assertSame(1, $summary->memo['count lien brisé']);
+    }
+
+    public function testFormatFromUrlWorksWithoutSummary()
+    {
+        // $summary is optional : must not error when the caller doesn't care (e.g. tests, recursive archive-URL guard)
+        $now = new \DateTimeImmutable();
+
+        $this::assertStringStartsWith('{{Lien brisé', (new DeadLinkTransformer())->formatFromUrl('bla', $now));
     }
 }

@@ -36,8 +36,6 @@ class ExternRefWorker extends AbstractRefBotWorker
     public const DEAD_LINK_NO_BOTFLAG = 5;
     public const SKIP_SITE_BLACKLISTED = true;
     public const SKIP_ROBOT_NOINDEX = true;
-    protected const STRING_WAYBACK_URL = '://web.archive.org/web/';
-    protected const STRING_WIKIWIX_URL = 'https://archive.wikiwix.com/cache/';
 
     protected $modeAuto = true;
 
@@ -74,6 +72,18 @@ class ExternRefWorker extends AbstractRefBotWorker
             return $refContent;
         }
 
+        // Snapshot before process() : DeadLinkTransformer writes directly into these
+        // memo counters (see docs/audit-gestion-erreurs-crawl-2026-08.md §9.8), so a
+        // before/after diff tells us whether *this* ref caused a new substitution —
+        // more reliable than re-deriving it by string-matching $result, which could
+        // false-positive on an archive URL that was already present in the citation
+        // for an unrelated reason.
+        $before = [
+            'count lien brisé' => $this->summary->memo['count lien brisé'] ?? 0,
+            'wikiwix' => $this->summary->memo['wikiwix'] ?? 0,
+            'wayback' => $this->summary->memo['wayback'] ?? 0,
+        ];
+
         try {
             $result = $this->transformer->process($refContent, $this->summary, ['pageTitle' => $this->currentTitle]);
         } catch (Throwable $e) {
@@ -99,26 +109,20 @@ class ExternRefWorker extends AbstractRefBotWorker
             return $refContent;
         }
 
-
-        if (preg_match('#{{lien brisé#i', $result)) {
+        if (($this->summary->memo['count lien brisé'] ?? 0) > $before['count lien brisé']) {
             $this->log->stats->increment('externref.transform.lienbrisé');
-            $this->summary->memo['count lien brisé'] = 1 + ($this->summary->memo['count lien brisé'] ?? 0);
             if ($this->summary->memo['count lien brisé'] >= self::DEAD_LINK_NO_BOTFLAG) {
                 $this->summary->setBotFlag(false);
             }
         }
-
-        if (str_contains($result, self::STRING_WIKIWIX_URL)) {
+        if (($this->summary->memo['wikiwix'] ?? 0) > $before['wikiwix']) {
             $this->log->stats->increment('externref.transform.wikiwix');
-            $this->summary->memo['wikiwix'] = 1 + ($this->summary->memo['wikiwix'] ?? 0);
             if ($this->summary->memo['wikiwix'] >= self::DEAD_LINK_NO_BOTFLAG) {
                 $this->summary->setBotFlag(false);
             }
         }
-        // not httpS in 2023
-        if (str_contains($result, self::STRING_WAYBACK_URL)) {
+        if (($this->summary->memo['wayback'] ?? 0) > $before['wayback']) {
             $this->log->stats->increment('externref.transform.wayback');
-            $this->summary->memo['wayback'] = 1 + ($this->summary->memo['wayback'] ?? 0);
             if ($this->summary->memo['wayback'] >= self::DEAD_LINK_NO_BOTFLAG) {
                 $this->summary->setBotFlag(false);
             }

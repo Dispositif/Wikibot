@@ -15,6 +15,7 @@ use App\Domain\ExternLink\ExternLinkCheckVerdict;
 use App\Domain\ExternLink\FetchErrorKind;
 use App\Domain\ExternLink\FetchResult;
 use App\Domain\InfrastructurePorts\ExternLinkCheckRepositoryInterface;
+use App\Domain\Models\Summary;
 use PHPUnit\Framework\TestCase;
 
 class ExternHttpErrorLogicTest extends TestCase
@@ -157,6 +158,24 @@ class ExternHttpErrorLogicTest extends TestCase
             'https://example.com/page',
             $logic->manageByFetchResult($this->fetch(451))
         );
+    }
+
+    /**
+     * §9.8 : the caller's Summary must reach DeadLinkTransformer, so it can record
+     * which archiver it used directly instead of ExternRefWorker re-deriving it later
+     * by string-matching the result.
+     */
+    public function testSummaryIsForwardedToDeadLinkTransformer()
+    {
+        $summary = new Summary();
+        $deadLinkTransformer = $this->createMock(DeadLinkTransformer::class);
+        $deadLinkTransformer->expects($this->once())
+            ->method('formatFromUrl')
+            ->with('https://example.com/page', $this->anything(), $this->identicalTo($summary))
+            ->willReturn('{{Lien brisé |url= https://example.com/page}}');
+
+        $logic = new ExternHttpErrorLogic($deadLinkTransformer);
+        $logic->manageByFetchResult($this->fetch(404), null, null, $summary);
     }
 
     public function testUnhandledFailuresLeaveUrlUnchanged()
