@@ -82,3 +82,11 @@ run: src/Infrastructure/resources/google_quota.json src/Infrastructure/resources
 .PHONY: restart-mysql # 	Restart the MySQL container only
 restart-mysql:
 	docker compose restart mysql
+
+.PHONY: up-tor # 	Start Tor (persistent, safe default: does not touch the workers)
+up-tor:
+	docker compose up -d tor
+
+.PHONY: restart-tor # 	Restart the Tor container only (e.g. after a docker/tor/ change)
+restart-tor:
+	docker compose up -d --build tor

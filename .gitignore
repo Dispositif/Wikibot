@@ -114,5 +114,6 @@ resources/wikibot-data-dump-*.sql
 /resources/corpus_lienWeb_url.txt
 /resources/titles/
 /resources/wikibot_structure_2021-02-06.sql
+/resources/wikibot-page_ouvrages-20260706.sql
 /resources/wikiprofiling-dump-20260706.sql
 /resources/wikiwix-log-11-01.txt
