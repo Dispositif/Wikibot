@@ -128,6 +128,23 @@ services:
         condition: service_healthy
     mem_limit: 256m
 
+  # Ref-separator syntax fix
+  # inserts {{,}} between concatenated <ref>/{{Sfn}} tags and
+  # trims stray whitespace before <ref>. Batch script like goo-extern: up to
+  # 500 CirrusSearch matches per run, then exits. No loop, no MySQL/Tor
+  # dependency, no persistent state — the CirrusSearch query itself only
+  # matches the malformed pattern, so already-fixed pages drop out on their own.
+  fix-typo:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    restart: "no"
+    profiles: ["workers"]
+    command: ["php", "src/Application/CLI/fixTypo.php"]
+    env_file:
+      - .env
+    mem_limit: 256m
+
   # ISBN completion pipeline (raw {{Ouvrage}} -> completed, via BnF/Google
   # Books/OpenLibrary/Wikidata). Loops internally (10000 rows per PHP
   # process, sleeps/retries on error) until the MySQL queue is empty

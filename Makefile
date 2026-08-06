@@ -59,8 +59,8 @@ ps:
 logs:
 	docker compose logs -f $(service)
 
-.PHONY: build-worker # 	(Re)build worker images after a code/Dockerfile change
-build-worker:
+.PHONY: build # 	(Re)build worker images after a code/Dockerfile change
+build:
 	docker compose --profile workers build
 
 # Gitignored runtime state (real Google API quota count + its flock() lock file), not
@@ -75,7 +75,7 @@ src/Infrastructure/resources/google_quota.lock:
 
 # To dry-run a worker instead, replaces the default rather than appending to it, e.g.:
 #   docker compose run --rm extern-ref php src/Application/CLI/externRefProcess.php --dry-run --page="Some Title"
-.PHONY: run # 	Run a one-shot worker for real: make run service=goo-extern|extern-ref|last-extern-ref|wiki-scan|ouvrage-complete|ouvrage-edit
+.PHONY: run # 	Run a one-shot worker for real: make run service=goo-extern|extern-ref|last-extern-ref|fix-typo|wiki-scan|ouvrage-complete|ouvrage-edit
 run: src/Infrastructure/resources/google_quota.json src/Infrastructure/resources/google_quota.lock
 	docker compose run --rm $(service)
 
