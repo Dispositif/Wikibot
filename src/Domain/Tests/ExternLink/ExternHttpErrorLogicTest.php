@@ -59,7 +59,7 @@ class ExternHttpErrorLogicTest extends TestCase
 
     public function testLooseNetworkFailuresGoThroughDeadLinkTransformer()
     {
-        foreach ([FetchErrorKind::EmptyReply, FetchErrorKind::DnsResolutionFailed, FetchErrorKind::ProxyFailure] as $kind) {
+        foreach ([FetchErrorKind::EmptyReply, FetchErrorKind::DnsResolutionFailed] as $kind) {
             $deadLinkTransformer = $this->createMock(DeadLinkTransformer::class);
             $deadLinkTransformer->expects($this->once())
                 ->method('formatFromUrl')
@@ -72,6 +72,24 @@ class ExternHttpErrorLogicTest extends TestCase
                 $logic->manageByFetchResult($this->fetch(null, $kind))
             );
         }
+    }
+
+    /**
+     * Regression test for §9.5 : a SOCKS5/Tor tunnel failure is a failure of the bot's
+     * own network path, not evidence the target site is dead — it must not produce a
+     * {{lien brisé}} or an archive lookup on an otherwise perfectly live link.
+     */
+    public function testProxyFailureIsNotTreatedAsDeadLink()
+    {
+        $deadLinkTransformer = $this->createMock(DeadLinkTransformer::class);
+        $deadLinkTransformer->expects($this->never())->method('formatFromUrl');
+
+        $logic = new ExternHttpErrorLogic($deadLinkTransformer);
+
+        $this::assertSame(
+            'https://example.com/page',
+            $logic->manageByFetchResult($this->fetch(null, FetchErrorKind::ProxyFailure))
+        );
     }
 
     public function testUnhandledFailuresLeaveUrlUnchanged()

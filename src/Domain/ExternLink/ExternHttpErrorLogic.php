@@ -27,13 +27,19 @@ class ExternHttpErrorLogic
     /** @var int[] statuses treated as a dead link only because LOOSE is enabled (server/gateway errors) */
     private const LOOSE_STATUSES_TREATED_AS_DEAD = [500, 502];
 
-    /** @var FetchErrorKind[] network failures treated as a dead link only because LOOSE is enabled */
+    /**
+     * @var FetchErrorKind[] network failures treated as a dead link only because LOOSE is enabled.
+     * ProxyFailure (SOCKS5/Tor tunnel) is deliberately excluded : it's a failure of the bot's own
+     * network path, not evidence the target site is down (see docs/audit-gestion-erreurs-crawl-2026-08.md §9.5).
+     */
     private const LOOSE_ERROR_KINDS_TREATED_AS_DEAD
         = [
             FetchErrorKind::EmptyReply,
             FetchErrorKind::DnsResolutionFailed,
-            FetchErrorKind::ProxyFailure,
         ];
+
+    /** @var int[] statuses that stay unchanged but get their own stats label instead of the generic defaultSkip bucket */
+    private const OBSERVED_NON_DEAD_STATUSES = [429, 503, 451];
 
     public function __construct(
         protected DeadLinkTransformer    $deadLinkTransformer,
@@ -88,7 +94,20 @@ class ExternHttpErrorLogic
             return $this->deadLinkTransformer->formatFromUrl($url);
         }
 
-        // DEFAULT (not filtered) : 429, 503, 451, timeout, TLS error, too-many-redirects...
+        if (in_array($fetch->httpStatus, self::OBSERVED_NON_DEAD_STATUSES, true)) {
+            // pas de {lien brisé} : ces statuts n'indiquent pas un contenu disparu (429/503 :
+            // limitation temporaire ; 451 : retrait légal, pas une absence de contenu). Sortis du
+            // bucket "defaultSkip" générique pour rester mesurables ; deviendront RetryLater/
+            // NeedsHumanCheck une fois §9.6 (persistance) en place.
+            $this->log->notice(
+                $fetch->httpStatus . ' : ' . $url,
+                ['stats' => 'externHttpErrorLogic.' . $fetch->httpStatus]
+            );
+
+            return $url;
+        }
+
+        // DEFAULT (not filtered) : timeout, TLS error, too-many-redirects, ProxyFailure (SOCKS5)...
         // pas de {lien brisé} : peut-être temporaire, et on n'a pas encore de mécanisme
         // de re-vérification différée (cf. docs/audit-gestion-erreurs-crawl-2026-08.md §9.6)
         $this->log->notice(
