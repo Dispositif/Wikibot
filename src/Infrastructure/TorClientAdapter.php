@@ -68,10 +68,15 @@ class TorClientAdapter extends GuzzleClientAdapter implements HttpClientInterfac
         echo "TOR IP : $torIp \n";
     }
 
+    /** Generous : this is the very first request through a cold Tor instance —
+     * circuit-building (3 hops) with nothing cached yet routinely takes >10s,
+     * confirmed empirically (~12s) after ruling out a bootstrap-readiness issue. */
+    private const GET_IP_TIMEOUT = 30;
+
     public function getIp(): ?string
     {
         $response = $this->client->get(self::API_GET_IP, [
-            'timeout' => 10,
+            'timeout' => self::GET_IP_TIMEOUT,
             'headers' => [
                 'User-Agent' => self::FAKE_USER_AGENT,
             ],

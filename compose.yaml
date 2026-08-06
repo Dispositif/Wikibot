@@ -71,6 +71,22 @@ services:
     restart: unless-stopped
     mem_limit: 128m
 
+    # Tor needs time to bootstrap its circuits after boot, and extern-ref/last-extern-ref crash hard (uncaught
+    # exception in TorClientAdapter's own startup IP check) if launched too soo after `tor`.
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >
+          bash -c '
+            exec 3<>/dev/tcp/127.0.0.1/9051 &&
+            printf "AUTHENTICATE\r\nGETINFO status/bootstrap-phase\r\nQUIT\r\n" >&3 &&
+            grep -q "TAG=done" <&3
+          '
+      interval: 5s
+      timeout: 3s
+      start_period: 40s
+      retries: 12
+
   # External link crawling ({{lien web}} / {{article}} generation from raw
   # URLs) — main/current version, matches the "externref" Makefile target.
   # Supports: --page/--debug/
@@ -87,7 +103,8 @@ services:
     volumes:
       - ./src/Application/resources/article_externRef_edited.txt:/app/src/Application/resources/article_externRef_edited.txt
     depends_on:
-      - tor
+      tor:
+        condition: service_healthy
     mem_limit: 256m
 
   # Same external link crawling, but sorted by most-recently-edited pages
@@ -105,7 +122,8 @@ services:
     volumes:
       - ./src/Application/resources/article_externRef_edited.txt:/app/src/Application/resources/article_externRef_edited.txt
     depends_on:
-      - tor
+      tor:
+        condition: service_healthy
     mem_limit: 256m
 
   # ISBN completion pipeline (raw {{Ouvrage}} -> completed, via BnF/Google
