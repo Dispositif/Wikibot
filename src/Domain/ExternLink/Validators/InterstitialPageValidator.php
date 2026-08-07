@@ -17,6 +17,11 @@ use Psr\Log\LoggerInterface;
  * Detect known bot-challenge/interstitial pages (anti-bot captcha, "please wait"...)
  * returned by the server (HTTP 200) instead of the real content, so their <title>
  * isn't mistakenly used as reference data (ex: "Radware Captcha Page" on aphp.fr).
+ *
+ * Title matching alone is a losing game: the challenge title is localized per
+ * Accept-Language and keeps changing wording (already 2 new Cloudflare variants
+ * in as many days). The body markers below are vendor script/asset paths, stable
+ * regardless of page language.
  */
 class InterstitialPageValidator implements LinkGateInterface
 {
@@ -31,14 +36,26 @@ class InterstitialPageValidator implements LinkGateInterface
             '#V[ée]rifi(cation|ez) que vous [êe]tes (un )?humain#i',
             '#Please Wait\.\.\. \| Cloudflare#i',
             '#Just a moment\.\.\.#', // Cloudflare
+            '#One moment, please\.\.\.#i', // Cloudflare
             '#Checking your browser#i',
             '#DDoS protection by#i',
             '#Unauthorized Request Blocked#i',
         ];
 
+    // language-independent, checked against the raw HTML body
+    public const KNOWN_INTERSTITIAL_BODY_MARKERS
+        = [
+            'cdn-cgi/challenge-platform', // Cloudflare
+            'challenges.cloudflare.com',
+            'cf-turnstile',
+            '__cf_chl_rt_tk',
+            'window._cf_chl_opt',
+        ];
+
     public function __construct(
         private readonly array           $pageData,
         private readonly string          $url,
+        private readonly ?string         $htmlBody = null,
         private readonly LoggerInterface $log = new NullLogger()
     )
     {
@@ -47,21 +64,35 @@ class InterstitialPageValidator implements LinkGateInterface
     public function check(): LinkVerdict
     {
         $title = $this->pageData['meta']['html-title'] ?? null;
-        if (empty($title)) {
-            return LinkVerdict::Accept;
+
+        if (!empty($title)) {
+            foreach (self::KNOWN_INTERSTITIAL_TITLES as $pattern) {
+                if (preg_match($pattern, (string)$title)) {
+                    $this->logDetection((string)$title);
+
+                    return LinkVerdict::KeepUrlAsIs;
+                }
+            }
         }
 
-        foreach (self::KNOWN_INTERSTITIAL_TITLES as $pattern) {
-            if (preg_match($pattern, (string)$title)) {
-                $this->log->notice(
-                    'Interstitial/bot-challenge page detected ("' . $title . '") : ' . $this->url,
-                    ['stats' => 'externref.skip.interstitialPage']
-                );
+        if (!empty($this->htmlBody)) {
+            foreach (self::KNOWN_INTERSTITIAL_BODY_MARKERS as $marker) {
+                if (str_contains($this->htmlBody, $marker)) {
+                    $this->logDetection($marker);
 
-                return LinkVerdict::KeepUrlAsIs;
+                    return LinkVerdict::KeepUrlAsIs;
+                }
             }
         }
 
         return LinkVerdict::Accept;
+    }
+
+    private function logDetection(string $label): void
+    {
+        $this->log->notice(
+            'Interstitial/bot-challenge page detected ("' . $label . '") : ' . $this->url,
+            ['stats' => 'externref.skip.interstitialPage']
+        );
     }
 }
