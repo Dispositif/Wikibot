@@ -140,7 +140,7 @@ class ExternRefTransformer implements ExternRefTransformerInterface
             // http://www.nydailynews.com/entertainment/jessica-barth-details-alleged-harvey-weinstein-encounter-article-1.3557986
             return $url;
         }
-        if ($this->runGate(new InterstitialPageValidator($pageData, $url, $fetch->body, $this->log)) === LinkVerdict::KeepUrlAsIs) {
+        if ($this->runGate(new InterstitialPageValidator($pageData, $url, $fetch->body, $fetch->cfMitigated, $this->log)) === LinkVerdict::KeepUrlAsIs) {
             return $url;
         }
         $softFailureVerdict = $this->runGate(

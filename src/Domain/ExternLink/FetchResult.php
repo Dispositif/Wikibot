@@ -25,6 +25,9 @@ final class FetchResult
         public readonly ?string         $body,
         public readonly ?FetchErrorKind $errorKind = null,
         public readonly ?string         $rawErrorMessage = null,
+        // Cloudflare's own documented signal for a Challenge Page response, whatever
+        // its type : header value is "challenge", set regardless of title wording/locale.
+        public readonly ?string         $cfMitigated = null,
     ) {
     }
 

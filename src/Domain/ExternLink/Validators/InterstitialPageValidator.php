@@ -56,6 +56,8 @@ class InterstitialPageValidator implements LinkGateInterface
         private readonly array           $pageData,
         private readonly string          $url,
         private readonly ?string         $htmlBody = null,
+        // Cloudflare's own "cf-mitigated" response header value, see FetchResult::$cfMitigated
+        private readonly ?string         $cfMitigated = null,
         private readonly LoggerInterface $log = new NullLogger()
     )
     {
@@ -63,6 +65,12 @@ class InterstitialPageValidator implements LinkGateInterface
 
     public function check(): LinkVerdict
     {
+        if ($this->cfMitigated === 'challenge') {
+            $this->logDetection('cf-mitigated: challenge');
+
+            return LinkVerdict::KeepUrlAsIs;
+        }
+
         $title = $this->pageData['meta']['html-title'] ?? null;
 
         if (!empty($title)) {

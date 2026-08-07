@@ -76,11 +76,12 @@ class ExternPageFactory
     {
         $contentType = $this->extractContentType($response);
         $finalUrl = $this->extractFinalUrl($stats, $url);
+        $cfMitigated = $this->extractCfMitigated($response);
 
         if (in_array('application/pdf', explode(';', $contentType ?? ''), true)) {
             $this->log->debug('Incompatible application/pdf content-type');
 
-            return new FetchResult($url, $finalUrl, $response->getStatusCode(), $contentType, 0, null);
+            return new FetchResult($url, $finalUrl, $response->getStatusCode(), $contentType, 0, null, cfMitigated: $cfMitigated);
         }
 
         $rawBody = $response->getBody()->getContents();
@@ -92,7 +93,8 @@ class ExternPageFactory
             $response->getStatusCode(),
             $contentType,
             strlen($rawBody),
-            $body
+            $body,
+            cfMitigated: $cfMitigated
         );
     }
 
@@ -134,6 +136,16 @@ class ExternPageFactory
         $contentType = $response->getHeader('Content-Type');
 
         return $contentType[0] ?? null;
+    }
+
+    /**
+     * @see https://developers.cloudflare.com/cloudflare-challenges/challenge-types/challenge-pages/detect-response/
+     */
+    private function extractCfMitigated(ResponseInterface $response): ?string
+    {
+        $header = $response->getHeader('cf-mitigated');
+
+        return $header[0] ?? null;
     }
 
     /**
