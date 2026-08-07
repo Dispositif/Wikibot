@@ -45,8 +45,13 @@ class ExternPageFactory
      * Fetch a URL and return a typed result — never throws for network/HTTP-level
      * failures (DNS, timeout, 4xx/5xx...), only for a malformed input URL. This
      * replaces the previous throw-and-regex-parse-the-message pattern.
+     *
+     * @param ?string $userAgent Override for this request only. Null (default) sends
+     * the bot's own declared identity (USER_AGENT env) — the honest, correct default
+     * for direct/non-anonymized requests. Callers deliberately blending in on Tor
+     * (see ExternRefTransformer::BROWSER_LIKE_USER_AGENT) pass a browser UA instead.
      */
-    public function fetch(string $url): FetchResult
+    public function fetch(string $url, ?string $userAgent = null): FetchResult
     {
         if (!HttpUtil::isHttpURL($url)) {
             throw new DomainException('URL not compatible : ' . $url);
@@ -56,7 +61,18 @@ class ExternPageFactory
         $options = [
             'timeout' => 35,
             'allow_redirects' => true, /* note : marche pas en mode proxy Tor, TorClientAdapter gère lui-même */
-            'headers' => ['User-Agent' => getenv('USER_AGENT')],
+            // Full-ish browser header set, not just User-Agent : some anti-bot heuristics
+            // fire on a bare/incomplete header set alone, before any JS challenge kicks in.
+            'headers' => [
+                'User-Agent' => $userAgent ?? getenv('USER_AGENT'),
+                'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+                'Accept-Language' => 'fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7',
+                'Upgrade-Insecure-Requests' => '1',
+                'Sec-Fetch-Dest' => 'document',
+                'Sec-Fetch-Mode' => 'navigate',
+                'Sec-Fetch-Site' => 'none',
+                'Sec-Fetch-User' => '?1',
+            ],
             'verify' => false,
             'on_stats' => function (TransferStats $s) use (&$stats): void {
                 $stats = $s; // fires on success AND failure, gives effective URI + handler error data either way

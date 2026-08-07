@@ -96,6 +96,12 @@ $httpClient = ServiceFactory::getHttpClient();
 $wikiwix = new WikiwixAdapter($httpClient, $logger);
 $internetArchive = new InternetArchiveAdapter($httpClient, $logger);
 
+// 2nd pass without Tor when the Tor fetch looks blocked (403/429/503, cf-mitigated,
+// interstitial body markers) — on by default, self-identifies honestly (not a fake
+// browser UA) on that direct pass. --no-direct-retry opts back out entirely.
+// See audits/synthese-anti-bot-crawling-tor-2026-08.md
+$directRetryEnabled = !in_array('--no-direct-retry', $argv, true);
+
 $domainParser = new InternetDomainParser();
 $transformer = new ExternRefTransformer(
     new ExternMapper($logger),
@@ -103,7 +109,8 @@ $transformer = new ExternRefTransformer(
     $domainParser,
     $logger,
     [$internetArchive, $wikiwix],
-    ServiceFactory::getExternLinkCheckRepository($argv)
+    ServiceFactory::getExternLinkCheckRepository($argv),
+    $directRetryEnabled ? $httpClient : null
 );
 
 $dryRun = in_array('--dry-run', $argv, true);

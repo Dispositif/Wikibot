@@ -47,6 +47,9 @@ class ExternRefTransformer implements ExternRefTransformerInterface
     final public const CONFIG_SCIENTIFIC_JSON = __DIR__ . '/../resources/data_scientific_domain.json';
     final public const CONFIG_SCIENTIFIC_WIKI_JSON = __DIR__ . '/../resources/data_scientific_wiki.json';
 
+    /** HTTP statuses that might mean "blocked by anti-bot", not "content is gone" — see audits/synthese-anti-bot-crawling-tor-2026-08.md */
+    private const BLOCK_SUSPECT_STATUSES = [403, 429, 503];
+
     public bool $skipSiteBlacklisted = true;
     public bool $skipRobotNoIndex = true;
     public array $summaryLog = [];
@@ -73,7 +76,13 @@ class ExternRefTransformer implements ExternRefTransformerInterface
         protected InternetDomainParserInterface $domainParser,
         protected LoggerInterface               $log = new NullLogger(),
         protected array                         $deadlinkArchivers = [],
-        private readonly ExternLinkCheckRepositoryInterface $linkCheckRepository = new NullExternLinkCheckRepository()
+        private readonly ExternLinkCheckRepositoryInterface $linkCheckRepository = new NullExternLinkCheckRepository(),
+        // "2nd pass without Tor" fallback, only used when looksBlocked() fires (not on
+        // every request) and self-identifying honestly (not the Tor pass's browser UA)
+        // when it does — see audits/synthese-anti-bot-crawling-tor-2026-08.md. Workers
+        // enable this by default and expose a --no-direct-retry opt-out; null here just
+        // means "no client was wired up", not "feature disabled" per se.
+        private readonly ?HttpClientInterface $directRetryClient = null,
     )
     {
         $this->importConfigAndData();
@@ -118,13 +127,12 @@ class ExternRefTransformer implements ExternRefTransformerInterface
 
         $url = WikiTextUtil::normalizeUrlForTemplate($url);
         sleep(self::HTTP_REQUEST_LOOP_DELAY);
-        $pageFactory = new ExternPageFactory($this->httpClient, $this->log);
-        $fetch = $pageFactory->fetch($url);
+        $fetch = $this->fetchWithOptionalDirectRetry($url);
         if (!$fetch->isSuccess()) {
             return $this->externHttpErrorLogic->manageByFetchResult($fetch, $this->registrableDomain, $pageTitle, $summary);
         }
 
-        $this->externalPage = $pageFactory->fromFetchResult($url, $fetch, $this->domainParser);
+        $this->externalPage = (new ExternPageFactory($this->httpClient, $this->log))->fromFetchResult($url, $fetch, $this->domainParser);
         $pageData = $this->externalPage->getData();
         $this->log->debug('metaData', $pageData);
 
@@ -223,6 +231,59 @@ class ExternRefTransformer implements ExternRefTransformerInterface
     private function runGate(LinkGateInterface $gate): LinkVerdict
     {
         return $gate->check();
+    }
+
+    /**
+     * Fetch via Tor (the normal path), then — only if directRetryClient was provided
+     * AND the Tor fetch shows a blocking signal — retry once directly. Whichever
+     * FetchResult is returned goes through the normal pipeline unchanged afterwards
+     * (ExternHttpErrorLogic / InterstitialPageValidator still apply, so a retry that's
+     * also blocked ends up handled exactly like a non-retried block would).
+     *
+     * Tor pass sends FAKE_USER_AGENT (a browser UA, blends in for anonymat) ; the
+     * direct-retry pass deliberately does NOT override it, falling back to
+     * ExternPageFactory::fetch()'s own default (USER_AGENT, the bot's honest identity)
+     * — masking identity wouldn't help against the IP-reputation blocks this fallback
+     * targets anyway, and self-identifying is the safer position on the bot's real IP.
+     * See audits/synthese-anti-bot-crawling-tor-2026-08.md
+     */
+    private function fetchWithOptionalDirectRetry(string $url): FetchResult
+    {
+        $fetch = (new ExternPageFactory($this->httpClient, $this->log))->fetch($url, getenv('FAKE_USER_AGENT') ?: null);
+
+        if ($this->directRetryClient === null || !$this->looksBlocked($fetch)) {
+            return $fetch;
+        }
+
+        $this->log->notice('Blocked via Tor, retrying without Tor : ' . $url, ['stats' => 'externref.retry.directFallback']);
+        $directFetch = (new ExternPageFactory($this->directRetryClient, $this->log))->fetch($url);
+
+        if ($this->looksBlocked($directFetch)) {
+            $this->log->notice('Still blocked without Tor : ' . $url, ['stats' => 'externref.retry.directFallbackFailed']);
+        }
+
+        return $directFetch;
+    }
+
+    /**
+     * Cheap pre-check, deliberately not the full InterstitialPageValidator pass done
+     * later in process() : title-based detection needs the parsed pageData that only
+     * exists after this fetch is chosen, so it's skipped here (pageData: []). Header
+     * (cf-mitigated) and body-marker detection need no parsing and are checked as-is.
+     */
+    private function looksBlocked(FetchResult $fetch): bool
+    {
+        if (in_array($fetch->httpStatus, self::BLOCK_SUSPECT_STATUSES, true)) {
+            return true;
+        }
+
+        if (!$fetch->isSuccess()) {
+            return false;
+        }
+
+        $precheck = new InterstitialPageValidator([], $fetch->requestedUrl, $fetch->body, $fetch->cfMitigated, $this->log);
+
+        return $precheck->check() === LinkVerdict::KeepUrlAsIs;
     }
 
     // stay
