@@ -33,7 +33,14 @@ class RecentChangeWorker
     protected const TASK_NAME = '🦊 Amélioration de références : URL ⇒ ';
     protected const ALREADY_EDITED_PATH = __DIR__ . '/../resources/article_externRef_edited.txt';
 
-    public function __construct(private readonly MediawikiApi $api, private readonly LoggerInterface $logger = new NullLogger())
+    public function __construct(
+        private readonly MediawikiApi $api,
+        private readonly LoggerInterface $logger = new NullLogger(),
+        // 2nd pass without Tor when the Tor fetch looks blocked — on by default, see
+        // audits/synthese-anti-bot-crawling-tor-2026-08.md
+        private readonly bool $directRetryEnabled = true,
+        private readonly bool $respectRobotsTxt = true,
+    )
     {
     }
 
@@ -107,7 +114,9 @@ class RecentChangeWorker
             ServiceFactory::getHttpClient(true),
             $domainParser,
             $this->logger,
-            [$internetArchive, $wikiwix]
+            [$internetArchive, $wikiwix],
+            directRetryClient: $this->directRetryEnabled ? $httpClient : null,
+            respectRobotsTxt: $this->respectRobotsTxt
         );
 
         new ExternRefWorker($botConfig, $wiki, $list, $transformer);

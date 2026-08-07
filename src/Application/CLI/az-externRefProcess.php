@@ -29,9 +29,16 @@ use App\Infrastructure\WikiwixAdapter;
 
 include __DIR__ . '/../myBootstrap.php';
 
-// --page="Skateboard" --stats=redis --stats=sqlite --debug --verbose
-echo "OPTIONS: --debug --verbose --stats=redis --stats=sqlite --page=\"Skateboard\" --offset=1000 --no-db \n";
-$options = getopt('', ['page::', 'debug', 'verbose', 'stats::', 'offset::']);
+// --page="Skateboard" --stats=redis --stats=sqlite --debug --verbose --no-direct-retry --no-robots-check
+echo "OPTIONS: --debug --verbose --stats=redis --stats=sqlite --page=\"Skateboard\" --offset=1000 --no-db --no-direct-retry --no-robots-check \n";
+$options = getopt('', ['page::', 'debug', 'verbose', 'stats::', 'offset::', 'no-direct-retry', 'no-robots-check']);
+// 2nd pass without Tor when the Tor fetch looks blocked (403/429/503, cf-mitigated,
+// interstitial title/body markers) — on by default, self-identifies honestly (not a
+// fake browser UA) on that direct pass. --no-direct-retry opts back out entirely.
+// robots.txt observance — on by default, --no-robots-check opts out.
+// See audits/synthese-anti-bot-crawling-tor-2026-08.md
+$directRetryEnabled = !isset($options['no-direct-retry']);
+$respectRobotsTxt = !isset($options['no-robots-check']);
 
 /** @noinspection PhpUnhandledExceptionInspection */
 $wiki = ServiceFactory::getMediawikiFactory();
@@ -88,7 +95,9 @@ $transformer = new ExternRefTransformer(
     $domainParser,
     $logger,
     [$internetArchive, $wikiwix],
-    ServiceFactory::getExternLinkCheckRepository($argv)
+    ServiceFactory::getExternLinkCheckRepository($argv),
+    $directRetryEnabled ? $httpClient : null,
+    $respectRobotsTxt
 );
 
 new ExternRefWorker($botConfig, $wiki, $list, $transformer);

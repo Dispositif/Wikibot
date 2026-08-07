@@ -66,6 +66,7 @@ class ExternRefTransformer implements ExternRefTransformerInterface
     private readonly ExternHttpErrorLogic $externHttpErrorLogic;
     private readonly CheckURL $urlChecker;
     private readonly DeadLinkTransformer $deadLinkTransformer;
+    private readonly ?RobotsTxtChecker $robotsTxtChecker;
 
     /**
      * @param DeadlinkArchiverInterface[] $deadlinkArchivers
@@ -83,12 +84,19 @@ class ExternRefTransformer implements ExternRefTransformerInterface
         // enable this by default and expose a --no-direct-retry opt-out; null here just
         // means "no client was wired up", not "feature disabled" per se.
         private readonly ?HttpClientInterface $directRetryClient = null,
+        // robots.txt observance : pure downside-reduction (skips URLs the site itself
+        // disallows), on by default. Workers expose a --no-robots-check opt-out (e.g.
+        // for debugging a specific URL). See audits/synthese-anti-bot-crawling-tor-2026-08.md
+        private readonly bool $respectRobotsTxt = true,
     )
     {
         $this->importConfigAndData();
         $this->deadLinkTransformer = new DeadLinkTransformer($deadlinkArchivers, $domainParser, null, $log);
         $this->externHttpErrorLogic = new ExternHttpErrorLogic($this->deadLinkTransformer, $log, $this->linkCheckRepository);
         $this->urlChecker = new CheckURL($domainParser, $log);
+        $this->robotsTxtChecker = $this->respectRobotsTxt
+            ? new RobotsTxtChecker($this->httpClient, explode('/', (string)getenv('USER_AGENT'))[0] ?: '*', $log)
+            : null;
     }
 
     /**
@@ -126,6 +134,12 @@ class ExternRefTransformer implements ExternRefTransformerInterface
         }
 
         $url = WikiTextUtil::normalizeUrlForTemplate($url);
+
+        if ($this->robotsTxtChecker !== null && !$this->robotsTxtChecker->isAllowed($url)) {
+            $this->log->debug('Disallowed by robots.txt : ' . $url, ['stats' => 'externref.skip.robotsTxt']);
+            return $url;
+        }
+
         sleep(self::HTTP_REQUEST_LOOP_DELAY);
         $fetch = $this->fetchWithOptionalDirectRetry($url);
         if (!$fetch->isSuccess()) {
@@ -266,10 +280,11 @@ class ExternRefTransformer implements ExternRefTransformerInterface
     }
 
     /**
-     * Cheap pre-check, deliberately not the full InterstitialPageValidator pass done
-     * later in process() : title-based detection needs the parsed pageData that only
-     * exists after this fetch is chosen, so it's skipped here (pageData: []). Header
-     * (cf-mitigated) and body-marker detection need no parsing and are checked as-is.
+     * Cheap pre-check, deliberately not the full pipeline pass done later in process() :
+     * no ExternPage/TagParser instantiation, just a raw <title> regex (same pattern as
+     * ExternPage::parseHtmlTitle(), duplicated here to stay a plain one-off check) plus
+     * whatever InterstitialPageValidator can do without further parsing (header,
+     * body markers).
      */
     private function looksBlocked(FetchResult $fetch): bool
     {
@@ -281,9 +296,19 @@ class ExternRefTransformer implements ExternRefTransformerInterface
             return false;
         }
 
-        $precheck = new InterstitialPageValidator([], $fetch->requestedUrl, $fetch->body, $fetch->cfMitigated, $this->log);
+        $pageData = ['meta' => ['html-title' => $this->extractRawTitle($fetch->body)]];
+        $precheck = new InterstitialPageValidator($pageData, $fetch->requestedUrl, $fetch->body, $fetch->cfMitigated, $this->log);
 
         return $precheck->check() === LinkVerdict::KeepUrlAsIs;
+    }
+
+    private function extractRawTitle(?string $html): ?string
+    {
+        if ($html !== null && preg_match('#<title>([^<]+)</title>#i', $html, $matches)) {
+            return trim(strip_tags($matches[1]));
+        }
+
+        return null;
     }
 
     // stay

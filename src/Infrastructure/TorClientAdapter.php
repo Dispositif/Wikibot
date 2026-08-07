@@ -26,8 +26,13 @@ use Psr\Http\Message\UriInterface;
  */
 class TorClientAdapter extends GuzzleClientAdapter implements HttpClientInterface
 {
-    final public const FAKE_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.7922.76 Safari/537.36";
     protected const API_GET_IP = 'https://api64.ipify.org';
+
+    // Fallback only, used if FAKE_USER_AGENT is unset (e.g. some test envs) : normally
+    // getenv('FAKE_USER_AGENT') wins, see getIp(). Can't be a class const : constant
+    // expressions can't call getenv(), so this is deliberately just a last resort, not
+    // the source of truth — keeping it in sync with .env is not required.
+    private const FALLBACK_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.7922.76 Safari/537.36";
 
     // Lowered from 5: each hop is a fresh getRecursive() call at the full per-request
     // timeout (see fetch() below), so a slow redirect chain multiplies wall-clock time
@@ -85,7 +90,7 @@ class TorClientAdapter extends GuzzleClientAdapter implements HttpClientInterfac
         $response = $this->client->get(self::API_GET_IP, [
             'timeout' => self::GET_IP_TIMEOUT,
             'headers' => [
-                'User-Agent' => self::FAKE_USER_AGENT,
+                'User-Agent' => getenv('FAKE_USER_AGENT') ?: self::FALLBACK_USER_AGENT,
             ],
             'verify' => false, // CURLOPT_SSL_VERIFYHOST
             'http_errors' => false, // no Exception on 4xx 5xx

@@ -30,15 +30,17 @@ use App\Infrastructure\WikiwixAdapter;
 
 include __DIR__.'/../myBootstrap.php';
 
-// --page="Skateboard" --stats=redis --stats=sqlite --debug --verbose --dry-run --no-direct-retry
-echo "OPTIONS: --debug --verbose --stats=redis --stats=sqlite --page=\"Skateboard\" --offset=1000 --nofilter --dry-run --no-db --no-direct-retry \n";
-$options = getopt('', ['page::', 'debug', 'verbose', 'stats::', 'offset::', 'dry-run', 'no-direct-retry']);
+// --page="Skateboard" --stats=redis --stats=sqlite --debug --verbose --dry-run --no-direct-retry --no-robots-check
+echo "OPTIONS: --debug --verbose --stats=redis --stats=sqlite --page=\"Skateboard\" --offset=1000 --nofilter --dry-run --no-db --no-direct-retry --no-robots-check \n";
+$options = getopt('', ['page::', 'debug', 'verbose', 'stats::', 'offset::', 'dry-run', 'no-direct-retry', 'no-robots-check']);
 $dryRun = isset($options['dry-run']);
 // 2nd pass without Tor when the Tor fetch looks blocked (403/429/503, cf-mitigated,
-// interstitial body markers) — on by default, self-identifies honestly (not a fake
-// browser UA) on that direct pass. --no-direct-retry opts back out entirely.
+// interstitial title/body markers) — on by default, self-identifies honestly (not a
+// fake browser UA) on that direct pass. --no-direct-retry opts back out entirely.
 // See audits/synthese-anti-bot-crawling-tor-2026-08.md
 $directRetryEnabled = !isset($options['no-direct-retry']);
+// robots.txt observance — on by default, --no-robots-check opts out (e.g. debugging one URL)
+$respectRobotsTxt = !isset($options['no-robots-check']);
 
 /** @noinspection PhpUnhandledExceptionInspection */
 $wiki = ServiceFactory::getMediawikiFactory();
@@ -141,7 +143,8 @@ try {
         $logger,
         [$internetArchive, $wikiwix],
         ServiceFactory::getExternLinkCheckRepository($argv),
-        $directRetryEnabled ? $httpClient : null
+        $directRetryEnabled ? $httpClient : null,
+        $respectRobotsTxt
     );
 
     new ExternRefWorker($botConfig, $wiki, $list, $transformer, $dryRun);
