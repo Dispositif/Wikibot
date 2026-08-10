@@ -47,7 +47,12 @@ class GoogleApiQuotaTest extends TestCase
         );
 
         $autoload = var_export(__DIR__ . '/../../../vendor/autoload.php', true);
-        $code = "require {$autoload}; (new App\\Infrastructure\\GoogleApiQuota())->increment();";
+        // Same error_reporting as myBootstrap.php : without it, PHP 8.5's stricter
+        // implicit-nullable-param deprecations (Guzzle Promise, voku/utf8...) leak onto
+        // this subprocess's stderr and fail the "no error output" assertion below —
+        // unrelated to the flock() logic this test actually exercises.
+        $code = "error_reporting(E_ALL & ~E_DEPRECATED); require {$autoload}; "
+            . "(new App\\Infrastructure\\GoogleApiQuota())->increment();";
 
         $processCount = 8;
         $running = [];
