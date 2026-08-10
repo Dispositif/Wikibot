@@ -98,6 +98,22 @@ class MediawikiRecentChangeSourceTest extends TestCase
         $this::assertSame(UserKind::Ip, $events[0]->userKind);
     }
 
+    public function testStreamMapsTemporaryAccountUsernameToTempUserKindEvenWithoutAnonFlag()
+    {
+        // No "anon" flag on this row — confirmed live : the API doesn't mark temp
+        // accounts as anon, classification has to go by username shape instead.
+        $api = $this->createMock(MediawikiApi::class);
+        $api->method('getRequest')->willReturn([
+            'query' => ['recentchanges' => [
+                ['revid' => 1, 'title' => 'X', 'ns' => 0, 'user' => '~2026-42871-93', 'timestamp' => '2026-08-10T10:00:00Z'],
+            ]],
+        ]);
+
+        $events = iterator_to_array($this->source($api)->stream(new RecentChangeCursor(new DateTimeImmutable())));
+
+        $this::assertSame(UserKind::Temp, $events[0]->userKind);
+    }
+
     public function testStreamMapsNoFlagsToRegisteredUserKind()
     {
         $api = $this->createMock(MediawikiApi::class);

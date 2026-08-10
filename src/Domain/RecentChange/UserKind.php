@@ -10,15 +10,38 @@ declare(strict_types=1);
 namespace App\Domain\RecentChange;
 
 /**
- * Only what the ref-worthy-candidate matcher needs : distinguishing bot edits
- * from human ones. No Temp case : MediaWiki's temporary-account flag/format wasn't
- * confirmed reliable enough to classify, and the contributor-analysis feature that
- * would have needed it was dropped (2026-08 discussion). Add it only once a matcher
- * actually needs it, and after verifying the real API shape against live data.
+ * MediaWiki's own rcprop=flags "anon" marker does NOT identify temporary accounts —
+ * confirmed on live data (~2026-42871-93 came back as plain "registered"). Temp
+ * accounts are only identifiable by their username shape, so Temp is detected by
+ * pattern rather than by API flag — see fromUsername().
  */
 enum UserKind: string
 {
     case Registered = 'registered';
     case Ip = 'ip';
     case Bot = 'bot';
+    case Temp = 'temp';
+
+    /**
+     * Temporary-account username : "~" + 4-digit creation year + one or more groups of
+     * up to 5 digits separated by hyphens. Active on frwiki since 2025-06-24, unrenamable
+     * by design. https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Compte_temporaire
+     * Examples (from that page): ~2024-0000, ~2025-00000-000, ~2025-00000-00000-0.
+     */
+    private const TEMP_USERNAME_PATTERN = '/^~\d{4}(-\d{1,5})+$/';
+
+    public static function fromUsername(string $username, bool $isAnon, bool $isBot): self
+    {
+        if ($isBot) {
+            return self::Bot;
+        }
+        if (preg_match(self::TEMP_USERNAME_PATTERN, $username) === 1) {
+            return self::Temp;
+        }
+        if ($isAnon) {
+            return self::Ip;
+        }
+
+        return self::Registered;
+    }
 }

@@ -23,11 +23,9 @@ use Mediawiki\Api\SimpleRequest;
  * resumed cursor walks forward instead of backward, rctype=edit|new to exclude log
  * entries (moves, protections...) which aren't edits.
  *
- * ASSUMPTION TO VERIFY during the Lot 3 dry-run : rcprop=flags is assumed to add
- * boolean-presence keys ("bot", "anon"...) directly on each row, per MediaWiki API docs.
- * Not exercised against live data yet — if wrong, userKind mapping below silently
- * misclassifies everything as Registered rather than erroring, so check byUserKind
- * counts from the dry-run script against known bot activity before trusting them.
+ * rcprop=flags adds boolean-presence keys ("bot", "anon"...) directly on each row —
+ * confirmed against live data. "anon" does NOT cover temporary accounts (see
+ * UserKind::fromUsername) : that classification is by username pattern instead.
  */
 class MediawikiRecentChangeSource implements RecentChangeSourceInterface
 {
@@ -73,6 +71,7 @@ class MediawikiRecentChangeSource implements RecentChangeSourceInterface
 
     private function toEvent(array $row): RecentChangeEvent
     {
+        $user = (string)($row['user'] ?? '');
         $isBot = array_key_exists('bot', $row);
         $isAnon = array_key_exists('anon', $row);
 
@@ -85,8 +84,8 @@ class MediawikiRecentChangeSource implements RecentChangeSourceInterface
             oldRevid: isset($row['old_revid']) ? (int)$row['old_revid'] : null,
             page: (string)($row['title'] ?? ''),
             ns: (int)($row['ns'] ?? 0),
-            user: (string)($row['user'] ?? ''),
-            userKind: $isBot ? UserKind::Bot : ($isAnon ? UserKind::Ip : UserKind::Registered),
+            user: $user,
+            userKind: UserKind::fromUsername($user, $isAnon, $isBot),
             timestamp: new DateTimeImmutable((string)($row['timestamp'] ?? 'now')),
             sizeDiff: $sizeDiff,
             comment: $row['comment'] ?? null,
