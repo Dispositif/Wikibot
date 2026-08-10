@@ -36,6 +36,8 @@ class RecentChangeWorker
     public function __construct(
         private readonly MediawikiApi $api,
         private readonly LoggerInterface $logger = new NullLogger(),
+
+        private readonly string $taskName = self::TASK_NAME,
         // 2nd pass without Tor when the Tor fetch looks blocked — on by default, see
         // audits/synthese-anti-bot-crawling-tor-2026-08.md
         private readonly bool $directRetryEnabled = true,
@@ -101,7 +103,7 @@ class RecentChangeWorker
     {
         $wiki = ServiceFactory::getMediawikiFactory();
         $botConfig = new WikiBotConfig($wiki, $this->logger);
-        $botConfig->setTaskName(self::TASK_NAME);
+        $botConfig->setTaskName($this->taskName);
 
         // refactored not tested :
         $httpClient = ServiceFactory::getHttpClient();
