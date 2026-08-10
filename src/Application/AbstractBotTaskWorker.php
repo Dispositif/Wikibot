@@ -135,15 +135,16 @@ abstract class AbstractBotTaskWorker
     }
 
     /**
+     * @return iterable<string>
      * @throws ConfigException
      */
-    protected function getTitles(): array
+    protected function getTitles(): iterable
     {
         if ($this->pageListGenerator === null) {
             throw new ConfigException('Empty PageListGenerator');
         }
 
-        return $this->pageListGenerator->getPageTitles();
+        return $this->pageListGenerator->stream();
     }
 
     protected function titleProcess(string $title): void

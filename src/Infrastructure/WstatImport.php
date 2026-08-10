@@ -134,4 +134,9 @@ class WstatImport implements PageListInterface, PageListForAppInterface
         // TODO: Implement getPageTitles() method.
         return [];
     }
+
+    public function stream(): iterable
+    {
+        yield from $this->getPageTitles();
+    }
 }

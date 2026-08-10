@@ -9,10 +9,16 @@ declare(strict_types=1);
 
 namespace App\Domain\InfrastructurePorts;
 
-/**
- * Todo generator type ? adapter infra ?
- */
 interface PageListInterface
 {
     public function getPageTitles(): array;
+
+    /**
+     * Same titles as getPageTitles(), but without materializing them all in memory first
+     * — implementations backed by a paginated source (search API...) should yield page by
+     * page instead of merging everything upfront.
+     *
+     * @return iterable<string>
+     */
+    public function stream(): iterable;
 }

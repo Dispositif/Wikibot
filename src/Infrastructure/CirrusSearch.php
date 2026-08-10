@@ -79,13 +79,49 @@ class CirrusSearch implements PageListInterface, PageListForAppInterface
             $this->saveOffsetInFile($continueOffset);
         }
 
+        return $this->extractTitles($arrayResp);
+    }
+
+    /**
+     * Same results as getPageTitles(), but loops internally across up to $maxPages result
+     * pages (500 titles each) and yields as it goes, instead of the caller instantiating
+     * several CirrusSearch with manual "sroffset" and array_merge()-ing the results
+     * (see git history of lastExternRefProcess.php).
+     *
+     * Independent of the file-based OPTION_CONTINUE mechanism (that one persists an
+     * offset across separate process runs) — don't combine the two.
+     *
+     * @return iterable<string>
+     * @throws ConfigException
+     */
+    public function stream(int $maxPages = 10, int $sleepBetweenPages = 0): iterable
+    {
+        $pages = 0;
+        while (true) {
+            $arrayResp = $this->httpRequest();
+            yield from $this->extractTitles($arrayResp);
+
+            $pages++;
+            $nextOffset = $arrayResp['continue']['sroffset'] ?? null;
+            if ($nextOffset === null || $pages >= $maxPages) {
+                return;
+            }
+            $this->params['sroffset'] = (int)$nextOffset;
+
+            if ($sleepBetweenPages > 0) {
+                sleep($sleepBetweenPages);
+            }
+        }
+    }
+
+    private function extractTitles(array $arrayResp): array
+    {
         if (!isset($arrayResp['query']) || empty($arrayResp['query']['search'])) {
             return [];
         }
-        $results = $arrayResp['query']['search'];
 
         $titles = [];
-        foreach ($results as $res) {
+        foreach ($arrayResp['query']['search'] as $res) {
             if (!empty($res['title'])) {
                 $titles[] = trim((string)$res['title']); // trim utile ?
             }

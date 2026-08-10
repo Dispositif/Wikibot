@@ -27,19 +27,19 @@ trait WorkerAnalyzedTitlesTrait
             $this->log->critical("Can't parse ARTICLE_ANALYZED_FILENAME : " . $e->getMessage());
             $analyzed = [];
         }
-        $this->pastAnalyzed = ($analyzed !== false) ? $analyzed : [];
+        $this->pastAnalyzed = ($analyzed !== false) ? array_flip($analyzed) : [];
     }
 
     protected function memorizeAndSaveAnalyzedTitle(string $title): void
     {
         if (!$this->checkAlreadyAnalyzed($title)) {
-            $this->pastAnalyzed[] = $title; // skip doublon title
+            $this->pastAnalyzed[$title] = true; // skip doublon title
             @file_put_contents(static::ARTICLE_ANALYZED_FILENAME, $title . PHP_EOL, FILE_APPEND);
         }
     }
 
     protected function checkAlreadyAnalyzed(string $title): bool
     {
-        return is_array($this->pastAnalyzed) && in_array($title, $this->pastAnalyzed);
+        return is_array($this->pastAnalyzed) && isset($this->pastAnalyzed[$title]);
     }
 }

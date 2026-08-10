@@ -36,6 +36,11 @@ class PageList implements PageListInterface, PageListForAppInterface
         return $this->titles;
     }
 
+    public function stream(): iterable
+    {
+        yield from $this->titles;
+    }
+
     public function count():int
     {
         return is_countable($this->titles) ? count($this->titles) : 0;

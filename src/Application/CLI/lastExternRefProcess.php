@@ -41,53 +41,28 @@ $botConfig->checkStopOnTalkpageOrException();
 
 // LAST EDIT
 // TODO : \<ref[^\>]*\> et liste à puces * http://...
-$list = new CirrusSearch(
+// 3 pages of 500 results, streamed instead of 3 CirrusSearch instances + array_merge()
+// (continue: false because last_edit_desc sorting)
+$cirrusSearch = new CirrusSearch(
     [
         'srsearch' => '"http" insource:/\<ref[^\>]*\> ?https?\:\/\/[^\<\ ]+ *\<\/ref/',
         'srlimit' => '500',
         'srqiprofile' => CirrusSearch::SRQIPROFILE_DEFAULT,
         'srsort' => CirrusSearch::SRSORT_LAST_EDIT_DESC,
     ],
-    // continue: false because last_edit_desc sorting
     [CirrusSearch::OPTION_REVERSE => true, CirrusSearch::OPTION_CONTINUE => false]
 );
-$titles = $list->getPageTitles();
-
-// sroffset 500
-sleep(3);
-$list = new CirrusSearch(
-    [
-        'srsearch' => '"http" insource:/\<ref[^\>]*\> ?https?\:\/\/[^\<\ ]+ *\<\/ref/',
-        'srlimit' => '500',
-        'sroffset' => '500',
-        'srqiprofile' => CirrusSearch::SRQIPROFILE_DEFAULT,
-        'srsort' => CirrusSearch::SRSORT_LAST_EDIT_DESC,
-    ],
-    // continue: false because last_edit_desc sorting
-    [CirrusSearch::OPTION_REVERSE => true, CirrusSearch::OPTION_CONTINUE => false]
-);
-$titles = array_merge($titles, $list->getPageTitles());
-
-// sroffset 1000
-sleep(3);
-$list = new CirrusSearch(
-    [
-        'srsearch' => '"http" insource:/\<ref[^\>]*\> ?https?\:\/\/[^\<\ ]+ *\<\/ref/',
-        'srlimit' => '500',
-        'sroffset' => '1000',
-        'srqiprofile' => CirrusSearch::SRQIPROFILE_DEFAULT,
-        'srsort' => CirrusSearch::SRSORT_LAST_EDIT_DESC,
-    ],
-    // continue: false because last_edit_desc sorting
-    [CirrusSearch::OPTION_REVERSE => true, CirrusSearch::OPTION_CONTINUE => false]
-);
-$titles = array_merge($titles, $list->getPageTitles());
 
 // filter titles already in edited.txt
-unset($list);
-//echo count($titles)." titles\n";
-$edited = file(__DIR__ . '/../resources/article_externRef_edited.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-$filtered = array_diff($titles, $edited);
+$edited = array_flip(
+    file(__DIR__ . '/../resources/article_externRef_edited.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES)
+);
+$filtered = [];
+foreach ($cirrusSearch->stream(maxPages: 3, sleepBetweenPages: 3) as $title) {
+    if (!isset($edited[$title])) {
+        $filtered[] = $title;
+    }
+}
 $list = new PageList($filtered);
 echo ">" . $list->count() . " dans liste\n";
 
