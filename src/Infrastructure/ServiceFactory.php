@@ -44,7 +44,7 @@ class ServiceFactory
      * of ~28k already-handled articles. See database_schema.sql (bot_page_analyzed,
      * bot_edit) and BotEditJournalInterface.
      */
-    public const BOT_EDIT_JOURNAL_ENABLED = false;
+    public const BOT_EDIT_JOURNAL_ENABLED = true;
 
     private static ?AMQPStreamConnection $AMQPConnection = null;
 
