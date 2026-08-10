@@ -186,14 +186,14 @@ services:
   # MySQL for ouvrage-complete/ouvrage-edit to pick up. One-shot batch
   # Takes an optional page title argument for a manual one-off
   # import instead of the CirrusSearch batch, e.g.:
-  #   docker compose run --rm wiki-scan php src/Application/CLI/wikiScanProcess.php "Some Title"
-  wiki-scan:
+  #   docker compose run --rm ouvrage-scan php src/Application/CLI/ouvrageScanProcess.php "Some Title"
+  ouvrage-scan:
     build:
       context: .
       dockerfile: docker/php/Dockerfile
     restart: "no"
     profiles: ["workers"]
-    command: ["php", "src/Application/CLI/wikiScanProcess.php"]
+    command: ["php", "src/Application/CLI/ouvrageScanProcess.php"]
     env_file:
       - .env.zizibot
     depends_on:

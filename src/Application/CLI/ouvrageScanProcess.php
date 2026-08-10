@@ -26,7 +26,7 @@ include __DIR__.'/../myBootstrap.php';
 
 $wiki = ServiceFactory::getMediawikiFactory();
 
-// import manuel : > php wikiScanProcess.php "Bla"
+// import manuel : > php ouvrageScanProcess.php "Bla"
 if (!empty($argv[1])) {
     echo "Ajout manuel...\n";
     $list = new PageList([trim($argv[1])]);
