@@ -135,7 +135,7 @@ class OuvrageCompleteWorker
     }
 
     /**
-     * Get array (title+raw strings) to complete from AMQP queue, SQL Select or file reading.
+     * Get array (title+raw strings) to complete from SQL select.
      */
     protected function getNewRow2CompleteOrException(): ?PageOuvrageDTO
     {

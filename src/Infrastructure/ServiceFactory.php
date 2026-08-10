@@ -19,8 +19,6 @@ use Mediawiki\Api\MediawikiApi;
 use Mediawiki\Api\MediawikiFactory;
 use Mediawiki\Api\UsageException;
 use Mediawiki\DataModel\EditInfo;
-use PhpAmqpLib\Channel\AMQPChannel;
-use PhpAmqpLib\Connection\AMQPStreamConnection;
 use Simplon\Mysql\Mysql;
 use Simplon\Mysql\PDOConnector;
 
@@ -46,8 +44,6 @@ class ServiceFactory
      */
     public const BOT_EDIT_JOURNAL_ENABLED = true;
 
-    private static ?AMQPStreamConnection $AMQPConnection = null;
-
     private static ?MediawikiFactory $wikiApi = null;
 
     private static ?Mysql $mysqlConnection = null;
@@ -57,50 +53,6 @@ class ServiceFactory
     {
     }
 
-    /**
-     * AMQP queue (actual RabbitMQ)
-     * todo $param
-     * todo $channel->close(); $AMQPConnection->close();.
-     *
-     *
-     */
-    public static function queueChannel(string $queueName): AMQPChannel
-    {
-        if (!isset(self::$AMQPConnection)) {
-            self::$AMQPConnection = new AMQPStreamConnection(
-                getenv('AMQP_HOST'),
-                getenv('AMQP_PORT'),
-                getenv('AMQP_USER'),
-                getenv('AMQP_PASSWORD'),
-                getenv('AMQP_VHOST')
-            );
-        }
-
-        $channel = self::$AMQPConnection->channel();
-
-        $channel->queue_declare(
-            $queueName,
-            false,
-            true, // won't be lost if MQ server restarts
-            false,
-            false
-        );
-
-        return $channel;
-    }
-
-    // --Commented out by Inspection START (21/04/2020 02:45):
-    //    /**
-    //     * @throws Exception
-    //     */
-    //    public static function closeAMQPconnection()
-    //    {
-    //        if (isset(self::$AMQPConnection)) {
-    //            self::$AMQPConnection->close();
-    //            self::$AMQPConnection = null;
-    //        }
-    //    }
-    // --Commented out by Inspection STOP (21/04/2020 02:45)
     /**
      * @throws UsageException
      */
