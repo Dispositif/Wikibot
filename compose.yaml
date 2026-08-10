@@ -219,5 +219,22 @@ services:
         condition: service_healthy
     mem_limit: 128m
 
+  # Lot 3 : dry-run RC scanner (Application/CLI/recentChangeScanProcess.php) — no
+  # signal detection yet, just exercises rc_cursor and reports throughput/memory.
+  # Single-shot, run repeatedly (no cron/flock wired up yet): make run service=rc-scan
+  rc-scan:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    restart: "no"
+    profiles: ["workers"]
+    command: ["php", "src/Application/CLI/recentChangeScanProcess.php"]
+    env_file:
+      - .env.zizibot
+    depends_on:
+      mysql:
+        condition: service_healthy
+    mem_limit: 128m
+
 volumes:
   mysql-data:

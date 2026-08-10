@@ -114,3 +114,45 @@ CREATE TABLE `bot_edit`
     KEY `page` (`page`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
+
+-- RC scanning socle (RecentChangeSourceInterface, RecentChangeCursorRepositoryInterface).
+-- Persisted resume position for the dry-run scanner, one row per source
+-- ("mediawiki-rc" today, "eventstreams" possible later — see MediawikiRecentChangeSource).
+CREATE TABLE `rc_cursor`
+(
+    `source`         varchar(50) NOT NULL,
+    `last_timestamp` datetime    NOT NULL,
+    `updated_at`     datetime    NOT NULL,
+    PRIMARY KEY (`source`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+
+-- Journal of edits retained by a matcher — schema ready ahead of need, not written to
+-- yet : no matcher exists yet to produce a signal (Lot 4, "ref-worthy candidate" first).
+-- UNIQUE(revid, signal) is what makes the whole scan idempotent : the dry-run cursor's
+-- few-seconds overlap (RecentChangeCursor) can re-see an event across two runs without
+-- risk, and a crash-and-resume can't double-count either.
+CREATE TABLE `rc_signal`
+(
+    `id`           bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+    `revid`        bigint(20) unsigned NOT NULL,
+    `old_revid`    bigint(20) unsigned          DEFAULT NULL,
+    `page`         varchar(255)         NOT NULL,
+    `ns`           smallint(6)          NOT NULL DEFAULT 0,
+    `user`         varchar(255)         NOT NULL,
+    `user_kind`    varchar(20)          NOT NULL,
+    `rc_timestamp` datetime             NOT NULL,
+    `size_diff`    int(11)                       DEFAULT NULL,
+    `comment`      varchar(500)                  DEFAULT NULL,
+    `tags`         varchar(255)                  DEFAULT NULL,
+    `signal`       varchar(40)          NOT NULL,
+    `weight`       smallint(6)          NOT NULL DEFAULT 1,
+    `state`        varchar(20)          NOT NULL DEFAULT 'new',
+    `detected_at`  datetime             NOT NULL,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uniq_rev_signal` (`revid`, `signal`),
+    KEY `idx_queue` (`signal`, `state`, `rc_timestamp`),
+    KEY `idx_user_window` (`user`, `rc_timestamp`),
+    KEY `page` (`page`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
