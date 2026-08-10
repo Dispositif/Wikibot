@@ -83,6 +83,10 @@ run: src/Infrastructure/resources/google_quota.json src/Infrastructure/resources
 db-migrate:
 	docker compose run --rm db-migrate
 
+.PHONY: rc-scan # 	RC scan: advances rc_cursor, writes rc_signal
+rc-scan:
+	docker compose run --rm rc-scan
+
 .PHONY: restart-mysql # 	Restart the MySQL container only
 restart-mysql:
 	docker compose restart mysql
