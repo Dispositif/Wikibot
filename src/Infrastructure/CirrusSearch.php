@@ -58,7 +58,8 @@ class CirrusSearch implements PageListInterface, PageListForAppInterface
     /**
      * $options : "continue" => true for continue search
      */
-    public function __construct(protected readonly array $params, protected ?array $options = [])
+    // Not readonly : stream() mutates params['sroffset'] between pages to paginate.
+    public function __construct(protected array $params, protected ?array $options = [])
     {
         $this->client = ServiceFactory::getHttpClient();
     }
@@ -99,7 +100,12 @@ class CirrusSearch implements PageListInterface, PageListForAppInterface
         $pages = 0;
         while (true) {
             $arrayResp = $this->httpRequest();
-            yield from $this->extractTitles($arrayResp);
+            // "yield from" per page (each restarting at key 0) would let iterator_to_array()
+            // silently collide/overwrite across pages ; yielding one by one instead gives
+            // the generator its own auto-incrementing keys across the whole stream.
+            foreach ($this->extractTitles($arrayResp) as $title) {
+                yield $title;
+            }
 
             $pages++;
             $nextOffset = $arrayResp['continue']['sroffset'] ?? null;
