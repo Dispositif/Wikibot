@@ -29,6 +29,7 @@ class ExternRefWorker extends AbstractRefBotWorker
     public const MINUTES_DELAY_AFTER_LAST_HUMAN_EDIT = 10; // minutes
     public const CHECK_EDIT_CONFLICT = true;
     public const ARTICLE_ANALYZED_FILENAME = __DIR__ . '/../resources/article_externRef_edited.txt';
+    public const JOURNAL_TASK = 'extern-ref';
     public const SKIP_ADQ = false;
     public const SKIP_LASTEDIT_BY_BOT = false;
     public const CITATION_NUMBER_ON_FIRE = 15;

@@ -201,5 +201,23 @@ services:
         condition: service_healthy
     mem_limit: 256m
 
+  # Applies src/Infrastructure/resources/migrations/*.sql that aren't in
+  # schema_migrations yet (Application/CLI/dbMigrate.php) — needed because
+  # database_schema.sql itself only runs once, against an empty MySQL data volume.
+  # Run after every `git pull` that adds a migration file: make run service=db-migrate
+  db-migrate:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    restart: "no"
+    profiles: ["workers"]
+    command: ["php", "src/Application/CLI/dbMigrate.php"]
+    env_file:
+      - .env
+    depends_on:
+      mysql:
+        condition: service_healthy
+    mem_limit: 128m
+
 volumes:
   mysql-data:

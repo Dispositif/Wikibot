@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace App\Application\Notification;
 
 
+use App\Application\ExternLink\ExternRefWorker;
 use App\Application\GoogleBooksWorker;
 use App\Application\InfrastructurePorts\PageListForAppInterface;
 use App\Application\OuvrageScan\ScanWiki2DB;
@@ -26,16 +27,16 @@ class CodexNotificationWorker extends NotificationWorker
     public const PROCESS_TASKNAME          = '🔔 Amélioration de références : URL ⇒ ';
 
     /**
-     * todo Refac that stupid idea :)
-     * Delete article title in the log text file.
+     * todo Refac that stupid idea :) — forces a re-pass by un-marking the title as
+     * analyzed for the extern-ref task (ARTICLE_ANALYZED_FILENAME is that task's
+     * journal file), even though processExternLinks() below actually runs
+     * GoogleBooksWorker, not ExternRefWorker. Pre-existing mismatch, preserved as-is —
+     * not this migration's call to fix.
      */
     private function deleteEditedArticleFile(string $title): void
     {
-        $text = file_get_contents(self::ARTICLE_ANALYZED_FILENAME);
-        $newText = str_replace($title."\n", '', $text);
-        if (!empty($text) && $text !== $newText) {
-            @file_put_contents(self::ARTICLE_ANALYZED_FILENAME, $newText);
-        }
+        ServiceFactory::getBotEditJournal(self::ARTICLE_ANALYZED_FILENAME)
+            ->forgetAnalyzed($title, ExternRefWorker::JOURNAL_TASK);
     }
 
     /**

@@ -79,6 +79,10 @@ src/Infrastructure/resources/google_quota.lock:
 run: src/Infrastructure/resources/google_quota.json src/Infrastructure/resources/google_quota.lock
 	docker compose run --rm $(service)
 
+.PHONY: db-migrate # 	Apply pending schema migrations (src/Infrastructure/resources/migrations/*.sql)
+db-migrate:
+	docker compose run --rm db-migrate
+
 .PHONY: restart-mysql # 	Restart the MySQL container only
 restart-mysql:
 	docker compose restart mysql

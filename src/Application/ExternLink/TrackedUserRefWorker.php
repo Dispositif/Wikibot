@@ -24,10 +24,13 @@ use Mediawiki\Api\SimpleRequest;
 use Psr\Log\LoggerInterface;
 
 /**
+ * Fetches recent contributions of a known/trusted user (via list=recentchanges,
+ * rcuser=...) and feeds the extern-ref pipeline with their edited pages — not a
+ * general recent-changes scanner. Renamed from RecentChangeWorker (2026-08) to avoid
+ * confusion with the future generic RC-filtering module (App\*\RecentChange).
  * refactored 2023-10 not tested
- * https://www.mediawiki.org/wiki/API:RecentChanges
  */
-class RecentChangeWorker
+class TrackedUserRefWorker
 {
     protected const USER_RC_LIMIT = 100;
     protected const TASK_NAME = '🦊 Amélioration de références : URL ⇒ ';

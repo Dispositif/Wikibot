@@ -1,3 +1,18 @@
+-- Tracks which src/Infrastructure/resources/migrations/*.sql files have been applied
+-- (Application/CLI/dbMigrate.php). This file (database_schema.sql) is only ever
+-- executed once, against an empty MySQL data volume (docker-entrypoint-initdb.d) — it
+-- is NOT re-run when the schema changes on an already-initialized DB (any dev machine,
+-- matou once deployed). dbMigrate.php is what applies changes there; its migration
+-- files are idempotent (CREATE TABLE IF NOT EXISTS), so running it against a freshly
+-- initialized container (which already has everything from this file) is a no-op.
+CREATE TABLE `schema_migrations`
+(
+    `version`    varchar(100) NOT NULL,
+    `applied_at` datetime     NOT NULL,
+    PRIMARY KEY (`version`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+
 CREATE TABLE `page_ouvrages`
 (
     `id`            int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -67,5 +82,35 @@ CREATE TABLE `extern_link_check_page`
     KEY `page` (`page`),
     CONSTRAINT `fk_extern_link_check_page_check_id`
         FOREIGN KEY (`check_id`) REFERENCES `extern_link_check` (`id`) ON DELETE CASCADE
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+
+-- Bot's own analysis/edit journal (BotEditJournalInterface) : replaces the per-worker
+-- flat files (article_edited.txt, article_externRef_edited.txt, gooBot_edited.txt)
+-- read fully into memory and grown unbounded (~28k lines as of 2026-08).
+-- State : was (page, task) already analyzed, regardless of whether it led to an edit —
+-- the skip-reprocessing guard consulted on every title.
+CREATE TABLE `bot_page_analyzed`
+(
+    `page`        varchar(255) NOT NULL,
+    `task`        varchar(50)  NOT NULL,
+    `analyzed_at` datetime     NOT NULL,
+    PRIMARY KEY (`page`, `task`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+
+-- Journal (append-only) : one row per actual edit. Separate from bot_page_analyzed
+-- because a page can be genuinely edited several times, and this history is what a
+-- correction script selects against ("every page the extern-ref pipeline touched").
+CREATE TABLE `bot_edit`
+(
+    `id`        int(11) unsigned NOT NULL AUTO_INCREMENT,
+    `page`      varchar(255)     NOT NULL,
+    `task`      varchar(50)      NOT NULL,
+    `revid`     bigint unsigned           DEFAULT NULL,
+    `edited_at` datetime         NOT NULL,
+    PRIMARY KEY (`id`),
+    KEY `idx_task_date` (`task`, `edited_at`),
+    KEY `page` (`page`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;

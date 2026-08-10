@@ -23,6 +23,7 @@ class GoogleBooksWorker extends AbstractBotTaskWorker
     final public const SLEEP_AFTER_EDITION        = 60;
     final public const TASK_BOT_FLAG              = true;
     final public const ARTICLE_ANALYZED_FILENAME  = __DIR__.'/resources/gooBot_edited.txt';
+    final public const JOURNAL_TASK               = 'goo-extern';
     final public const SKIP_LASTEDIT_BY_BOT       = false;
     final public const SKIP_NOT_IN_MAIN_WIKISPACE = true;
     final public const SKIP_ADQ                   = false;

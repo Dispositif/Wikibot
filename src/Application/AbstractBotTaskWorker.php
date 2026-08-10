@@ -34,6 +34,9 @@ abstract class AbstractBotTaskWorker
     public const MINUTES_DELAY_AFTER_LAST_HUMAN_EDIT = 15;
     public const CHECK_EDIT_CONFLICT = true;
     public const ARTICLE_ANALYZED_FILENAME = __DIR__ . '/resources/article_edited.txt';
+    // Column value in bot_page_analyzed / bot_edit (BotEditJournalInterface) — every
+    // concrete worker overrides this.
+    public const JOURNAL_TASK = 'default';
     public const SKIP_LASTEDIT_BY_BOT = true;
     public const SKIP_NOT_IN_MAIN_WIKISPACE = true;
     public const SKIP_ADQ = false;
@@ -64,10 +67,6 @@ abstract class AbstractBotTaskWorker
      * @var LoggerInterface
      */
     protected $log;
-    /**
-     * @var array titles previously processed
-     */
-    protected $pastAnalyzed = [];
     /**
      * @var Summary
      */
@@ -188,7 +187,7 @@ abstract class AbstractBotTaskWorker
 
                 return;
             }
-            $this->doEdition($newText);
+            $this->doEdition($title, $newText);
         }
     }
 
@@ -215,7 +214,7 @@ abstract class AbstractBotTaskWorker
     /**
      * @throws Exception
      */
-    protected function doEdition(string $newText): void
+    protected function doEdition(string $title, string $newText): void
     {
         try {
             $result = $this->pageAction->editPage(
@@ -243,6 +242,9 @@ abstract class AbstractBotTaskWorker
         }
 
         $this->log->notice($result ? '>> EDIT OK' : '>>  NOCHANGE');
+        if ($result) {
+            $this->recordEditedTitle($title);
+        }
         $this->log->debug("Sleep " . static::SLEEP_AFTER_EDITION);
         sleep(static::SLEEP_AFTER_EDITION);
     }

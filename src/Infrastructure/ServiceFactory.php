@@ -11,6 +11,7 @@ namespace App\Infrastructure;
 
 use App\Application\InfrastructurePorts\HttpClientInterface;
 use App\Application\WikiPageAction;
+use App\Domain\InfrastructurePorts\BotEditJournalInterface;
 use App\Domain\InfrastructurePorts\ExternLinkCheckRepositoryInterface;
 use Exception;
 use Mediawiki\Api\ApiUser;
@@ -33,6 +34,17 @@ class ServiceFactory
      * some hosts (other VPS) never have DB access at all.
      */
     public const EXTERN_LINK_CHECK_ENABLED = true;
+
+    /**
+     * Opt-in on purpose, unlike EXTERN_LINK_CHECK_ENABLED : bot_page_analyzed is the
+     * skip-reprocessing guard (was this page already handled ?), not just advisory
+     * state. Flipping this to true before running the one-shot import of the existing
+     * article_edited.txt / article_externRef_edited.txt / gooBot_edited.txt makes every
+     * worker start believing no page was ever analyzed — mass re-processing/re-editing
+     * of ~28k already-handled articles. See database_schema.sql (bot_page_analyzed,
+     * bot_edit) and BotEditJournalInterface.
+     */
+    public const BOT_EDIT_JOURNAL_ENABLED = false;
 
     private static ?AMQPStreamConnection $AMQPConnection = null;
 
@@ -178,5 +190,21 @@ class ServiceFactory
         }
 
         return new ExternLinkCheckAdapter(self::getMysqlConnection());
+    }
+
+    /**
+     * @param string $analyzedFilePath Per-task file (e.g. ARTICLE_ANALYZED_FILENAME) —
+     * only consulted by the file fallback, when BOT_EDIT_JOURNAL_ENABLED is off.
+     */
+    public static function getBotEditJournal(string $analyzedFilePath): BotEditJournalInterface
+    {
+        if (!self::BOT_EDIT_JOURNAL_ENABLED) {
+            $editionsFilePath = preg_replace('/\.txt$/', '_editions.txt', $analyzedFilePath)
+                ?? ($analyzedFilePath . '_editions.txt');
+
+            return new FileBotEditJournal($analyzedFilePath, $editionsFilePath);
+        }
+
+        return new BotEditJournalAdapter(self::getMysqlConnection());
     }
 }
