@@ -1,7 +1,8 @@
 -- RC scanning socle (RecentChangeSourceInterface, RecentChangeCursorRepositoryInterface).
--- rc_signal is created here (schema ready) but not yet written to — no matcher exists
--- yet to produce signals, that's Lot 4. See database_schema.sql for the full comment
--- on each table's purpose. Idempotent (IF NOT EXISTS).
+-- rc_signal.signal_name is named that way (not "signal") because SIGNAL is a reserved
+-- MySQL keyword (SIGNAL SQLSTATE) — an unquoted "signal" column caused a real raw-SQL
+-- syntax error before this got caught. See database_schema.sql for the full comment on
+-- each table's purpose. Idempotent (IF NOT EXISTS).
 
 CREATE TABLE IF NOT EXISTS `rc_cursor`
 (
@@ -25,13 +26,13 @@ CREATE TABLE IF NOT EXISTS `rc_signal`
     `size_diff`    int(11)                       DEFAULT NULL,
     `comment`      varchar(500)                  DEFAULT NULL,
     `tags`         varchar(255)                  DEFAULT NULL,
-    `signal`       varchar(40)          NOT NULL,
+    `signal_name`  varchar(40)          NOT NULL,
     `weight`       smallint(6)          NOT NULL DEFAULT 1,
     `state`        varchar(20)          NOT NULL DEFAULT 'new',
     `detected_at`  datetime             NOT NULL,
     PRIMARY KEY (`id`),
-    UNIQUE KEY `uniq_rev_signal` (`revid`, `signal`),
-    KEY `idx_queue` (`signal`, `state`, `rc_timestamp`),
+    UNIQUE KEY `uniq_rev_signal` (`revid`, `signal_name`),
+    KEY `idx_queue` (`signal_name`, `state`, `rc_timestamp`),
     KEY `idx_user_window` (`user`, `rc_timestamp`),
     KEY `page` (`page`)
 ) ENGINE = InnoDB

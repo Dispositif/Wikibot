@@ -12,6 +12,7 @@ namespace App\Infrastructure\Tests;
 use App\Domain\RecentChange\RecentChangeEvent;
 use App\Domain\RecentChange\UserKind;
 use App\Infrastructure\RecentChange\RecentChangeSignalAdapter;
+use DateInterval;
 use DateTimeImmutable;
 use DateTimeZone;
 use PHPUnit\Framework\TestCase;
@@ -48,7 +49,7 @@ class RecentChangeSignalAdapterTest extends TestCase
                     $this::assertSame('2026-08-10 12:05:20', $data['rc_timestamp']);
                     $this::assertSame(42, $data['size_diff']);
                     $this::assertSame('visualeditor,mobile edit', $data['tags']);
-                    $this::assertSame('observed', $data['signal']);
+                    $this::assertSame('observed', $data['signal_name']);
                     $this::assertSame('new', $data['state']);
 
                     return true;
@@ -89,5 +90,41 @@ class RecentChangeSignalAdapterTest extends TestCase
             );
 
         (new RecentChangeSignalAdapter($db))->record($event, 'observed');
+    }
+
+    public function testPurgeOlderThanDeletesAndReturnsCount()
+    {
+        $db = $this->createMock(Mysql::class);
+        // "signal" is a reserved MySQL keyword (SIGNAL SQLSTATE) — a query built without
+        // backticks around it is a real SQL syntax error, not just a mock mismatch.
+        // Caught live, hence signal_name (not signal) as the column name : this
+        // assertion on the query text is what a fully-mocked test without it would
+        // have missed.
+        $db->expects($this->once())
+            ->method('fetchColumn')
+            ->with($this->stringContains('`signal_name` = :signal_name'))
+            ->willReturn('7');
+        $db->expects($this->once())
+            ->method('delete')
+            ->with(
+                'rc_signal',
+                $this->callback(fn(array $conds) => $conds['signal_name'] === 'observed'),
+                '`signal_name` = :signal_name AND `detected_at` < :threshold'
+            );
+
+        $purged = (new RecentChangeSignalAdapter($db))->purgeOlderThan('observed', new DateInterval('P3D'));
+
+        $this::assertSame(7, $purged);
+    }
+
+    public function testPurgeOlderThanSkipsDeleteWhenNothingToPurge()
+    {
+        $db = $this->createMock(Mysql::class);
+        $db->method('fetchColumn')->willReturn('0');
+        $db->expects($this->never())->method('delete');
+
+        $purged = (new RecentChangeSignalAdapter($db))->purgeOlderThan('observed', new DateInterval('P3D'));
+
+        $this::assertSame(0, $purged);
     }
 }

@@ -75,7 +75,7 @@ src/Infrastructure/resources/google_quota.lock:
 
 # To dry-run a worker instead, replaces the default rather than appending to it, e.g.:
 #   docker compose run --rm extern-ref php src/Application/CLI/externRefProcess.php --dry-run --page="Some Title"
-.PHONY: run # 	Run a one-shot worker for real: make run service=goo-extern|extern-ref|last-extern-ref|fix-typo|wiki-scan|ouvrage-complete|ouvrage-edit
+.PHONY: run # 	Run a one-shot worker for real: make run service=goo-extern|extern-ref|last-extern-ref|fix-typo|ouvrage-scan|ouvrage-complete|ouvrage-edit
 run: src/Infrastructure/resources/google_quota.json src/Infrastructure/resources/google_quota.lock
 	docker compose run --rm $(service)
 
@@ -86,6 +86,11 @@ db-migrate:
 .PHONY: rc-scan # 	RC scan: advances rc_cursor, writes rc_signal
 rc-scan:
 	docker compose run --rm rc-scan
+
+days ?= 0
+.PHONY: rc-clean # 	Purge rc_signal's 'observed' samples now: make rc-clean [days=N] (default 0 = all)
+rc-clean:
+	docker compose run --rm rc-scan php src/Application/CLI/purgeRcSignal.php --older-than-days=$(days)
 
 .PHONY: restart-mysql # 	Restart the MySQL container only
 restart-mysql:

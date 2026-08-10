@@ -11,6 +11,7 @@ namespace App\Infrastructure\RecentChange;
 
 use App\Domain\InfrastructurePorts\RecentChangeSignalRepositoryInterface;
 use App\Domain\RecentChange\RecentChangeEvent;
+use DateInterval;
 use DateTimeImmutable;
 use DateTimeZone;
 use Simplon\Mysql\Mysql;
@@ -42,12 +43,36 @@ class RecentChangeSignalAdapter implements RecentChangeSignalRepositoryInterface
                 'size_diff' => $event->sizeDiff,
                 'comment' => $event->comment !== null ? mb_substr($event->comment, 0, 500) : null,
                 'tags' => !empty($event->tags) ? mb_substr(implode(',', $event->tags), 0, 255) : null,
-                'signal' => $signal,
+                'signal_name' => $signal,
                 'weight' => $weight,
                 'state' => 'new',
                 'detected_at' => (new DateTimeImmutable('now', new DateTimeZone('UTC')))->format('Y-m-d H:i:s'),
             ],
-            true // insertIgnore : idempotent on UNIQUE(revid, signal)
+            true // insertIgnore : idempotent on UNIQUE(revid, signal_name)
         );
+    }
+
+    public function purgeOlderThan(string $signal, DateInterval $olderThan): int
+    {
+        $threshold = (new DateTimeImmutable('now', new DateTimeZone('UTC')))
+            ->sub($olderThan)
+            ->format('Y-m-d H:i:s');
+
+        $conds = ['signal_name' => $signal, 'threshold' => $threshold];
+
+        $count = (int)($this->db->fetchColumn(
+            'SELECT COUNT(*) FROM ' . self::TABLE . ' WHERE `signal_name` = :signal_name AND `detected_at` < :threshold',
+            $conds
+        ) ?? 0);
+
+        if ($count > 0) {
+            $this->db->delete(
+                self::TABLE,
+                $conds,
+                '`signal_name` = :signal_name AND `detected_at` < :threshold'
+            );
+        }
+
+        return $count;
     }
 }
