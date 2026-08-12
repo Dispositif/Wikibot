@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace App\Domain\ExternLink\Raw;
 
+use App\Domain\ExternLink\Raw\Hints\AuthorPrefixExtractor;
+use App\Domain\ExternLink\Raw\Hints\ConsulteLeExtractor;
 use App\Domain\ExternLink\Raw\Hints\HintExtractorInterface;
 use App\Domain\ExternLink\Raw\Hints\ItalicSiteAfterCommaExtractor;
 use App\Domain\ExternLink\Raw\Hints\SiteMentionExtractor;
@@ -24,14 +26,16 @@ use App\Domain\ExternLink\Raw\Hints\TrailingDateExtractor;
  * a corpus of ~33k real fragments mined via CirrusSearch (see
  * rawExternLinkCorpusScan.php / resources/corpus_raw_extern_link.txt) — the patterns
  * this class recognizes are the ~35% "clean" cases (label is the whole story), leading
- * {{lang}}/{{pdf}} templates, French guillemets around the title, and (via the Hints/
- * extractor chain, applied in order so each can consume what the previous one left) a
+ * {{lang}}/{{pdf}} templates (each mapped to a 'langue' hint -- {{fr}} included, see
+ * PREFIX_TEMPLATE_PATTERN), French guillemets around the title, an author/institution name
+ * right before the bracket ("Louis Laroque, [url ...]"), and — via the Hints/ extractor
+ * chain applied to $rest, in order so each can consume what the previous one left — a
  * trailing ", sur Site" mention (~7.6%), a leading ", ''Site''"/", [[Site]]" mention
- * (~33% of the corpus carries italic markup), and a trailing date -- plain, {{date|...}}
- * templated, or bare year (~50% of the corpus has a 4-digit year somewhere). Everything
- * else ("consulté le" / author prefixes / multi-citation refs...) is deliberately left
- * in $rest or $leadingText unparsed — see RawExternLinkParserTest for the documented
- * backlog (group "wip").
+ * (~33% of the corpus carries italic markup), a trailing date -- plain, {{date|...}}
+ * templated, or bare year (~50% of the corpus has a 4-digit year somewhere) -- and a
+ * "consulté le" access date (~9.6%, textual or "JJ/MM/AAAA"). Everything else (multi-
+ * citation refs, descriptive "sur le site officiel"...) is deliberately left unparsed —
+ * see RawExternLinkParserTest for the documented backlog (group "wip").
  *
  * Deliberately silent on {{lien web}} vs {{article}} vs {{lien brisé}} : that choice
  * depends on crawled page metadata (date, DOI, JSON-LD type) and domain config
@@ -44,28 +48,42 @@ class RawExternLinkParser
 {
     /**
      * Template names recognized as a pure prefix (stripped from $leadingText into
-     * $leadingTemplates) when they appear immediately before the bracketed link.
-     * Deliberately narrow : these are the only two seen decorating the link itself in
-     * the corpus without carrying data of their own ({{Date|}}, {{p.|}} etc. carry data
-     * and are left in $rest/$leadingText for a future extractor).
+     * $leadingTemplates) when they appear immediately before the bracketed link :
+     * language codes (each mapped to a 'langue' hint below, {{fr}} included -- an
+     * explicit {{fr}} is unusual on frwiki, since it's the wiki's own default language,
+     * but still a legitimate langue=fr worth writing when the editor bothered to add it)
+     * plus {{pdf}} (a format flag, never a language). Deliberately narrow : the only ones
+     * seen decorating the link itself in the corpus without carrying data of their own
+     * ({{Date|}}, {{p.|}} etc. carry data and are left in $rest/$leadingText).
      */
-    private const PREFIX_TEMPLATE_PATTERN = '#^\{\{\s*(en|de|es|it|nl|pt|ru|ja|zh|pdf)\s*\}\}\s*#i';
+    private const PREFIX_TEMPLATE_PATTERN = '#^\{\{\s*(fr|en|de|es|it|nl|pt|ru|ja|zh|pdf)\s*\}\}\s*#i';
+
+    private const NON_LANGUAGE_PREFIX_TEMPLATES = ['pdf'];
 
     private const BRACKET_LINK_PATTERN = '#\[(https?://\S+?)(?:\s+([^\]]*))?\]#u';
 
-    /** @var HintExtractorInterface[] */
+    /** @var HintExtractorInterface[] applied to $rest, in order */
     private readonly array $hintExtractors;
 
+    /** @var HintExtractorInterface[] applied to $leadingText, in order */
+    private readonly array $leadingTextExtractors;
+
     /**
-     * @param HintExtractorInterface[]|null $hintExtractors override the default chain
-     *     (tests only) ; null uses the real chain.
+     * @param HintExtractorInterface[]|null $hintExtractors override the default $rest
+     *     chain (tests only) ; null uses the real chain.
+     * @param HintExtractorInterface[]|null $leadingTextExtractors override the default
+     *     $leadingText chain (tests only) ; null uses the real chain.
      */
-    public function __construct(?array $hintExtractors = null)
+    public function __construct(?array $hintExtractors = null, ?array $leadingTextExtractors = null)
     {
         $this->hintExtractors = $hintExtractors ?? [
             new SiteMentionExtractor(),
             new ItalicSiteAfterCommaExtractor(),
             new TrailingDateExtractor(),
+            new ConsulteLeExtractor(),
+        ];
+        $this->leadingTextExtractors = $leadingTextExtractors ?? [
+            new AuthorPrefixExtractor(),
         ];
     }
 
@@ -109,38 +127,57 @@ class RawExternLinkParser
         }
 
         $titre = $this->stripGuillemets(trim($label));
-        [$rest, $hints] = $this->applyHintExtractors(trim($after));
+        [$rest, $restHints] = $this->applyExtractorChain(trim($after), $this->hintExtractors);
+        [$leadingText, $leadingHints] = $this->applyExtractorChain(trim($before), $this->leadingTextExtractors);
 
         return new RawExternLinkDTO(
             raw: $fragment,
             url: $url,
             titre: $titre === '' ? null : $titre,
-            leadingText: trim($before),
+            leadingText: $leadingText,
             leadingTemplates: $leadingTemplates,
             rest: $rest,
             isBullet: $isBullet,
             refName: $refName,
             refGroup: $refGroup,
-            hints: $hints,
+            hints: $this->languageHint($leadingTemplates) + $leadingHints + $restHints,
         );
     }
 
     /**
-     * @return array{0: string, 1: array<string, string>} [$remainingRest, $hints]
+     * @param HintExtractorInterface[] $extractors
+     * @return array{0: string, 1: array<string, string>} [$remainingText, $hints]
      */
-    private function applyHintExtractors(string $rest): array
+    private function applyExtractorChain(string $text, array $extractors): array
     {
         $hints = [];
-        foreach ($this->hintExtractors as $extractor) {
-            $match = $extractor->extract($rest);
+        foreach ($extractors as $extractor) {
+            $match = $extractor->extract($text);
             if ($match === null) {
                 continue;
             }
             $hints[$match->param] = $match->value;
-            $rest = trim($match->remaining);
+            $text = trim($match->remaining);
         }
 
-        return [$rest, $hints];
+        return [$text, $hints];
+    }
+
+    /**
+     * @param string[] $leadingTemplates
+     * @return array<string, string>
+     */
+    private function languageHint(array $leadingTemplates): array
+    {
+        foreach ($leadingTemplates as $tpl) {
+            if (in_array($tpl, self::NON_LANGUAGE_PREFIX_TEMPLATES, true)) {
+                continue;
+            }
+
+            return ['langue' => $tpl];
+        }
+
+        return [];
     }
 
     /**

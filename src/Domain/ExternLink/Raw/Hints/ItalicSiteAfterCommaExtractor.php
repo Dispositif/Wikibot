@@ -26,7 +26,7 @@ namespace App\Domain\ExternLink\Raw\Hints;
  */
 final class ItalicSiteAfterCommaExtractor implements HintExtractorInterface
 {
-    private const PATTERN = "#^,\s*(''.+?''|\[\[[^]]+])\s*(.*)\$#us";
+    private const PATTERN = "#^,\s*(''.+?''|\[\[[^\]]+\]\])\s*(.*)\$#us";
 
     public function extract(string $rest): ?HintMatch
     {

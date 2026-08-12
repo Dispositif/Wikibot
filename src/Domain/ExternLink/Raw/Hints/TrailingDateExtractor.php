@@ -24,23 +24,14 @@ namespace App\Domain\ExternLink\Raw\Hints;
  * pipe-separated segment with a space, which would leak "en astronomie" into the date.
  *
  * Deliberately does NOT touch "Consulté le ..." (a different template param, 'consulté
- * le', not 'date') -- see RawExternLinkParserTest::testExtractsConsulteLeWithoutComma
- * (still wip), naturally disjoint since that phrase never starts with a digit or "{{".
+ * le', not 'date' -- see ConsulteLeExtractor), naturally disjoint since that phrase
+ * never starts with a digit or "{{".
  */
 final class TrailingDateExtractor implements HintExtractorInterface
 {
-    private const MONTHS = 'janvier|février|fevrier|mars|avril|mai|juin|juillet|août|aout|septembre|octobre|novembre|décembre|decembre';
+    private const PATTERN = '#^,?\s*(?:\{\{\s*[Dd]ate\s*\|(?<tpl>[^}]+)\}\}|(?<day>\d{1,2})\s+(?<month>' . FrenchDate::MONTHS_PATTERN . ')\s+(?<year1>(?:1[4-9]|20)\d{2})|(?<year2>(?:1[4-9]|20)\d{2}))\.?\s*(?<remaining>.*)$#iu';
 
-    private const PATTERN = '#^,?\s*(?:\{\{\s*[Dd]ate\s*\|(?<tpl>[^}]+)\}\}|(?<day>\d{1,2})\s+(?<month>' . self::MONTHS . ')\s+(?<year1>(?:1[4-9]|20)\d{2})|(?<year2>(?:1[4-9]|20)\d{2}))\.?\s*(?<remaining>.*)$#iu';
-
-    private const STRICT_DATE_PATTERN = '#^(\d{1,2})\s+(' . self::MONTHS . ')\s+(\d{4})$#iu';
-
-    private const MONTH_NUMBERS
-        = [
-            'janvier' => 1, 'février' => 2, 'fevrier' => 2, 'mars' => 3, 'avril' => 4,
-            'mai' => 5, 'juin' => 6, 'juillet' => 7, 'août' => 8, 'aout' => 8,
-            'septembre' => 9, 'octobre' => 10, 'novembre' => 11, 'décembre' => 12, 'decembre' => 12,
-        ];
+    private const STRICT_DATE_PATTERN = '#^(\d{1,2})\s+(' . FrenchDate::MONTHS_PATTERN . ')\s+(\d{4})$#iu';
 
     public function extract(string $rest): ?HintMatch
     {
@@ -79,7 +70,7 @@ final class TrailingDateExtractor implements HintExtractorInterface
 
         if (count($parts) === 3
             && preg_match('#^\d{1,2}$#', $parts[0])
-            && preg_match('#^(?:' . self::MONTHS . ')$#iu', $parts[1])
+            && preg_match('#^(?:' . FrenchDate::MONTHS_PATTERN . ')$#iu', $parts[1])
             && preg_match('#^(?:1[4-9]|20)\d{2}$#', $parts[2])
         ) {
             return implode(' ', $parts);
@@ -90,13 +81,9 @@ final class TrailingDateExtractor implements HintExtractorInterface
 
     /**
      * Only the strict "day month year" shape has something to actually calendar-check
-     * (checkdate() rejects "31 février"). A bare year, an ordinal day ("1er"), or a
-     * "month year" form is kept as-is -- there's nothing to validate a standalone year
-     * or an unparsed ordinal against.
-     *
-     * Deliberately NOT DateUtil::simpleFrench2object() here : DateTime::createFromFormat()
-     * is lenient by default and silently rolls "31 février 2019" over into 3 March 2019
-     * instead of failing -- checkdate() is the actual calendar validator.
+     * (FrenchDate::isValidCalendarDate() rejects "31 février"). A bare year, an ordinal
+     * day ("1er"), or a "month year" form is kept as-is -- there's nothing to validate a
+     * standalone year or an unparsed ordinal against.
      */
     private function looksLikeValidDate(string $value): bool
     {
@@ -104,8 +91,6 @@ final class TrailingDateExtractor implements HintExtractorInterface
             return true;
         }
 
-        $month = self::MONTH_NUMBERS[mb_strtolower($m[2])] ?? null;
-
-        return $month !== null && checkdate($month, (int) $m[1], (int) $m[3]);
+        return FrenchDate::isValidCalendarDate((int) $m[1], $m[2], (int) $m[3]);
     }
 }

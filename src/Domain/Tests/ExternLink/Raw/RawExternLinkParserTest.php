@@ -253,10 +253,7 @@ class RawExternLinkParserTest extends TestCase
         $this::assertNotNull($dto);
         $this::assertSame($expectedSite, $dto->hints['site'] ?? null);
         // now that TrailingDateExtractor runs right after in the chain (Lot 2 cont'd),
-        // the date that used to be left in $rest is consumed too. (isFullyConsumed() is
-        // NOT asserted here : one data set below has a wikilinked institution before the
-        // bracket, which lands in $leadingText and is untouched by either extractor --
-        // see testItalicSiteExtractorDoesNotTouchLeadingText.)
+        // the date that used to be left in $rest is consumed too.
         $this::assertSame($expectedDate, $dto->hints['date'] ?? null);
     }
 
@@ -283,8 +280,9 @@ class RawExternLinkParserTest extends TestCase
 
     /**
      * "., ..." after a wikilinked author/institution before the bracket (here
-     * "[[Université Johns-Hopkins]], ") stays in $leadingText, untouched by this
-     * extractor which only ever looks at $rest.
+     * "[[Université Johns-Hopkins]], ") is untouched by this extractor, which only ever
+     * looks at $rest -- it's picked up separately, by AuthorPrefixExtractor's own chain
+     * on $leadingText, see testAuthorPrefixExtractorHandlesWikilinkedAuthor.
      */
     public function testItalicSiteExtractorDoesNotTouchLeadingText()
     {
@@ -293,7 +291,7 @@ class RawExternLinkParserTest extends TestCase
         );
 
         $this::assertNotNull($dto);
-        $this::assertSame('[[Université Johns-Hopkins]],', $dto->leadingText);
+        $this::assertSame('Héritage mendélien chez l\'humain', $dto->hints['site'] ?? null);
     }
 
     // --- GREEN : ~50% of the corpus, the trailing-date hint extractor (Lot 2 cont'd) ---
@@ -363,6 +361,169 @@ class RawExternLinkParserTest extends TestCase
         $this::assertArrayNotHasKey('date', $dto->hints);
     }
 
+    // --- GREEN : ~9.6% of the corpus, the "consulté le" hint extractor (Lot 2 cont'd) ---
+
+    /**
+     * @dataProvider provideConsulteLeFragments
+     */
+    public function testExtractsConsulteLeWithoutComma(string $fragment, string $expectedConsulteLe)
+    {
+        $dto = $this->parser()->parse($fragment);
+
+        $this::assertNotNull($dto);
+        $this::assertSame($expectedConsulteLe, $dto->hints['consulté le'] ?? null);
+        // isFullyConsumed() NOT asserted here : one data set has an unrecognized leading
+        // language template ({{bg}}, Bulgarian -- not in PREFIX_TEMPLATE_PATTERN), which
+        // is unrelated to "consulté le" extraction itself.
+    }
+
+    public static function provideConsulteLeFragments(): array
+    {
+        return [
+            'textual date, no comma, no parens' => [
+                '<ref>[http://www.saint-maur.com/ Site de la ville] Consulté le 25 juin 2009</ref>',
+                '25 juin 2009',
+            ],
+            'numeric JJ/MM/AAAA, dominant real-world shape' => [
+                '<ref>[https://www.linternaute.com/ville/ville/elections-municipales/27468/puget-sur-argens.shtml Liste des élus au conseil municipal en 2008 sur le site linternaute.com] Consulté le 06/07/2009.</ref>',
+                '6 juillet 2009',
+            ],
+            'parenthesized textual date' => [
+                "<ref>{{bg}} [http://paisiionline.hit.bg/ Site du lycée Otec Paisij] (consulté le 23 janvier 2009).</ref>",
+                '23 janvier 2009',
+            ],
+        ];
+    }
+
+    /**
+     * "[url Titre], 30 juin 2011 (consulté le 6 avril 2020)." -- the citation's own date
+     * (handled by TrailingDateExtractor) and the access date are two distinct hints,
+     * extracted by two different extractors running in sequence on the same $rest.
+     */
+    public function testConsulteLeExtractorRunsAfterTrailingDateOnTheSameRest()
+    {
+        $dto = $this->parser()->parse(
+            "<ref>[https://actu.fr/normandie/mortagne-au-perche_61293/mamers-il-etait-une-fois-une-gare_5696533.html « Mamers. Il était une fois une gare… »], ''actu.fr'', 30 juin 2011 (consulté le 6 avril 2020).</ref>"
+        );
+
+        $this::assertNotNull($dto);
+        $this::assertSame('actu.fr', $dto->hints['site'] ?? null);
+        $this::assertSame('30 juin 2011', $dto->hints['date'] ?? null);
+        $this::assertSame('6 avril 2020', $dto->hints['consulté le'] ?? null);
+        $this::assertTrue($dto->isFullyConsumed());
+    }
+
+    // --- GREEN : ~2.4% of the corpus, the author/institution prefix extractor (Lot 2 cont'd) ---
+
+    /**
+     * @dataProvider provideAuthorPrefixFragments
+     */
+    public function testExtractsAuthorPrefix(string $fragment, string $expectedAuteur)
+    {
+        $dto = $this->parser()->parse($fragment);
+
+        $this::assertNotNull($dto);
+        $this::assertSame($expectedAuteur, $dto->hints['auteur'] ?? null);
+        $this::assertTrue($dto->isFullyConsumed());
+    }
+
+    public static function provideAuthorPrefixFragments(): array
+    {
+        return [
+            'two-word author, site+date also extracted from rest' => [
+                '<ref>Louis Laroque, [http://www.lepoint.fr/tendances/2008-08-14/maisons-de-stars/998/0/266963 "Maisons de stars"], \'\'Le Point\'\', 14 août 2008</ref>',
+                'Louis Laroque',
+            ],
+            'author + wikilinked site in rest' => [
+                "<ref>Simon Hooper, [https://edition.cnn.com/2005/TECH/science/01/04/norte.chico/ ''New insight into ancient Americans''], [[Cable News Network|CNN]], 4 janvier 2005.</ref>",
+                'Simon Hooper',
+            ],
+            'short 2-letter-surname author' => [
+                "<ref>Wen Mu, [http://french.peopledaily.com.cn/Horizon/6623053.html Commentaire sur les « Sept questions sur le Tibet » de Elizabeth Gleick], ''Le Quotidien du Peuple en ligne'', 26 juin 2009.</ref>",
+                'Wen Mu',
+            ],
+        ];
+    }
+
+    public function testAuthorPrefixAlsoExtractsSiteAndDateFromRest()
+    {
+        $dto = $this->parser()->parse(
+            '<ref>Louis Laroque, [http://www.lepoint.fr/tendances/2008-08-14/maisons-de-stars/998/0/266963 "Maisons de stars"], \'\'Le Point\'\', 14 août 2008</ref>'
+        );
+
+        $this::assertNotNull($dto);
+        $this::assertSame('Le Point', $dto->hints['site'] ?? null);
+        $this::assertSame('14 août 2008', $dto->hints['date'] ?? null);
+    }
+
+    /**
+     * A wikilinked institution before the bracket ("[[Université Johns-Hopkins]],") is
+     * kept verbatim as the 'auteur' hint, wikilink markup and all -- see
+     * AuthorPrefixExtractor's docblock for why that's the *correct* value here, not an
+     * intermediate form to dereference to plain text.
+     */
+    public function testAuthorPrefixExtractorHandlesWikilinkedAuthor()
+    {
+        $dto = $this->parser()->parse(
+            "<ref>[[Université Johns-Hopkins]], [https://www.ncbi.nlm.nih.gov/omim/604004 604004], ''[[Héritage mendélien chez l'humain]]''.</ref>"
+        );
+
+        $this::assertNotNull($dto);
+        $this::assertSame('[[Université Johns-Hopkins]]', $dto->hints['auteur'] ?? null);
+        $this::assertSame('', $dto->leadingText);
+        $this::assertTrue($dto->isFullyConsumed());
+    }
+
+    // --- GREEN : leading {{lang}} templates -> 'langue' hint (Lot 2 cont'd) ---
+
+    /**
+     * @dataProvider provideLanguageTemplateFragments
+     */
+    public function testExtractsLanguageHintFromLeadingTemplate(string $fragment, ?string $expectedLangue)
+    {
+        $dto = $this->parser()->parse($fragment);
+
+        $this::assertNotNull($dto);
+        $this::assertSame($expectedLangue, $dto->hints['langue'] ?? null);
+    }
+
+    public static function provideLanguageTemplateFragments(): array
+    {
+        return [
+            '{{en}} -> langue=en' => [
+                '<ref>{{en}} [http://www.ukbutterflies.co.uk/species.php?species=pandora UK Butterflies].</ref>',
+                'en',
+            ],
+            '{{fr}} -> langue=fr (explicit is unusual on frwiki but still legitimate)' => [
+                '<ref name="2013_www.lfsm.net">{{fr}} [http://www.lfsm.net/8/mia.htm lfsm.net].</ref>',
+                'fr',
+            ],
+            '{{de}} -> langue=de' => [
+                "<ref>{{de}} [http://www.buergerstiftung-bonn.de/cms/download/pressetexte/pressemeldung_031115.pdf ''Bürgerstiftung Bonn a déclaré Bücherschrank auf'', Presseerklärung der Bürgerstiftung Bonn, 15. novembre 2003]</ref>",
+                'de',
+            ],
+            '{{pdf}} is a format flag, not a language' => [
+                '<ref>{{PDF}} [http://www.chubri-galo.bzh/docs/files/z-ortograf/Regles-orthograph-gallo-moga-05-2016.pdf Règles orthographiques pour le gallo].</ref>',
+                null,
+            ],
+            'no leading template at all' => [
+                '<ref>[https://catalogue.bnf.fr/ark:/12148/cb16665235p Bibliothèque Nationale de France]</ref>',
+                null,
+            ],
+        ];
+    }
+
+    public function testFrenchLanguageTemplateIsStrippedIntoLeadingTemplatesToo()
+    {
+        $dto = $this->parser()->parse(
+            '<ref name="2013_www.lfsm.net">{{fr}} [http://www.lfsm.net/8/mia.htm lfsm.net].</ref>'
+        );
+
+        $this::assertNotNull($dto);
+        $this::assertSame(['fr'], $dto->leadingTemplates);
+        $this::assertSame('', $dto->leadingText);
+    }
+
     // --- GREEN : parser stays agnostic to the eventual {{lien web}}/{{article}} choice ---
 
     /**
@@ -420,36 +581,6 @@ class RawExternLinkParserTest extends TestCase
     // (phpunit.xml). Run with: vendor/bin/phpunit --group wip
     // =====================================================================================
 
-
-    /**
-     * @group wip
-     * ~9.6% of the corpus, and ~2.1% without a comma before it (as here). Target:
-     * 'consulté le' hint, distinct from the citation's own 'date'.
-     */
-    public function testExtractsConsulteLeWithoutComma()
-    {
-        $dto = $this->parser()->parse(
-            '<ref>[http://www.saint-maur.com/ Site de la ville] Consulté le 25 juin 2009</ref>'
-        );
-
-        $this::markTestIncomplete('Target: predicted "consulté le" = 2009-06-25, $dto->rest empty.');
-        // $this::assertNotNull($dto->hints['consulté le']);
-    }
-
-    /**
-     * @group wip
-     * Author name(s) before the bracket, not just after — currently dumped whole into
-     * $leadingText. Target: 'auteur' hint (and 'lien auteur' if wikilinked).
-     */
-    public function testExtractsAuthorPrefix()
-    {
-        $dto = $this->parser()->parse(
-            '<ref>Louis Laroque, [http://www.lepoint.fr/tendances/2008-08-14/maisons-de-stars/998/0/266963 "Maisons de stars"], \'\'Le Point\'\', 14 août 2008</ref>'
-        );
-
-        $this::markTestIncomplete('Target: predicted auteur = "Louis Laroque", périodique = "Le Point", date = 2008-08-14.');
-        // $this::assertSame('Louis Laroque', $dto->hints['auteur']);
-    }
 
     /**
      * @group wip
