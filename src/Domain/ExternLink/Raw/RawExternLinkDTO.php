@@ -19,6 +19,9 @@ final class RawExternLinkDTO
     /**
      * @param string[] $leadingTemplates template names found immediately before the
      *     bracket (e.g. ['en'], ['pdf']) — stripped out of $leadingText.
+     * @param array<string, string> $hints template params predicted from $rest by the
+     *     Hints/ extractor chain (e.g. ['site' => 'presence-pc.com']) — already removed
+     *     from $rest when matched. See Hints/HintExtractorInterface.
      */
     public function __construct(
         public readonly string $raw,
@@ -30,6 +33,7 @@ final class RawExternLinkDTO
         public readonly bool $isBullet,
         public readonly ?string $refName = null,
         public readonly ?string $refGroup = null,
+        public readonly array $hints = [],
     ) {
     }
 

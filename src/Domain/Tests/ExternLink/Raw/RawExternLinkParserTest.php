@@ -174,6 +174,72 @@ class RawExternLinkParserTest extends TestCase
         $this::assertSame(", ''Têtu''.", $dto->rest);
     }
 
+    // --- GREEN : ~7.6% of the corpus, the "sur Site" hint extractor (Lot 2) ---
+
+    /**
+     * @dataProvider provideSiteMentionFragments
+     */
+    public function testExtractsSiteMentionAfterSur(string $fragment, string $expectedSite)
+    {
+        $dto = $this->parser()->parse($fragment);
+
+        $this::assertNotNull($dto);
+        $this::assertSame($expectedSite, $dto->hints['site'] ?? null);
+        $this::assertTrue($dto->isFullyConsumed());
+    }
+
+    public static function provideSiteMentionFragments(): array
+    {
+        return [
+            'bare domain' => [
+                '<ref>[http://www.presence-pc.com/actualite/batterie-Li-Ion-36696/ « Les batteries Li-Ion bientôt dépassées ? »], sur presence-pc.com</ref>',
+                'presence-pc.com',
+            ],
+            'bare domain, {{en}} prefix' => [
+                '<ref>{{en}} [http://www.infinityward.com/games.php#/videos?id=8 Modern Warfare 2 Launch Trailer], sur infinityward.com</ref>',
+                'infinityward.com',
+            ],
+            'italic site name + trailing period' => [
+                "* [http://www.blamont.info/index.html Site Blâmont.info], sur ''Blâmont.info''.",
+                'Blâmont.info',
+            ],
+        ];
+    }
+
+    /**
+     * Guard against over-matching : a comma-separated trailing mention that does NOT
+     * use "sur" (e.g. "..., sallesdecinemas.blogspot.com, 25 octobre 2020.") must NOT be
+     * captured as a site hint by SiteMentionExtractor -- that's a different, still-wip
+     * pattern (see testExtractsTrailingDate).
+     */
+    public function testDoesNotMisfireOnCommaWithoutSur()
+    {
+        $dto = $this->parser()->parse(
+            "<ref>[https://sallesdecinemas.blogspot.com/2020/10/alexandra-paris-16eme.html « Alexandra (Paris 16ème) »], sallesdecinemas.blogspot.com, 25 octobre 2020.</ref>"
+        );
+
+        $this::assertNotNull($dto);
+        $this::assertArrayNotHasKey('site', $dto->hints);
+        $this::assertSame(', sallesdecinemas.blogspot.com, 25 octobre 2020.', $dto->rest);
+    }
+
+    /**
+     * @group wip
+     * SiteMentionExtractor deliberately only matches when the whole rest is "sur X" --
+     * descriptive phrasings ("sur le site officiel du constructeur", "sur le site de
+     * [[X]]") would otherwise be mis-captured as a literal site name ("le site officiel").
+     * Target: strip the "le site (de/du/officiel...)" wrapper before treating the
+     * remainder as the site value, or route through a wikilink-aware variant.
+     */
+    public function testDoesNotMisparseDescriptiveSiteMention()
+    {
+        $dto = $this->parser()->parse(
+            '<ref>[http://www.medicen.org/ Site officiel du pôle Medicen.] sur le site officiel</ref>'
+        );
+
+        $this::markTestIncomplete('Target: either no "site" hint at all, or a correctly stripped one -- not "le site officiel".');
+    }
+
     // --- GREEN : parser stays agnostic to the eventual {{lien web}}/{{article}} choice ---
 
     /**
@@ -230,24 +296,6 @@ class RawExternLinkParserTest extends TestCase
     // a real corpus fragment + the target behaviour. Excluded from the default test run
     // (phpunit.xml). Run with: vendor/bin/phpunit --group wip
     // =====================================================================================
-
-    /**
-     * @group wip
-     * ~7.6% of the corpus : "[url Titre], sur Site". Target: $dto should expose a
-     * predicted 'site' hint ("presence-pc.com") separate from $rest, via a future
-     * HintExtractor (see plan §5, RawLinkHints). Today the whole ", sur ..." stays in
-     * $rest, unparsed.
-     */
-    public function testExtractsSiteMentionAfterSur()
-    {
-        $dto = $this->parser()->parse(
-            '<ref>[http://www.presence-pc.com/actualite/batterie-Li-Ion-36696/ « Les batteries Li-Ion bientôt dépassées ? »], sur presence-pc.com</ref>'
-        );
-
-        $this::markTestIncomplete('Target: predicted site = "presence-pc.com", $dto->rest empty.');
-        // $this::assertSame('presence-pc.com', $dto->hints['site']);
-        // $this::assertTrue($dto->isFullyConsumed());
-    }
 
     /**
      * @group wip

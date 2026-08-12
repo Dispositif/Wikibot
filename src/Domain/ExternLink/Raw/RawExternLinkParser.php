@@ -9,6 +9,9 @@ declare(strict_types=1);
 
 namespace App\Domain\ExternLink\Raw;
 
+use App\Domain\ExternLink\Raw\Hints\HintExtractorInterface;
+use App\Domain\ExternLink\Raw\Hints\SiteMentionExtractor;
+
 /**
  * Parses a manuscript "[http(s)://... Libellé]" citation fragment (bare, inside a
  * <ref>, or as a "* [url Libellé]" bullet list item) into a RawExternLinkDTO, so a
@@ -18,11 +21,12 @@ namespace App\Domain\ExternLink\Raw;
  * Deliberately pure/stateless : no I/O, no crawling, no template knowledge. Built from
  * a corpus of ~33k real fragments mined via CirrusSearch (see
  * rawExternLinkCorpusScan.php / resources/corpus_raw_extern_link.txt) — the patterns
- * this class recognizes are the ~35% "clean" cases (label is the whole story) plus
- * leading {{lang}}/{{pdf}} templates and French guillemets around the title. Everything
- * else (", sur Site" / trailing dates / italic site names / "consulté le" / author
- * prefixes / multi-citation refs...) is deliberately left in $rest or $leadingText
- * unparsed — see RawExternLinkParserTest for the documented backlog (group "wip").
+ * this class recognizes are the ~35% "clean" cases (label is the whole story), leading
+ * {{lang}}/{{pdf}} templates, French guillemets around the title, and (via the Hints/
+ * extractor chain) a trailing ", sur Site" mention (~7.6%). Everything else (trailing
+ * dates / italic site names / "consulté le" / author prefixes / multi-citation refs...)
+ * is deliberately left in $rest or $leadingText unparsed — see RawExternLinkParserTest
+ * for the documented backlog (group "wip").
  *
  * Deliberately silent on {{lien web}} vs {{article}} vs {{lien brisé}} : that choice
  * depends on crawled page metadata (date, DOI, JSON-LD type) and domain config
@@ -43,6 +47,20 @@ class RawExternLinkParser
     private const PREFIX_TEMPLATE_PATTERN = '#^\{\{\s*(en|de|es|it|nl|pt|ru|ja|zh|pdf)\s*\}\}\s*#i';
 
     private const BRACKET_LINK_PATTERN = '#\[(https?://\S+?)(?:\s+([^\]]*))?\]#u';
+
+    /** @var HintExtractorInterface[] */
+    private readonly array $hintExtractors;
+
+    /**
+     * @param HintExtractorInterface[]|null $hintExtractors override the default chain
+     *     (tests only) ; null uses the real chain.
+     */
+    public function __construct(?array $hintExtractors = null)
+    {
+        $this->hintExtractors = $hintExtractors ?? [
+            new SiteMentionExtractor(),
+        ];
+    }
 
     public function parse(string $fragment): ?RawExternLinkDTO
     {
@@ -84,6 +102,7 @@ class RawExternLinkParser
         }
 
         $titre = $this->stripGuillemets(trim($label));
+        [$rest, $hints] = $this->applyHintExtractors(trim($after));
 
         return new RawExternLinkDTO(
             raw: $fragment,
@@ -91,11 +110,30 @@ class RawExternLinkParser
             titre: $titre === '' ? null : $titre,
             leadingText: trim($before),
             leadingTemplates: $leadingTemplates,
-            rest: trim($after),
+            rest: $rest,
             isBullet: $isBullet,
             refName: $refName,
             refGroup: $refGroup,
+            hints: $hints,
         );
+    }
+
+    /**
+     * @return array{0: string, 1: array<string, string>} [$remainingRest, $hints]
+     */
+    private function applyHintExtractors(string $rest): array
+    {
+        $hints = [];
+        foreach ($this->hintExtractors as $extractor) {
+            $match = $extractor->extract($rest);
+            if ($match === null) {
+                continue;
+            }
+            $hints[$match->param] = $match->value;
+            $rest = trim($match->remaining);
+        }
+
+        return [$rest, $hints];
     }
 
     /**
