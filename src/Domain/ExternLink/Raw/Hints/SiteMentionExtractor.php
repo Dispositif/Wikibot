@@ -30,23 +30,11 @@ final class SiteMentionExtractor implements HintExtractorInterface
             return null;
         }
 
-        $site = $this->stripWikiMarkup(trim($m[1]));
+        $site = WikiMarkupStripper::stripItalicAndWikilink(trim($m[1]));
         if ($site === '') {
             return null;
         }
 
         return new HintMatch('site', $site, '');
-    }
-
-    private function stripWikiMarkup(string $site): string
-    {
-        if (preg_match("#^''(.+)''\$#u", $site, $m)) {
-            return $m[1];
-        }
-        if (preg_match('#^\[\[(?:[^|\]]*\|)?([^]]+)]]$#u', $site, $m)) {
-            return $m[1];
-        }
-
-        return $site;
     }
 }

@@ -170,8 +170,9 @@ class RawExternLinkParserTest extends TestCase
             'Ségolène Royal entre en campagne et campe sur ses positions conservatrices',
             $dto->titre
         );
-        // the ", ''Têtu''." part is NOT yet parsed into a site/périodique -- see testExtractsItalicSiteNameAfterComma (wip)
-        $this::assertSame(", ''Têtu''.", $dto->rest);
+        // the ", ''Têtu''." part is now parsed by ItalicSiteAfterCommaExtractor (Lot 2)
+        $this::assertSame('Têtu', $dto->hints['site'] ?? null);
+        $this::assertTrue($dto->isFullyConsumed());
     }
 
     // --- GREEN : ~7.6% of the corpus, the "sur Site" hint extractor (Lot 2) ---
@@ -240,6 +241,57 @@ class RawExternLinkParserTest extends TestCase
         $this::markTestIncomplete('Target: either no "site" hint at all, or a correctly stripped one -- not "le site officiel".');
     }
 
+    // --- GREEN : ~33% of the corpus, the ", ''Site''"/", [[Site]]" hint extractor (Lot 2) ---
+
+    /**
+     * @dataProvider provideItalicSiteFragments
+     */
+    public function testExtractsItalicSiteNameAfterComma(string $fragment, string $expectedSite, string $expectedRest)
+    {
+        $dto = $this->parser()->parse($fragment);
+
+        $this::assertNotNull($dto);
+        $this::assertSame($expectedSite, $dto->hints['site'] ?? null);
+        // trailing date/access-date left for a future extractor -- see testExtractsTrailingDate (wip)
+        $this::assertSame($expectedRest, $dto->rest);
+    }
+
+    public static function provideItalicSiteFragments(): array
+    {
+        return [
+            'italic site, trailing date left in rest' => [
+                "<ref>[http://www.thewhir.com/web-hosting-news/united-internet-acquires-fasthosts United Internet Acquires FastHosts], ''The Whir'', 10 mai 2006.</ref>",
+                'The Whir',
+                ', 10 mai 2006.',
+            ],
+            'italic site, trailing year only' => [
+                "<ref>{{en}} [https://www.independent.co.uk/life-style/health-and-families/health-news/drugs-the-real-deal-410086.html « Drugs: the real deal »], ''The Independent'', 2006.</ref>",
+                'The Independent',
+                ', 2006.',
+            ],
+            'piped wikilink nested inside italics, fully consumed' => [
+                "<ref>[[Université Johns-Hopkins]], [https://www.ncbi.nlm.nih.gov/omim/604004 604004], ''[[Héritage mendélien chez l'humain]]''.</ref>",
+                "Héritage mendélien chez l'humain",
+                '.',
+            ],
+        ];
+    }
+
+    /**
+     * "., ..." after a wikilinked author/institution before the bracket (here
+     * "[[Université Johns-Hopkins]], ") stays in $leadingText, untouched by this
+     * extractor which only ever looks at $rest.
+     */
+    public function testItalicSiteExtractorDoesNotTouchLeadingText()
+    {
+        $dto = $this->parser()->parse(
+            "<ref>[[Université Johns-Hopkins]], [https://www.ncbi.nlm.nih.gov/omim/604004 604004], ''[[Héritage mendélien chez l'humain]]''.</ref>"
+        );
+
+        $this::assertNotNull($dto);
+        $this::assertSame('[[Université Johns-Hopkins]],', $dto->leadingText);
+    }
+
     // --- GREEN : parser stays agnostic to the eventual {{lien web}}/{{article}} choice ---
 
     /**
@@ -296,22 +348,6 @@ class RawExternLinkParserTest extends TestCase
     // a real corpus fragment + the target behaviour. Excluded from the default test run
     // (phpunit.xml). Run with: vendor/bin/phpunit --group wip
     // =====================================================================================
-
-    /**
-     * @group wip
-     * ~33% of the corpus carries italic markup, frequently the site/périodique name
-     * right after the closing bracket : "[url Titre], ''Le Monde'', 12 mars 2019".
-     * Target: 'site' or 'périodique' hint extracted from the italic span.
-     */
-    public function testExtractsItalicSiteNameAfterComma()
-    {
-        $dto = $this->parser()->parse(
-            "<ref>[http://www.thewhir.com/web-hosting-news/united-internet-acquires-fasthosts United Internet Acquires FastHosts], ''The Whir'', 10 mai 2006.</ref>"
-        );
-
-        $this::markTestIncomplete('Target: predicted site/périodique = "The Whir", trailing date extracted separately (see testExtractsTrailingDate).');
-        // $this::assertSame('The Whir', $dto->hints['site'] ?? $dto->hints['périodique']);
-    }
 
     /**
      * @group wip

@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Domain\ExternLink\Raw;
 
 use App\Domain\ExternLink\Raw\Hints\HintExtractorInterface;
+use App\Domain\ExternLink\Raw\Hints\ItalicSiteAfterCommaExtractor;
 use App\Domain\ExternLink\Raw\Hints\SiteMentionExtractor;
 
 /**
@@ -23,10 +24,11 @@ use App\Domain\ExternLink\Raw\Hints\SiteMentionExtractor;
  * rawExternLinkCorpusScan.php / resources/corpus_raw_extern_link.txt) — the patterns
  * this class recognizes are the ~35% "clean" cases (label is the whole story), leading
  * {{lang}}/{{pdf}} templates, French guillemets around the title, and (via the Hints/
- * extractor chain) a trailing ", sur Site" mention (~7.6%). Everything else (trailing
- * dates / italic site names / "consulté le" / author prefixes / multi-citation refs...)
- * is deliberately left in $rest or $leadingText unparsed — see RawExternLinkParserTest
- * for the documented backlog (group "wip").
+ * extractor chain) a trailing ", sur Site" mention (~7.6%) or a leading ", ''Site''"/
+ * ", [[Site]]" mention (~33% of the corpus carries italic markup). Everything else
+ * (trailing dates / "consulté le" / author prefixes / multi-citation refs...) is
+ * deliberately left in $rest or $leadingText unparsed — see RawExternLinkParserTest for
+ * the documented backlog (group "wip").
  *
  * Deliberately silent on {{lien web}} vs {{article}} vs {{lien brisé}} : that choice
  * depends on crawled page metadata (date, DOI, JSON-LD type) and domain config
@@ -59,6 +61,7 @@ class RawExternLinkParser
     {
         $this->hintExtractors = $hintExtractors ?? [
             new SiteMentionExtractor(),
+            new ItalicSiteAfterCommaExtractor(),
         ];
     }
 
