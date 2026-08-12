@@ -44,7 +44,7 @@
       <file>src/Application/ScanWiki2DB.php</file>
       <file>src/Infrastructure/WstatImport.php</file>
       <file>src/Domain/Tests/PredictNameFirstNameTest.php</file>
-      <file>src/Domain/Bazar/ParseRawExternLinkTest.php</file>
+      <file>src/Domain/Bazar/ParseRawOuvrageTest.php</file>
     </exclude>
   </source>
 </phpunit>
