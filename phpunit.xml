@@ -23,6 +23,9 @@
   <groups>
     <exclude>
       <group>integration</group>
+      <!-- TDD backlog markers (e.g. RawExternLinkParserTest) : documented, deliberately
+           unimplemented patterns. Run explicitly with option "group=wip". -->
+      <group>wip</group>
     </exclude>
   </groups>
   <logging>

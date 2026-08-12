@@ -59,6 +59,7 @@ resources/wikibot-data-dump-*.sql
 /src/Application/resources/temp/
 /src/Application/resources/temp_ref_http.wiki
 /src/Application/resources/watch_pages.json
+/src/Application/resources/corpus_raw_extern_link.txt
 /src/Application/resources/wd_journaux.json
 /src/Application/resources/wikidata_editeurs.json
 /src/Domain/resources/analysis_pattern_auteurs.csv
