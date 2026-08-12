@@ -246,33 +246,37 @@ class RawExternLinkParserTest extends TestCase
     /**
      * @dataProvider provideItalicSiteFragments
      */
-    public function testExtractsItalicSiteNameAfterComma(string $fragment, string $expectedSite, string $expectedRest)
+    public function testExtractsItalicSiteNameAfterComma(string $fragment, string $expectedSite, ?string $expectedDate)
     {
         $dto = $this->parser()->parse($fragment);
 
         $this::assertNotNull($dto);
         $this::assertSame($expectedSite, $dto->hints['site'] ?? null);
-        // trailing date/access-date left for a future extractor -- see testExtractsTrailingDate (wip)
-        $this::assertSame($expectedRest, $dto->rest);
+        // now that TrailingDateExtractor runs right after in the chain (Lot 2 cont'd),
+        // the date that used to be left in $rest is consumed too. (isFullyConsumed() is
+        // NOT asserted here : one data set below has a wikilinked institution before the
+        // bracket, which lands in $leadingText and is untouched by either extractor --
+        // see testItalicSiteExtractorDoesNotTouchLeadingText.)
+        $this::assertSame($expectedDate, $dto->hints['date'] ?? null);
     }
 
     public static function provideItalicSiteFragments(): array
     {
         return [
-            'italic site, trailing date left in rest' => [
+            'italic site, trailing date' => [
                 "<ref>[http://www.thewhir.com/web-hosting-news/united-internet-acquires-fasthosts United Internet Acquires FastHosts], ''The Whir'', 10 mai 2006.</ref>",
                 'The Whir',
-                ', 10 mai 2006.',
+                '10 mai 2006',
             ],
             'italic site, trailing year only' => [
                 "<ref>{{en}} [https://www.independent.co.uk/life-style/health-and-families/health-news/drugs-the-real-deal-410086.html « Drugs: the real deal »], ''The Independent'', 2006.</ref>",
                 'The Independent',
-                ', 2006.',
+                '2006',
             ],
-            'piped wikilink nested inside italics, fully consumed' => [
+            'piped wikilink nested inside italics, no date to find' => [
                 "<ref>[[Université Johns-Hopkins]], [https://www.ncbi.nlm.nih.gov/omim/604004 604004], ''[[Héritage mendélien chez l'humain]]''.</ref>",
                 "Héritage mendélien chez l'humain",
-                '.',
+                null,
             ],
         ];
     }
@@ -290,6 +294,73 @@ class RawExternLinkParserTest extends TestCase
 
         $this::assertNotNull($dto);
         $this::assertSame('[[Université Johns-Hopkins]],', $dto->leadingText);
+    }
+
+    // --- GREEN : ~50% of the corpus, the trailing-date hint extractor (Lot 2 cont'd) ---
+
+    /**
+     * @dataProvider provideTrailingDateFragments
+     */
+    public function testExtractsTrailingDate(string $fragment, string $expectedDate)
+    {
+        $dto = $this->parser()->parse($fragment);
+
+        $this::assertNotNull($dto);
+        $this::assertSame($expectedDate, $dto->hints['date'] ?? null);
+        // isFullyConsumed() NOT asserted : one data set has an author/institution before
+        // the bracket (-> non-empty $leadingText), unrelated to date extraction itself.
+    }
+
+    public static function provideTrailingDateFragments(): array
+    {
+        return [
+            'plain day+month+year' => [
+                '<ref>[https://www.minorplanetcenter.net/mpec/K18/K18P88.html MPEC 2018-P88 : P/2018 L4 (PANSTARRS) ], 13 août 2018.</ref>',
+                '13 août 2018',
+            ],
+            'bare year' => [
+                '<ref>[http://dnf.asso.fr/Zoom-sur-la-e-cigarette-les-points.html?var_recherche=cigarette%20electronique DNF, zoom sur la cigarette électronique], 2013.</ref>',
+                '2013',
+            ],
+            '{{date|...}} single combined param, month+year only' => [
+                '<ref>Observatoire sociétal des cancers (2014° [http://www.ligue-cancer.net/sites/default/files/rapport-2013-observatoire-societal-des-cancers.pdf \'\'Rapport 2013\'\'], {{date|avril 2014}}.</ref>',
+                'avril 2014',
+            ],
+            '{{date|...}} single combined param, ordinal day' => [
+                '<ref>[https://www.minorplanetcenter.net/mpec/K24/K24E01.html MPEC 2024-E01 : COMET C/2019 G2 (PANSTARRS)], {{date|1er mars 2024}}.</ref>',
+                '1er mars 2024',
+            ],
+            '{{date|...}} with trailing calendar context, discarded' => [
+                '<ref>[https://www.minorplanetcenter.net/mpec/K20/K20P10.html MPEC 2020-P10 : COMET C/2020 O2 (Aramal)], {{date|2 août 2020|en astronomie}}.</ref>',
+                '2 août 2020',
+            ],
+        ];
+    }
+
+    public function testTrailingDateExtractorHandlesThreePipeSeparatedTemplateParams()
+    {
+        $dto = $this->parser()->parse(
+            "<ref>[http://www.charles-de-gaulle.org/article.php3?id_article=62 Discours du Forum d'Alger], {{date|4|juin|1958}}.</ref>"
+        );
+
+        $this::assertNotNull($dto);
+        $this::assertSame('4 juin 1958', $dto->hints['date'] ?? null);
+        $this::assertTrue($dto->isFullyConsumed());
+    }
+
+    /**
+     * DateUtil::simpleFrench2object() rejects a calendar-impossible day+month+year
+     * (31 February) -- the extractor must not blindly trust the regex shape and store a
+     * bogus date hint.
+     */
+    public function testTrailingDateExtractorRejectsInvalidCalendarDate()
+    {
+        $dto = $this->parser()->parse(
+            '<ref>[http://example.org/x Titre], 31 février 2019.</ref>'
+        );
+
+        $this::assertNotNull($dto);
+        $this::assertArrayNotHasKey('date', $dto->hints);
     }
 
     // --- GREEN : parser stays agnostic to the eventual {{lien web}}/{{article}} choice ---
@@ -349,21 +420,6 @@ class RawExternLinkParserTest extends TestCase
     // (phpunit.xml). Run with: vendor/bin/phpunit --group wip
     // =====================================================================================
 
-    /**
-     * @group wip
-     * ~50% of the corpus has a 4-digit year somewhere, ~31% a French month name.
-     * Target: a 'date' hint parsed via DateUtil::simpleFrench2object() or similar,
-     * whether it trails a comma or stands alone.
-     */
-    public function testExtractsTrailingDate()
-    {
-        $dto = $this->parser()->parse(
-            '<ref>[https://www.minorplanetcenter.net/mpec/K18/K18P88.html MPEC 2018-P88 : P/2018 L4 (PANSTARRS) ], 13 août 2018.</ref>'
-        );
-
-        $this::markTestIncomplete('Target: predicted date = 2018-08-13 (DateUtil), $dto->rest empty.');
-        // $this::assertNotNull($dto->hints['date']);
-    }
 
     /**
      * @group wip

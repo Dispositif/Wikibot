@@ -12,6 +12,7 @@ namespace App\Domain\ExternLink\Raw;
 use App\Domain\ExternLink\Raw\Hints\HintExtractorInterface;
 use App\Domain\ExternLink\Raw\Hints\ItalicSiteAfterCommaExtractor;
 use App\Domain\ExternLink\Raw\Hints\SiteMentionExtractor;
+use App\Domain\ExternLink\Raw\Hints\TrailingDateExtractor;
 
 /**
  * Parses a manuscript "[http(s)://... Libellé]" citation fragment (bare, inside a
@@ -24,11 +25,13 @@ use App\Domain\ExternLink\Raw\Hints\SiteMentionExtractor;
  * rawExternLinkCorpusScan.php / resources/corpus_raw_extern_link.txt) — the patterns
  * this class recognizes are the ~35% "clean" cases (label is the whole story), leading
  * {{lang}}/{{pdf}} templates, French guillemets around the title, and (via the Hints/
- * extractor chain) a trailing ", sur Site" mention (~7.6%) or a leading ", ''Site''"/
- * ", [[Site]]" mention (~33% of the corpus carries italic markup). Everything else
- * (trailing dates / "consulté le" / author prefixes / multi-citation refs...) is
- * deliberately left in $rest or $leadingText unparsed — see RawExternLinkParserTest for
- * the documented backlog (group "wip").
+ * extractor chain, applied in order so each can consume what the previous one left) a
+ * trailing ", sur Site" mention (~7.6%), a leading ", ''Site''"/", [[Site]]" mention
+ * (~33% of the corpus carries italic markup), and a trailing date -- plain, {{date|...}}
+ * templated, or bare year (~50% of the corpus has a 4-digit year somewhere). Everything
+ * else ("consulté le" / author prefixes / multi-citation refs...) is deliberately left
+ * in $rest or $leadingText unparsed — see RawExternLinkParserTest for the documented
+ * backlog (group "wip").
  *
  * Deliberately silent on {{lien web}} vs {{article}} vs {{lien brisé}} : that choice
  * depends on crawled page metadata (date, DOI, JSON-LD type) and domain config
@@ -62,6 +65,7 @@ class RawExternLinkParser
         $this->hintExtractors = $hintExtractors ?? [
             new SiteMentionExtractor(),
             new ItalicSiteAfterCommaExtractor(),
+            new TrailingDateExtractor(),
         ];
     }
 
