@@ -27,6 +27,18 @@ class SeoSanitizer
         }
         $title = str_replace(['–', '—', '\\'], ['-', '-', '/'], $title); // replace em dash with hyphen
 
+        // A page with no real title beyond the site-name suffix collapses to a bare
+        // leading hyphen (ex: YouTube's "<title> - YouTube</title>" on an unavailable/
+        // login-required video, once upstream trim() eats the leading space). That
+        // never matches the " - " separator below (needs a space on both sides), so
+        // without this check the single "- YouTube" segment would be returned as-is
+        // and published verbatim as junk ("titre=- YouTube").
+        if (preg_match('/^-\s*(.+)$/', $title, $matches)
+            && $this->deleteSegmentsContainingSitename($prettyDomainName, [$matches[1]]) === []
+        ) {
+            return null;
+        }
+
         $seoSegments = $this->extractSEOSegments($title);
         // No SEO segmentation found
         if (count($seoSegments) < 2) {

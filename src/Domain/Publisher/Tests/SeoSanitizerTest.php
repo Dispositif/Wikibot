@@ -33,6 +33,10 @@ class SeoSanitizerTest extends TestCase
     {
         return [
             ['test.com', '', null], // no title TODO ?
+            // YouTube "unavailable video" shell : <title> - YouTube</title>, leading space
+            // already eaten by upstream trim() so it never hits the ' - ' separator below
+            ['youtube.com', '- YouTube', null],
+            ['fu-bar.com', '- fu-bar.com', null],
             ['fu-bar.com', 'First | fu-bar.com', 'First'],
             ['fu-bar.com', 'First | fu-bar.com | Second', 'First - Second'],
             ['fu-bar.com', 'First is a very long phrase which could be enough | fu-bar.com | Second', 'First is a very long phrase which could be enough'],
