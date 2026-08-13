@@ -29,6 +29,27 @@ authorization requests.
 Tech stack : PHP >=8.1 (version 1.1 on PHP7.2), MySQL, Tor, composer libraries (Symfony components, addwiki/mediawiki-api, etc), 
 hexagonal architecture….
 
+## Installation
+
+```bash
+composer install
+cp .env.dist .env   # then fill in your bot's Wikimedia credentials
+```
+
+A few domain-lookup data files are gitignored (manually curated or Wikidata-sourced, not meant to live in git
+history) and must be generated before the external-link worker can run. Two scripts fetch them from Wikidata
+via SPARQL:
+
+```bash
+php src/Application/CLI/wikidataFetchPresse.php      # newspaper website domain -> French name + wikilink
+php src/Application/CLI/wikidataFetchScientific.php  # scientific journal website domain/name -> wikilink
+```
+
+These populate `src/Domain/resources/data_newspapers.json`, `data_scientific_domain.json` and
+`data_scientific_wiki.json` (used by `ExternRefTransformer` to decide `{{article}}` vs `{{lien web}}` and to
+fill in the publication's name/wikilink), plus a couple of raw Wikidata caches. Re-run them anytime to refresh
+the data — safe to run repeatedly, each run overwrites the previous output.
+
 Use ``make`` on root, for the list of some available commands.
 
 <img src="https://raw.githubusercontent.com/Dispositif/Wikibot/master/docs/workers.png" alt="schemas of workers" style="max-width:300px;" />
