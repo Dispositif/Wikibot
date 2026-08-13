@@ -29,7 +29,7 @@ namespace App\Domain\ExternLink\Raw\Hints;
  */
 final class ConsulteLeExtractor implements HintExtractorInterface
 {
-    private const PATTERN = '#^,?\s*\(?\s*[Cc]onsult\S*\s+(?:le|du|sur\s+\S+\s+le)\s+(?:\{\{\s*[Dd]ate\s*\|(?<tpl>[^}]+)\}\}|(?<textday>\d{1,2}|' . FrenchDate::ORDINAL_FIRST_DAY_PATTERN . ')\s+(?<textmonth>' . FrenchDate::MONTHS_PATTERN . ')\s+(?<textyear>\d{4})|(?<numday>\d{1,2})[/.\-](?<nummonth>\d{1,2})[/.\-](?<numyear>\d{2,4}))\)?\.?\s*(?<remaining>.*)$#iu';
+    private const PATTERN = '#^,?\s*\(?\s*[Cc]onsult\S*\s+(?:le|du|sur\s+\S+\s+le)\s+(?:\{\{\s*[Dd]ate\s*\|(?<tpl>[^}]+)\}\}|(?<textday>' . FrenchDate::DAY_PATTERN . ')\s+(?<textmonth>' . FrenchDate::MONTHS_PATTERN . ')\s+(?<textyear>\d{4})|(?<numday>\d{1,2})[/.\-](?<nummonth>\d{1,2})[/.\-](?<numyear>\d{2,4}))\)?\.?\s*(?<remaining>.*)$#iu';
 
     public function extract(string $rest): ?HintMatch
     {

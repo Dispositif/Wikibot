@@ -70,6 +70,11 @@ final class HintMerger
     private const GENERIC_MANUSCRIPT_TITLES
         = ['lire en ligne', 'en ligne', 'ici', 'cliquez ici', 'voir', 'consulter', 'consultable', 'source', 'lien'];
 
+    public function __construct(
+        private readonly ResidueReducer $residueReducer = new ResidueReducer(),
+    ) {
+    }
+
     /**
      * @param array<string, string> $crawledMapData same shape as ExternMapper::process()
      */
@@ -93,9 +98,14 @@ final class HintMerger
         // Technical fields : crawled wins if present, manuscript only fills a gap.
         $mapData = $this->fillGapOnly($raw->hints, $mapData, 'consulté le', 'consulté le');
 
-        $mapData = $this->preserveUnconsumedResidue($raw, $mapData);
+        [$mapData, $residueWasAllRedundant] = $this->preserveUnconsumedResidue($raw, $mapData);
 
-        $confidence = ($conflicts === [] && $raw->isFullyConsumed())
+        // A residue ResidueReducer could fully explain away isn't "unaccounted for" : every
+        // word of it restated data already in the template, so there is genuinely nothing
+        // left unhandled and the merge is as trustworthy as a fully-consumed one.
+        $accountedFor = $raw->isFullyConsumed() || $residueWasAllRedundant;
+
+        $confidence = ($conflicts === [] && $accountedFor)
             ? MergeConfidence::Auto
             : MergeConfidence::SemiAuto;
 
@@ -110,22 +120,32 @@ final class HintMerger
      * the caller's own stripParamsNotSupportedByTemplate() -- same generic mechanism
      * that already handles 'site' not existing on {{article}}, no special-casing here.
      *
+     * ResidueReducer runs first : very often the leftover is just the title/site/date
+     * restated in prose ("Witbank News, 1er novembre 2018"), which would make a useless
+     * and redundant citation. Only what it can't explain away is kept.
+     *
      * @param array<string, string> $mapData
-     * @return array<string, string>
+     * @return array{0: array<string, string>, 1: bool} [$mapData, $residueWasAllRedundant]
      */
     private function preserveUnconsumedResidue(RawExternLinkDTO $raw, array $mapData): array
     {
         if ($raw->isFullyConsumed() || !empty($mapData['citation'])) {
-            return $mapData;
+            return [$mapData, false];
         }
 
         $residue = trim(trim($raw->leadingText) . ' ' . trim($raw->rest));
         $residue = trim($residue, " \t\n\r\0\x0B,;.");
-        if ($residue !== '') {
-            $mapData['citation'] = $residue;
+        if ($residue === '') {
+            return [$mapData, false];
         }
 
-        return $mapData;
+        $reduced = $this->residueReducer->reduce($residue, $mapData, $raw->url);
+        if ($reduced === null) {
+            return [$mapData, true];
+        }
+        $mapData['citation'] = $reduced;
+
+        return [$mapData, false];
     }
 
     /**

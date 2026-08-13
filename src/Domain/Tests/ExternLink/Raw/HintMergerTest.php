@@ -279,6 +279,28 @@ class HintMergerTest extends TestCase
         );
     }
 
+    /**
+     * A residue ResidueReducer can fully explain away (here : the site name and the
+     * date, restated in prose after the bracket) produces NO citation at all, and --
+     * since nothing is left unaccounted for -- also lifts confidence back to Auto,
+     * exactly as if the extractor chain had consumed it. Real raw-extern-ref output,
+     * 2026-08-13 : it used to emit "|citation=Witbank News, 1er novembre 2018".
+     */
+    public function testFullyRedundantResidueYieldsNoCitationAndStaysAuto()
+    {
+        $raw = $this->parse(
+            '<ref>{{en}} [https://witbanknews.co.za/116572/dirtiest-air-world/ We have the dirtiest air in the world], Witbank News, 1er novembre 2018</ref>'
+        );
+
+        $result = $this->merger()->merge(
+            $raw,
+            ['titre' => 'We have the dirtiest air in the world', 'site' => 'Witbank News', 'date' => '01-11-2018']
+        );
+
+        self::assertArrayNotHasKey('citation', $result->mapData);
+        self::assertSame(MergeConfidence::Auto, $result->confidence);
+    }
+
     public function testDoesNotOverwriteAnAlreadyPresentCrawledCitation()
     {
         $raw = $this->parse(
