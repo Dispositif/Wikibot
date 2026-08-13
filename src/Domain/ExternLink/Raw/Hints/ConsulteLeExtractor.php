@@ -10,26 +10,40 @@ declare(strict_types=1);
 namespace App\Domain\ExternLink\Raw\Hints;
 
 /**
- * "[url Titre] Consulté le 06/07/2009.", "[url Titre] (consulté le 23 janvier 2009)." --
- * ~9.6% of the corpus, ~2.1% of it (like both examples above) with no comma before it,
- * which is why it needs its own extractor rather than piggybacking on the comma-based
- * ones : ordering after TrailingDateExtractor in the chain means it also picks up the
- * common "[url Titre], 30 juin 2011 (consulté le 6 avril 2020)." shape, where the
- * citation date is consumed first and this extractor only sees what's left,
- * "(consulté le 6 avril 2020).".
+ * "[url Titre] Consulté le 06/07/2009.", "[url Titre] (consulté le 23 janvier 2009).",
+ * "[url Titre] Retrieved: 21 April 2011.", "[url Titre] Retrieved December 9, 2011." --
+ * ~9.6% of the corpus, ~2.1% of it with no comma before it, which is why it needs its
+ * own extractor rather than piggybacking on the comma-based ones : ordering after
+ * TrailingDateExtractor in the chain means it also picks up the common "[url Titre],
+ * 30 juin 2011 (consulté le 6 avril 2020)." shape, where the citation date is consumed
+ * first and this extractor only sees what's left, "(consulté le 6 avril 2020).".
  *
- * The dominant real-world form in the "no comma" bucket is actually numeric
- * "JJ/MM/AAAA", not the textual "12 mars 2019" form -- both are handled ;
- * numericToFrenchText() reformats the numeric form into the same textual shape the rest
- * of this parser produces, after validating it's a real calendar date. Also handles the
- * whole date wrapped in {{date|...}} ("consulté le {{date|1 avril 2012}}", resolved via
- * the shared FrenchDate::resolveTemplateDateParam(), also used by TrailingDateExtractor)
- * and just the day wrapped as the ordinal placeholder {{1er}} ("consulté le {{1er}} avril
- * 2012", where the month/year stay plain text).
+ * "Retrieved"/"retrieved on"/"accessed" (157 "Retrieved" occurrences alone in the Lot 0
+ * corpus) are the English equivalent of "consulté le" -- unlike the French forms, the
+ * connector word ("on") is often absent entirely ("Retrieved December 9, 2011"), so it's
+ * OPTIONAL here, not mandatory. All four date shapes below always resolve to French text
+ * output ("21 avril 2011") regardless of how the source page phrased it, since this is a
+ * French Wikipedia citation param :
+ * - day-first, French or English month name : "21 avril 2011" / "21 April 2011"
+ * - US month-first with comma : "April 21, 2011"
+ * - ISO : "2011-04-21" ("Retrieved 2011-04-21", a real corpus shape)
+ * - numeric DD/MM/YYYY : "06/07/2009" (French convention, never MM/DD)
+ * - {{date|...}} template (see the shared FrenchDate::resolveTemplateDateParam(),
+ *   also used by TrailingDateExtractor) and the ordinal placeholder {{1er}} (see
+ *   FrenchDate::DAY_PATTERN).
  */
 final class ConsulteLeExtractor implements HintExtractorInterface
 {
-    private const PATTERN = '#^,?\s*\(?\s*[Cc]onsult\S*\s+(?:le|du|sur\s+\S+\s+le)\s+(?:\{\{\s*[Dd]ate\s*\|(?<tpl>[^}]+)\}\}|(?<textday>' . FrenchDate::DAY_PATTERN . ')\s+(?<textmonth>' . FrenchDate::MONTHS_PATTERN . ')\s+(?<textyear>\d{4})|(?<numday>\d{1,2})[/.\-](?<nummonth>\d{1,2})[/.\-](?<numyear>\d{2,4}))\)?\.?\s*(?<remaining>.*)$#iu';
+    private const MONTHS_PATTERN = FrenchDate::MONTHS_PATTERN . '|' . EnglishDate::MONTHS_PATTERN;
+
+    private const PATTERN
+        = '#^,?\s*\(?\s*(?:[Cc]onsult\S*|[Rr]etrieved|[Aa]ccessed)\s*:?\s*(?:(?:le|du|on|sur\s+\S+\s+le)\s+)?(?:'
+        . '\{\{\s*[Dd]ate\s*\|(?<tpl>[^}]+)\}\}'
+        . '|(?<textday>' . FrenchDate::DAY_PATTERN . ')\s+(?<textmonth>' . self::MONTHS_PATTERN . ')\s+(?<textyear>\d{4})'
+        . '|(?<usmonth>' . EnglishDate::MONTHS_PATTERN . ')\s+(?<usday>\d{1,2}),?\s+(?<usyear>\d{4})'
+        . '|(?<isoyear>\d{4})-(?<isomonth>\d{1,2})-(?<isoday>\d{1,2})'
+        . '|(?<numday>\d{1,2})[/.\-](?<nummonth>\d{1,2})[/.\-](?<numyear>\d{2,4})'
+        . ')\)?\.?\s*(?<remaining>.*)$#iu';
 
     public function extract(string $rest): ?HintMatch
     {
@@ -53,33 +67,50 @@ final class ConsulteLeExtractor implements HintExtractorInterface
 
         if (!empty($m['textday'])) {
             $day = FrenchDate::dayNumber($m['textday']);
+            $month = FrenchDate::monthNumber($m['textmonth']) ?? EnglishDate::monthNumber($m['textmonth']);
             $year = (int) $m['textyear'];
+            if ($month === null || !FrenchDate::isValidCalendarDateByNumber($day, $month, $year)) {
+                return null;
+            }
 
-            return FrenchDate::isValidCalendarDate($day, $m['textmonth'], $year)
-                ? trim(FrenchDate::dayText($m['textday']) . ' ' . $m['textmonth'] . ' ' . $m['textyear'])
-                : null;
+            // Keep the ordinal spelling ("1er") rather than the generic toFrenchText()'s
+            // numeric day -- only meaningful for the French-worded branch ; the US/ISO/
+            // numeric branches below have no such convention to preserve.
+            $monthName = FrenchDate::monthNumber($m['textmonth']) !== null ? $m['textmonth'] : FrenchDate::monthName($month);
+
+            return trim(FrenchDate::dayText($m['textday']) . ' ' . $monthName . ' ' . $year);
+        }
+
+        if (!empty($m['usmonth'])) {
+            return $this->toValidatedFrenchText(
+                (int) $m['usday'],
+                EnglishDate::monthNumber($m['usmonth']),
+                (int) $m['usyear']
+            );
+        }
+
+        if (!empty($m['isoyear'])) {
+            return $this->toValidatedFrenchText((int) $m['isoday'], (int) $m['isomonth'], (int) $m['isoyear']);
         }
 
         if (!empty($m['numday'])) {
-            return $this->numericToFrenchText((int) $m['numday'], (int) $m['nummonth'], (int) $m['numyear']);
+            $year = (int) $m['numyear'];
+            if ($year < 100) {
+                $year += ($year < 70) ? 2000 : 1900;
+            }
+
+            return $this->toValidatedFrenchText((int) $m['numday'], (int) $m['nummonth'], $year);
         }
 
         return null;
     }
 
-    /**
-     * "06/07/2009" -> "6 juillet 2009" (French DD/MM/YYYY convention, never MM/DD).
-     */
-    private function numericToFrenchText(int $day, int $month, int $year): ?string
+    private function toValidatedFrenchText(int $day, ?int $month, int $year): ?string
     {
-        if ($year < 100) {
-            $year += ($year < 70) ? 2000 : 1900;
-        }
-        $monthName = FrenchDate::monthName($month);
-        if ($monthName === null || !checkdate($month, $day, $year)) {
+        if ($month === null || !FrenchDate::isValidCalendarDateByNumber($day, $month, $year)) {
             return null;
         }
 
-        return $day . ' ' . $monthName . ' ' . $year;
+        return FrenchDate::toFrenchText($day, $month, $year);
     }
 }

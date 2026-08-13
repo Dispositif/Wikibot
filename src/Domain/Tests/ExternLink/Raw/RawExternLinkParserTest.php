@@ -373,6 +373,14 @@ class RawExternLinkParserTest extends TestCase
                 '<ref>[https://www.minorplanetcenter.net/mpec/K20/K20P10.html MPEC 2020-P10 : COMET C/2020 O2 (Aramal)], {{date|2 août 2020|en astronomie}}.</ref>',
                 '2 août 2020',
             ],
+            'day-first English month name -> French output (2026-08 revision)' => [
+                '<ref>Stephen Kelly, [http://www.popmatters.com/film/features/030508-cheung.shtml "WHY DOES IT HAVE TO BE LIKE THIS?" Leslie Cheung, 1956–2003"], 8 May 2003</ref>',
+                '8 mai 2003',
+            ],
+            'US month-first with comma -> French output' => [
+                '<ref>[http://www.bocaratonnews.com/index.php?src=news&prid=3072&category=LOCAL%20NEWS \'\'\'Boca Raton News\'\'\'], November 13, 2002.</ref>',
+                '13 novembre 2002',
+            ],
         ];
     }
 
@@ -441,7 +449,40 @@ class RawExternLinkParserTest extends TestCase
                 '<ref>[https://www.allocine.fr/article/fichearticle_gen_carticle=18362912.html Allocine.fr : Distinctions britannique pour Harvey Weinstein], consulté le {{date|1 avril 2012}}.</ref>',
                 '1 avril 2012',
             ],
+            'English "Retrieved:" with colon, day-first (2026-08 revision)' => [
+                '<ref>[http://example.org/x Titre] Retrieved: 21 April 2011.</ref>',
+                '21 avril 2011',
+            ],
+            'English "Retrieved" with no connector, US month-first' => [
+                '<ref>[http://example.org/x Titre] Retrieved December 9, 2011.</ref>',
+                '9 décembre 2011',
+            ],
+            'English "Retrieved on", ISO date' => [
+                '<ref>[http://example.org/x Titre] Retrieved on 2011-11-07.</ref>',
+                '7 novembre 2011',
+            ],
+            'English "accessed", US month-first' => [
+                '<ref>[http://example.org/x Titre] accessed June 11, 2011.</ref>',
+                '11 juin 2011',
+            ],
         ];
+    }
+
+    /**
+     * Real corpus fragment combining an English day-first citation date (handled by
+     * TrailingDateExtractor) with an English "accessed" access date on the same $rest --
+     * the two English-date extensions working together end-to-end, mirroring
+     * testConsulteLeExtractorRunsAfterTrailingDateOnTheSameRest()'s French equivalent.
+     */
+    public function testEnglishAccessedDateRunsAfterEnglishTrailingDateOnTheSameRest()
+    {
+        $dto = $this->parser()->parse(
+            '<ref name="list">[https://www.un.org/depts/DGACM/RegionalGroups.shtml United Nations Regional Groups of Member States], 9 May 2014, accessed 28 September 2015.</ref>'
+        );
+
+        $this::assertNotNull($dto);
+        $this::assertSame('9 mai 2014', $dto->hints['date'] ?? null);
+        $this::assertSame('28 septembre 2015', $dto->hints['consulté le'] ?? null);
     }
 
     /**

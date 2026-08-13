@@ -62,6 +62,25 @@ final class FrenchDate
     }
 
     /**
+     * Same calendar check, for callers (English/US/ISO date branches in
+     * TrailingDateExtractor/ConsulteLeExtractor) that already resolved the month to a
+     * number themselves via EnglishDate::monthNumber() rather than a French name.
+     */
+    public static function isValidCalendarDateByNumber(int $day, int $month, int $year): bool
+    {
+        return checkdate($month, $day, $year);
+    }
+
+    /** "21 April 2011"/"April 21, 2011"/"2011-04-21" all become "21 avril 2011" : a
+     *  French citation param should read in French regardless of the source's language. */
+    public static function toFrenchText(int $day, int $month, int $year): ?string
+    {
+        $monthName = self::monthName($month);
+
+        return $monthName === null ? null : $day . ' ' . $monthName . ' ' . $year;
+    }
+
+    /**
      * "1er"/"{{1er}}" -> 1 for calendar validation ; any other value parsed as an int
      * (non-numeric -> 0, which simply fails checkdate() rather than throwing).
      */
