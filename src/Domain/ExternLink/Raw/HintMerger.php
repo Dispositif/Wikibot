@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Domain\ExternLink\Raw;
 
+use App\Domain\ExternLink\Raw\Hints\SiteMentionExtractor;
 use App\Domain\Utils\TextUtil;
 
 /**
@@ -165,6 +166,14 @@ final class HintMerger
     {
         $hintSite = $raw->hints['site'] ?? null;
         if ($hintSite === null) {
+            return [$mapData, null];
+        }
+
+        if ($hintSite === SiteMentionExtractor::OFFICIAL_SITE_LABEL) {
+            // "sur le site officiel" is an editorial judgment, not a name to compare
+            // against the crawled one -- overrides outright, no similarity check.
+            $mapData['site'] = $hintSite;
+
             return [$mapData, null];
         }
 

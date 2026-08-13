@@ -208,22 +208,51 @@ class HintMergerTest extends TestCase
 
     // --- confidence gating ---
 
-    public function testSemiAutoWhenManuscriptResidueIsUnconsumed()
+    /**
+     * "sur le site de X" is treated as equivalent to "sur X" (2026-08 revision) : the
+     * wrapper is stripped at parse time (SiteMentionExtractorTest... no, tested at the
+     * RawExternLinkParser level, see RawExternLinkParserTest), and once reduced to a
+     * plain 'site' hint it goes through the exact same gap-fill/compare/conflict rule
+     * as any other "sur X" mention -- no HintMerger-specific handling needed. Here the
+     * crawled site genuinely disagrees ("SIG Sauer" the company name vs. the crawled
+     * domain), so it's STILL a legitimate conflict -- SemiAuto is the right call, but
+     * for an honest name mismatch now, not a mis-parsed "le site de" wrapper.
+     */
+    public function testSiteOfMentionStillConflictsWhenItGenuinelyDisagreesWithCrawledSite()
     {
-        // "sur le site officiel" is (mis)parsed by SiteMentionExtractor as a literal
-        // site hint ("le site officiel", see RawExternLinkParserTest::
-        // testDoesNotMisparseDescriptiveSiteMention, still wip) -- rest ends up fully
-        // consumed, but that bogus hint conflicts with the real crawled site, which is
-        // what actually drives SemiAuto here (not leftover residue -- see
-        // testPreservesUnconsumedResidueAsCitationInsteadOfDroppingIt for that case).
+        $raw = $this->parse(
+            '<ref>[http://www.sigsauerguns.com/sig-p238-copperhead-ns-380.html P238 Copperhead] sur le site de SIG Sauer</ref>'
+        );
+
+        self::assertSame('SIG Sauer', $raw->hints['site'] ?? null, 'the "le site de" wrapper must be stripped');
+
+        $result = $this->merger()->merge($raw, ['titre' => 'P238 Copperhead', 'site' => 'sigsauerguns.com']);
+
+        self::assertSame(MergeConfidence::SemiAuto, $result->confidence);
+        self::assertSame(
+            ['manuscript' => 'SIG Sauer', 'crawled' => 'sigsauerguns.com'],
+            $result->conflicts['site']
+        );
+    }
+
+    /**
+     * "sur le site officiel" is an editorial judgment ("this URL IS the subject's own
+     * homepage"), not a literal site name -- overrides the crawled value outright
+     * instead of being compared/conflicting with it (2026-08 revision, fixes a false
+     * conflict found in live testing : "le site officiel" used to be captured verbatim
+     * and false-conflict with the real crawled domain).
+     */
+    public function testOfficialSiteMentionOverridesCrawledSite()
+    {
         $raw = $this->parse(
             '<ref>[http://www.medicen.org/ Site officiel du pôle Medicen.] sur le site officiel</ref>'
         );
 
         $result = $this->merger()->merge($raw, ['titre' => 'Site officiel du pôle Medicen.', 'site' => 'medicen.org']);
 
-        self::assertSame(MergeConfidence::SemiAuto, $result->confidence);
-        self::assertArrayHasKey('site', $result->conflicts);
+        self::assertSame('site officiel', $result->mapData['site']);
+        self::assertSame([], $result->conflicts);
+        self::assertSame(MergeConfidence::Auto, $result->confidence);
     }
 
     /**

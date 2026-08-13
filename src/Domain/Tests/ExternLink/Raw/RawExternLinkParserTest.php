@@ -225,20 +225,56 @@ class RawExternLinkParserTest extends TestCase
     }
 
     /**
-     * @group wip
-     * SiteMentionExtractor deliberately only matches when the whole rest is "sur X" --
-     * descriptive phrasings ("sur le site officiel du constructeur", "sur le site de
-     * [[X]]") would otherwise be mis-captured as a literal site name ("le site officiel").
-     * Target: strip the "le site (de/du/officiel...)" wrapper before treating the
-     * remainder as the site value, or route through a wikilink-aware variant.
+     * "sur le site officiel [de X]" is recognized as the literal OFFICIAL_SITE_LABEL
+     * marker (2026-08 revision) rather than mis-captured as a site name -- the
+     * merge-time override (HintMerger lets this win over the crawled site outright) is
+     * tested in HintMergerTest::testOfficialSiteMentionOverridesCrawledSite.
      */
-    public function testDoesNotMisparseDescriptiveSiteMention()
+    public function testRecognizesOfficialSiteMentionAsALiteralMarker()
     {
         $dto = $this->parser()->parse(
             '<ref>[http://www.medicen.org/ Site officiel du pôle Medicen.] sur le site officiel</ref>'
         );
 
-        $this::markTestIncomplete('Target: either no "site" hint at all, or a correctly stripped one -- not "le site officiel".');
+        $this::assertNotNull($dto);
+        $this::assertSame('site officiel', $dto->hints['site'] ?? null);
+        $this::assertTrue($dto->isFullyConsumed());
+    }
+
+    /**
+     * "sur le site de X" (no "officiel") is equivalent to "sur X" : the "le site
+     * (du/des/de)" wrapper is stripped, X becomes the hint value and goes through the
+     * exact same downstream handling (gap-fill/compare/conflict) as a bare "sur X"
+     * mention -- X itself isn't assumed correct, see
+     * HintMergerTest::testSiteOfMentionStillConflictsWhenItGenuinelyDisagreesWithCrawledSite
+     * for a case where it's wrong and correctly flagged.
+     *
+     * @dataProvider provideSiteOfFragments
+     */
+    public function testStripsSiteDeWrapperBeforeTreatingRemainderAsSiteName(string $fragment, string $expectedSite)
+    {
+        $dto = $this->parser()->parse($fragment);
+
+        $this::assertNotNull($dto);
+        $this::assertSame($expectedSite, $dto->hints['site'] ?? null);
+    }
+
+    public static function provideSiteOfFragments(): array
+    {
+        return [
+            '"de" + bare name' => [
+                '<ref>[http://www.sigsauerguns.com/sig-p238-copperhead-ns-380.html P238 Copperhead] sur le site de SIG Sauer</ref>',
+                'SIG Sauer',
+            ],
+            '"des" contraction' => [
+                '<ref group="PUL">[https://presses.univ-lyon2.fr/ Catalogue], sur le site des PUL.</ref>',
+                'PUL',
+            ],
+            '"de la" article kept attached, plus wikilink' => [
+                '<ref>[http://data.bnf.fr/13918026/gioachino_rossini_guillaume_tell/ Fiche] sur le site de la [[Bibliothèque nationale de France]].</ref>',
+                'la [[Bibliothèque nationale de France]]',
+            ],
+        ];
     }
 
     // --- GREEN : ~33% of the corpus, the ", ''Site''"/", [[Site]]" hint extractor (Lot 2) ---
