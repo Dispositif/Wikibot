@@ -109,6 +109,26 @@ services:
         condition: service_healthy
     mem_limit: 256m
 
+  # Bracketed manuscript links ("[url Libellé]") -> {{lien web}}/{{article}}/
+  # {{lien brisé}}, blending the crawl with the manuscript's own titre/site/
+  # date/auteur/langue. Independent from extern-ref (own dedup file, own
+  # CirrusSearch query) while the merge/arbitration logic is being proven out.
+  raw-extern-ref:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    restart: "no"
+    profiles: ["workers"]
+    command: ["php", "src/Application/CLI/rawExternLinkProcess.php"]
+    env_file:
+      - .env.zizibot
+    volumes:
+      - ./src/Application/resources/article_rawExternRef_edited.txt:/app/src/Application/resources/article_rawExternRef_edited.txt
+    depends_on:
+      tor:
+        condition: service_healthy
+    mem_limit: 256m
+
   # Same external link crawling, but sorted by most-recently-edited pages
   # instead of relevance — a distinct entry point, not a replacement for
   # extern-ref. Shares the same dedup file.
