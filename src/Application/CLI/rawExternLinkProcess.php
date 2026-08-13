@@ -37,14 +37,16 @@ use App\Infrastructure\WikiwixAdapter;
 
 include __DIR__.'/../myBootstrap.php';
 
-// --page="Skateboard" --stats=redis --stats=sqlite --debug --verbose --dry-run --no-direct-retry --no-robots-check
-// No --auto flag : type "auto" at the first confirmation prompt instead
-// (WorkerCLITrait::autoOrYesConfirmation() already switches modeAuto for the rest of
-// the run from there -- a separate CLI flag would need modeAuto threaded through
-// AbstractBotTaskWorker's constructor, which calls run() internally before returning).
-echo "OPTIONS: --debug --verbose --stats=redis --stats=sqlite --page=\"Skateboard\" --nofilter --dry-run --no-direct-retry --no-robots-check \n";
-$options = getopt('', ['page::', 'debug', 'verbose', 'stats::', 'nofilter', 'dry-run', 'no-direct-retry', 'no-robots-check']);
+// --page="Skateboard" --stats=redis --stats=sqlite --debug --verbose --dry-run --no-direct-retry --no-robots-check --auto
+// --auto : fully unsupervised (no confirmation prompts at all, not even for a
+// site/data conflict). SemiAuto merges are still applied, not skipped, but with the
+// bot flag forced off and a warning note in the edit summary -- see
+// RawExternLinkWorker::processRefContent(). Without --auto, every SemiAuto merge
+// always needs an interactive "y"/"n" regardless of anything typed at earlier prompts.
+echo "OPTIONS: --debug --verbose --stats=redis --stats=sqlite --page=\"Skateboard\" --nofilter --dry-run --no-direct-retry --no-robots-check --auto \n";
+$options = getopt('', ['page::', 'debug', 'verbose', 'stats::', 'nofilter', 'dry-run', 'no-direct-retry', 'no-robots-check', 'auto']);
 $dryRun = isset($options['dry-run']);
+$fullAuto = isset($options['auto']);
 $directRetryEnabled = !isset($options['no-direct-retry']);
 $respectRobotsTxt = !isset($options['no-robots-check']);
 
@@ -130,7 +132,7 @@ try {
 
     $transformer = new RawExternLinkTransformer(new RawExternLinkParser(), $externRefTransformer);
 
-    new RawExternLinkWorker($botConfig, $wiki, $list, $transformer, $dryRun);
+    new RawExternLinkWorker($botConfig, $wiki, $list, $transformer, $dryRun, $fullAuto);
 } finally {
     echo "END of process\n";
     sleep(5);

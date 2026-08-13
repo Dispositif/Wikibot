@@ -27,9 +27,21 @@ use Throwable;
  * Deliberately INDEPENDENT from ExternRefWorker for now (own dedup file, own
  * JOURNAL_TASK, own CirrusSearch query in rawExternLinkProcess.php) -- merging into
  * extern-ref is a later step, once this has run unsupervised on a real sample without
- * surprises. modeAuto defaults to FALSE here (unlike ExternRefWorker's TRUE) : a brand
- * new merge/arbitration pipeline should ask before every edit until proven, not just
- * during --dry-run.
+ * surprises.
+ *
+ * Two supervision levels, both distinct from TASK_BOT_FLAG (the blanket "not trusted
+ * yet" switch for the whole feature, currently false) :
+ * - Supervised (default, $fullAuto = false) : modeAuto starts false, every edit --
+ *   Auto or SemiAuto -- is confirmed interactively (typing "auto" at a prompt only
+ *   escalates the Auto-confidence path, never the SemiAuto one, see confirmSemiAuto()).
+ * - Full-auto ($fullAuto = true, --auto CLI flag) : no human is assumed present.
+ *   Auto-confidence edits proceed like modeAuto=true always has. SemiAuto ones are
+ *   NOT skipped and NOT blocked on a prompt either -- they're applied, but with the
+ *   bot flag forced off (Summary::setBotFlag(false), regardless of TASK_BOT_FLAG) and
+ *   a warning marker in the edit summary, so a human patrols them via Recent Changes
+ *   instead of gatekeeping them beforehand. Must be threaded through the constructor,
+ *   not set after -- AbstractBotTaskWorker::__construct() calls run() internally
+ *   before returning.
  *
  * Only <ref>...</ref> content is handled through AbstractRefBotWorker's inherited
  * processText()/processRefContent() (its extraction regex already captures ANY <ref>
@@ -50,17 +62,24 @@ class RawExternLinkWorker extends AbstractRefBotWorker
 
     protected RawExternLinkTransformer $transformer;
 
+    private readonly bool $fullAuto;
+
     public function __construct(
         WikiBotConfig             $bot,
         MediawikiFactory          $wiki,
         ?PageListInterface        $pagesGen = null,
         ?RawExternLinkTransformer $transformer = null,
-        bool                      $dryRun = false
+        bool                      $dryRun = false,
+        bool                      $fullAuto = false
     ) {
         if (!$transformer instanceof RawExternLinkTransformer) {
             throw new ConfigException('RawExternLinkTransformer not set');
         }
         $this->transformer = $transformer;
+        $this->fullAuto = $fullAuto;
+        if ($fullAuto) {
+            $this->modeAuto = true;
+        }
 
         parent::__construct($bot, $wiki, $pagesGen, $dryRun);
     }
@@ -144,17 +163,22 @@ class RawExternLinkWorker extends AbstractRefBotWorker
 
         $this->printDiff($refContent, $newContent, 'echo');
 
-        $confirmed = ($result->confidence === MergeConfidence::SemiAuto)
-            ? $this->confirmSemiAuto('Fusion incertaine (résidu non catégorisé et/ou désaccord manuscrit/crawl), conserver quand même ?')
-            : $this->autoOrYesConfirmation('Conserver cette modif ?');
+        $isSemiAuto = $result->confidence === MergeConfidence::SemiAuto;
 
-        if (!$confirmed) {
+        if ($isSemiAuto && $this->fullAuto) {
+            // No human to ask : apply it, but strip the bot flag and flag the edit
+            // summary instead of gatekeeping on a prompt nobody is there to answer.
+            $this->summary->setBotFlag(false);
+            $this->summary->memo['count semiauto unflagged'] = 1 + ($this->summary->memo['count semiauto unflagged'] ?? 0);
+        } elseif ($isSemiAuto) {
+            if (!$this->confirmSemiAuto('Fusion incertaine (résidu non catégorisé et/ou désaccord manuscrit/crawl), conserver quand même ?')) {
+                return $refContent;
+            }
+        } elseif (!$this->autoOrYesConfirmation('Conserver cette modif ?')) {
             return $refContent;
         }
 
-        $this->log->stats->increment(
-            'rawexternlink.transform.' . ($result->confidence === MergeConfidence::Auto ? 'auto' : 'semiauto')
-        );
+        $this->log->stats->increment('rawexternlink.transform.' . ($isSemiAuto ? 'semiauto' : 'auto'));
         // NOT $this->summary->citationNumber : that field is also incremented by
         // SummaryExternTrait::tagAndLog() inside ExternRefTransformer::process() (called
         // above, same $summary instance) for every URL successfully crawled+mapped --
@@ -167,9 +191,10 @@ class RawExternLinkWorker extends AbstractRefBotWorker
     }
 
     /**
-     * A SemiAuto result (manuscript/crawl conflict, e.g. site mismatch) always needs a
-     * human, even under --auto : bypasses autoOrYesConfirmation()'s modeAuto shortcut
-     * entirely rather than juggling it on/off around the call.
+     * A SemiAuto result (manuscript/crawl conflict, e.g. site mismatch) needs a human --
+     * bypasses autoOrYesConfirmation()'s modeAuto shortcut entirely rather than juggling
+     * it on/off around the call. Only reached in supervised mode ($fullAuto = false) ;
+     * see processRefContent()'s $fullAuto branch for the unsupervised path.
      */
     private function confirmSemiAuto(string $question): bool
     {
@@ -196,6 +221,9 @@ class RawExternLinkWorker extends AbstractRefBotWorker
         $suffix = '';
         if (!empty($this->summary->memo['count changed'])) {
             $suffix .= ' ' . $this->summary->memo['count changed'] . 'x [url]';
+        }
+        if (!empty($this->summary->memo['count semiauto unflagged'])) {
+            $suffix .= ' ⚠️ hésitation de fusion';
         }
 
         return $prefixSummary . $this->summary->taskName . $suffix;
