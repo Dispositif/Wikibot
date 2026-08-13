@@ -28,22 +28,30 @@ namespace App\Domain\ExternLink\Raw\Hints;
  * - US month-first with comma : "April 21, 2011"
  * - ISO : "2011-04-21" ("Retrieved 2011-04-21", a real corpus shape)
  * - numeric DD/MM/YYYY : "06/07/2009" (French convention, never MM/DD)
+ * - numeric MM/YYYY, no day : "03/2024" ("''consulté le 03/2024''", a real corpus shape)
  * - {{date|...}} template (see the shared FrenchDate::resolveTemplateDateParam(),
  *   also used by TrailingDateExtractor) and the ordinal placeholder {{1er}} (see
  *   FrenchDate::DAY_PATTERN).
+ *
+ * Tolerates an optional wrapping "''...''" (italics) around the whole access-date
+ * phrase (2026-08 revision) : ItalicSiteAfterCommaExtractor, earlier in the chain,
+ * deliberately backs off an italic span that itself looks like an access date
+ * ("[url Titre], ''consulté le 03/2024''") rather than misreading it as a site name,
+ * leaving the markup-wrapped phrase for this extractor to recognize.
  */
 final class ConsulteLeExtractor implements HintExtractorInterface
 {
     private const MONTHS_PATTERN = FrenchDate::MONTHS_PATTERN . '|' . EnglishDate::MONTHS_PATTERN;
 
     private const PATTERN
-        = '#^,?\s*\(?\s*(?:[Cc]onsult\S*|[Rr]etrieved|[Aa]ccessed)\s*:?\s*(?:(?:le|du|on|sur\s+\S+\s+le)\s+)?(?:'
+        = '#^,?\s*\(?\s*(?:\'\')?\s*(?:[Cc]onsult\S*|[Rr]etrieved|[Aa]ccessed)\s*:?\s*(?:(?:le|du|on|sur\s+\S+\s+le)\s+)?(?:'
         . '\{\{\s*[Dd]ate\s*\|(?<tpl>[^}]+)\}\}'
         . '|(?<textday>' . FrenchDate::DAY_PATTERN . ')\s+(?<textmonth>' . self::MONTHS_PATTERN . ')\s+(?<textyear>\d{4})'
         . '|(?<usmonth>' . EnglishDate::MONTHS_PATTERN . ')\s+(?<usday>\d{1,2}),?\s+(?<usyear>\d{4})'
         . '|(?<isoyear>\d{4})-(?<isomonth>\d{1,2})-(?<isoday>\d{1,2})'
         . '|(?<numday>\d{1,2})[/.\-](?<nummonth>\d{1,2})[/.\-](?<numyear>\d{2,4})'
-        . ')\)?\.?\s*(?<remaining>.*)$#iu';
+        . '|(?<nummonthonly>\d{1,2})/(?<numyearonly>\d{4})'
+        . ')(?:\'\')?\)?\.?\s*(?<remaining>.*)$#iu';
 
     public function extract(string $rest): ?HintMatch
     {
@@ -100,6 +108,12 @@ final class ConsulteLeExtractor implements HintExtractorInterface
             }
 
             return $this->toValidatedFrenchText((int) $m['numday'], (int) $m['nummonth'], $year);
+        }
+
+        if (!empty($m['nummonthonly'])) {
+            $monthName = FrenchDate::monthName((int) $m['nummonthonly']);
+
+            return $monthName === null ? null : $monthName . ' ' . $m['numyearonly'];
         }
 
         return null;

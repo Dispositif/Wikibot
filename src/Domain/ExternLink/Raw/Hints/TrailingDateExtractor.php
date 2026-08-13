@@ -14,10 +14,14 @@ namespace App\Domain\ExternLink\Raw\Hints;
  * "[url Titre], {{date|31 août 2008}}", "[url Titre], {{Date|11|mars|2015}}" -- ~50% of
  * the Lot 0 corpus has a 4-digit year somewhere and ~31% a French month name (a further
  * 611 occurrences of an English month name in some position, day-first "10 May 2006" or
- * US month-first "May 10, 2006"). Matches a LEADING date span (day+month+year, month+year,
- * or bare year -- {{date|...}}'s param can be any of the three) right after the optional
- * comma, and leaves whatever trails (most often "(consulté le ...)") untouched in $rest,
- * same non-anchored shape as ItalicSiteAfterCommaExtractor.
+ * US month-first "May 10, 2006"). Matches a LEADING date span (day+month+year, month+year
+ * with no day, month+year alone, or bare year -- {{date|...}}'s param can be any of the
+ * first three) right after an optional comma/"du"/opening parenthesis, and leaves
+ * whatever trails (most often "(consulté le ...)") untouched in $rest, same non-anchored
+ * shape as ItalicSiteAfterCommaExtractor. The optional leading "(" and "du " connector
+ * (2026-08 revision, corpus sweep) cover "sur X (23 janvier 2021)" and "sur X du 2
+ * juillet 2015" -- SiteMentionExtractor's own boundary detection stops right before
+ * either shape and hands it here unconsumed.
  *
  * ALWAYS resolves to French text output ("10 mai 2006"), regardless of how the source
  * page phrased its own date -- this is a French Wikipedia citation param.
@@ -38,13 +42,14 @@ final class TrailingDateExtractor implements HintExtractorInterface
     private const YEAR_PATTERN = '(?:1[4-9]|20)\d{2}';
 
     private const PATTERN
-        = '#^,?\s*(?:'
+        = '#^,?\s*\(?\s*(?:du\s+)?(?:'
         . '\{\{\s*[Dd]ate\s*\|(?<tpl>[^}]+)\}\}'
         . '|(?<day>' . FrenchDate::DAY_PATTERN . ')\s+(?<month>' . self::MONTHS_PATTERN . ')\s+(?<year1>' . self::YEAR_PATTERN . ')'
+        . '|(?<monthonly>' . self::MONTHS_PATTERN . ')\s+(?<year3>' . self::YEAR_PATTERN . ')'
         . '|(?<usmonth>' . EnglishDate::MONTHS_PATTERN . ')\s+(?<usday>\d{1,2}),?\s+(?<usyear>' . self::YEAR_PATTERN . ')'
         . '|(?<isoyear>' . self::YEAR_PATTERN . ')-(?<isomonth>\d{1,2})-(?<isoday>\d{1,2})'
         . '|(?<year2>' . self::YEAR_PATTERN . ')'
-        . ')\.?\s*(?<remaining>.*)$#iu';
+        . ')\)?\.?\s*(?<remaining>.*)$#iu';
 
     private const STRICT_DATE_PATTERN = '#^(' . FrenchDate::DAY_PATTERN . ')\s+(' . FrenchDate::MONTHS_PATTERN . ')\s+(\d{4})$#iu';
 
@@ -72,6 +77,10 @@ final class TrailingDateExtractor implements HintExtractorInterface
 
         if (!empty($m['day']) && !empty($m['month']) && !empty($m['year1'])) {
             return $this->resolveDayFirst($m['day'], $m['month'], (int) $m['year1']);
+        }
+
+        if (!empty($m['monthonly']) && !empty($m['year3'])) {
+            return $this->resolveMonthYear($m['monthonly'], $m['year3']);
         }
 
         if (!empty($m['usmonth'])) {
@@ -103,6 +112,21 @@ final class TrailingDateExtractor implements HintExtractorInterface
         $monthName = FrenchDate::monthNumber($monthRaw) !== null ? $monthRaw : FrenchDate::monthName($month);
 
         return trim(FrenchDate::dayText($dayRaw) . ' ' . $monthName . ' ' . $year);
+    }
+
+    /**
+     * "mai 2017" / "May 2017" -- no day to calendar-check against (a valid month name
+     * from either MONTHS_PATTERN is validation enough), same "always French text out"
+     * rule as the other branches.
+     */
+    private function resolveMonthYear(string $monthRaw, string $year): ?string
+    {
+        $month = FrenchDate::monthNumber($monthRaw) ?? EnglishDate::monthNumber($monthRaw);
+        if ($month === null) {
+            return null;
+        }
+
+        return FrenchDate::monthName($month) . ' ' . $year;
     }
 
     private function resolveNumeric(int $day, ?int $month, int $year): ?string

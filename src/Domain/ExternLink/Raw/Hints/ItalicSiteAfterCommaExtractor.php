@@ -30,10 +30,20 @@ namespace App\Domain\ExternLink\Raw\Hints;
  * italic/wikilink span to start IMMEDIATELY (no "sur " in between), so "sur ''Site''"
  * (already fully handled by SiteMentionExtractor's own markup stripping) never reaches
  * this class.
+ *
+ * Guards against one real corpus shape found via a full-corpus sweep : an access date
+ * itself written in italics ("[url Titre], ''consulté le 03/2024''") is syntactically a
+ * "''...''" span like any other, but semantically an access date, not a site name --
+ * would otherwise end up as a garbage 'site' hint (2026-08 revision). Recognized by the
+ * same trigger word ConsulteLeExtractor itself looks for and left unconsumed
+ * (DOES_NOT_LOOK_LIKE_A_SITE_NAME_PATTERN) so ConsulteLeExtractor, further down the
+ * chain, gets a chance at the (markup-tolerant) '' wrapping itself.
  */
 final class ItalicSiteAfterCommaExtractor implements HintExtractorInterface
 {
     private const PATTERN = "#^,?\s*(''.+?''|\[\[[^\]]+\]\])\s*(.*)\$#us";
+
+    private const LOOKS_LIKE_ACCESS_DATE_PHRASE_PATTERN = '#^(?:[Cc]onsult\S*|[Rr]etrieved|[Aa]ccessed)\b#u';
 
     public function extract(string $rest): ?HintMatch
     {
@@ -42,7 +52,7 @@ final class ItalicSiteAfterCommaExtractor implements HintExtractorInterface
         }
 
         $site = WikiMarkupStripper::stripItalicAndWikilink($m[1]);
-        if ($site === '') {
+        if ($site === '' || preg_match(self::LOOKS_LIKE_ACCESS_DATE_PHRASE_PATTERN, $site) === 1) {
             return null;
         }
 

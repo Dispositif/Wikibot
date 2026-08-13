@@ -274,7 +274,116 @@ class RawExternLinkParserTest extends TestCase
                 '<ref>[http://data.bnf.fr/13918026/gioachino_rossini_guillaume_tell/ Fiche] sur le site de la [[Bibliothèque nationale de France]].</ref>',
                 'la [[Bibliothèque nationale de France]]',
             ],
+            'no "du/des/de" connector, bare domain directly after "site"' => [
+                '<ref>[http://example.org/x Titre] sur le site culture.gouv.fr</ref>',
+                'culture.gouv.fr',
+            ],
         ];
+    }
+
+    /**
+     * Real bug report (2026-08) : "sur le site X, consulté le DATE" -- no "du/des/de"
+     * connector before X, and an access date sharing the same "sur ..." clause. Before
+     * the TRAILING_HINT_LOOKAHEAD fix, SiteMentionExtractor's end-anchored pattern
+     * swallowed the whole tail ("le site culture.gouv.fr, consulté le 26 janvier 2014")
+     * as one garbage 'site' value, which HintMerger's manuscriptWins('site', 'périodique')
+     * then copied verbatim into 'périodique'.
+     */
+    public function testSplitsSiteMentionFromConsulteLeAccessDateInTheSameSurClause()
+    {
+        $dto = $this->parser()->parse(
+            '<ref>[https://web.archive.org/web/20190507163011/http://www2.culture.gouv.fr/documentation/mnr/MnR-pres.htm Catalogue MNR Rose Valland - Musées Nationaux Récupération ], sur le site culture.gouv.fr, consulté le 26 janvier 2014</ref>'
+        );
+
+        $this::assertNotNull($dto);
+        $this::assertSame('culture.gouv.fr', $dto->hints['site'] ?? null);
+        $this::assertSame('26 janvier 2014', $dto->hints['consulté le'] ?? null);
+        $this::assertTrue($dto->isFullyConsumed());
+    }
+
+    /**
+     * Full-corpus sweep (2026-08) found the comma-only TRAILING_HINT_LOOKAHEAD still
+     * missed several real separator variants sharing the same "sur X <trailing hint>"
+     * clause : "du DATE" (no comma), a bare "(DATE)"/"(consulté le ...)" with no comma
+     * at all, and "month year" with no day. Each was verified against its own real
+     * corpus fragment (comment column) rather than an invented example.
+     *
+     * @dataProvider provideSiteMentionTrailingHintSeparatorFragments
+     */
+    public function testSplitsSiteMentionFromTrailingHintAcrossSeparatorVariants(
+        string $fragment,
+        string $expectedSite,
+        string $expectedDateHintKey,
+        string $expectedDateHintValue
+    ) {
+        $dto = $this->parser()->parse($fragment);
+
+        $this::assertNotNull($dto);
+        $this::assertSame($expectedSite, $dto->hints['site'] ?? null);
+        $this::assertSame($expectedDateHintValue, $dto->hints[$expectedDateHintKey] ?? null);
+        $this::assertTrue($dto->isFullyConsumed());
+    }
+
+    public static function provideSiteMentionTrailingHintSeparatorFragments(): array
+    {
+        return [
+            'comma + month/year, no day' => [
+                '<ref>[https://www.independent.co.uk/x « Uber : which countries have banned the controversial taxi app »] sur independent.co.uk, mai 2017</ref>',
+                'independent.co.uk',
+                'date',
+                'mai 2017',
+            ],
+            'bare parenthesized date, no comma at all' => [
+                '<ref>[https://www.statista.com/statistics/669429/x https://www.statista.com/statistics/669429/x] sur statista.com (23 janvier 2021)</ref>',
+                'statista.com',
+                'date',
+                '23 janvier 2021',
+            ],
+            '"du" connector instead of a comma' => [
+                "<ref>[http://www.telerama.fr/x “Guignols de l'info” : dites, ça tournerait pas un peu au délire collectif ?] sur telerama.fr du 2 juillet 2015</ref>",
+                'telerama.fr',
+                'date',
+                '2 juillet 2015',
+            ],
+            'parenthesized "consulté le", no comma, site name has an internal comma' => [
+                '<ref>{{en}} [https://www.som.com/projects/x Skidmore, Owings and Merrill : The Ledge at Skydeck Chicago] sur le site de Skidmore, Owings and Merrill (consulté le 16 mars 2019)</ref>',
+                'Skidmore, Owings and Merrill',
+                'consulté le',
+                '16 mars 2019',
+            ],
+            'parenthesized "Consulté le", no comma, plain bare site name' => [
+                '<ref>[https://www.imdb.com/title/tt3638488/awards?ref_=tt_awd Les Initiés (2016– ) Awards], sur le site IMDB (Consulté le 10 novembre 2019)</ref>',
+                'IMDB',
+                'consulté le',
+                '10 novembre 2019',
+            ],
+            'italic site name + parenthesized "consulté le", no comma before the parenthesis' => [
+                "<ref>[http://cartometro.com/cartes/metro-paris/index.php?gpslat=48.877079&gpslon=2.284766&zoom=4 Configuration des voies], sur le site ''cartometro.com'' (consulté le 13 novembre 2013).</ref>",
+                'cartometro.com',
+                'consulté le',
+                '13 novembre 2013',
+            ],
+        ];
+    }
+
+    /**
+     * Real corpus bug (2026-08) : an access date itself written in italics ("''consulté
+     * le 03/2024''") is syntactically indistinguishable from a legitimate italic site
+     * name to ItalicSiteAfterCommaExtractor's own pattern -- guarded there (see its
+     * LOOKS_LIKE_ACCESS_DATE_PHRASE_PATTERN), and ConsulteLeExtractor extended to
+     * tolerate the "''...''" wrapping left behind, plus a new MM/YYYY (no day) numeric
+     * shape.
+     */
+    public function testDoesNotMisreadAnItalicizedAccessDateAsASiteName()
+    {
+        $dto = $this->parser()->parse(
+            '<ref name="Blason">[https://www.bures-sur-yvette.fr/les-armes-de-la-commune/ Page Blason et logo de Bures-sur-Yvette sur le site officiel de la ville], \'\'consulté le 03/2024\'\'</ref>'
+        );
+
+        $this::assertNotNull($dto);
+        $this::assertArrayNotHasKey('site', $dto->hints);
+        $this::assertSame('mars 2024', $dto->hints['consulté le'] ?? null);
+        $this::assertTrue($dto->isFullyConsumed());
     }
 
     // --- GREEN : ~33% of the corpus, the ", ''Site''"/", [[Site]]" hint extractor (Lot 2) ---
@@ -592,14 +701,15 @@ class RawExternLinkParserTest extends TestCase
     }
 
     /**
-     * Known imprecision, pre-existing and NOT specific to this extractor : once "par X"
-     * is consumed, SiteMentionExtractor's own pattern is anchored to the end of the
-     * remaining text ("sur (.+?)$"), so when a date follows the site within the SAME
-     * "sur ..." clause with no further separator recognized in between, it swallows
-     * both as one compound 'site' value rather than splitting them -- 'auteur' itself
-     * is still extracted correctly, which is what this extractor is responsible for.
+     * Formerly a documented "known imprecision" : once "par X" is consumed,
+     * SiteMentionExtractor used to be anchored to the end of the remaining text
+     * ("sur (.+?)$"), so a date following the site within the SAME "sur ..." clause got
+     * swallowed into one compound 'site' value instead of being split off. Fixed
+     * (2026-08 revision) via SiteMentionExtractor::TRAILING_HINT_LOOKAHEAD, which stops
+     * the site capture at a recognized trailing date and hands the rest back to
+     * TrailingDateExtractor, next in the chain.
      */
-    public function testAuthorMentionAfterCommaLeavesSiteAndDateCombinedWhenBothFollowInTheSameSurClause()
+    public function testAuthorMentionAfterCommaLeavesSiteAndDateSeparatedWhenBothFollowInTheSameSurClause()
     {
         $dto = $this->parser()->parse(
             "<ref>[https://www.gabonreview.com/x Titre] par Désiré-Clitandre Dzonteu, sur ''Gabon Review'', 2 octobre 2019.</ref>"
@@ -607,8 +717,8 @@ class RawExternLinkParserTest extends TestCase
 
         $this::assertNotNull($dto);
         $this::assertSame('Désiré-Clitandre Dzonteu', $dto->hints['auteur'] ?? null);
-        $this::assertArrayNotHasKey('date', $dto->hints);
-        $this::assertSame("''Gabon Review'', 2 octobre 2019", $dto->hints['site'] ?? null);
+        $this::assertSame('2 octobre 2019', $dto->hints['date'] ?? null);
+        $this::assertSame('Gabon Review', $dto->hints['site'] ?? null);
     }
 
     /**

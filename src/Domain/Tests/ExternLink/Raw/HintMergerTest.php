@@ -267,6 +267,30 @@ class HintMergerTest extends TestCase
     }
 
     /**
+     * Real bug report (2026-08) : "sur le site X, consulté le DATE" used to end up as
+     * périodique='le site culture.gouv.fr, consulté le 26 janvier 2014' -- the whole
+     * unparsed tail, copied verbatim via manuscriptWins('site', 'périodique') -- because
+     * SiteMentionExtractor's old end-anchored pattern swallowed the access date into the
+     * 'site' hint (see RawExternLinkParserTest::
+     * testSplitsSiteMentionFromConsulteLeAccessDateInTheSameSurClause for the parser-level
+     * fix). Once 'site' resolves to just the domain, 'périodique' follows suit.
+     */
+    public function testDoesNotLeakConsulteLeIntoPeriodiqueViaSiteHint()
+    {
+        $raw = $this->parse(
+            '<ref>[https://web.archive.org/web/20190507163011/http://www2.culture.gouv.fr/documentation/mnr/MnR-pres.htm Catalogue MNR Rose Valland - Musées Nationaux Récupération ], sur le site culture.gouv.fr, consulté le 26 janvier 2014</ref>'
+        );
+
+        $result = $this->merger()->merge($raw, [
+            'titre' => 'Catalogue MNR Rose Valland - Musées Nationaux Récupération',
+            'site' => 'culture.gouv.fr via [[Internet Archive]]',
+        ]);
+
+        self::assertSame('culture.gouv.fr', $result->mapData['périodique']);
+        self::assertSame('26 janvier 2014', $result->mapData['consulté le']);
+    }
+
+    /**
      * "sur le site officiel" is an editorial judgment ("this URL IS the subject's own
      * homepage"), not a literal site name -- overrides the crawled value outright
      * instead of being compared/conflicting with it (2026-08 revision, fixes a false
