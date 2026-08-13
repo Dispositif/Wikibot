@@ -70,14 +70,20 @@ final class RawExternLinkTransformer
         }
 
         try {
-            return $this->isLienBrise($templateName)
+            $result = $this->isLienBrise($templateName)
                 ? new RawExternLinkResult($this->injectManuscriptTitle($crawled, $templateName, $raw), MergeConfidence::Auto)
                 : $this->mergeIntoTemplate($crawled, $templateName, $raw);
         } catch (Throwable) {
             // Malformed/unexpected template text (shouldn't happen -- $crawled came from
             // ExternRefTransformer itself) : fail safe, keep the crawl's own result.
-            return new RawExternLinkResult($crawled, MergeConfidence::SemiAuto);
+            $result = new RawExternLinkResult($crawled, MergeConfidence::SemiAuto);
         }
+
+        // The parser strips the leading "* " off a bullet-list fragment before parsing
+        // (RawExternLinkParser::parse()) so BRACKET_LINK_PATTERN sees the same shape as a
+        // bare/<ref> fragment -- restore it here, since every path above serializes only
+        // the template itself.
+        return $raw->isBullet ? new RawExternLinkResult('* ' . $result->wikitext, $result->confidence) : $result;
     }
 
     private function extractTemplateName(string $serialized): ?string

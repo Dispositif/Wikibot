@@ -191,6 +191,24 @@ class RawExternLinkTransformerTest extends TestCase
         self::assertSame(MergeConfidence::Auto, $result->confidence);
     }
 
+    /**
+     * Regression (found in prod, 2026-08-13, https://fr.wikipedia.org/w/index.php?title=Odonata&diff=prev&oldid=238601170) :
+     * RawExternLinkParser strips the leading "* " off a bullet-list fragment before
+     * parsing (so BRACKET_LINK_PATTERN sees the same shape as a bare/<ref> fragment),
+     * but nothing ever restored it -- every bullet-list manuscript link lost its bullet,
+     * merging it into the following/preceding line.
+     */
+    public function testKeepsBulletPrefixOnBulletListFragment()
+    {
+        $transformer = $this->transformer(
+            '{{lien web |auteur1=NetPilote SARL |titre=Société française d\'Odonatologie |url=http://www.libellules.org |site=libellules.org}}'
+        );
+
+        $result = $transformer->process("* [http://www.libellules.org Société française d'Odonatologie].");
+
+        self::assertStringStartsWith('* {{lien web', $result->wikitext);
+    }
+
     public function testPassesUrlAndSummaryThroughToTheCrawlPipelineUnchanged()
     {
         $externRefTransformer = $this->createMock(ExternRefTransformerInterface::class);
