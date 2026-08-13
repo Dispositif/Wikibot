@@ -171,6 +171,29 @@ class HintMergerTest extends TestCase
         self::assertSame('H-net.org', $result->mapData['titre'], 'a domain-name label is still better than no titre at all');
     }
 
+    /**
+     * Real bug report (2026-08) : "[url Succulents.co.za: ''Aloe reynoldsii'']" -- unlike
+     * the bare "H-net.org" case above, the manuscript label is not JUST the domain, it's
+     * a "Domain: real title" source-attribution prefix. Not a case-sensitivity issue
+     * (normalize() already lowercases) : isDomainOrSiteName()'s exact-match rule simply
+     * doesn't apply here, since there IS real content (the species name) worth keeping --
+     * HintMerger::stripDomainPrefix() strips just the "Succulents.co.za: " prefix instead
+     * of discarding the whole manuscript title. $raw->url stays the ORIGINAL (pre-archive)
+     * URL throughout HintMerger (see RawExternLinkTransformer::process(), which crawls
+     * $raw->url and only the crawled 'site' carries the "via [[Internet Archive]]"
+     * suffix), so the domain-prefix match works even when the link was later archived.
+     */
+    public function testStripsDomainPrefixFromASourceAttributedTitleInsteadOfDiscardingIt()
+    {
+        $raw = $this->parse(
+            "<ref>[http://www.succulents.co.za/aloes/stemless-aloes/aloe-reynoldsii.php Succulents.co.za: ''Aloe reynoldsii'']</ref>"
+        );
+
+        $result = $this->merger()->merge($raw, ['site' => 'succulents.co.za via [[Internet Archive]]']);
+
+        self::assertSame("''Aloe reynoldsii''", $result->mapData['titre']);
+    }
+
     // --- auteur/date/périodique : EDITORIAL fields, manuscript wins by default ---
 
     public function testFillsMissingAuteurAndDateFromManuscript()

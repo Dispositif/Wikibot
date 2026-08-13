@@ -27,7 +27,9 @@ use App\Domain\Utils\TextUtil;
  *             writes instead of a real title ("Lire en ligne", "en ligne", "ici"...), or
  *             it's just the URL's domain/the crawled site name restated ("H-net.org"),
  *             in which case crawled fills in (or the manuscript value stays, absent
- *             anything better).
+ *             anything better). A leading "Domain: " source-attribution prefix
+ *             ("Succulents.co.za: Aloe reynoldsii") is stripped first, keeping the real
+ *             title that follows rather than falling back to crawled wholesale.
  * - auteur, date, périodique : editorial fields, same "manuscript wins if present" rule
  *             as titre (no separate generic-placeholder table for these, not seen as a
  *             pattern in the corpus the way title placeholders are).
@@ -155,11 +157,13 @@ final class HintMerger
      */
     private function mergeTitre(RawExternLinkDTO $raw, array $mapData): array
     {
-        if ($raw->titre !== null
-            && !$this->isGenericManuscriptTitle($raw->titre)
-            && !$this->isDomainOrSiteName($raw->titre, $raw, $mapData)
+        $titre = $raw->titre !== null ? $this->stripDomainPrefix($raw->titre, $raw, $mapData) : null;
+
+        if ($titre !== null
+            && !$this->isGenericManuscriptTitle($titre)
+            && !$this->isDomainOrSiteName($titre, $raw, $mapData)
         ) {
-            $mapData['titre'] = $raw->titre;
+            $mapData['titre'] = $titre;
 
             return $mapData;
         }
@@ -167,11 +171,40 @@ final class HintMerger
         // Manuscript titre absent, itself a placeholder, or just the domain/site name :
         // crawled fills in when available ; otherwise fall back to the manuscript value
         // rather than nothing.
-        if (!isset($mapData['titre']) && $raw->titre !== null) {
-            $mapData['titre'] = $raw->titre;
+        if (!isset($mapData['titre']) && $titre !== null) {
+            $mapData['titre'] = $titre;
         }
 
         return $mapData;
+    }
+
+    /**
+     * "[url Succulents.co.za: ''Aloe reynoldsii'']" -- a human sometimes prefixes the
+     * REAL title with the domain/site name as a source attribution ("Domain: Title"),
+     * unlike isDomainOrSiteName()'s case where the label IS just the domain and nothing
+     * else. Unlike that case, there's real content worth keeping here, so the prefix is
+     * stripped rather than falling back to the crawled title wholesale.
+     *
+     * @param array<string, string> $mapData
+     */
+    private function stripDomainPrefix(string $titre, RawExternLinkDTO $raw, array $mapData): string
+    {
+        $host = (string) (parse_url($raw->url, PHP_URL_HOST) ?? '');
+        $host = preg_replace('#^www\.#i', '', $host) ?? $host;
+
+        foreach (array_filter([$host, $mapData['site'] ?? null]) as $candidate) {
+            $prefixPattern = '#^' . preg_quote((string) $candidate, '#') . "\s*[:\x2D\x{2013}]\s*#iu";
+            if (preg_match($prefixPattern, $titre, $m) !== 1) {
+                continue;
+            }
+
+            $stripped = trim(mb_substr($titre, mb_strlen($m[0])));
+            if ($stripped !== '') {
+                return $stripped;
+            }
+        }
+
+        return $titre;
     }
 
     private function isGenericManuscriptTitle(string $titre): bool
