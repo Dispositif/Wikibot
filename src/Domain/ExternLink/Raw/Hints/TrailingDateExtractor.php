@@ -27,9 +27,9 @@ namespace App\Domain\ExternLink\Raw\Hints;
  */
 final class TrailingDateExtractor implements HintExtractorInterface
 {
-    private const PATTERN = '#^,?\s*(?:\{\{\s*[Dd]ate\s*\|(?<tpl>[^}]+)\}\}|(?<day>\d{1,2})\s+(?<month>' . FrenchDate::MONTHS_PATTERN . ')\s+(?<year1>(?:1[4-9]|20)\d{2})|(?<year2>(?:1[4-9]|20)\d{2}))\.?\s*(?<remaining>.*)$#iu';
+    private const PATTERN = '#^,?\s*(?:\{\{\s*[Dd]ate\s*\|(?<tpl>[^}]+)\}\}|(?<day>' . FrenchDate::DAY_PATTERN . ')\s+(?<month>' . FrenchDate::MONTHS_PATTERN . ')\s+(?<year1>(?:1[4-9]|20)\d{2})|(?<year2>(?:1[4-9]|20)\d{2}))\.?\s*(?<remaining>.*)$#iu';
 
-    private const STRICT_DATE_PATTERN = '#^(\d{1,2})\s+(' . FrenchDate::MONTHS_PATTERN . ')\s+(\d{4})$#iu';
+    private const STRICT_DATE_PATTERN = '#^(' . FrenchDate::DAY_PATTERN . ')\s+(' . FrenchDate::MONTHS_PATTERN . ')\s+(\d{4})$#iu';
 
     public function extract(string $rest): ?HintMatch
     {
@@ -50,7 +50,7 @@ final class TrailingDateExtractor implements HintExtractorInterface
         if (!empty($m['tpl'])) {
             $value = FrenchDate::resolveTemplateDateParam($m['tpl']);
         } elseif (!empty($m['day']) && !empty($m['month']) && !empty($m['year1'])) {
-            $value = trim($m['day'] . ' ' . $m['month'] . ' ' . $m['year1']);
+            $value = trim(FrenchDate::dayText($m['day']) . ' ' . $m['month'] . ' ' . $m['year1']);
         } else {
             $value = $m['year2'] ?? null;
         }
@@ -60,9 +60,9 @@ final class TrailingDateExtractor implements HintExtractorInterface
 
     /**
      * Only the strict "day month year" shape has something to actually calendar-check
-     * (FrenchDate::isValidCalendarDate() rejects "31 février"). A bare year, an ordinal
-     * day ("1er"), or a "month year" form is kept as-is -- there's nothing to validate a
-     * standalone year or an unparsed ordinal against.
+     * (FrenchDate::isValidCalendarDate() rejects "31 février"). A bare year or a
+     * "month year" form is kept as-is -- there's nothing to validate a standalone year
+     * against.
      */
     private function looksLikeValidDate(string $value): bool
     {
@@ -70,6 +70,6 @@ final class TrailingDateExtractor implements HintExtractorInterface
             return true;
         }
 
-        return FrenchDate::isValidCalendarDate((int) $m[1], $m[2], (int) $m[3]);
+        return FrenchDate::isValidCalendarDate(FrenchDate::dayNumber($m[1]), $m[2], (int) $m[3]);
     }
 }

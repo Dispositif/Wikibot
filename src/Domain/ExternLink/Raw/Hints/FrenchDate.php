@@ -24,6 +24,13 @@ final class FrenchDate
      *  "consulté le {{1er}} avril 2012") -- normalizes to the ordinal text "1er". */
     public const ORDINAL_FIRST_DAY_PATTERN = '\{\{\s*1er\s*\}\}';
 
+    /**
+     * Every shape a day-of-month is written in : plain "12"/"01", the French ordinal
+     * "1er" (86 occurrences in the Lot 0 corpus, only ever for the 1st), or that same
+     * ordinal wrapped in its template, "{{1er}}" (195 occurrences).
+     */
+    public const DAY_PATTERN = '\d{1,2}(?:er)?|' . self::ORDINAL_FIRST_DAY_PATTERN;
+
     private const MONTH_NUMBERS
         = [
             'janvier' => 1, 'février' => 2, 'fevrier' => 2, 'mars' => 3, 'avril' => 4,
@@ -60,19 +67,19 @@ final class FrenchDate
      */
     public static function dayNumber(string $day): int
     {
-        return self::isOrdinalFirstDayTemplate($day) ? 1 : (int) $day;
+        return self::isOrdinalFirstDay($day) ? 1 : (int) $day;
     }
 
     /** "{{1er}}" -> "1er" (the literal text a human would have written without the
      *  template wrapper) ; any other value passed through unchanged. */
     public static function dayText(string $day): string
     {
-        return self::isOrdinalFirstDayTemplate($day) ? '1er' : $day;
+        return self::isOrdinalFirstDay($day) ? '1er' : $day;
     }
 
-    private static function isOrdinalFirstDayTemplate(string $day): bool
+    private static function isOrdinalFirstDay(string $day): bool
     {
-        return preg_match('#^' . self::ORDINAL_FIRST_DAY_PATTERN . '$#iu', trim($day)) === 1;
+        return preg_match('#^(?:' . self::ORDINAL_FIRST_DAY_PATTERN . '|1er)$#iu', trim($day)) === 1;
     }
 
     /**
