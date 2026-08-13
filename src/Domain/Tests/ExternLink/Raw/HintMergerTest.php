@@ -140,6 +140,37 @@ class HintMergerTest extends TestCase
         self::assertSame('en ligne', $result->mapData['titre'], 'a placeholder is still better than no titre at all');
     }
 
+    /**
+     * "[url H-net.org]" -- the manuscript label is just the URL's own domain (also the
+     * crawled 'site' value here), not an actual title ; the crawled page title carries
+     * more information and should win.
+     */
+    public function testFallsBackToCrawledTitleWhenManuscriptLabelIsJustTheDomainName()
+    {
+        $raw = $this->parse(
+            '<ref>[https://www.h-net.org/reviews/showrev.php?id=10388 H-net.org]</ref>'
+        );
+
+        $result = $this->merger()->merge(
+            $raw,
+            ['titre' => 'Spoliation d’œuvres d’art par le régime nazi', 'site' => 'h-net.org']
+        );
+
+        self::assertSame('Spoliation d’œuvres d’art par le régime nazi', $result->mapData['titre']);
+        self::assertSame(MergeConfidence::Auto, $result->confidence);
+    }
+
+    public function testKeepsDomainNameManuscriptLabelWhenNoCrawledAlternative()
+    {
+        $raw = $this->parse(
+            '<ref>[https://www.h-net.org/reviews/showrev.php?id=10388 H-net.org]</ref>'
+        );
+
+        $result = $this->merger()->merge($raw, ['site' => 'h-net.org']);
+
+        self::assertSame('H-net.org', $result->mapData['titre'], 'a domain-name label is still better than no titre at all');
+    }
+
     // --- auteur/date/périodique : EDITORIAL fields, manuscript wins by default ---
 
     public function testFillsMissingAuteurAndDateFromManuscript()

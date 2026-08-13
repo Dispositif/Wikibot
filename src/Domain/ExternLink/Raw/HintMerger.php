@@ -24,9 +24,10 @@ use App\Domain\Utils\TextUtil;
  * whatever the citation happened to say. Concretely :
  *
  * - titre   : manuscript wins, UNLESS it's itself a generic placeholder label a human
- *             writes instead of a real title ("Lire en ligne", "en ligne", "ici"...),
- *             in which case crawled fills in (or the placeholder stays, absent anything
- *             better).
+ *             writes instead of a real title ("Lire en ligne", "en ligne", "ici"...), or
+ *             it's just the URL's domain/the crawled site name restated ("H-net.org"),
+ *             in which case crawled fills in (or the manuscript value stays, absent
+ *             anything better).
  * - auteur, date, périodique : editorial fields, same "manuscript wins if present" rule
  *             as titre (no separate generic-placeholder table for these, not seen as a
  *             pattern in the corpus the way title placeholders are).
@@ -154,14 +155,18 @@ final class HintMerger
      */
     private function mergeTitre(RawExternLinkDTO $raw, array $mapData): array
     {
-        if ($raw->titre !== null && !$this->isGenericManuscriptTitle($raw->titre)) {
+        if ($raw->titre !== null
+            && !$this->isGenericManuscriptTitle($raw->titre)
+            && !$this->isDomainOrSiteName($raw->titre, $raw, $mapData)
+        ) {
             $mapData['titre'] = $raw->titre;
 
             return $mapData;
         }
 
-        // Manuscript titre absent or itself a placeholder : crawled fills in when
-        // available ; otherwise fall back to the placeholder rather than nothing.
+        // Manuscript titre absent, itself a placeholder, or just the domain/site name :
+        // crawled fills in when available ; otherwise fall back to the manuscript value
+        // rather than nothing.
         if (!isset($mapData['titre']) && $raw->titre !== null) {
             $mapData['titre'] = $raw->titre;
         }
@@ -172,6 +177,40 @@ final class HintMerger
     private function isGenericManuscriptTitle(string $titre): bool
     {
         return in_array($this->normalize($titre), self::GENERIC_MANUSCRIPT_TITLES, true);
+    }
+
+    /**
+     * "[url H-net.org]" -- a human sometimes writes the bare domain/site name as the
+     * link label instead of an actual title (unlike GENERIC_MANUSCRIPT_TITLES, this
+     * isn't a fixed vocabulary, it's the manuscript titre matching the URL's own host or
+     * the crawled 'site' -- so it's compared, not looked up). Such a label carries no
+     * more information than 'site' already does, and the crawled page title is worth
+     * more than restating the domain.
+     *
+     * @param array<string, string> $mapData
+     */
+    private function isDomainOrSiteName(string $titre, RawExternLinkDTO $raw, array $mapData): bool
+    {
+        $normalizedTitre = $this->normalizeAlnum($titre);
+        if ($normalizedTitre === '') {
+            return false;
+        }
+
+        $host = (string) (parse_url($raw->url, PHP_URL_HOST) ?? '');
+        $host = preg_replace('#^www\.#i', '', $host) ?? $host;
+
+        foreach ([$host, $mapData['site'] ?? ''] as $candidate) {
+            if ($candidate !== '' && $normalizedTitre === $this->normalizeAlnum($candidate)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function normalizeAlnum(string $value): string
+    {
+        return preg_replace('#[^\p{L}\p{N}]+#u', '', $this->normalize($value)) ?? '';
     }
 
     /**
