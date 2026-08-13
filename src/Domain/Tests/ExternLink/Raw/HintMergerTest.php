@@ -210,10 +210,12 @@ class HintMergerTest extends TestCase
 
     public function testSemiAutoWhenManuscriptResidueIsUnconsumed()
     {
-        // "sur le site officiel" isn't parsed by SiteMentionExtractor (see
-        // RawExternLinkParserTest::testDoesNotMisparseDescriptiveSiteMention, wip) --
-        // it stays as unconsumed $rest, so even with zero site/titre conflicts the
-        // manuscript wasn't fully accounted for.
+        // "sur le site officiel" is (mis)parsed by SiteMentionExtractor as a literal
+        // site hint ("le site officiel", see RawExternLinkParserTest::
+        // testDoesNotMisparseDescriptiveSiteMention, still wip) -- rest ends up fully
+        // consumed, but that bogus hint conflicts with the real crawled site, which is
+        // what actually drives SemiAuto here (not leftover residue -- see
+        // testPreservesUnconsumedResidueAsCitationInsteadOfDroppingIt for that case).
         $raw = $this->parse(
             '<ref>[http://www.medicen.org/ Site officiel du pôle Medicen.] sur le site officiel</ref>'
         );
@@ -221,6 +223,45 @@ class HintMergerTest extends TestCase
         $result = $this->merger()->merge($raw, ['titre' => 'Site officiel du pôle Medicen.', 'site' => 'medicen.org']);
 
         self::assertSame(MergeConfidence::SemiAuto, $result->confidence);
+        self::assertArrayHasKey('site', $result->conflicts);
+    }
+
+    /**
+     * Regression (found in live testing, 2026-08-12) : a "; " separator (not "," --
+     * none of the Hints/ extractors recognize it) left "Vidéo présentant au ralenti le
+     * décollage d'une libellule, sur You Tube par Valvids" entirely unconsumed. Before
+     * preserveUnconsumedResidue() existed, confirming the SemiAuto diff silently
+     * dropped that whole description + the author attribution ("Valvids") -- the
+     * confidence flag correctly asked for a human look, but nothing preserved the data
+     * itself if that human said yes without carefully re-reading the raw diff.
+     */
+    public function testPreservesUnconsumedResidueAsCitationInsteadOfDroppingIt()
+    {
+        $raw = $this->parse(
+            "* [https://www.youtube.com/watch?v=HdKxmvcRxls Dragonfly action in slow motion ] ; Vidéo présentant au ralenti le décollage d'une libellule, sur You Tube par Valvids"
+        );
+
+        $result = $this->merger()->merge($raw, ['titre' => 'Dragonfly action in slow motion', 'site' => '[[YouTube]]']);
+
+        self::assertSame(MergeConfidence::SemiAuto, $result->confidence);
+        self::assertSame(
+            "Vidéo présentant au ralenti le décollage d'une libellule, sur You Tube par Valvids",
+            $result->mapData['citation']
+        );
+    }
+
+    public function testDoesNotOverwriteAnAlreadyPresentCrawledCitation()
+    {
+        $raw = $this->parse(
+            '<ref>[http://www.medicen.org/ Site officiel du pôle Medicen.] sur le site officiel</ref>'
+        );
+
+        $result = $this->merger()->merge(
+            $raw,
+            ['titre' => 'Site officiel du pôle Medicen.', 'citation' => 'Extrait crawlé déjà présent']
+        );
+
+        self::assertSame('Extrait crawlé déjà présent', $result->mapData['citation']);
     }
 
     /**

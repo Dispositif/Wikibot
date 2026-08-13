@@ -49,6 +49,13 @@ use App\Domain\Utils\TextUtil;
  * ExternRefTransformer::chooseTemplateNameByData()'s job, run on the MERGED mapData this
  * class returns (so a manuscript date hint filling a gap can legitimately enable the
  * "date obligatoire pour {article}" rule downstream).
+ *
+ * "Zero data loss" : any manuscript text the Hints/ extractor chain (Lot 2) couldn't
+ * attribute to a specific field (leadingText/rest left over -- e.g. a separator style
+ * ("; ") or a phrasing no extractor recognizes yet) is NOT silently discarded just
+ * because the merge otherwise succeeds -- see preserveUnconsumedResidue(). Confidence
+ * still drops to SemiAuto in that case (a human should confirm the categorization), but
+ * the text itself survives into the output either way.
  */
 final class HintMerger
 {
@@ -85,11 +92,39 @@ final class HintMerger
         // Technical fields : crawled wins if present, manuscript only fills a gap.
         $mapData = $this->fillGapOnly($raw->hints, $mapData, 'consulté le', 'consulté le');
 
+        $mapData = $this->preserveUnconsumedResidue($raw, $mapData);
+
         $confidence = ($conflicts === [] && $raw->isFullyConsumed())
             ? MergeConfidence::Auto
             : MergeConfidence::SemiAuto;
 
         return new MergeResult($mapData, $confidence, $conflicts);
+    }
+
+    /**
+     * Whatever the Hints/ chain left in $leadingText/$rest (see class docblock) goes
+     * into 'citation' -- a real {{lien web}} param (alias of 'extrait'/'quote'), meant
+     * for exactly this : a short descriptive excerpt about the source. Templates that
+     * don't support 'citation' ({{article}}, {{lien brisé}}) simply drop it later via
+     * the caller's own stripParamsNotSupportedByTemplate() -- same generic mechanism
+     * that already handles 'site' not existing on {{article}}, no special-casing here.
+     *
+     * @param array<string, string> $mapData
+     * @return array<string, string>
+     */
+    private function preserveUnconsumedResidue(RawExternLinkDTO $raw, array $mapData): array
+    {
+        if ($raw->isFullyConsumed() || !empty($mapData['citation'])) {
+            return $mapData;
+        }
+
+        $residue = trim(trim($raw->leadingText) . ' ' . trim($raw->rest));
+        $residue = trim($residue, " \t\n\r\0\x0B,;.");
+        if ($residue !== '') {
+            $mapData['citation'] = $residue;
+        }
+
+        return $mapData;
     }
 
     /**
