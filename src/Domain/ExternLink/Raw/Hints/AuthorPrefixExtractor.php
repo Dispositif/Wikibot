@@ -32,9 +32,7 @@ namespace App\Domain\ExternLink\Raw\Hints;
  */
 final class AuthorPrefixExtractor implements HintExtractorInterface
 {
-    private const CONNECTORS = 'de|du|des|van|von|der|la|le';
-
-    private const PATTERN = "#^(\[\[[^\]]+\]\]|[A-ZÀ-Ý][\p{L}'.\-]*(?:\s+(?:[A-ZÀ-Ý][\p{L}'.\-]*|" . self::CONNECTORS . "))*),\s*\$#u";
+    private const PATTERN = "#^(\[\[[^\]]+\]\]|" . FrenchName::NAME_PATTERN . "),\s*\$#u";
 
     public function extract(string $rest): ?HintMatch
     {

@@ -21,11 +21,15 @@ namespace App\Domain\ExternLink\Raw\Hints;
  * The dominant real-world form in the "no comma" bucket is actually numeric
  * "JJ/MM/AAAA", not the textual "12 mars 2019" form -- both are handled ;
  * numericToFrenchText() reformats the numeric form into the same textual shape the rest
- * of this parser produces, after validating it's a real calendar date.
+ * of this parser produces, after validating it's a real calendar date. Also handles the
+ * whole date wrapped in {{date|...}} ("consulté le {{date|1 avril 2012}}", resolved via
+ * the shared FrenchDate::resolveTemplateDateParam(), also used by TrailingDateExtractor)
+ * and just the day wrapped as the ordinal placeholder {{1er}} ("consulté le {{1er}} avril
+ * 2012", where the month/year stay plain text).
  */
 final class ConsulteLeExtractor implements HintExtractorInterface
 {
-    private const PATTERN = '#^,?\s*\(?\s*[Cc]onsult\S*\s+(?:le|du|sur\s+\S+\s+le)\s+(?:(?<textday>\d{1,2})\s+(?<textmonth>' . FrenchDate::MONTHS_PATTERN . ')\s+(?<textyear>\d{4})|(?<numday>\d{1,2})[/.\-](?<nummonth>\d{1,2})[/.\-](?<numyear>\d{2,4}))\)?\.?\s*(?<remaining>.*)$#iu';
+    private const PATTERN = '#^,?\s*\(?\s*[Cc]onsult\S*\s+(?:le|du|sur\s+\S+\s+le)\s+(?:\{\{\s*[Dd]ate\s*\|(?<tpl>[^}]+)\}\}|(?<textday>\d{1,2}|' . FrenchDate::ORDINAL_FIRST_DAY_PATTERN . ')\s+(?<textmonth>' . FrenchDate::MONTHS_PATTERN . ')\s+(?<textyear>\d{4})|(?<numday>\d{1,2})[/.\-](?<nummonth>\d{1,2})[/.\-](?<numyear>\d{2,4}))\)?\.?\s*(?<remaining>.*)$#iu';
 
     public function extract(string $rest): ?HintMatch
     {
@@ -43,12 +47,16 @@ final class ConsulteLeExtractor implements HintExtractorInterface
 
     private function resolveValue(array $m): ?string
     {
+        if (!empty($m['tpl'])) {
+            return FrenchDate::resolveTemplateDateParam($m['tpl']);
+        }
+
         if (!empty($m['textday'])) {
-            $day = (int) $m['textday'];
+            $day = FrenchDate::dayNumber($m['textday']);
             $year = (int) $m['textyear'];
 
             return FrenchDate::isValidCalendarDate($day, $m['textmonth'], $year)
-                ? trim($m['textday'] . ' ' . $m['textmonth'] . ' ' . $m['textyear'])
+                ? trim(FrenchDate::dayText($m['textday']) . ' ' . $m['textmonth'] . ' ' . $m['textyear'])
                 : null;
         }
 

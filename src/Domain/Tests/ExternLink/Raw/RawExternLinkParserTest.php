@@ -311,6 +311,11 @@ class RawExternLinkParserTest extends TestCase
                 "Héritage mendélien chez l'humain",
                 null,
             ],
+            'no comma at all before the italic (2026-08 revision)' => [
+                "<ref>[https://www.lemonde.fr/international/article/2012/06/05/le-numero-2-d-al-qaida-vise-par-un-drone_1712624_3210.html Le numéro 2 d'Al-Qaïda tué par un drone au Pakistan] ''Le Monde'', 5 juin 2012</ref>",
+                'Le Monde',
+                '5 juin 2012',
+            ],
         ];
     }
 
@@ -428,6 +433,14 @@ class RawExternLinkParserTest extends TestCase
                 "<ref>{{bg}} [http://paisiionline.hit.bg/ Site du lycée Otec Paisij] (consulté le 23 janvier 2009).</ref>",
                 '23 janvier 2009',
             ],
+            'ordinal day wrapped as {{1er}} template, month/year plain text' => [
+                '<ref>[https://www.allocine.fr/film/fichefilm-110666/casting/ Allocine.fr : Fiche technique Le concert] consulté le {{1er}} avril 2012.</ref>',
+                '1er avril 2012',
+            ],
+            'whole date wrapped in {{date|...}}' => [
+                '<ref>[https://www.allocine.fr/article/fichearticle_gen_carticle=18362912.html Allocine.fr : Distinctions britannique pour Harvey Weinstein], consulté le {{date|1 avril 2012}}.</ref>',
+                '1 avril 2012',
+            ],
         ];
     }
 
@@ -508,6 +521,69 @@ class RawExternLinkParserTest extends TestCase
         $this::assertSame('[[Université Johns-Hopkins]]', $dto->hints['auteur'] ?? null);
         $this::assertSame('', $dto->leadingText);
         $this::assertTrue($dto->isFullyConsumed());
+    }
+
+    // --- GREEN : ~1.2% of the corpus, author mention AFTER the bracket ("par X") (2026-08) ---
+
+    /**
+     * @dataProvider provideAuthorMentionAfterCommaFragments
+     */
+    public function testExtractsAuthorMentionAfterComma(string $fragment, string $expectedAuteur)
+    {
+        $dto = $this->parser()->parse($fragment);
+
+        $this::assertNotNull($dto);
+        $this::assertSame($expectedAuteur, $dto->hints['auteur'] ?? null);
+    }
+
+    public static function provideAuthorMentionAfterCommaFragments(): array
+    {
+        return [
+            'comma + "par" + two-word name, nothing else trailing' => [
+                '<ref>[http://www.example.org/x Titre], par J. Valentin.</ref>',
+                'J. Valentin',
+            ],
+            'no comma before "par", site+date also extracted from what is left' => [
+                "<ref>[https://www.gabonreview.com/x Titre] par Désiré-Clitandre Dzonteu, sur ''Gabon Review'', 2 octobre 2019.</ref>",
+                'Désiré-Clitandre Dzonteu',
+            ],
+        ];
+    }
+
+    /**
+     * Known imprecision, pre-existing and NOT specific to this extractor : once "par X"
+     * is consumed, SiteMentionExtractor's own pattern is anchored to the end of the
+     * remaining text ("sur (.+?)$"), so when a date follows the site within the SAME
+     * "sur ..." clause with no further separator recognized in between, it swallows
+     * both as one compound 'site' value rather than splitting them -- 'auteur' itself
+     * is still extracted correctly, which is what this extractor is responsible for.
+     */
+    public function testAuthorMentionAfterCommaLeavesSiteAndDateCombinedWhenBothFollowInTheSameSurClause()
+    {
+        $dto = $this->parser()->parse(
+            "<ref>[https://www.gabonreview.com/x Titre] par Désiré-Clitandre Dzonteu, sur ''Gabon Review'', 2 octobre 2019.</ref>"
+        );
+
+        $this::assertNotNull($dto);
+        $this::assertSame('Désiré-Clitandre Dzonteu', $dto->hints['auteur'] ?? null);
+        $this::assertArrayNotHasKey('date', $dto->hints);
+        $this::assertSame("''Gabon Review'', 2 octobre 2019", $dto->hints['site'] ?? null);
+    }
+
+    /**
+     * A name followed by more comma-separated prose that isn't itself recognized (page
+     * count here) isn't lost -- it stays in $rest for HintMerger's 'citation' safety net,
+     * same principle as AuthorPrefixExtractor's own known limitation.
+     */
+    public function testAuthorMentionAfterCommaLeavesUnrecognizedTrailingContentInRest()
+    {
+        $dto = $this->parser()->parse(
+            '<ref>[http://www.example.org/x Titre], par Pierre Heili, 10 pages, {{p.|8}}.</ref>'
+        );
+
+        $this::assertNotNull($dto);
+        $this::assertSame('Pierre Heili', $dto->hints['auteur'] ?? null);
+        $this::assertSame(', 10 pages, {{p.|8}}.', $dto->rest);
     }
 
     // --- GREEN : leading {{lang}} templates -> 'langue' hint (Lot 2 cont'd) ---

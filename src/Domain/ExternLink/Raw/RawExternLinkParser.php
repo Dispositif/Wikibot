@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Domain\ExternLink\Raw;
 
+use App\Domain\ExternLink\Raw\Hints\AuthorMentionAfterCommaExtractor;
 use App\Domain\ExternLink\Raw\Hints\AuthorPrefixExtractor;
 use App\Domain\ExternLink\Raw\Hints\ConsulteLeExtractor;
 use App\Domain\ExternLink\Raw\Hints\HintExtractorInterface;
@@ -77,6 +78,7 @@ class RawExternLinkParser
     public function __construct(?array $hintExtractors = null, ?array $leadingTextExtractors = null)
     {
         $this->hintExtractors = $hintExtractors ?? [
+            new AuthorMentionAfterCommaExtractor(),
             new SiteMentionExtractor(),
             new ItalicSiteAfterCommaExtractor(),
             new TrailingDateExtractor(),

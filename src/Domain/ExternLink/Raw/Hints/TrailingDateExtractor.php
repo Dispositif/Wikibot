@@ -17,11 +17,9 @@ namespace App\Domain\ExternLink\Raw\Hints;
  * comma, and leaves whatever trails (most often "(consulté le ...)") untouched in $rest,
  * same non-anchored shape as ItalicSiteAfterCommaExtractor.
  *
- * {{date|...}}'s param is sometimes "DAY MOIS ANNEE|extra context" (e.g.
- * "{{date|2 août 2020|en astronomie}}" -- "en astronomie" is a display-calendar
- * modifier, not part of the date) or "DAY|MOIS|ANNEE" (3 separate positional params) --
- * resolveTemplateDate() tells those two shapes apart instead of naively joining every
- * pipe-separated segment with a space, which would leak "en astronomie" into the date.
+ * {{date|...}}'s param shape ("DAY MOIS ANNEE|extra context" vs. 3 separate
+ * "DAY|MOIS|ANNEE" positional params) is resolved by the shared
+ * FrenchDate::resolveTemplateDateParam() (also used by ConsulteLeExtractor).
  *
  * Deliberately does NOT touch "Consulté le ..." (a different template param, 'consulté
  * le', not 'date' -- see ConsulteLeExtractor), naturally disjoint since that phrase
@@ -50,7 +48,7 @@ final class TrailingDateExtractor implements HintExtractorInterface
     private function resolveValue(array $m): ?string
     {
         if (!empty($m['tpl'])) {
-            $value = $this->resolveTemplateDate($m['tpl']);
+            $value = FrenchDate::resolveTemplateDateParam($m['tpl']);
         } elseif (!empty($m['day']) && !empty($m['month']) && !empty($m['year1'])) {
             $value = trim($m['day'] . ' ' . $m['month'] . ' ' . $m['year1']);
         } else {
@@ -58,25 +56,6 @@ final class TrailingDateExtractor implements HintExtractorInterface
         }
 
         return ($value !== null && $this->looksLikeValidDate($value)) ? $value : null;
-    }
-
-    /**
-     * {{date|...}}'s single param can be "DAY MOIS ANNEE" (possibly plus a trailing
-     * "|context" to discard), or 3 separate "DAY|MOIS|ANNEE" positional params.
-     */
-    private function resolveTemplateDate(string $tplArgs): ?string
-    {
-        $parts = array_map('trim', explode('|', $tplArgs));
-
-        if (count($parts) === 3
-            && preg_match('#^\d{1,2}$#', $parts[0])
-            && preg_match('#^(?:' . FrenchDate::MONTHS_PATTERN . ')$#iu', $parts[1])
-            && preg_match('#^(?:1[4-9]|20)\d{2}$#', $parts[2])
-        ) {
-            return implode(' ', $parts);
-        }
-
-        return $parts[0] !== '' ? $parts[0] : null;
     }
 
     /**

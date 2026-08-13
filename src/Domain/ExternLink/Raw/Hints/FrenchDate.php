@@ -11,14 +11,18 @@ namespace App\Domain\ExternLink\Raw\Hints;
 
 /**
  * Shared by TrailingDateExtractor and ConsulteLeExtractor : French month name regex
- * fragment, name<->number mapping, and calendar validation via checkdate() --
- * deliberately NOT App\Domain\Utils\DateUtil::simpleFrench2object(), whose
- * DateTime::createFromFormat() is lenient by default and silently rolls "31 février
- * 2019" over into 3 March 2019 instead of rejecting it.
+ * fragment, name<->number mapping, calendar validation via checkdate() -- deliberately
+ * NOT App\Domain\Utils\DateUtil::simpleFrench2object(), whose DateTime::createFromFormat()
+ * is lenient by default and silently rolls "31 février 2019" over into 3 March 2019
+ * instead of rejecting it -- and {{date|...}} template param resolution.
  */
 final class FrenchDate
 {
     public const MONTHS_PATTERN = 'janvier|février|fevrier|mars|avril|mai|juin|juillet|août|aout|septembre|octobre|novembre|décembre|decembre';
+
+    /** "{{1er}}" as a standalone day placeholder (seen preceding a plain month/year, e.g.
+     *  "consulté le {{1er}} avril 2012") -- normalizes to the ordinal text "1er". */
+    public const ORDINAL_FIRST_DAY_PATTERN = '\{\{\s*1er\s*\}\}';
 
     private const MONTH_NUMBERS
         = [
@@ -48,5 +52,49 @@ final class FrenchDate
         $month = self::monthNumber($monthName);
 
         return $month !== null && checkdate($month, $day, $year);
+    }
+
+    /**
+     * "1er"/"{{1er}}" -> 1 for calendar validation ; any other value parsed as an int
+     * (non-numeric -> 0, which simply fails checkdate() rather than throwing).
+     */
+    public static function dayNumber(string $day): int
+    {
+        return self::isOrdinalFirstDayTemplate($day) ? 1 : (int) $day;
+    }
+
+    /** "{{1er}}" -> "1er" (the literal text a human would have written without the
+     *  template wrapper) ; any other value passed through unchanged. */
+    public static function dayText(string $day): string
+    {
+        return self::isOrdinalFirstDayTemplate($day) ? '1er' : $day;
+    }
+
+    private static function isOrdinalFirstDayTemplate(string $day): bool
+    {
+        return preg_match('#^' . self::ORDINAL_FIRST_DAY_PATTERN . '$#iu', trim($day)) === 1;
+    }
+
+    /**
+     * {{date|...}}'s single param can be "DAY MOIS ANNEE" (possibly plus a trailing
+     * "|context" to discard, e.g. "{{date|2 août 2020|en astronomie}}" -- "en astronomie"
+     * is a display-calendar modifier, not part of the date), or 3 separate
+     * "DAY|MOIS|ANNEE" positional params (e.g. "{{Date|11|mars|2015}}"). Tells the two
+     * shapes apart instead of naively joining every pipe-separated segment with a space,
+     * which would leak the trailing context into the date.
+     */
+    public static function resolveTemplateDateParam(string $tplArgs): ?string
+    {
+        $parts = array_map('trim', explode('|', $tplArgs));
+
+        if (count($parts) === 3
+            && preg_match('#^\d{1,2}$#', $parts[0])
+            && preg_match('#^(?:' . self::MONTHS_PATTERN . ')$#iu', $parts[1])
+            && preg_match('#^(?:1[4-9]|20)\d{2}$#', $parts[2])
+        ) {
+            return implode(' ', $parts);
+        }
+
+        return $parts[0] !== '' ? $parts[0] : null;
     }
 }

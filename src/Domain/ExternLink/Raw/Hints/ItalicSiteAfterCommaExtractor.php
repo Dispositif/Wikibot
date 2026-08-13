@@ -17,16 +17,23 @@ namespace App\Domain\ExternLink\Raw\Hints;
  * SiteMentionExtractor (which only fires on ", sur X" and requires the whole rest to be
  * consumed), this extractor matches only the leading italic/wikilink span and leaves
  * whatever trails (date, {{date|...}}, "(consulté le ...)") untouched in $rest for a
- * future extractor -- see RawExternLinkParserTest::testExtractsTrailingDate (wip).
+ * future extractor.
+ *
+ * The comma is OPTIONAL (2026-08 revision, found via a full-corpus coverage sweep) : a
+ * meaningful minority of fragments have the italic/wikilink span right after the
+ * bracket with just a space, no comma ("[url Titre] ''Site''. Retrieved..."). Some risk
+ * of over-matching prose that happens to be italicized for emphasis rather than naming
+ * a site, but the fallback (SemiAuto + 'citation' safety net, see HintMerger) means a
+ * wrong guess here is surfaced for review, not silently published.
  *
  * Disjoint from SiteMentionExtractor by construction : this pattern requires the
- * italic/wikilink span to start IMMEDIATELY after the comma (no "sur " in between), so
- * ", sur ''Site''" (already fully handled by SiteMentionExtractor's own markup
- * stripping) never reaches this class.
+ * italic/wikilink span to start IMMEDIATELY (no "sur " in between), so "sur ''Site''"
+ * (already fully handled by SiteMentionExtractor's own markup stripping) never reaches
+ * this class.
  */
 final class ItalicSiteAfterCommaExtractor implements HintExtractorInterface
 {
-    private const PATTERN = "#^,\s*(''.+?''|\[\[[^\]]+\]\])\s*(.*)\$#us";
+    private const PATTERN = "#^,?\s*(''.+?''|\[\[[^\]]+\]\])\s*(.*)\$#us";
 
     public function extract(string $rest): ?HintMatch
     {
