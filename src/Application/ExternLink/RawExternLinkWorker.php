@@ -225,6 +225,17 @@ class RawExternLinkWorker extends AbstractRefBotWorker
         if (!empty($this->summary->memo['count semiauto unflagged'])) {
             $suffix .= ' ⚠️ hésitation de fusion';
         }
+        if (!empty($this->summary->memo['wayback'])) {
+            // from DeadLinkTransformer
+            $suffix .= ' ';
+            $suffix .= ($this->summary->memo['wayback'] > 1) ? $this->summary->memo['wayback'] . 'x ' : '';
+            $suffix .= '🏛️';
+        }
+        if (!empty($this->summary->memo['wikiwix'])) {
+            $suffix .= ' ';
+            $suffix .= ($this->summary->memo['wikiwix'] > 1) ? $this->summary->memo['wikiwix'] . 'x ' : '';
+            $suffix .= '🥝';
+        }
 
         return $prefixSummary . $this->summary->taskName . $suffix;
     }
