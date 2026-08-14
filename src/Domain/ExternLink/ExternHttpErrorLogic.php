@@ -23,7 +23,7 @@ class ExternHttpErrorLogic
     final public const LOG_REQUEST_ERROR = __DIR__ . '/../../Application/resources/external_request_error.log';
     protected const LOOSE = true;
 
-    /** How long a 429/500/502/503 must go unconfirmed before ExternLinkCheckRepository offers it up again. */
+    /** How long a 429/503 must go unconfirmed before ExternLinkCheckRepository offers it up again. */
     public const RECHECK_DELAY = 'P2M';
 
     /**
@@ -31,7 +31,18 @@ class ExternHttpErrorLogic
      * converted to a dead link on a single observation, recorded for a later re-check
      * instead (docs/audit-gestion-erreurs-crawl-2026-08.md §9.5/§9.6).
      */
-    private const TRANSIENT_ERROR_STATUSES = [429, 500, 502, 503];
+    private const TRANSIENT_ERROR_STATUSES = [429, 503];
+
+    /**
+     * @var int[] statuses converted to a dead link immediately (single observation,
+     * no recheck delay) : unlike 429/503, these point at the specific requested
+     * resource rather than the server being globally overloaded, and are a reliable
+     * enough dead-link signal for today's web to act on right away. 451 (legal
+     * takedown) is included here too : it's not transient by nature — the content
+     * isn't coming back within RECHECK_DELAY — so it belongs with the immediate
+     * group rather than being left untouched.
+     */
+    private const IMMEDIATE_DEAD_STATUSES = [400, 500, 502, 451];
 
     /**
      * @var FetchErrorKind[] network failures treated as a dead link only because LOOSE is enabled.
@@ -73,17 +84,17 @@ class ExternHttpErrorLogic
         if ($fetch->httpStatus === 410) {
             $this->log->notice('410 Gone', ['stats' => 'externHttpErrorLogic.410']);
 
-            return ExternRefTransformer::REPLACE_410 ? $this->deadLinkTransformer->formatFromUrl($url, summary: $summary) : $url;
+            return ExternRefTransformer::REPLACE_410 ? $this->deadLinkTransformer->formatFromUrl($url, summary: $summary, httpStatus: $fetch->httpStatus) : $url;
         }
         if ($fetch->httpStatus === 404) {
             $this->log->notice('404 Not Found', ['stats' => 'externHttpErrorLogic.404']);
 
-            return ExternRefTransformer::REPLACE_404 ? $this->deadLinkTransformer->formatFromUrl($url, summary: $summary) : $url;
+            return ExternRefTransformer::REPLACE_404 ? $this->deadLinkTransformer->formatFromUrl($url, summary: $summary, httpStatus: $fetch->httpStatus) : $url;
         }
-        if ($fetch->httpStatus === 400) {
-            $this->log->warning('400 Bad Request : ' . $url, ['stats' => 'externHttpErrorLogic.400']);
+        if (in_array($fetch->httpStatus, self::IMMEDIATE_DEAD_STATUSES, true)) {
+            $this->log->notice($fetch->httpStatus . ' : ' . $url, ['stats' => 'externHttpErrorLogic.' . $fetch->httpStatus]);
 
-            return $url;
+            return $this->deadLinkTransformer->formatFromUrl($url, summary: $summary, httpStatus: $fetch->httpStatus);
         }
         if ($fetch->httpStatus === 403) {
             $this->log->warning('403 Forbidden : ' . $url, ['stats' => 'externHttpErrorLogic.403']);
@@ -99,8 +110,8 @@ class ExternHttpErrorLogic
 
         if (in_array($fetch->httpStatus, self::TRANSIENT_ERROR_STATUSES, true)) {
             // pas de {lien brisé} sur une seule observation : 429/503 sont des limitations
-            // temporaires, 500/502 peuvent l'être aussi. On enregistre et on revérifiera
-            // dans RECHECK_DELAY plutôt que de conclure trop vite (voir ExternLinkCheckRepository).
+            // temporaires (rate-limit, maintenance globale du serveur). On enregistre et on
+            // revérifiera dans RECHECK_DELAY plutôt que de conclure trop vite (voir ExternLinkCheckRepository).
             $this->log->notice($fetch->httpStatus . ' (transitoire, à revérifier) : ' . $url, ['stats' => 'externHttpErrorLogic.' . $fetch->httpStatus]);
             if ($pageTitle !== null) {
                 $this->linkCheckRepository->recordFailure(
@@ -123,14 +134,6 @@ class ExternHttpErrorLogic
             );
 
             return $this->deadLinkTransformer->formatFromUrl($url, summary: $summary);
-        }
-
-        if ($fetch->httpStatus === 451) {
-            // retrait légal, pas une absence de contenu transitoire : ne rentre pas dans
-            // TRANSIENT_ERROR_STATUSES (le contenu ne "reviendra" pas dans RECHECK_DELAY).
-            $this->log->notice('451 : ' . $url, ['stats' => 'externHttpErrorLogic.451']);
-
-            return $url;
         }
 
         // DEFAULT (not filtered) : timeout, TLS error, too-many-redirects, ProxyFailure (SOCKS5)...

@@ -189,4 +189,24 @@ class DeadLinkTransformerTest extends TestCase
 
         $this::assertStringStartsWith('{{Lien brisé', (new DeadLinkTransformer())->formatFromUrl('bla', $now));
     }
+
+    public function testFormatFromUrlAddsHttpStatusNote()
+    {
+        $now = new \DateTimeImmutable();
+
+        $this::assertSame(
+            sprintf('{{Lien brisé |url= bla |titre=bla |brisé le=%s |note=HTTP 500}}', $now->format('d-m-Y')),
+            (new DeadLinkTransformer())->formatFromUrl('bla', $now, null, 500)
+        );
+    }
+
+    public function testFormatFromUrlWithoutHttpStatusOmitsNote()
+    {
+        $now = new \DateTimeImmutable();
+
+        $this::assertStringNotContainsString(
+            'note=',
+            (new DeadLinkTransformer())->formatFromUrl('bla', $now)
+        );
+    }
 }

@@ -27,11 +27,11 @@ class ExternHttpErrorLogicTest extends TestCase
 
     public function testDeadLinkStatusesGoThroughDeadLinkTransformer()
     {
-        foreach ([404, 410] as $status) {
+        foreach ([404, 410, 400, 500, 502, 451] as $status) {
             $deadLinkTransformer = $this->createMock(DeadLinkTransformer::class);
             $deadLinkTransformer->expects($this->once())
                 ->method('formatFromUrl')
-                ->with('https://example.com/page')
+                ->with('https://example.com/page', $this->anything(), $this->anything(), $status)
                 ->willReturn('{{Lien brisé |url= https://example.com/page}}');
 
             $logic = new ExternHttpErrorLogic($deadLinkTransformer);
@@ -46,7 +46,7 @@ class ExternHttpErrorLogicTest extends TestCase
 
     public function testAccessErrorsLeaveUrlUnchanged()
     {
-        foreach ([400, 401, 403] as $status) {
+        foreach ([401, 403] as $status) {
             $deadLinkTransformer = $this->createMock(DeadLinkTransformer::class);
             $deadLinkTransformer->expects($this->never())->method('formatFromUrl');
 
@@ -61,12 +61,14 @@ class ExternHttpErrorLogicTest extends TestCase
     }
 
     /**
-     * §9.5/§9.6 : 429/500/502/503 are no longer converted to a dead link on a single
-     * observation — they're recorded (for a later recheck) and the URL stays unchanged.
+     * §9.5/§9.6 : 429/503 are not converted to a dead link on a single observation —
+     * they're recorded (for a later recheck) and the URL stays unchanged. Unlike
+     * 500/502, these signal a server-wide, likely-temporary condition rather than
+     * the specific requested resource being gone.
      */
     public function testTransientErrorStatusesAreRecordedNotConvertedToDeadLink()
     {
-        foreach ([429, 500, 502, 503] as $status) {
+        foreach ([429, 503] as $status) {
             $deadLinkTransformer = $this->createMock(DeadLinkTransformer::class);
             $deadLinkTransformer->expects($this->never())->method('formatFromUrl');
 
@@ -101,7 +103,7 @@ class ExternHttpErrorLogicTest extends TestCase
 
         $this::assertSame(
             'https://example.com/page',
-            $logic->manageByFetchResult($this->fetch(500), 'example.com')
+            $logic->manageByFetchResult($this->fetch(503), 'example.com')
         );
     }
 
@@ -142,20 +144,25 @@ class ExternHttpErrorLogicTest extends TestCase
 
     /**
      * 451 is a legal takedown, not a transitory failure : it must not be recorded for
-     * a recheck in ExternLinkCheckRepository (the content isn't coming back).
+     * a recheck in ExternLinkCheckRepository (the content isn't coming back), and goes
+     * straight through DeadLinkTransformer like 400/500/502 rather than being left
+     * untouched.
      */
     public function test451IsNotRecordedForRecheck()
     {
         $deadLinkTransformer = $this->createMock(DeadLinkTransformer::class);
-        $deadLinkTransformer->expects($this->never())->method('formatFromUrl');
+        $deadLinkTransformer->expects($this->once())
+            ->method('formatFromUrl')
+            ->with('https://example.com/page', $this->anything(), $this->anything(), 451)
+            ->willReturn('{{Lien brisé |url= https://example.com/page}}');
 
         $repository = $this->createMock(ExternLinkCheckRepositoryInterface::class);
         $repository->expects($this->never())->method('recordFailure');
 
         $logic = new ExternHttpErrorLogic($deadLinkTransformer, linkCheckRepository: $repository);
 
-        $this::assertSame(
-            'https://example.com/page',
+        $this::assertStringContainsString(
+            '{{Lien brisé',
             $logic->manageByFetchResult($this->fetch(451))
         );
     }
@@ -171,7 +178,7 @@ class ExternHttpErrorLogicTest extends TestCase
         $deadLinkTransformer = $this->createMock(DeadLinkTransformer::class);
         $deadLinkTransformer->expects($this->once())
             ->method('formatFromUrl')
-            ->with('https://example.com/page', $this->anything(), $this->identicalTo($summary))
+            ->with('https://example.com/page', $this->anything(), $this->identicalTo($summary), 404)
             ->willReturn('{{Lien brisé |url= https://example.com/page}}');
 
         $logic = new ExternHttpErrorLogic($deadLinkTransformer);

@@ -49,7 +49,7 @@ class DeadLinkTransformer
      * logic reads it directly instead of re-deriving it by string-matching the
      * serialized result (see docs/audit-gestion-erreurs-crawl-2026-08.md §9.8).
      */
-    public function formatFromUrl(string $url, DateTimeInterface $now = new DateTimeImmutable(), ?Summary $summary = null): string
+    public function formatFromUrl(string $url, DateTimeInterface $now = new DateTimeImmutable(), ?Summary $summary = null, ?int $httpStatus = null): string
     {
         // HACK : Temporary skip transform on archiver URL (éviter archive IA sur url Wikiwix)
         if ($this->isWebArchiveUrl($url)) {
@@ -81,7 +81,7 @@ class DeadLinkTransformer
         }
         $this->log->notice('web archive not found');
 
-        return $this->generateLienBrise($url, $now, $summary);
+        return $this->generateLienBrise($url, $now, $summary, $httpStatus);
     }
 
     private function recordArchiverUsed(WebarchiveDTO $dto, ?Summary $summary): void
@@ -153,7 +153,7 @@ class DeadLinkTransformer
         return $text;
     }
 
-    protected function generateLienBrise(string $url, DateTimeInterface $now, ?Summary $summary = null): string
+    protected function generateLienBrise(string $url, DateTimeInterface $now, ?Summary $summary = null, ?int $httpStatus = null): string
     {
         if ($this->isWebArchiveUrl($url)) {
             $this->log->notice('Skip {lien brisé} on web archive url', ['stats' => 'externref.skip.lienBriseOnwebarchiveurl']);
@@ -166,10 +166,11 @@ class DeadLinkTransformer
         }
 
         return sprintf(
-            '{{Lien brisé |url= %s |titre=%s |brisé le=%s}}',
+            '{{Lien brisé |url= %s |titre=%s |brisé le=%s%s}}',
             $this->stripWebArchivePrefix($url),
             $this->generateTitleFromURLText($url),
-            $now->format('d-m-Y')
+            $now->format('d-m-Y'),
+            $httpStatus !== null ? sprintf(' |note=HTTP %d', $httpStatus) : ''
         );
     }
 
