@@ -29,18 +29,25 @@ use Throwable;
  * extern-ref is a later step, once this has run unsupervised on a real sample without
  * surprises.
  *
- * Three supervision levels, all distinct from TASK_BOT_FLAG (the blanket "not trusted
- * yet" switch for the whole feature, currently false) :
+ * Three supervision levels. TASK_BOT_FLAG = true is only the STARTING point for an
+ * edit's bot flag, not the final word : any SemiAuto merge actually kept in the
+ * output (whichever of the two routes below let it through) unflags the bot for that
+ * WHOLE edit via markUncertainMergeKept() -- $this->summary is one instance per
+ * article (see AbstractBotTaskWorker::titleProcess()), so a single uncertain ref
+ * among several confident ones in the same edit still correctly downgrades the
+ * entire edit, not just that one ref. generateSummaryText() prefixes "bot " only
+ * when the flag survived unflagging (2026-08 revision -- confident-only edits are
+ * trusted enough for the bot flag now, tested live under the ZiziBot account) :
  * - Supervised (default, $fullAuto = false, $rejectUncertain = false) : modeAuto starts
  *   false, every edit -- Auto or SemiAuto -- is confirmed interactively (typing "auto"
  *   at a prompt only escalates the Auto-confidence path, never the SemiAuto one, see
- *   confirmSemiAuto()).
+ *   confirmSemiAuto()). A human-confirmed SemiAuto edit still unflags the bot -- the
+ *   merge itself stays uncertain regardless of who signed off on it live.
  * - Full-auto ($fullAuto = true, --auto CLI flag) : no human is assumed present.
  *   Auto-confidence edits proceed like modeAuto=true always has. SemiAuto ones are
- *   NOT skipped and NOT blocked on a prompt either -- they're applied, but with the
- *   bot flag forced off (Summary::setBotFlag(false), regardless of TASK_BOT_FLAG) and
- *   a warning marker in the edit summary, so a human patrols them via Recent Changes
- *   instead of gatekeeping them beforehand.
+ *   NOT skipped and NOT blocked on a prompt either -- they're applied, but unflagged
+ *   with a warning marker in the edit summary, so a human patrols them via Recent
+ *   Changes instead of gatekeeping them beforehand.
  * - Strict full-auto ($rejectUncertain = true, --reject-uncertain CLI flag, implies
  *   full-auto on its own) : also no prompts, but the opposite call on SemiAuto --
  *   instead of applying it unflagged, it's treated exactly like MergeConfidence::Skip
@@ -58,7 +65,7 @@ use Throwable;
  */
 class RawExternLinkWorker extends AbstractRefBotWorker
 {
-    public const TASK_BOT_FLAG = false;
+    public const TASK_BOT_FLAG = true;
     public const JOURNAL_TASK = 'raw-extern-ref';
     public const ARTICLE_ANALYZED_FILENAME = __DIR__ . '/../resources/article_rawExternRef_edited.txt';
     public const MAX_REFS_PROCESSED_IN_ARTICLE = 30;
@@ -188,14 +195,18 @@ class RawExternLinkWorker extends AbstractRefBotWorker
         }
 
         if ($isSemiAuto && $this->fullAuto) {
-            // No human to ask : apply it, but strip the bot flag and flag the edit
-            // summary instead of gatekeeping on a prompt nobody is there to answer.
-            $this->summary->setBotFlag(false);
-            $this->summary->memo['count semiauto unflagged'] = 1 + ($this->summary->memo['count semiauto unflagged'] ?? 0);
+            // No human to ask : apply it, but flag the edit summary instead of
+            // gatekeeping on a prompt nobody is there to answer.
+            $this->markUncertainMergeKept();
         } elseif ($isSemiAuto) {
             if (!$this->confirmSemiAuto('Fusion incertaine (résidu non catégorisé et/ou désaccord manuscrit/crawl), conserver quand même ?')) {
                 return $refContent;
             }
+            // A human confirmed it live, but the merge itself is still uncertain by
+            // construction -- same bot-flag/edit-summary treatment as the unsupervised
+            // path either way, so a later reviewer sees the same signal regardless of
+            // who signed off on it in the moment.
+            $this->markUncertainMergeKept();
         } elseif (!$this->autoOrYesConfirmation('Conserver cette modif ?')) {
             return $refContent;
         }
@@ -223,6 +234,21 @@ class RawExternLinkWorker extends AbstractRefBotWorker
         $ask = readline(Color::LIGHT_YELLOW . '*** [SEMI-AUTO] ' . $question . ' [y/n]' . Color::NORMAL);
 
         return 'y' === $ask;
+    }
+
+    /**
+     * A SemiAuto merge kept in the output -- forced (full-auto) or human-confirmed
+     * (supervised) -- is never bot-flagged : uncertainty in the merge itself doesn't go
+     * away because someone let it through. $this->summary is shared across every ref in
+     * the current article (see AbstractBotTaskWorker::titleProcess()), so this downgrades
+     * the WHOLE edit, not just this one ref -- correct, since the published diff as a
+     * whole now contains an unverified merge. Idempotent : safe to call once per
+     * uncertain ref kept, however many there are in the same edit.
+     */
+    private function markUncertainMergeKept(): void
+    {
+        $this->summary->setBotFlag(false);
+        $this->summary->memo['count semiauto unflagged'] = 1 + ($this->summary->memo['count semiauto unflagged'] ?? 0);
     }
 
     private function unwrapRef(string $wikitext): string
