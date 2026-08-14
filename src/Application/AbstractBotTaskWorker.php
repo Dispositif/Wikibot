@@ -31,6 +31,7 @@ abstract class AbstractBotTaskWorker
 
     public const TASK_BOT_FLAG = false;
     public const SLEEP_AFTER_EDITION = 60;
+    public const MIN_SLEEP_AFTER_EDITION = 5;
     public const MINUTES_DELAY_AFTER_LAST_HUMAN_EDIT = 15;
     public const CHECK_EDIT_CONFLICT = true;
     public const ARTICLE_ANALYZED_FILENAME = __DIR__ . '/resources/article_edited.txt';
@@ -40,6 +41,8 @@ abstract class AbstractBotTaskWorker
     public const SKIP_LASTEDIT_BY_BOT = true;
     public const SKIP_NOT_IN_MAIN_WIKISPACE = true;
     public const SKIP_ADQ = false;
+    // Politeness delay towards the wiki API, so it only applies to titles that actually
+    // hit it — see the skip shortcut in run().
     public const THROTTLE_DELAY_AFTER_EACH_TITLE = 2; //secs
     protected const GIT_COMMIT_HASH_PATH = __DIR__ . '/resources/commithash.txt';
 
@@ -117,7 +120,7 @@ abstract class AbstractBotTaskWorker
 
         foreach ($this->getTitles() as $title) {
             try {
-                $this->titleProcess($title);
+                $touchedWiki = $this->titleProcess($title);
             } catch (Exception $exception) {
                 $this->log->error($exception->getMessage());
                 if ($exception instanceof StopActionException) {
@@ -129,7 +132,9 @@ abstract class AbstractBotTaskWorker
                 throw $exception;
             }
 
-            sleep(self::THROTTLE_DELAY_AFTER_EACH_TITLE);
+            if ($touchedWiki) {
+                sleep(self::THROTTLE_DELAY_AFTER_EACH_TITLE);
+            }
         }
     }
 
@@ -146,7 +151,11 @@ abstract class AbstractBotTaskWorker
         return $this->pageListGenerator->stream();
     }
 
-    protected function titleProcess(string $title): void
+    /**
+     * @return bool whether the wiki API was queried for that title — drives the
+     *              politeness throttle in run(), which a purely local skip must not pay
+     */
+    protected function titleProcess(string $title): bool
     {
         $this->printTitle($title);
 
@@ -154,18 +163,18 @@ abstract class AbstractBotTaskWorker
         if ($this->checkAlreadyAnalyzed($title)) {
             $this->log->notice("Skip : déjà analysé", ['stats' => 'bottaskworker.skip.dejaanalyse']);
 
-            return;
+            return false;
         }
 
         try {
             $text = $this->getTextFromWikiAction($title);
         } catch (Exception $e) {
             $this->log->error($e->getMessage());
-            return;
+            return true; // the request was issued (and failed) : still throttle
         }
 
         if (!$this->canProcessTitleArticle($title, $text)) {
-            return;
+            return true;
         }
 
         $this->summary = new Summary($this->defaultTaskname);
@@ -185,10 +194,12 @@ abstract class AbstractBotTaskWorker
                     mb_strlen((string)$newText)
                 ));
 
-                return;
+                return true;
             }
             $this->doEdition($title, $newText);
         }
+
+        return true;
     }
 
     /**
@@ -245,8 +256,9 @@ abstract class AbstractBotTaskWorker
         if ($result) {
             $this->recordEditedTitle($title);
         }
-        $this->log->debug("Sleep " . static::SLEEP_AFTER_EDITION);
-        sleep(static::SLEEP_AFTER_EDITION);
+        $sleep = max(static::MIN_SLEEP_AFTER_EDITION, static::SLEEP_AFTER_EDITION);
+        $this->log->debug("Sleep " . $sleep);
+        sleep($sleep);
     }
 
     /**
