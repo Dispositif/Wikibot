@@ -183,6 +183,47 @@ class ExistingRefTransformerTest extends TestCase
         self::assertStringContainsString('Peter McPhee', $result->refContent, 'unrecognized existing param must not be silently dropped');
     }
 
+    /**
+     * Regression (found live, 2026-08-14, "Ligue 2 : Dunkerque glacé...") : the crawl's
+     * JSON-LD only exposes a single combined author name, mapped to 'auteur1'. Merged
+     * naively alongside an existing citation's curated 'prénom1'+'nom1' split, BOTH
+     * survived into the output -- same author stated twice under different param names.
+     */
+    public function testDoesNotAddCrawledAuteurWhenExistingAlreadyHasSplitName()
+    {
+        $transformer = $this->transformer(
+            '{{lien web |titre=Titre |url=http://x.fr/a |auteur1=Frédéric Sourice |site=x.fr |consulté le=' . date('d-m-Y') . '}}'
+        );
+
+        $fragment = '{{lien web |prénom1=Frédéric |nom1=Sourice |titre=Titre |url=http://x.fr/a |consulté le=2020-01-01}}';
+        $result = $transformer->process($fragment);
+
+        $get = $this->paramFromSerialized('lien web', $result->refContent);
+        self::assertSame('Frédéric', $get('prénom1'), 'existing split name kept');
+        self::assertSame('Sourice', $get('nom1'), 'existing split name kept');
+        self::assertNull($get('auteur1'), 'crawled combined name must not be added alongside the existing split');
+    }
+
+    /**
+     * Symmetric case : existing has the combined 'auteur1', crawl offers a split
+     * 'prénom1'/'nom1' for the same slot -- existing wins outright (completion pass,
+     * not an upgrade pass), the split must not be added alongside it either.
+     */
+    public function testDoesNotAddCrawledSplitNameWhenExistingAlreadyHasAuteur()
+    {
+        $transformer = $this->transformer(
+            '{{lien web |titre=Titre |url=http://x.fr/a |prénom1=Frédéric |nom1=Sourice |site=x.fr |consulté le=' . date('d-m-Y') . '}}'
+        );
+
+        $fragment = '{{lien web |auteur1=Frédéric Sourice |titre=Titre |url=http://x.fr/a |consulté le=2020-01-01}}';
+        $result = $transformer->process($fragment);
+
+        $get = $this->paramFromSerialized('lien web', $result->refContent);
+        self::assertSame('Frédéric Sourice', $get('auteur1'), 'existing combined name kept');
+        self::assertNull($get('prénom1'), 'crawled split name must not be added alongside the existing combined name');
+        self::assertNull($get('nom1'), 'crawled split name must not be added alongside the existing combined name');
+    }
+
     public function testSkipsWhenNothingChanges()
     {
         // 'consulté le' kept old on purpose (not $today) : this exercises the

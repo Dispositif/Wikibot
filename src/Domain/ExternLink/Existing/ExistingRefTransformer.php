@@ -252,6 +252,7 @@ final class ExistingRefTransformer
     {
         $crawledData = $this->hydrateFromSerialized($crawledTemplateName, $crawled)->toArray();
         $crawledData = $this->stripParamsNotSupportedByTemplate($crawledData, $existingTemplateName);
+        $crawledData = $this->stripRedundantAuthorFields($crawledData, $existingData);
 
         $merged = array_merge($crawledData, array_filter($existingData, static fn ($v) => $v !== ''));
         $merged['consulté le'] = $crawledData['consulté le'] ?? date('d-m-Y');
@@ -264,6 +265,37 @@ final class ExistingRefTransformer
         }
 
         return $template->serialize(true);
+    }
+
+    /**
+     * Same class of bug as stripParamsNotSupportedByTemplate() -- a single author slot
+     * ends up represented under TWO different param names, one from each side, and
+     * array_merge() can't tell they're the same fact. Here it's not an alias collision
+     * but a structural one : a source's JSON-LD/OpenGraph typically exposes one combined
+     * name string (mapped to 'auteurN'), while an existing citation may curate it split
+     * ('prénomN'+'nomN', or vice versa). Regression found live, 2026-08-14 ("Ligue 2 :
+     * Dunkerque glacé..." -- crawl added 'auteur1' alongside an existing 'prénom1'+'nom1'
+     * split, both surviving into the merged citation).
+     *
+     * Existing curation wins outright here, same as every other field per this method's
+     * docblock : if the existing side already has ANY representation of a slot (split OR
+     * combined), the crawled side's representation of that SAME slot is dropped
+     * entirely, never merged alongside it -- this is a completion pass, not an upgrade
+     * pass, so a crawled split name doesn't get to replace an existing combined one either.
+     */
+    private function stripRedundantAuthorFields(array $crawledData, array $existingData): array
+    {
+        foreach (['', '1', '2', '3', '4', '5', '6', '7'] as $slot) {
+            $existingHasSlot = !empty($existingData["auteur$slot"])
+                || !empty($existingData["prénom$slot"])
+                || !empty($existingData["nom$slot"]);
+
+            if ($existingHasSlot) {
+                unset($crawledData["auteur$slot"], $crawledData["prénom$slot"], $crawledData["nom$slot"]);
+            }
+        }
+
+        return $crawledData;
     }
 
     private function containsArchiveTodayLink(string $text): bool
