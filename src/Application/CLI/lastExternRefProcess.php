@@ -39,18 +39,26 @@ $botConfig->setTaskName("🐭 Amélioration de références : URL ⇒ "); // �
 
 $botConfig->checkStopOnTalkpageOrException();
 
-// LAST EDIT
 // TODO : \<ref[^\>]*\> et liste à puces * http://...
-// 3 pages of 500 results, streamed instead of 3 CirrusSearch instances + array_merge()
-// (continue: false because last_edit_desc sorting)
+//
+// srsort=random, not last_edit_desc : the query matches ~26k articles, of which the
+// previous 3×500 "most recently edited" slice renewed far slower than the run cadence,
+// so consecutive runs mostly re-served titles already in the analyzed journal ("Skip :
+// déjà analysé"). Random draws a fresh sample from the whole corpus each time, and also
+// reaches the ~16k articles that sroffset (capped at 10000) can never paginate to.
+// Consequences of that choice, both intentional :
+//  - srqiprofile is dropped : random sorting overrides any relevance profile.
+//  - one single request instead of stream() : paginating a random sort reshuffles
+//    between pages, so it returns duplicates and gaps rather than more coverage.
+//  - OPTION_REVERSE is dropped : it only made sense to un-reverse the last_edit_desc order.
+// See audits/audit-sources-listes-articles-2026-08.md
 $cirrusSearch = new CirrusSearch(
     [
         'srsearch' => '"http" insource:/\<ref[^\>]*\> ?https?\:\/\/[^\<\ ]+ *\<\/ref/',
-        'srlimit' => '500',
-        'srqiprofile' => CirrusSearch::SRQIPROFILE_DEFAULT,
-        'srsort' => CirrusSearch::SRSORT_LAST_EDIT_DESC,
+        'srlimit' => CirrusSearch::SRLIMIT_MAX, // 5000 with the bot account's apihighlimits, 500 otherwise
+        'srsort' => CirrusSearch::SRSORT_RANDOM,
     ],
-    [CirrusSearch::OPTION_REVERSE => true, CirrusSearch::OPTION_CONTINUE => false]
+    [CirrusSearch::OPTION_APILOGIN => true, CirrusSearch::OPTION_CONTINUE => false]
 );
 
 // filter titles already in edited.txt
@@ -58,7 +66,7 @@ $edited = array_flip(
     file(__DIR__ . '/../resources/article_externRef_edited.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES)
 );
 $filtered = [];
-foreach ($cirrusSearch->stream(maxPages: 3, sleepBetweenPages: 3) as $title) {
+foreach ($cirrusSearch->getPageTitles() as $title) {
     if (!isset($edited[$title])) {
         $filtered[] = $title;
     }

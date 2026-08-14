@@ -17,10 +17,11 @@ use App\Domain\InfrastructurePorts\PageListInterface;
 use Exception;
 use GuzzleHttp\Psr7\Response;
 use InvalidArgumentException;
+use Mediawiki\Api\SimpleRequest;
+use Mediawiki\Api\UsageException;
 use Throwable;
 
 /**
- * TODO injecter API session sinon limité à 500 results !
  * https://www.mediawiki.org/wiki/Help:CirrusSearch
  * https://fr.wikipedia.org/w/api.php?action=help&modules=query%2Bsearch
  * https://www.mediawiki.org/wiki/Help:CirrusSearch#Insource
@@ -32,15 +33,32 @@ class CirrusSearch implements PageListInterface, PageListForAppInterface
 {
     public const OPTION_CONTINUE = 'continue';
     public const OPTION_REVERSE = 'reverse';
+    /**
+     * Route the search through the logged-in MediaWiki API session instead of an
+     * anonymous HTTP GET. Only point : a bot account has "apihighlimits", so
+     * srlimit=SRLIMIT_MAX yields 5000 titles per request instead of 500.
+     */
     public const OPTION_APILOGIN = 'apilogin';
     public const SRSORT_NONE = 'none';
     public const SRSORT_RANDOM = 'random';
     public const SRSORT_LAST_EDIT_DESC = 'last_edit_desc';
     public const SRQIPROFILE_POPULAR_INCLINKS_PV = 'popular_inclinks_pv'; // nombre de vues de la page :)
     public const SRQIPROFILE_DEFAULT = 'engine_autoselect';
+    /**
+     * Self-adjusting limit : resolves server-side to whatever the caller is allowed
+     * (500 anonymous, 5000 with apihighlimits, i.e. OPTION_APILOGIN on a bot account).
+     * Prefer it over a hardcoded '5000', which is rejected with a warning and silently
+     * clamped to 500 when the right is missing.
+     */
+    public const SRLIMIT_MAX = 'max';
 
     protected const BASE_URL = 'https://fr.wikipedia.org/w/api.php'; // todo move config
     protected const CONTINUE_OFFSET_FILENAME = __DIR__ . '/../../resources/cirrusSearch-{HASH}.txt'; // todo move config
+
+    /** Saturated shared pool on the Wikimedia side : worth waiting for, unlike a bad query. */
+    protected const TRANSIENT_ERROR_CODES = ['cirrussearch-regex-too-busy-error', 'cirrussearch-too-busy-error'];
+    protected const MAX_RETRY = 3;
+    protected const RETRY_SLEEP_SECONDS = 30;
 
     protected array $requestParams = [];
     protected array $defaultParams
@@ -50,7 +68,7 @@ class CirrusSearch implements PageListInterface, PageListForAppInterface
             'formatversion' => '2',
             'format' => 'json',
             'srnamespace' => 0,
-            'srlimit' => '500', // max 500 péon, 5000 bot/admin
+            'srlimit' => '500', // max 500 péon, 5000 bot/admin (see SRLIMIT_MAX)
             'srprop' => 'size|wordcount|timestamp', // default 'size|wordcount|timestamp|snippet'
         ];
     protected readonly HttpClientInterface $client;
@@ -92,11 +110,20 @@ class CirrusSearch implements PageListInterface, PageListForAppInterface
      * Independent of the file-based OPTION_CONTINUE mechanism (that one persists an
      * offset across separate process runs) — don't combine the two.
      *
+     * Two server-side ceilings apply : sroffset is capped at 10000
+     * ("cirrussearch-offset-too-large" beyond that), and srsort=random reshuffles on
+     * every request, so paginating it yields duplicates and gaps rather than more
+     * coverage — with random, ask for one big page instead.
+     *
      * @return iterable<string>
      * @throws ConfigException
      */
     public function stream(int $maxPages = 10, int $sleepBetweenPages = 0): iterable
     {
+        if ($maxPages > 1 && ($this->params['srsort'] ?? null) === self::SRSORT_RANDOM) {
+            echo "CirrusSearch: paginating srsort=random is meaningless (order reshuffles per request).\n";
+        }
+
         $pages = 0;
         while (true) {
             $arrayResp = $this->httpRequest();
@@ -141,11 +168,85 @@ class CirrusSearch implements PageListInterface, PageListForAppInterface
     }
 
     /**
-     * todo Wiki API ?
+     * insource:/regex/ searches go through a shared pool on the Wikimedia side, which
+     * hands back "cirrussearch-regex-too-busy-error" when it is saturated — a transient
+     * condition, not a bad query, and one that two bot crons firing at the same minute
+     * hit easily. Retried with a plain backoff rather than propagated, since the caller
+     * has no worklist at all otherwise.
+     *
      * @throws ConfigException
      * @throws Exception
      */
     protected function httpRequest(): array
+    {
+        for ($attempt = 1; ; $attempt++) {
+            $response = ($this->options[self::OPTION_APILOGIN] ?? false)
+                ? $this->apiLoggedRequest()
+                : $this->anonymousRequest();
+
+            $errorCode = (string)($response['error']['code'] ?? '');
+            if ($errorCode === '') {
+                return $response;
+            }
+            // static:: and not self:: : subclasses (tests, other wikis) must be able to
+            // retune the backoff, and self:: would freeze it to this class at compile time
+            if (!in_array($errorCode, static::TRANSIENT_ERROR_CODES, true) || $attempt >= static::MAX_RETRY) {
+                throw new Exception(
+                    sprintf('CirrusSearch API error: %s %s', $errorCode, $response['error']['info'] ?? '')
+                );
+            }
+
+            $sleep = $attempt * static::RETRY_SLEEP_SECONDS;
+            echo sprintf("CirrusSearch busy (%s), retry %d in %ds\n", $errorCode, $attempt, $sleep);
+            sleep($sleep);
+        }
+    }
+
+    /**
+     * Same query, sent through the authenticated MediaWiki API session, so a bot
+     * account's apihighlimits applies (srlimit=max => 5000 instead of 500).
+     *
+     * @throws ConfigException
+     * @throws Exception
+     */
+    protected function apiLoggedRequest(): array
+    {
+        $params = $this->buildRequestParams();
+        // action is a SimpleRequest argument, and the library forces format=json itself
+        unset($params['action'], $params['format']);
+
+        try {
+            $response = ServiceFactory::getMediawikiApi()->getRequest(new SimpleRequest('query', $params));
+        } catch (UsageException $e) {
+            // normalized to the anonymous path's shape, so httpRequest() arbitrates retries once
+            return ['error' => ['code' => $e->getApiCode(), 'info' => $e->getRawMessage()]];
+        }
+        if (!is_array($response)) {
+            throw new Exception('CirrusSearch: unexpected API response type');
+        }
+        $this->echoApiWarnings($response);
+
+        return $response;
+    }
+
+    /**
+     * API warnings are the only place where a silently degraded search shows up :
+     * an srlimit clamped back to 500 (missing apihighlimits), or the killer one,
+     * "The regex search timed out, so only partial results are available".
+     */
+    protected function echoApiWarnings(array $response): void
+    {
+        foreach ($response['warnings'] ?? [] as $module => $warning) {
+            $text = is_array($warning) ? implode(' ', $warning) : (string)$warning;
+            echo sprintf("CirrusSearch API warning [%s]: %s\n", $module, trim($text));
+        }
+    }
+
+    /**
+     * @throws ConfigException
+     * @throws Exception
+     */
+    protected function anonymousRequest(): array
     {
         $url = $this->getURL();
         if ($url === '' || $url === '0') {
@@ -171,11 +272,16 @@ class CirrusSearch implements PageListInterface, PageListForAppInterface
         } catch (Throwable $e) {
             throw new Exception($e->getMessage(), $e->getCode(), $e);
         }
+        $this->echoApiWarnings($array);
 
         return $array;
     }
 
-    protected function getURL(): string
+    /**
+     * Merges defaults + caller params + the persisted continue offset, and memorizes
+     * the result in $requestParams (which saveOffsetInFile() hashes afterwards).
+     */
+    protected function buildRequestParams(): array
     {
         if (empty($this->params['srsearch'])) {
             throw new InvalidArgumentException('No "srsearch" argument in params.');
@@ -189,8 +295,14 @@ class CirrusSearch implements PageListInterface, PageListForAppInterface
                 $this->requestParams['sroffset'], $this->hashSearchParams($this->requestParams)
             );
         }
+
+        return $this->requestParams;
+    }
+
+    protected function getURL(): string
+    {
         // RFC3986 : space => %20
-        $query = http_build_query($this->requestParams, 'bla', '&', PHP_QUERY_RFC3986);
+        $query = http_build_query($this->buildRequestParams(), 'bla', '&', PHP_QUERY_RFC3986);
 
         return self::BASE_URL . '?' . $query;
     }

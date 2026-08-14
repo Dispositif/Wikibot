@@ -39,16 +39,29 @@ $bot = new WikiBotConfig($wiki, $logger);
 $bot->checkStopOnTalkpageOrException();
 $bot->setTaskName("🌐📘 Amélioration bibliographique : lien Google Books ⇒ {ouvrage}");
 
-// TODO : https://www.google.com/books/edition/A_Wrinkle_in_Time/r119-dYq0mwC
+// The previous query ('"https://books.google" insource:/\<ref[^\>]*\> *https\:\/\/books\.google/')
+// was down to 9 hits on fr.wikipedia : the task was done, and the endless "Skip : déjà
+// analysé" came from re-serving the same exhausted set. It was also blind to three things
+// GoogleTransformer does handle, hence the wider regex below (~161 hits, measured 2026-08-14) :
+//  - https, but also http, and play.google.*
+//  - the new URL format www.google.*/books/edition/<slug>/<id> — 117 articles have one in a
+//    <ref>, and GoogleTransformer has supported it since the 2026-08-05 fix (see
+//    audits/audit-google-livres-nouveau-format-url.md)
+//  - "* http…" bullet lists, handled by extractGoogleExternalBullets()
+// Kept narrower than a bare insource:/books\.google/ (186k hits) on purpose : those are
+// overwhelmingly links already inside a {{ouvrage|lire en ligne=}}, nothing left to convert.
+// The leading bare "google" term is not redundant with the regex : it restricts the document
+// set the regex then scans. Without it the search reports "the regex search timed out, so
+// only partial results are available" and the hit count wobbles run to run.
+// See audits/audit-sources-listes-articles-2026-08.md
 $list = new CirrusSearch(
     [
-        'srsearch' => '"https://books.google" insource:/\<ref[^\>]*\> *https\:\/\/books\.google/',
-//        'srsearch' => 'https://books.google" insource:/\* *https\:\/\/books\.google/', // liste à puces
+        'srsearch' => '"google" insource:/(\<ref[^\>]*\>|\*) *https?\:\/\/((books|play)\.google\.|www\.google\.[a-z\.]+\/books\/)/',
         'srnamespace' => '0',
-        'srlimit' => '500',
+        'srlimit' => CirrusSearch::SRLIMIT_MAX, // 5000 with the bot account's apihighlimits, 500 otherwise
         'srqiprofile' => CirrusSearch::SRQIPROFILE_POPULAR_INCLINKS_PV,
     ],
-    [CirrusSearch::OPTION_CONTINUE => true]
+    [CirrusSearch::OPTION_APILOGIN => true, CirrusSearch::OPTION_CONTINUE => true]
 );
 $titles = $list->getPageTitles();
 echo 'CirrusSearch: '.count($titles).' titles found';
@@ -62,4 +75,3 @@ if (!empty($positionalArgs[1])) {
 }
 
 new GoogleBooksWorker($bot, $wiki, $list, $dryRun);
-// todo 2023 : desactivate "Skip : déjà analysé"
