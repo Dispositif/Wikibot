@@ -126,7 +126,7 @@ services:
     # (no flags) for local supervised runs with interactive validation prompts.
     command: ["php", "src/Application/CLI/rawExternLinkProcess.php", "--auto", "--reject-uncertain"]
     env_file:
-      - .env.zizibot
+      - .env
     volumes:
       - ./src/Application/resources/article_rawExternRef_edited.txt:/app/src/Application/resources/article_rawExternRef_edited.txt
     depends_on:
