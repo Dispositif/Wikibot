@@ -52,6 +52,11 @@ class LienWebTemplateTest extends TestCase
             'pmc -> pmcid' => ['pmc', 'pmcid'],
             'url-access -> accès url' => ['url-access', 'accès url'],
             'zbmath -> zbl' => ['zbmath', 'zbl'],
+            // Déprécié mais toujours rendu par le wikifier MediaWiki (single-author,
+            // avant la convention numérotée) -- régression trouvée 2026-08-14, voir
+            // ExistingRefTransformer.
+            'prénom -> prénom1' => ['prénom', 'prénom1'],
+            'nom -> nom1' => ['nom', 'nom1'],
         ];
     }
 

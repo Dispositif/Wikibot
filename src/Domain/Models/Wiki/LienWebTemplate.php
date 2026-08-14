@@ -68,6 +68,13 @@ class LienWebTemplate extends AbstractWikiTemplate
             'extrait' => 'citation', // 'extrait' devenu nom documenté, 'citation' reste le nom géré ici
             'quote' => 'citation',
             'pmc' => 'pmcid',
+            // Déprécié mais toujours rendu par le wikifier MediaWiki (single-author, avant
+            // la convention numérotée prénom1/nom1) : ArticleTemplateAlias les a déjà,
+            // {{lien web}} ne les avait pas -- régression trouvée 2026-08-14 (voir
+            // ExistingRefTransformer), un 'prénom'/'nom' déjà en place se retrouvait rejeté
+            // comme paramètre inconnu au lieu d'être reconnu.
+            'prénom' => 'prénom1',
+            'nom' => 'nom1',
         ]; // test purpose
 
     public $parametersByOrder
