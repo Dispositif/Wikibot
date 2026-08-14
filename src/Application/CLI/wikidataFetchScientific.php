@@ -111,7 +111,7 @@ foreach ($dataScientificJournals as $entry) {
     } catch (Exception) {
         continue; // unparsable URL
     }
-    if (!empty($domain)) {
+    if (!empty($domain) && !in_array($domain, InternetDomainParser::GENERIC_HOSTING_DOMAINS, true)) {
         $domains[$domain] = true; // dedupe
     }
 }

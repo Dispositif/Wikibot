@@ -99,6 +99,12 @@ foreach ($bindings as $row) {
     if (empty($domain)) {
         continue;
     }
+    if (in_array($domain, InternetDomainParser::GENERIC_HOSTING_DOMAINS, true)) {
+        // A journal's Wikidata website hosted on a shared blog platform would poison
+        // this domain key for every unrelated page hosted there -- see
+        // InternetDomainParser::GENERIC_HOSTING_DOMAINS.
+        continue;
+    }
 
     $wdJournaux[] = [
         'fr' => $row['itemLabel']['value'],
