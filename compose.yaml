@@ -153,6 +153,27 @@ services:
         condition: service_healthy
     mem_limit: 256m
 
+  # Re-crawls the URL of ALREADY-EXISTING {{lien web}}/{{article}} citations --
+  # refreshes 'consulté le' + fills gaps on a live page, converts to {{Lien
+  # brisé}}/an archived copy when it's gone. Independent from extern-ref/
+  # raw-extern-ref for now (own dedup file, own CirrusSearch query) while it's
+  # being proven out unsupervised, same posture raw-extern-ref took before it.
+  existing-ref:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    restart: "no"
+    profiles: ["workers"]
+    command: ["php", "src/Application/CLI/existingRefProcess.php"]
+    env_file:
+      - .env.zizibot
+    volumes:
+      - ./src/Application/resources/article_existingRef_edited.txt:/app/src/Application/resources/article_existingRef_edited.txt
+    depends_on:
+      tor:
+        condition: service_healthy
+    mem_limit: 256m
+
   # Ref-separator syntax fix
   # inserts {{,}} between concatenated <ref>/{{Sfn}} tags and
   # trims stray whitespace before <ref>. Batch script like goo-extern: up to

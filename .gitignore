@@ -22,6 +22,7 @@ tests/build/
 
 /src/Application/resources/article_externRef_edited.txt
 /src/Application/resources/article_rawExternRef_edited.txt
+/src/Application/resources/article_existingRef_edited.txt
 
 # SQL data dumps (trop lourds pour git — structure schema conservée)
 resources/wikibot-data-dump-*.sql

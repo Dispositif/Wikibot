@@ -196,8 +196,10 @@ class DeadLinkTransformer
 
     /**
      * todo move
+     * Public : also used by ExistingRefTransformer to skip URLs that are already an
+     * archive link (nothing to refresh/dead-link-check there).
      */
-    protected function isWebArchiveUrl(string $url): bool
+    public function isWebArchiveUrl(string $url): bool
     {
         return str_starts_with($url, 'http://web.archive.org/web/')
             || str_starts_with($url, 'https://web.archive.org/web/')
