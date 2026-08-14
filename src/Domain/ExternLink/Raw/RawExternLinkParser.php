@@ -128,6 +128,18 @@ class RawExternLinkParser
             return null;
         }
 
+        if ($this->containsMultipleBracketLinks($content)) {
+            // "[url1 Titre1] et [url2 Titre2], sur X. Consultés le DATE" -- more than
+            // one bracketed link in the same fragment (2026-08 bug report, CRITICAL :
+            // two separate GameRankings pages cited together). BRACKET_LINK_PATTERN
+            // below only ever locates the FIRST one ; the second link's own raw
+            // "[url label]" wiki syntax would end up swallowed into leadingText/rest and
+            // published as inert literal text inside a template param -- no longer a
+            // working external link, and silently dropped as a real citation. Out of
+            // scope entirely rather than risk losing/breaking one of the links.
+            return null;
+        }
+
         if (!preg_match(self::BRACKET_LINK_PATTERN, $content, $linkMatch, PREG_OFFSET_CAPTURE)) {
             return null;
         }
@@ -236,5 +248,10 @@ class RawExternLinkParser
     private function containsNestedRef(string $content): bool
     {
         return preg_match('#<ref[\s>]#i', $content) === 1;
+    }
+
+    private function containsMultipleBracketLinks(string $content): bool
+    {
+        return preg_match_all(self::BRACKET_LINK_PATTERN, $content) > 1;
     }
 }

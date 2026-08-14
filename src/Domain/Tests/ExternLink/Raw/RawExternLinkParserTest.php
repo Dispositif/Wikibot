@@ -135,6 +135,31 @@ class RawExternLinkParserTest extends TestCase
     }
 
     /**
+     * CRITICAL bug report (2026-08) : two GameRankings pages (Pokemon Ruby and Sapphire)
+     * cited together in one fragment. BRACKET_LINK_PATTERN only ever locates the FIRST
+     * "[url label]" -- the second one's own raw wiki syntax ended up swallowed into
+     * $rest and published as inert literal text inside 'citation', silently breaking it
+     * as a working external link. Out of scope entirely, same as a nested <ref> tag.
+     */
+    public function testSkipsAFragmentContainingMultipleBracketLinks()
+    {
+        $dto = $this->parser()->parse(
+            '<ref>[http://www.gamerankings.com/gba/471243-pokemon-ruby-version/index.html Pokemon Ruby Version] et [http://www.gamerankings.com/gba/563596-pokemon-sapphire-version/index.html Pokemon Sapphire Version], sur GameRankings. Consultés le 22 mars 2013</ref>'
+        );
+
+        $this::assertNull($dto);
+    }
+
+    public function testSkipsABulletWithMultipleBracketLinks()
+    {
+        $dto = $this->parser()->parse(
+            '* [http://example.org/a Titre A] et [http://example.org/b Titre B], sur X'
+        );
+
+        $this::assertNull($dto);
+    }
+
+    /**
      * @dataProvider provideCleanBulletFragments
      */
     public function testParsesCleanBulletWithNoResidue(string $fragment, string $expectedUrl, string $expectedTitre)
