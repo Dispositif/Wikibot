@@ -212,6 +212,25 @@ class ExistingRefTransformerTest extends TestCase
         self::assertSame(date('d-m-Y'), $this->paramFromSerialized('lien web', $result->refContent)('consulté le'));
     }
 
+    /**
+     * Regression (found live, 2026-08-14, lopinion.fr citation) : a crawl mapped as
+     * {{article}} carries the URL under its OWN canonical name 'lire en ligne', which
+     * also happens to be a valid alias on {{lien web}} (-> 'url'). Merged against the
+     * existing {{lien web}}'s 'url' key without canonicalizing first, hydrate() saw the
+     * same URL under two different keys and filed the second one as 'url-doublon'.
+     */
+    public function testCrawledArticleUrlDoesNotDuplicateOntoExistingLienWeb()
+    {
+        $transformer = $this->transformer(
+            '{{article |titre=Titre |lire en ligne=http://x.fr/a |périodique=Le Monde |auteur1=Jean Dupont |consulté le=' . date('d-m-Y') . '}}'
+        );
+
+        $fragment = '{{lien web |titre=Titre |url=http://x.fr/a |site=x.fr}}';
+        $result = $transformer->process($fragment);
+
+        self::assertStringNotContainsString('url-doublon', $result->refContent);
+    }
+
     public function testKeepsExistingTemplateTypeOnCompletion()
     {
         // Crawl came back as {{lien web}} (no date found), but the existing citation is

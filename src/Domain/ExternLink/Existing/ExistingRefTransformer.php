@@ -286,11 +286,29 @@ final class ExistingRefTransformer
         return $template;
     }
 
+    /**
+     * Also canonicalizes each surviving key via the TARGET template's own alias map.
+     * Without this, a crawl mapped as {{article}} (canonical 'lire en ligne' for the
+     * URL) merges against an existing {{lien web}} (canonical 'url') as TWO distinct
+     * array keys -- 'lire en ligne' happens to be a valid alias name on {{lien web}}
+     * too, so it survives array_intersect_key() unchanged instead of collapsing onto
+     * 'url'. hydrate() then sees the same URL twice under different keys and files the
+     * second one as a "url-doublon" (regression found live, 2026-08-14).
+     */
     private function stripParamsNotSupportedByTemplate(array $mapData, string $templateName): array
     {
         $probe = WikiTemplateFactory::create($templateName);
+        $validNames = array_flip($probe->getParamsAndAlias());
 
-        return array_intersect_key($mapData, array_flip($probe->getParamsAndAlias()));
+        $result = [];
+        foreach ($mapData as $name => $value) {
+            if (!array_key_exists($name, $validNames)) {
+                continue;
+            }
+            $result[$probe->getAliasParam($name)] = $value;
+        }
+
+        return $result;
     }
 
     private function freshTemplate(string $templateName, array $data): AbstractWikiTemplate
