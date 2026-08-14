@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Domain\ExternLink\Raw;
 
 use App\Domain\ExternLink\Raw\Hints\SiteMentionExtractor;
+use App\Domain\Utils\RedundantFieldStripper;
 use App\Domain\Utils\TextUtil;
 
 /**
@@ -73,6 +74,18 @@ final class HintMerger
     private const GENERIC_MANUSCRIPT_TITLES
         = ['lire en ligne', 'en ligne', 'ici', 'cliquez ici', 'voir', 'consulter', 'consultable', 'source', 'lien'];
 
+    /** Not "known field values" to strip a redundant mention of OUT of 'titre' --
+     *  'titre' is the subject text itself, 'url' isn't human-readable content, and
+     *  'citation' is this very class's own residue-safety-net construction, not an
+     *  independently-resolved fact to compare against. 'site' is excluded too : unlike
+     *  auteur/périodique/date/pages (structured metadata a title sometimes restates in
+     *  prose), a title routinely legitimately STARTS with the site's own branding when
+     *  it's the crawled title itself ("e-Obce.sk - Portál pre obce a mestá") -- that's
+     *  not redundancy to clean up, and site/domain redundancy already has its own
+     *  narrower, purpose-built handling (isDomainOrSiteName()/stripDomainPrefix()).
+     *  'langue' is excluded as a 2-letter code too generic to safely match. */
+    private const TITRE_STRIP_EXCLUDED_PARAMS = ['titre', 'url', 'citation', 'site', 'langue'];
+
     public function __construct(
         private readonly ResidueReducer $residueReducer = new ResidueReducer(),
     ) {
@@ -102,6 +115,7 @@ final class HintMerger
         $mapData = $this->fillGapOnly($raw->hints, $mapData, 'consulté le', 'consulté le');
 
         [$mapData, $residueWasAllRedundant] = $this->preserveUnconsumedResidue($raw, $mapData);
+        $mapData = $this->stripRedundantTitreContent($mapData);
 
         // A residue ResidueReducer could fully explain away isn't "unaccounted for" : every
         // word of it restated data already in the template, so there is genuinely nothing
@@ -149,6 +163,41 @@ final class HintMerger
         $mapData['citation'] = $reduced;
 
         return [$mapData, false];
+    }
+
+    /**
+     * "Alain Collomp, Alliance et filiation en haute Provence (Annales 1977, p.445-477)"
+     * -- a manuscript titre kept verbatim often restates data now separately resolved
+     * elsewhere in $mapData (an auteur byline, the périodique/date/pages of a trailing
+     * citation block...). Strips those redundant mentions out (RedundantFieldStripper,
+     * App\Domain\Utils -- deliberately generic, not ExternLink-specific) and cleans up
+     * the separator debris left behind. Runs LAST, once every other field is at its
+     * final resolved value, using the whole of $mapData (minus 'titre' itself, and the
+     * non-content 'url'/'citation' keys) as the known-value set.
+     *
+     * Deliberately does NOT affect $confidence either way : this is a cosmetic cleanup
+     * of what's already trusted content (manuscript titre, wins by default), not a new
+     * source of uncertainty to gate on.
+     *
+     * @param array<string, string> $mapData
+     * @return array<string, string>
+     */
+    private function stripRedundantTitreContent(array $mapData): array
+    {
+        if (empty($mapData['titre'])) {
+            return $mapData;
+        }
+
+        $knownValues = array_diff_key($mapData, array_flip(self::TITRE_STRIP_EXCLUDED_PARAMS));
+        $stripped = RedundantFieldStripper::strip((string) $mapData['titre'], $knownValues);
+
+        // A titre reduced to nothing (rare : would mean the whole manuscript label was
+        // just a restatement of other fields) is worse than the untouched original.
+        if ($stripped !== '') {
+            $mapData['titre'] = $stripped;
+        }
+
+        return $mapData;
     }
 
     /**

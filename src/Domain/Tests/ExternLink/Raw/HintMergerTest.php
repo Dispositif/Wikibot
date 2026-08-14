@@ -172,6 +172,29 @@ class HintMergerTest extends TestCase
     }
 
     /**
+     * Real bug report (2026-08) : "[url e-obce.sk<!-- Titre généré automatiquement -->]"
+     * used to end up as titre="!-- Titre généré automatiquement -->" (the "e-obce.sk<"
+     * prefix silently lost downstream). With RawExternLinkParser::stripHtmlComments()
+     * removing the comment at parse time, $raw->titre is the clean "e-obce.sk" by the
+     * time it reaches HintMerger -- which then correctly recognizes it as JUST the
+     * domain name (isDomainOrSiteName()) and falls back to the crawled title, same as
+     * testFallsBackToCrawledTitleWhenManuscriptLabelIsJustTheDomainName().
+     */
+    public function testDomainNameFallbackWorksOnceAnEmbeddedHtmlCommentIsStripped()
+    {
+        $raw = $this->parse(
+            '<ref>[https://www.e-obce.sk e-obce.sk<!-- Titre généré automatiquement -->]</ref>'
+        );
+
+        $result = $this->merger()->merge(
+            $raw,
+            ['titre' => 'e-Obce.sk - Portál pre obce a mestá', 'site' => 'e-obce.sk']
+        );
+
+        self::assertSame('e-Obce.sk - Portál pre obce a mestá', $result->mapData['titre']);
+    }
+
+    /**
      * Real bug report (2026-08) : "[url Succulents.co.za: ''Aloe reynoldsii'']" -- unlike
      * the bare "H-net.org" case above, the manuscript label is not JUST the domain, it's
      * a "Domain: real title" source-attribution prefix. Not a case-sensitivity issue
@@ -410,5 +433,39 @@ class HintMergerTest extends TestCase
         self::assertSame('Simon Hooper', $result->mapData['auteur1']);
         self::assertSame('4 janvier 2005', $result->mapData['date']);
         self::assertSame('CNN', $result->mapData['site']);
+    }
+
+    /**
+     * Real bug report (2026-08) : a manuscript titre kept verbatim (auteur wins by
+     * default) restated auteur/périodique/date/pages already resolved from Persée's
+     * own crawled metadata -- RedundantFieldStripper (App\Domain\Utils, wired in as
+     * HintMerger::stripRedundantTitreContent(), run last on the fully-merged mapData)
+     * strips those redundant mentions out. Per explicit instruction : does NOT downgrade
+     * confidence -- this is a cosmetic cleanup of already-trusted content, not a new
+     * source of doubt.
+     */
+    public function testStripsRedundantAuteurPeriodiqueDateAndPagesFromTitreWithoutDowngradingConfidence()
+    {
+        $raw = $this->parse(
+            '<ref>[https://www.persee.fr/doc/ahess_0395-2649_1977_num_32_3_293833 Alain Collomp, Alliance et filiation en haute Provence au {{s-|XVIII}} (Annales 1977, {{p.|445-477}}))]</ref>'
+        );
+
+        $result = $this->merger()->merge($raw, [
+            'auteur1' => 'Collomp, Alain',
+            'périodique' => 'Annales',
+            'date' => '1977',
+            'pages' => '445-477',
+            'volume' => '32',
+            'numéro' => '3',
+            'doi' => '10.3406/ahess.1977.293833',
+            'éditeur' => '[[Persée (portail)|Persée]]',
+        ]);
+
+        self::assertStringNotContainsString('Collomp', $result->mapData['titre']);
+        self::assertStringNotContainsString('Annales', $result->mapData['titre']);
+        self::assertStringNotContainsString('1977', $result->mapData['titre']);
+        self::assertStringNotContainsString('445-477', $result->mapData['titre']);
+        self::assertStringContainsString('Alliance et filiation en haute Provence', $result->mapData['titre']);
+        self::assertSame(MergeConfidence::Auto, $result->confidence, 'stripping redundant titre content must not downgrade confidence');
     }
 }
