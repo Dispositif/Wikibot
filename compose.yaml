@@ -119,7 +119,12 @@ services:
       dockerfile: docker/php/Dockerfile
     restart: "no"
     profiles: ["workers"]
-    command: ["php", "src/Application/CLI/rawExternLinkProcess.php"]
+    # Prod default : unattended (no confirmation prompts) and conservative (an
+    # uncertain/SemiAuto merge is skipped outright, not published unflagged) -- see
+    # RawExternLinkWorker's class docblock for what each flag changes. Override with
+    # `docker compose run --rm raw-extern-ref php src/Application/CLI/rawExternLinkProcess.php`
+    # (no flags) for local supervised runs with interactive validation prompts.
+    command: ["php", "src/Application/CLI/rawExternLinkProcess.php", "--auto", "--reject-uncertain"]
     env_file:
       - .env.zizibot
     volumes:
