@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Tests;
 
 use App\Infrastructure\TagParser;
+use Exception;
 use PHPUnit\Framework\TestCase;
 
 class TagParserTest extends TestCase
@@ -28,5 +29,20 @@ class TagParserTest extends TestCase
             ],
             $refs
         );
+    }
+
+    /**
+     * Regression (found live, 2026-08-14) : a 200 response with an empty body (some
+     * sites do this) reaches importHtml('') unchanged -- DOMDocument::loadHTML() throws
+     * a ValueError on an empty string since PHP 8.4, which isn't caught by callers'
+     * catch(Exception) (ValueError extends Error, not Exception), crashing the whole
+     * crawl instead of being treated as "no metadata found".
+     */
+    public function testImportEmptyHtmlDoesNotThrow()
+    {
+        $parser = new TagParser();
+
+        $this->expectException(Exception::class);
+        $parser->importHtml('')->getRefValues();
     }
 }

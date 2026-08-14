@@ -24,6 +24,16 @@ class TagParser implements TagParserInterface
      */
     public function importHtml(string $data): TagParserInterface
     {
+        if (trim($data) === '') {
+            // DOMDocument::loadHTML() throws a ValueError on an empty string since PHP
+            // 8.4 (previously a silent no-op) -- Error doesn't extend Exception, so it
+            // isn't caught by callers' catch(Exception) (ExternPage::parseLdJson(),
+            // WikiPageAction::extractRefFromText()). Leaving $this->xml null here
+            // reproduces the old graceful behavior : xpathResults() already throws a
+            // plain (catchable) Exception downstream when $this->xml isn't set.
+            return $this;
+        }
+
         libxml_use_internal_errors(true);
         $doc = new DOMDocument();
         $doc->strictErrorChecking = false;
