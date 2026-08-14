@@ -251,12 +251,12 @@ class RawExternLinkWorker extends AbstractRefBotWorker
             // from DeadLinkTransformer
             $suffix .= ' ';
             $suffix .= ($this->summary->memo['wayback'] > 1) ? $this->summary->memo['wayback'] . 'x ' : '';
-            $suffix .= '🏛️';
+            $suffix .= '🏛️ Internet Archive';
         }
         if (!empty($this->summary->memo['wikiwix'])) {
             $suffix .= ' ';
             $suffix .= ($this->summary->memo['wikiwix'] > 1) ? $this->summary->memo['wikiwix'] . 'x ' : '';
-            $suffix .= '🥝';
+            $suffix .= '🥝 Wikiwix';
         }
 
         return $prefixSummary . $this->summary->taskName . $suffix;

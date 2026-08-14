@@ -74,6 +74,39 @@ class RawExternLinkParserTest extends TestCase
     }
 
     /**
+     * Real bug report (2026-08) : an HTML comment inside the manuscript label
+     * ("e-obce.sk<!-- Titre généré automatiquement -->") left unstripped corrupted
+     * 'titre' further downstream in the merge/template pipeline, instead of the comment
+     * simply being invisible editorial metadata a human never meant as citation content.
+     * Stripped once, on the whole <ref>/bullet content, before the bracket is even
+     * located -- see RawExternLinkParser::stripHtmlComments().
+     */
+    public function testStripsHtmlCommentFromManuscriptLabel()
+    {
+        $dto = $this->parser()->parse(
+            '<ref>[https://www.e-obce.sk e-obce.sk<!-- Titre généré automatiquement -->]</ref>'
+        );
+
+        $this::assertNotNull($dto);
+        $this::assertSame('e-obce.sk', $dto->titre);
+        $this::assertTrue($dto->isFullyConsumed());
+    }
+
+    /**
+     * A comment removed from the MIDDLE of the content (not just trailing) must not
+     * leave a double space behind.
+     */
+    public function testCollapsesWhitespaceLeftByARemovedMidStringComment()
+    {
+        $dto = $this->parser()->parse(
+            '<ref>[http://example.org/x Foo <!-- some note --> Bar]</ref>'
+        );
+
+        $this::assertNotNull($dto);
+        $this::assertSame('Foo Bar', $dto->titre);
+    }
+
+    /**
      * @dataProvider provideCleanBulletFragments
      */
     public function testParsesCleanBulletWithNoResidue(string $fragment, string $expectedUrl, string $expectedTitre)

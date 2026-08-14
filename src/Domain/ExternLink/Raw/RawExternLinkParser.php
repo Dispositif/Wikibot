@@ -113,6 +113,8 @@ class RawExternLinkParser
             return null;
         }
 
+        $content = $this->stripHtmlComments($content);
+
         if (!preg_match(self::BRACKET_LINK_PATTERN, $content, $linkMatch, PREG_OFFSET_CAPTURE)) {
             return null;
         }
@@ -193,5 +195,26 @@ class RawExternLinkParser
         }
 
         return $titre;
+    }
+
+    /**
+     * "[url e-obce.sk<!-- Titre généré automatiquement -->]" -> "[url e-obce.sk]" -- an
+     * HTML comment is invisible editorial metadata, never citation content, but left
+     * unstripped it corrupted 'titre' downstream (2026-08 bug report : the merged
+     * template ended up with titre="!-- Titre généré automatiquement -->", the "e-obce.sk<"
+     * prefix silently lost to whatever in the crawl/template pipeline mishandles a raw
+     * "<!--" it wasn't expecting -- see RawExternLinkTransformer::hydrateFromSerialized()'s
+     * own comment-stripping, which only ever covered the CRAWLED text, never the
+     * manuscript's). Stripped once here, on the whole <ref>/bullet content, before the
+     * bracket is even located -- benefits titre, leadingText and rest uniformly, and
+     * means every Hints/ extractor downstream never has to account for stray markup
+     * noise. Also collapses whatever double-space a removed mid-string comment leaves
+     * behind ("Foo <!-- x --> Bar" -> "Foo Bar").
+     */
+    private function stripHtmlComments(string $content): string
+    {
+        $stripped = preg_replace('#<!--.*?-->#s', '', $content) ?? $content;
+
+        return trim(preg_replace('#[ \t]+#', ' ', $stripped) ?? $stripped);
     }
 }
