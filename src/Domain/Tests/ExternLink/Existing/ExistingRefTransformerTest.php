@@ -14,6 +14,7 @@ use App\Domain\ExternLink\ExternRefTransformerInterface;
 use App\Domain\ExternLink\Raw\MergeConfidence;
 use App\Domain\Models\Summary;
 use App\Domain\WikiTemplateFactory;
+use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -151,15 +152,64 @@ class ExistingRefTransformerTest extends TestCase
 
     public function testSkipsWhenNothingChanges()
     {
-        $today = date('d-m-Y');
+        // 'consulté le' kept old on purpose (not $today) : this exercises the
+        // crawl-then-compare no-op path specifically, distinct from the
+        // recently-consulted early-skip path covered below.
         $transformer = $this->transformer(
-            "{{lien web |titre=Titre |url=http://x.fr/a |site=x.fr |consulté le=$today}}"
+            '{{Lien web |titre=Titre |url=http://x.fr/a |site=x.fr |consulté le=01-01-2020}}'
         );
 
-        $fragment = "{{lien web |titre=Titre |url=http://x.fr/a |site=x.fr |consulté le=$today}}";
+        // Casing matches LienWebTemplate::WIKITEMPLATE_NAME exactly ("Lien web") : the
+        // completion path always re-serializes through that constant, so a differently-
+        // cased input would register as a (cosmetic) diff, not a true no-op.
+        $fragment = '{{Lien web |titre=Titre |url=http://x.fr/a |site=x.fr |consulté le=01-01-2020}}';
         $result = $transformer->process($fragment);
 
         self::assertSame(trim($fragment), trim($result->refContent));
+    }
+
+    /**
+     * The crawl pipeline must not even be called : recently-checked
+     * citations are skipped before any HTTP work, not just left unchanged after a crawl.
+     */
+    public function testSkipsWithoutCrawlingWhenRecentlyConsulted()
+    {
+        $externRefTransformer = $this->createMock(ExternRefTransformerInterface::class);
+        $externRefTransformer->expects(self::never())->method('process');
+        $transformer = new ExistingRefTransformer($externRefTransformer);
+
+        $now = new DateTimeImmutable('2026-08-14');
+        $fragment = '{{lien web |titre=Titre |url=http://x.fr/a |site=x.fr |consulté le=01-06-2026}}';
+        $result = $transformer->process($fragment, new Summary(), [], $now);
+
+        self::assertSame($fragment, $result->refContent);
+        self::assertSame(MergeConfidence::Skip, $result->confidence);
+    }
+
+    public function testDoesNotSkipWhenConsultedMoreThanSixMonthsAgo()
+    {
+        $transformer = $this->transformer(
+            '{{lien web |titre=Titre |url=http://x.fr/a |site=x.fr |consulté le=' . date('d-m-Y') . '}}'
+        );
+
+        $now = new DateTimeImmutable('2026-08-14');
+        $fragment = '{{lien web |titre=Titre |url=http://x.fr/a |site=x.fr |consulté le=01-01-2026}}';
+        $result = $transformer->process($fragment, new Summary(), [], $now);
+
+        self::assertSame(date('d-m-Y'), $this->paramFromSerialized('lien web', $result->refContent)('consulté le'));
+    }
+
+    public function testDoesNotSkipWhenConsulteLeIsUnparseable()
+    {
+        $transformer = $this->transformer(
+            '{{lien web |titre=Titre |url=http://x.fr/a |site=x.fr |consulté le=' . date('d-m-Y') . '}}'
+        );
+
+        $now = new DateTimeImmutable('2026-08-14');
+        $fragment = '{{lien web |titre=Titre |url=http://x.fr/a |site=x.fr |consulté le=printemps 2026}}';
+        $result = $transformer->process($fragment, new Summary(), [], $now);
+
+        self::assertSame(date('d-m-Y'), $this->paramFromSerialized('lien web', $result->refContent)('consulté le'));
     }
 
     public function testKeepsExistingTemplateTypeOnCompletion()

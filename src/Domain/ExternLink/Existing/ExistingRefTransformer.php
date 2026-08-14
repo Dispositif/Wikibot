@@ -14,9 +14,14 @@ use App\Domain\ExternLink\ExternRefTransformerInterface;
 use App\Domain\ExternLink\Raw\MergeConfidence;
 use App\Domain\Models\Summary;
 use App\Domain\Models\Wiki\AbstractWikiTemplate;
+use App\Domain\Utils\DateUtil;
 use App\Domain\Utils\TemplateParser;
 use App\Domain\WikiOptimizer\OptimizerFactory;
 use App\Domain\WikiTemplateFactory;
+use DateInterval;
+use DateTime;
+use DateTimeImmutable;
+use DateTimeInterface;
 use Throwable;
 
 /**
@@ -49,12 +54,22 @@ final class ExistingRefTransformer
 {
     private const SUPPORTED_TEMPLATES = ['lien web', 'article'];
 
+    /**
+     * A citation confirmed recently doesn't need re-crawling yet.
+     */
+    private const SKIP_IF_CONSULTED_WITHIN = 'P6M'; // 6 months
+
     public function __construct(
         private readonly ExternRefTransformerInterface $externRefTransformer,
     ) {
     }
 
-    public function process(string $refContent, Summary $summary = new Summary(), array $options = []): ExistingRefResult
+    public function process(
+        string             $refContent,
+        Summary            $summary = new Summary(),
+        array              $options = [],
+        DateTimeInterface  $now = new DateTimeImmutable(),
+    ): ExistingRefResult
     {
         $trimmed = trim($refContent);
         $existing = $this->detectExistingTemplate($trimmed);
@@ -69,6 +84,10 @@ final class ExistingRefTransformer
         try {
             $existingData = $this->hydrateFromSerialized($existingTemplateName, $rawMatch)->toArray();
         } catch (Throwable) {
+            return new ExistingRefResult($refContent, MergeConfidence::Skip);
+        }
+
+        if ($this->recentlyConsulted($existingData['consulté le'] ?? '', $now)) {
             return new ExistingRefResult($refContent, MergeConfidence::Skip);
         }
 
@@ -113,6 +132,50 @@ final class ExistingRefTransformer
         $newRefContent = str_replace($rawMatch, $newTemplate, $refContent);
 
         return new ExistingRefResult($newRefContent, MergeConfidence::Auto);
+    }
+
+    /**
+     * Unparseable/missing 'consulté le' is NOT treated as recent -- conservative
+     * default : better to (re-)check a date this can't read than to silently skip a
+     * citation that might actually be stale.
+     */
+    private function recentlyConsulted(string $consulteLe, DateTimeInterface $now): bool
+    {
+        $date = $this->parseConsulteLe($consulteLe);
+        if ($date === null) {
+            return false;
+        }
+
+        $threshold = DateTimeImmutable::createFromInterface($now)->sub(new DateInterval(self::SKIP_IF_CONSULTED_WITHIN));
+
+        return $date > $threshold;
+    }
+
+    /**
+     * 'consulté le' values seen in the wild : this bot's own "d-m-Y" (DeadLinkTransformer/
+     * mappers), plain ISO "Y-m-d" (common on machine-imported citations), "d/m/Y", and
+     * French long-form ("13 décembre 2023", via DateUtil). The round-trip
+     * format()===$value check guards against createFromFormat()'s lenient overflow
+     * (e.g. silently rolling "31-02-2023" into a different, valid date) -- same
+     * rationale as FrenchDate's own docblock.
+     */
+    private function parseConsulteLe(string $value): ?DateTimeImmutable
+    {
+        $value = trim($value);
+        if ($value === '') {
+            return null;
+        }
+
+        foreach (['Y-m-d', 'd-m-Y', 'd/m/Y'] as $format) {
+            $date = DateTime::createFromFormat('!' . $format, $value);
+            if ($date instanceof DateTime && $date->format($format) === $value) {
+                return DateTimeImmutable::createFromMutable($date);
+            }
+        }
+
+        $french = DateUtil::simpleFrench2object($value);
+
+        return $french instanceof DateTime ? DateTimeImmutable::createFromMutable($french) : null;
     }
 
     /**
