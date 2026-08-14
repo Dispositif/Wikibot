@@ -166,7 +166,7 @@ class ExternRefWorker extends AbstractRefBotWorker
         }
         if (isset($this->summary->memo['count lien brisé'])) {
             $this->log->stats->increment('externref.count.lienbrisé');
-            $suffix .= ' ⚠️️️lien brisé'; //⚠️💩
+            $suffix .= ' 🔗lien brisé'; //⚠️💩🔗
             $suffix .= ($this->summary->memo['count lien brisé'] > 1)
                 ? ' x' . $this->summary->memo['count lien brisé']
                 : '';
@@ -176,14 +176,14 @@ class ExternRefWorker extends AbstractRefBotWorker
             $suffix .= ($this->summary->memo['wikiwix'] > 1)
                 ? $this->summary->memo['wikiwix'] . 'x '
                 : '';
-            $suffix .= 'Wikiwix';
+            $suffix .= 'Wikiwix🥝';
         }
         if (isset($this->summary->memo['wayback'])) {
             $suffix .= ' ';
             $suffix .= ($this->summary->memo['wayback'] > 1)
                 ? $this->summary->memo['wayback'] . 'x '
                 : '';
-            $suffix .= 'InternetArchive';
+            $suffix .= 'InternetArchive🏛️';
         }
 
         if (isset($this->summary->memo['accès url non libre'])) {

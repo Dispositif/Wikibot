@@ -126,18 +126,18 @@ class ExistingRefWorker extends AbstractRefBotWorker
             $suffix .= ' ' . $this->summary->memo['count URL'] . 'x ref';
         }
         if (!empty($this->summary->memo['count lien brisé'])) {
-            $suffix .= ' ⚠️ lien brisé';
+            $suffix .= '🔗 lien brisé';
             $suffix .= ($this->summary->memo['count lien brisé'] > 1) ? ' x' . $this->summary->memo['count lien brisé'] : '';
         }
         if (!empty($this->summary->memo['wikiwix'])) {
             $suffix .= ' ';
             $suffix .= ($this->summary->memo['wikiwix'] > 1) ? $this->summary->memo['wikiwix'] . 'x ' : '';
-            $suffix .= 'Wikiwix';
+            $suffix .= 'Wikiwix🥝';
         }
         if (!empty($this->summary->memo['wayback'])) {
             $suffix .= ' ';
             $suffix .= ($this->summary->memo['wayback'] > 1) ? $this->summary->memo['wayback'] . 'x ' : '';
-            $suffix .= 'InternetArchive';
+            $suffix .= 'InternetArchive🏛️';
         }
 
         return $prefixSummary . $this->summary->taskName . $suffix;
