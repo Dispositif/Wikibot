@@ -57,7 +57,7 @@ final class ExistingRefTransformer
     /**
      * A citation confirmed recently doesn't need re-crawling yet.
      */
-    private const SKIP_IF_CONSULTED_WITHIN = 'P6M'; // 6 months
+    private const SKIP_IF_CONSULTED_WITHIN = 'P1Y'; // 1 year
 
     public function __construct(
         private readonly ExternRefTransformerInterface $externRefTransformer,
@@ -121,7 +121,7 @@ final class ExistingRefTransformer
 
         try {
             $newTemplate = $wentDead
-                ? $this->buildDeadLinkReplacement($crawled, $crawledTemplateName, $existingData)
+                ? $this->buildDeadLinkReplacement($crawled, $crawledTemplateName, $existingData, $now)
                 : $this->buildCompletion($crawled, $crawledTemplateName, $existingTemplateName, $existingData);
         } catch (Throwable) {
             // Malformed/unexpected template text (shouldn't happen -- $crawled came from
@@ -200,19 +200,28 @@ final class ExistingRefTransformer
     }
 
     /**
-     * {{Lien brisé}} carries a URL-derived placeholder titre (DeadLinkTransformer's
-     * generateTitleFromURLText()), and even a freshly re-crawled titre is a re-crawl,
-     * not an editorial choice -- the existing citation's own titre, when there is one,
-     * is always kept over either.
+     * Titre : existing editorial titre always wins. 'brisé le' only on a genuine
+     * {{Lien brisé}} -- adding it on an archived replacement makes MediaWiki render a
+     * perfectly working {{lien web}}/{{article}} as broken (2026-08-14 bug report).
      */
-    private function buildDeadLinkReplacement(string $crawled, string $crawledTemplateName, array $existingData): string
+    private function buildDeadLinkReplacement(string $crawled, string $crawledTemplateName, array $existingData, DateTimeInterface $now): string
     {
-        if (empty($existingData['titre'])) {
+        $isLienBrise = in_array(mb_strtolower($crawledTemplateName), ['lien brisé', 'lien brise'], true);
+        $hasOldConsulteLe = $isLienBrise && !empty($existingData['consulté le']);
+
+        if (empty($existingData['titre']) && !$hasOldConsulteLe) {
             return $crawled;
         }
 
         $data = $this->hydrateFromSerialized($crawledTemplateName, $crawled)->toArray();
-        $data['titre'] = $existingData['titre'];
+
+        if (!empty($existingData['titre'])) {
+            $data['titre'] = $existingData['titre'];
+        }
+        if ($hasOldConsulteLe) {
+            $data['consulté le'] = $existingData['consulté le'];
+            $data['brisé le'] = $now->format('d-m-Y');
+        }
 
         return $this->freshTemplate($crawledTemplateName, $data)->serialize(true);
     }

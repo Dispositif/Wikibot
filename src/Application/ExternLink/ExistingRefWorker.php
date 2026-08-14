@@ -28,7 +28,7 @@ use Throwable;
  */
 class ExistingRefWorker extends AbstractRefBotWorker
 {
-    public const TASK_BOT_FLAG = false;
+    public const TASK_BOT_FLAG = true;
     public const JOURNAL_TASK = 'existing-ref';
     public const ARTICLE_ANALYZED_FILENAME = __DIR__ . '/../resources/article_existingRef_edited.txt';
     public const MAX_REFS_PROCESSED_IN_ARTICLE = 30;
@@ -123,7 +123,7 @@ class ExistingRefWorker extends AbstractRefBotWorker
         $prefixSummary = $this->summary->isBotFlag() ? 'bot ' : '';
         $suffix = '';
         if (!empty($this->summary->memo['count URL'])) {
-            $suffix .= ' ' . $this->summary->memo['count URL'] . 'x ref complétée/vérifiée';
+            $suffix .= ' ' . $this->summary->memo['count URL'] . 'x ref';
         }
         if (!empty($this->summary->memo['count lien brisé'])) {
             $suffix .= ' ⚠️ lien brisé';

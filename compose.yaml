@@ -166,7 +166,7 @@ services:
     profiles: ["workers"]
     command: ["php", "src/Application/CLI/existingRefProcess.php"]
     env_file:
-      - .env.zizibot
+      - .env
     volumes:
       - ./src/Application/resources/article_existingRef_edited.txt:/app/src/Application/resources/article_existingRef_edited.txt
     depends_on:

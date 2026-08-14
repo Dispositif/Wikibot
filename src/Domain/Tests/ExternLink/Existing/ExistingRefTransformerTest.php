@@ -186,14 +186,14 @@ class ExistingRefTransformerTest extends TestCase
         self::assertSame(MergeConfidence::Skip, $result->confidence);
     }
 
-    public function testDoesNotSkipWhenConsultedMoreThanSixMonthsAgo()
+    public function testDoesNotSkipWhenConsultedMoreThanOneYearAgo()
     {
         $transformer = $this->transformer(
             '{{lien web |titre=Titre |url=http://x.fr/a |site=x.fr |consulté le=' . date('d-m-Y') . '}}'
         );
 
         $now = new DateTimeImmutable('2026-08-14');
-        $fragment = '{{lien web |titre=Titre |url=http://x.fr/a |site=x.fr |consulté le=01-01-2026}}';
+        $fragment = '{{lien web |titre=Titre |url=http://x.fr/a |site=x.fr |consulté le=01-01-2025}}';
         $result = $transformer->process($fragment, new Summary(), [], $now);
 
         self::assertSame(date('d-m-Y'), $this->paramFromSerialized('lien web', $result->refContent)('consulté le'));
@@ -257,6 +257,43 @@ class ExistingRefTransformerTest extends TestCase
         $get = $this->paramFromSerialized('lien web', $result->refContent);
         self::assertSame('Titre curé par un humain', $get('titre'));
         self::assertSame(MergeConfidence::Auto, $result->confidence);
+    }
+
+    /**
+     * Regression (found live, 2026-08-14) : 'brisé le' on an archived replacement makes
+     * MediaWiki render a perfectly working {{lien web}} as broken. Archive found => plain
+     * refresh (consulté le = today), no 'brisé le' -- unlike a genuine {{Lien brisé}},
+     * see below.
+     */
+    public function testArchivedReplacementGetsPlainConsulteLeRefreshNoBriseLe()
+    {
+        $transformer = $this->deadLinkTransformer(
+            '{{lien web |titre=Titre archive |url=https://web.archive.org/web/20211111013456/http://x.fr/a |site=x.fr via Wikiwix |consulté le=' . date('d-m-Y') . '}}',
+            'wikiwix'
+        );
+
+        $now = new DateTimeImmutable('2026-08-14');
+        $fragment = '{{lien web |titre=Titre |url=http://x.fr/a |site=x.fr |consulté le=20-06-2023}}';
+        $result = $transformer->process($fragment, new Summary(), [], $now);
+
+        $get = $this->paramFromSerialized('lien web', $result->refContent);
+        self::assertSame(date('d-m-Y'), $get('consulté le'), 'consulté le refreshed to today, old date not kept here');
+        self::assertNull($get('brisé le'), 'no brisé le on a working archived replacement');
+    }
+
+    public function testGenuineLienBriseKeepsOldConsulteLeAndSetsBriseLeToNow()
+    {
+        $transformer = $this->deadLinkTransformer(
+            '{{Lien brisé |url=http://x.fr/a |titre=x.fr/a |brisé le=' . date('d-m-Y') . '}}'
+        );
+
+        $now = new DateTimeImmutable('2026-08-14');
+        $fragment = '{{lien web |titre=Titre |url=http://x.fr/a |site=x.fr |consulté le=20-06-2023}}';
+        $result = $transformer->process($fragment, new Summary(), [], $now);
+
+        $get = $this->paramFromSerialized('lien brisé', $result->refContent);
+        self::assertSame('20-06-2023', $get('consulté le'), 'old consulté le kept as last-confirmed-alive date');
+        self::assertSame('14-08-2026', $get('brisé le'), 'brisé le is today, not the crawl\'s own now()');
     }
 
     public function testPassesUrlAndSummaryThroughToTheCrawlPipelineUnchanged()

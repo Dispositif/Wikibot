@@ -43,7 +43,7 @@ $logger = new ConsoleLogger();
 $logger->colorMode = true;
 //$logger->debug = true;
 $botConfig = new WikiBotConfig($wiki, $logger);
-$botConfig->setTaskName("🔄 Complétion de référence existante :");
+$botConfig->setTaskName("☑️ Consultation de {lien web} {article} :"); // ✔☑️✅
 
 $botConfig->checkStopOnTalkpageOrException();
 
