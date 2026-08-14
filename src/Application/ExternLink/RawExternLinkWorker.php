@@ -29,19 +29,26 @@ use Throwable;
  * extern-ref is a later step, once this has run unsupervised on a real sample without
  * surprises.
  *
- * Two supervision levels, both distinct from TASK_BOT_FLAG (the blanket "not trusted
+ * Three supervision levels, all distinct from TASK_BOT_FLAG (the blanket "not trusted
  * yet" switch for the whole feature, currently false) :
- * - Supervised (default, $fullAuto = false) : modeAuto starts false, every edit --
- *   Auto or SemiAuto -- is confirmed interactively (typing "auto" at a prompt only
- *   escalates the Auto-confidence path, never the SemiAuto one, see confirmSemiAuto()).
+ * - Supervised (default, $fullAuto = false, $rejectUncertain = false) : modeAuto starts
+ *   false, every edit -- Auto or SemiAuto -- is confirmed interactively (typing "auto"
+ *   at a prompt only escalates the Auto-confidence path, never the SemiAuto one, see
+ *   confirmSemiAuto()).
  * - Full-auto ($fullAuto = true, --auto CLI flag) : no human is assumed present.
  *   Auto-confidence edits proceed like modeAuto=true always has. SemiAuto ones are
  *   NOT skipped and NOT blocked on a prompt either -- they're applied, but with the
  *   bot flag forced off (Summary::setBotFlag(false), regardless of TASK_BOT_FLAG) and
  *   a warning marker in the edit summary, so a human patrols them via Recent Changes
- *   instead of gatekeeping them beforehand. Must be threaded through the constructor,
- *   not set after -- AbstractBotTaskWorker::__construct() calls run() internally
- *   before returning.
+ *   instead of gatekeeping them beforehand.
+ * - Strict full-auto ($rejectUncertain = true, --reject-uncertain CLI flag, implies
+ *   full-auto on its own) : also no prompts, but the opposite call on SemiAuto --
+ *   instead of applying it unflagged, it's treated exactly like MergeConfidence::Skip
+ *   (left untouched, nothing published). Use when running fully unattended somewhere
+ *   Recent Changes isn't being patrolled, and a missed edit is preferable to a
+ *   maybe-wrong one.
+ * Both auto flags must be threaded through the constructor, not set after --
+ * AbstractBotTaskWorker::__construct() calls run() internally before returning.
  *
  * Only <ref>...</ref> content is handled through AbstractRefBotWorker's inherited
  * processText()/processRefContent() (its extraction regex already captures ANY <ref>
@@ -64,20 +71,27 @@ class RawExternLinkWorker extends AbstractRefBotWorker
 
     private readonly bool $fullAuto;
 
+    private readonly bool $rejectUncertain;
+
     public function __construct(
         WikiBotConfig             $bot,
         MediawikiFactory          $wiki,
         ?PageListInterface        $pagesGen = null,
         ?RawExternLinkTransformer $transformer = null,
         bool                      $dryRun = false,
-        bool                      $fullAuto = false
+        bool                      $fullAuto = false,
+        bool                      $rejectUncertain = false
     ) {
         if (!$transformer instanceof RawExternLinkTransformer) {
             throw new ConfigException('RawExternLinkTransformer not set');
         }
         $this->transformer = $transformer;
-        $this->fullAuto = $fullAuto;
-        if ($fullAuto) {
+        $this->rejectUncertain = $rejectUncertain;
+        // $rejectUncertain implies no-prompt mode on its own : there would be nothing
+        // left to ask about, since the only interactive path left (SemiAuto) is skipped
+        // outright rather than confirmed -- see processRefContent().
+        $this->fullAuto = $fullAuto || $rejectUncertain;
+        if ($this->fullAuto) {
             $this->modeAuto = true;
         }
 
@@ -164,6 +178,14 @@ class RawExternLinkWorker extends AbstractRefBotWorker
         $this->printDiff($refContent, $newContent, 'echo');
 
         $isSemiAuto = $result->confidence === MergeConfidence::SemiAuto;
+
+        if ($isSemiAuto && $this->rejectUncertain) {
+            // Strict full-auto : no human to ask, and unlike plain --auto, no unflagged
+            // publish either -- treated exactly like MergeConfidence::Skip.
+            $this->log->stats->increment('rawexternlink.skip.semiauto_rejected');
+
+            return $refContent;
+        }
 
         if ($isSemiAuto && $this->fullAuto) {
             // No human to ask : apply it, but strip the bot flag and flag the edit

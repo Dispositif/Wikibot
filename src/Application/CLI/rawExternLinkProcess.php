@@ -37,16 +37,21 @@ use App\Infrastructure\WikiwixAdapter;
 
 include __DIR__.'/../myBootstrap.php';
 
-// --page="Skateboard" --stats=redis --stats=sqlite --debug --verbose --dry-run --no-direct-retry --no-robots-check --auto
+// --page="Skateboard" --stats=redis --stats=sqlite --debug --verbose --dry-run --no-direct-retry --no-robots-check --auto --reject-uncertain
 // --auto : fully unsupervised (no confirmation prompts at all, not even for a
 // site/data conflict). SemiAuto merges are still applied, not skipped, but with the
 // bot flag forced off and a warning note in the edit summary -- see
 // RawExternLinkWorker::processRefContent(). Without --auto, every SemiAuto merge
 // always needs an interactive "y"/"n" regardless of anything typed at earlier prompts.
-echo "OPTIONS: --debug --verbose --stats=redis --stats=sqlite --page=\"Skateboard\" --nofilter --dry-run --no-direct-retry --no-robots-check --auto \n";
-$options = getopt('', ['page::', 'debug', 'verbose', 'stats::', 'nofilter', 'dry-run', 'no-direct-retry', 'no-robots-check', 'auto']);
+// --reject-uncertain : also unsupervised (implies --auto on its own, no need to pass
+// both), but SemiAuto merges are SKIPPED instead of applied unflagged -- nothing is
+// published for them at all. Use for a fully unattended run where nobody patrols
+// Recent Changes for the unflagged/warned edits --auto alone would leave behind.
+echo "OPTIONS: --debug --verbose --stats=redis --stats=sqlite --page=\"Skateboard\" --nofilter --dry-run --no-direct-retry --no-robots-check --auto --reject-uncertain \n";
+$options = getopt('', ['page::', 'debug', 'verbose', 'stats::', 'nofilter', 'dry-run', 'no-direct-retry', 'no-robots-check', 'auto', 'reject-uncertain']);
 $dryRun = isset($options['dry-run']);
 $fullAuto = isset($options['auto']);
+$rejectUncertain = isset($options['reject-uncertain']);
 $directRetryEnabled = !isset($options['no-direct-retry']);
 $respectRobotsTxt = !isset($options['no-robots-check']);
 
@@ -132,7 +137,7 @@ try {
 
     $transformer = new RawExternLinkTransformer(new RawExternLinkParser(), $externRefTransformer);
 
-    new RawExternLinkWorker($botConfig, $wiki, $list, $transformer, $dryRun, $fullAuto);
+    new RawExternLinkWorker($botConfig, $wiki, $list, $transformer, $dryRun, $fullAuto, $rejectUncertain);
 } finally {
     echo "END of process\n";
     sleep(5);
