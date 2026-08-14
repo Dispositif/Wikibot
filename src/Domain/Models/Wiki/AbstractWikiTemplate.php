@@ -31,6 +31,12 @@ abstract class AbstractWikiTemplate extends AbstractStrictWikiTemplate implement
 
     protected const ALLOW_USER_MULTI_SPACED = true;
 
+    /**
+     * Whether an unrecognized/malformed param gets an explanatory HTML comment appended
+     * (e.g. "<!-- PARAMETRE 'X' N'EXISTE PAS -->").
+     */
+    protected const ANNOTATE_UNRECOGNIZED_PARAMS = false;
+
     public $parametersErrorFromHydrate;
 
     public $userSeparator;
@@ -158,11 +164,15 @@ abstract class AbstractWikiTemplate extends AbstractStrictWikiTemplate implement
                     }
 
                     // ou 1= 2= 3=
-                    $errorUserData[$param] = $value.' <!--VALEUR SANS NOM DE PARAMETRE -->';
+                    if (self::ANNOTATE_UNRECOGNIZED_PARAMS) {
+                        $errorUserData[$param] = $value.' <!--VALEUR SANS NOM DE PARAMETRE -->';
+                    }
 
                     continue;
                 }
-                $errorUserData[$param] = $value." <!--PARAMETRE '$param' N'EXISTE PAS -->";
+                if (self::ANNOTATE_UNRECOGNIZED_PARAMS) {
+                    $errorUserData[$param] = $value." <!--PARAMETRE '$param' N'EXISTE PAS -->";
+                }
             }
             $paramsByRenderOrder = array_merge($paramsByRenderOrder, $errorUserData);
         }

@@ -20,8 +20,10 @@ class OuvrageTemplateTest extends TestCase
         $ouvrage->hydrateFromText(
             "{{Ouvrage |titre=bla |volume=5 |vol=3}}"
         );
+        // "N'EXISTE PAS" comment annotation temporarily disabled (2026-08-14, see
+        // AbstractWikiTemplate::ANNOTATE_UNRECOGNIZED_PARAMS)
         $this::assertSame(
-            "{{Ouvrage |titre=bla |volume=5 |éditeur= |année= |isbn= |volume-doublon=3 <!--PARAMETRE 'volume-doublon' N'EXISTE PAS -->}}",
+            "{{Ouvrage |titre=bla |volume=5 |éditeur= |année= |isbn= |volume-doublon=3}}",
             $ouvrage->serialize(true)
         );
     }
