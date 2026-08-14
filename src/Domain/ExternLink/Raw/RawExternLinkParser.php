@@ -115,6 +115,19 @@ class RawExternLinkParser
 
         $content = $this->stripHtmlComments($content);
 
+        if ($this->containsNestedRef($content)) {
+            // A citation with its own embedded <ref>...</ref> footnote (rare, but real
+            // -- e.g. "* [url Titre], Artiste Peintre<ref>{{lien web|...}}</ref>.") is
+            // never safe to fold into a template param : the value ends up containing a
+            // literal <ref> tag, and any truncation along the way (ResidueReducer's own
+            // word-boundary trimming, or anything else) risks leaving it unclosed --
+            // "</ref}}" instead of "</ref>}}" -- which would swallow unrelated page
+            // content into one broken footnote when published. Out of scope entirely,
+            // same as a bare URL with no recognized wrapper -- checked on the WHOLE
+            // content (label + leadingText + rest) so it can't slip in from any of them.
+            return null;
+        }
+
         if (!preg_match(self::BRACKET_LINK_PATTERN, $content, $linkMatch, PREG_OFFSET_CAPTURE)) {
             return null;
         }
@@ -216,5 +229,12 @@ class RawExternLinkParser
         $stripped = preg_replace('#<!--.*?-->#s', '', $content) ?? $content;
 
         return trim(preg_replace('#[ \t]+#', ' ', $stripped) ?? $stripped);
+    }
+
+    /** "<ref" followed by whitespace or ">" -- not e.g. "<reference" -- catches both
+     *  "<ref>" and an attributed "<ref name=\"x\">" opening tag. */
+    private function containsNestedRef(string $content): bool
+    {
+        return preg_match('#<ref[\s>]#i', $content) === 1;
     }
 }

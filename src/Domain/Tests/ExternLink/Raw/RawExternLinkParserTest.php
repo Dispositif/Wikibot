@@ -107,6 +107,34 @@ class RawExternLinkParserTest extends TestCase
     }
 
     /**
+     * Real bug report (2026-08) : "* [url Titre], Artiste Peintre<ref>{{lien web|...}}
+     * </ref>." -- a citation with its own embedded <ref>...</ref> footnote. Folding this
+     * into a template's 'citation' param produced a real wikitext-corrupting bug once
+     * (ResidueReducer's own word-boundary trimming truncated the value to "...</ref"
+     * with no closing ">", leaving the published page with an unclosed <ref> tag that
+     * would swallow unrelated content into one broken footnote). Rather than trying to
+     * make truncation always safe, the fragment is out of scope entirely : returns null,
+     * same as a bare URL with no recognized wrapper.
+     */
+    public function testSkipsAFragmentContainingANestedRefTag()
+    {
+        $dto = $this->parser()->parse(
+            '* [https://www.isula.corsica/culture/FABIANI-Jean-Charles_a2597.html Jean-Charles Fabiani], Artiste Peintre<ref>{{lien web |titre=Fiche personnalité sur le site du Sénat |url=https://www.senat.fr/senateur/natali_jean000126.html |site=[[Sénat (France)|senat.fr]] |consulté le=13-08-2026}}.</ref>.'
+        );
+
+        $this::assertNull($dto);
+    }
+
+    public function testSkipsAFragmentWithAnAttributedNestedRefTag()
+    {
+        $dto = $this->parser()->parse(
+            '<ref>[http://example.org/x Titre] blabla<ref name="x">Autre note</ref></ref>'
+        );
+
+        $this::assertNull($dto);
+    }
+
+    /**
      * @dataProvider provideCleanBulletFragments
      */
     public function testParsesCleanBulletWithNoResidue(string $fragment, string $expectedUrl, string $expectedTitre)
