@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace App\Domain\ExternLink\Raw;
 
+use App\Domain\ExternLink\Raw\Hints\EnglishDate;
+use App\Domain\ExternLink\Raw\Hints\FrenchDate;
 use App\Domain\ExternLink\Raw\Hints\SiteMentionExtractor;
 use App\Domain\Utils\RedundantFieldStripper;
 use App\Domain\Utils\TextUtil;
@@ -160,9 +162,109 @@ final class HintMerger
         if ($reduced === null) {
             return [$mapData, true];
         }
+
+        [$mapData, $residueWasADate] = $this->resolveReducedResidueAsDate($reduced, $mapData);
+        if ($residueWasADate) {
+            return [$mapData, true];
+        }
+
         $mapData['citation'] = $reduced;
 
         return [$mapData, false];
+    }
+
+    /**
+     * ", Agra Presse, 5 février 2007" reduces (ResidueReducer, above) to just "5 février
+     * 2007" once "Agra Presse" is explained away as a site-domain fragment -- a bare
+     * date, dumped into 'citation' as noise, when the crawl found no 'date' at all.
+     * "; Publié le 2 juillet 2015, consulté 2016-06-18" reduces to just "2016-06-18"
+     * once the citation's own date is explained away as redundant with the crawled
+     * 'date' -- but the SURVIVING date is a SECOND, unrelated one, almost always an
+     * inline "consulted on" mention rather than a real second citation date.
+     *
+     * Two rules (2026-08) on whatever ResidueReducer couldn't reduce further, when that
+     * leftover is ITSELF nothing but a date :
+     * - 'date' empty : promote the residue date to fill it, residue fully consumed.
+     * - 'date' already set and the residue date is LATER : discard the residue outright
+     *   (almost certainly an access date restated inline, not new citation content) --
+     *   residue still counts as fully consumed.
+     * - 'date' already set and the residue date is EARLIER/equal, or either date fails
+     *   to parse : neither rule applies, falls through to the normal 'citation' path
+     *   unchanged (too ambiguous to guess at).
+     *
+     * @param array<string, string> $mapData
+     * @return array{0: array<string, string>, 1: bool} [$mapData, $residueWasADate]
+     */
+    private function resolveReducedResidueAsDate(string $reduced, array $mapData): array
+    {
+        $residueDate = $this->parseAsCalendarDate($reduced);
+        if ($residueDate === null) {
+            return [$mapData, false];
+        }
+
+        if (empty($mapData['date'])) {
+            $mapData['date'] = FrenchDate::toFrenchText($residueDate['day'], $residueDate['month'], $residueDate['year']);
+
+            return [$mapData, true];
+        }
+
+        $existingDate = $this->parseAsCalendarDate((string) $mapData['date']);
+        if ($existingDate !== null && $this->dateSortKey($residueDate) > $this->dateSortKey($existingDate)) {
+            return [$mapData, true];
+        }
+
+        return [$mapData, false];
+    }
+
+    /**
+     * @return array{day: int, month: int, year: int}|null
+     */
+    private function parseAsCalendarDate(string $text): ?array
+    {
+        $text = trim($text);
+
+        if (preg_match('#^(\d{4})-(\d{1,2})-(\d{1,2})$#', $text, $m) === 1) {
+            return $this->validatedDate((int) $m[3], (int) $m[2], (int) $m[1]);
+        }
+
+        if (preg_match('#^(\d{1,2})[-/.](\d{1,2})[-/.](\d{2,4})$#', $text, $m) === 1) {
+            $year = (int) $m[3];
+            if ($year < 100) {
+                $year += ($year < 70) ? 2000 : 1900;
+            }
+
+            return $this->validatedDate((int) $m[1], (int) $m[2], $year);
+        }
+
+        $monthsPattern = FrenchDate::MONTHS_PATTERN . '|' . EnglishDate::MONTHS_PATTERN;
+        if (preg_match('#^(' . FrenchDate::DAY_PATTERN . ')\s+(' . $monthsPattern . ')\s+(\d{4})$#iu', $text, $m) === 1) {
+            $month = FrenchDate::monthNumber($m[2]) ?? EnglishDate::monthNumber($m[2]);
+            if ($month === null) {
+                return null;
+            }
+
+            return $this->validatedDate(FrenchDate::dayNumber($m[1]), $month, (int) $m[3]);
+        }
+
+        return null;
+    }
+
+    /**
+     * @return array{day: int, month: int, year: int}|null
+     */
+    private function validatedDate(int $day, int $month, int $year): ?array
+    {
+        return FrenchDate::isValidCalendarDateByNumber($day, $month, $year)
+            ? ['day' => $day, 'month' => $month, 'year' => $year]
+            : null;
+    }
+
+    /**
+     * @param array{day: int, month: int, year: int} $date
+     */
+    private function dateSortKey(array $date): int
+    {
+        return $date['year'] * 10000 + $date['month'] * 100 + $date['day'];
     }
 
     /**

@@ -402,6 +402,75 @@ class HintMergerTest extends TestCase
         self::assertSame(MergeConfidence::Auto, $result->confidence);
     }
 
+    /**
+     * Real bug report (2026-08) : ", Agra Presse, 5 février 2007" reduces to just "5
+     * février 2007" once "Agra Presse" is explained away as a site-domain fragment --
+     * previously dumped into 'citation' as noise when the crawl found no 'date' at all.
+     * A bare date leftover with an empty 'date' slot should fill the gap instead, and
+     * -- since nothing is then left unaccounted for -- confidence goes to Auto.
+     */
+    public function testPromotesABareDateResidueToFillAnEmptyDateParam()
+    {
+        $raw = $this->parse(
+            '<ref>[http://www.agrapresse.fr/x Cristal Union ratifie sa fusion avec Erstein], Agra Presse, 5 février 2007</ref>'
+        );
+
+        $result = $this->merger()->merge(
+            $raw,
+            ['titre' => 'Cristal Union ratifie sa fusion avec Erstein', 'site' => 'Agrapresse.fr']
+        );
+
+        self::assertSame('5 février 2007', $result->mapData['date']);
+        self::assertArrayNotHasKey('citation', $result->mapData);
+        self::assertSame(MergeConfidence::Auto, $result->confidence);
+    }
+
+    /**
+     * Real bug report (2026-08) : "; Publié le 2 juillet 2015, consulté 2016-06-18"
+     * reduces to just "2016-06-18" once the citation's own date is explained away as
+     * redundant with the crawled 'date' (02-07-2015) -- but "2016-06-18" is a SECOND,
+     * later date, almost always an inline "consulted on" mention rather than real
+     * citation content. Discarded outright rather than kept as a meaningless citation.
+     */
+    public function testDiscardsABareDateResidueLaterThanTheExistingDate()
+    {
+        $raw = $this->parse(
+            "<ref>[https://www.smel.fr/x ''Les nucelles, un produit aux multiples valorisations''] ; Publié le 2 juillet 2015, consulté 2016-06-18</ref>"
+        );
+
+        $result = $this->merger()->merge(
+            $raw,
+            [
+                'titre' => 'Les nucelles, un produit aux multiples valorisations',
+                'site' => 'smel.fr via [[Internet Archive]]',
+                'date' => '02-07-2015',
+            ]
+        );
+
+        self::assertSame('02-07-2015', $result->mapData['date'], 'the existing date is untouched, not overwritten by the discarded one');
+        self::assertArrayNotHasKey('citation', $result->mapData);
+        self::assertSame(MergeConfidence::Auto, $result->confidence);
+    }
+
+    /**
+     * The mirror case, NOT covered by either new rule : a bare date residue EARLIER
+     * than (or equal to) the existing 'date' isn't an obvious "consulted on" mention,
+     * so it's too ambiguous to guess at -- falls through to the normal citation path,
+     * unlike the "later date" case above.
+     */
+    public function testKeepsABareDateResidueEarlierThanTheExistingDateAsCitation()
+    {
+        $raw = $this->parse(
+            '<ref>[http://example.org/x Titre] ; publié le 5 janvier 2020, consulté 12 mars 2018</ref>'
+        );
+
+        $result = $this->merger()->merge($raw, ['titre' => 'Titre', 'date' => '05-01-2020']);
+
+        self::assertSame('05-01-2020', $result->mapData['date']);
+        self::assertSame('12 mars 2018', $result->mapData['citation']);
+        self::assertSame(MergeConfidence::SemiAuto, $result->confidence);
+    }
+
     public function testDoesNotOverwriteAnAlreadyPresentCrawledCitation()
     {
         $raw = $this->parse(
