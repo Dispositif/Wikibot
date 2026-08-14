@@ -87,6 +87,39 @@ class ExistingRefTransformerTest extends TestCase
         self::assertSame(MergeConfidence::Skip, $result->confidence);
     }
 
+    /**
+     * Regression (found live, 2026-08-14, "Archivio storico capitolino") : the
+     * PRIMARY url was a normal live page (crawl-worthy), but the citation also carried
+     * a legitimate 'archive-url' backup field pointing to archive.is. Checked only on
+     * the primary url, isWebArchiveUrl() wouldn't have caught this -- the check now
+     * scans the whole raw citation.
+     */
+    public function testSkipsWhenAnyFieldIsAnArchiveTodayLinkEvenIfUrlIsLive()
+    {
+        $externRefTransformer = $this->createMock(ExternRefTransformerInterface::class);
+        $externRefTransformer->expects(self::never())->method('process');
+        $transformer = new ExistingRefTransformer($externRefTransformer);
+
+        $fragment = '{{lien web |titre=Bla |url=http://x.fr/a |site=x.fr |archive-url=https://archive.is/20200608121409/http://x.fr/a}}';
+        $result = $transformer->process($fragment);
+
+        self::assertSame($fragment, $result->refContent);
+        self::assertSame(MergeConfidence::Skip, $result->confidence);
+    }
+
+    public function testSkipsWhenUrlIsAnArchiveTodayMirror()
+    {
+        $externRefTransformer = $this->createMock(ExternRefTransformerInterface::class);
+        $externRefTransformer->expects(self::never())->method('process');
+        $transformer = new ExistingRefTransformer($externRefTransformer);
+
+        $fragment = '{{lien web |titre=Bla |url=https://archive.ph/20200608121409/http://x.fr/a |site=x.fr}}';
+        $result = $transformer->process($fragment);
+
+        self::assertSame($fragment, $result->refContent);
+        self::assertSame(MergeConfidence::Skip, $result->confidence);
+    }
+
     public function testReturnsFragmentUnchangedWhenCrawlIsSkipped()
     {
         // ExternRefTransformer::process() returns the bare (normalized) URL on any

@@ -81,6 +81,11 @@ final class ExistingRefTransformer
         }
         [$existingTemplateName, $rawMatch] = $existing;
 
+        if ($this->containsArchiveTodayLink($rawMatch)) {
+            // archive.today/.is and its mirrors are blacklisted on frwiki
+            return new ExistingRefResult($refContent, MergeConfidence::Skip);
+        }
+
         try {
             $existingData = $this->hydrateFromSerialized($existingTemplateName, $rawMatch)->toArray();
         } catch (Throwable) {
@@ -259,6 +264,11 @@ final class ExistingRefTransformer
         }
 
         return $template->serialize(true);
+    }
+
+    private function containsArchiveTodayLink(string $text): bool
+    {
+        return (bool) preg_match('#https?://' . DeadLinkTransformer::ARCHIVE_TODAY_DOMAINS_REGEX . '/#i', $text);
     }
 
     private function extractTemplateName(string $serialized): ?string

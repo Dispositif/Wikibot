@@ -181,7 +181,7 @@ class DeadLinkTransformer
      * On garde la reconnaissance de ces domaines (pour ne pas re-traiter des liens déjà archivés
      * existants) mais on ne les utilise plus comme archiveur (cf. DeadlinkArchiverInterface).
      */
-    private const ARCHIVE_TODAY_DOMAINS_REGEX = 'archive\.(today|is|ph|md|vn|li|fo|ec)';
+    public const ARCHIVE_TODAY_DOMAINS_REGEX = 'archive\.(today|is|ph|md|vn|li|fo|ec)';
 
     /**
      * Bug https://w.wiki/7kUm
