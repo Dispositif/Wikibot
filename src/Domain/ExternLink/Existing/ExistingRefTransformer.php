@@ -283,15 +283,43 @@ final class ExistingRefTransformer
      * entirely, never merged alongside it -- this is a completion pass, not an upgrade
      * pass, so a crawled split name doesn't get to replace an existing combined one either.
      */
+    /**
+     * Slot 1 has TWO spellings that both mean "first/only author" : the bare
+     * 'auteur'/'prénom'/'nom' (LienWebTemplate keeps these as their own distinct
+     * params, unlike ArticleTemplate where 'auteur' is a plain alias straight to
+     * 'auteur1') and the numbered 'auteur1'/'prénom1'/'nom1'. Grouped together here so
+     * an existing bare 'auteur' also blocks a crawled 'auteur1' from being added
+     * alongside it, and vice versa -- treating them as two independent slots missed
+     * exactly this cross-spelling collision (regression found live, 2026-08-14,
+     * "Rodolphe Ryo" : existing bare 'auteur' + crawled numbered 'auteur1', both
+     * surviving as if they named two different authors). Slots 2-7 have no bare
+     * equivalent, so they stay ungrouped.
+     */
+    private const AUTHOR_SLOT_GROUPS = [
+        ['', '1'],
+        ['2'],
+        ['3'],
+        ['4'],
+        ['5'],
+        ['6'],
+        ['7'],
+    ];
+
     private function stripRedundantAuthorFields(array $crawledData, array $existingData): array
     {
-        foreach (['', '1', '2', '3', '4', '5', '6', '7'] as $slot) {
-            $existingHasSlot = !empty($existingData["auteur$slot"])
-                || !empty($existingData["prénom$slot"])
-                || !empty($existingData["nom$slot"]);
+        foreach (self::AUTHOR_SLOT_GROUPS as $group) {
+            $existingHasGroup = false;
+            foreach ($group as $slot) {
+                if (!empty($existingData["auteur$slot"]) || !empty($existingData["prénom$slot"]) || !empty($existingData["nom$slot"])) {
+                    $existingHasGroup = true;
+                    break;
+                }
+            }
 
-            if ($existingHasSlot) {
-                unset($crawledData["auteur$slot"], $crawledData["prénom$slot"], $crawledData["nom$slot"]);
+            if ($existingHasGroup) {
+                foreach ($group as $slot) {
+                    unset($crawledData["auteur$slot"], $crawledData["prénom$slot"], $crawledData["nom$slot"]);
+                }
             }
         }
 

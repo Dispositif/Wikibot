@@ -224,6 +224,27 @@ class ExistingRefTransformerTest extends TestCase
         self::assertNull($get('nom1'), 'crawled split name must not be added alongside the existing combined name');
     }
 
+    /**
+     * Regression (found live, 2026-08-14, "Rodolphe Ryo") : existing had the BARE
+     * 'auteur' (LienWebTemplate keeps it distinct from 'auteur1', unlike
+     * ArticleTemplate), crawl added the NUMBERED 'auteur1' for the same real person --
+     * two different spellings of "first author" treated as unrelated slots, both
+     * surviving into the output.
+     */
+    public function testDoesNotAddCrawledAuteur1WhenExistingAlreadyHasBareAuteur()
+    {
+        $transformer = $this->transformer(
+            '{{lien web |titre=Titre |url=http://x.fr/a |auteur1=Rodolphe Ryo |site=x.fr |consulté le=' . date('d-m-Y') . '}}'
+        );
+
+        $fragment = '{{lien web |auteur=Rodolphe Ryo |titre=Titre |url=http://x.fr/a |consulté le=2020-01-01}}';
+        $result = $transformer->process($fragment);
+
+        $get = $this->paramFromSerialized('lien web', $result->refContent);
+        self::assertSame('Rodolphe Ryo', $get('auteur'), 'existing bare auteur kept');
+        self::assertNull($get('auteur1'), 'crawled numbered auteur1 must not be added alongside the existing bare auteur');
+    }
+
     public function testSkipsWhenNothingChanges()
     {
         // 'consulté le' kept old on purpose (not $today) : this exercises the
