@@ -29,7 +29,7 @@ namespace App\Domain\Models\Wiki;
  */
 class LienBriseTemplate extends LienWebTemplate implements ArticleOrLienBriseInterface
 {
-    public const WIKITEMPLATE_NAME = 'lien brisé';
+    public const WIKITEMPLATE_NAME = 'Lien brisé';
 
     public const REQUIRED_PARAMETERS = ['url'];
 

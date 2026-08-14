@@ -16,7 +16,7 @@ use App\Domain\Utils\TextUtil;
  */
 class LienWebTemplate extends AbstractWikiTemplate
 {
-    public const WIKITEMPLATE_NAME = 'lien web';
+    public const WIKITEMPLATE_NAME = 'Lien web';
 
     public const REQUIRED_PARAMETERS = ['titre', 'url'];
 
