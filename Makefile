@@ -73,10 +73,17 @@ src/Infrastructure/resources/google_quota.json:
 src/Infrastructure/resources/google_quota.lock:
 	touch $@
 
+# Same gotcha, same fix : per-worker gitignored dedup files (extern-ref/existing-ref
+# read them with file() on startup) bind-mounted individually in compose.yaml -- must
+# exist as plain files BEFORE `docker compose run` on a fresh checkout, else Docker
+# bind-mounts a directory in their place (2026-08-14 : bit existing-ref in prod).
+src/Application/resources/article_externRef_edited.txt src/Application/resources/article_rawExternRef_edited.txt src/Application/resources/article_existingRef_edited.txt:
+	touch $@
+
 # To dry-run a worker instead, replaces the default rather than appending to it, e.g.:
 #   docker compose run --rm extern-ref php src/Application/CLI/externRefProcess.php --dry-run --page="Some Title"
 .PHONY: run # 	Run a one-shot worker for real: make run service=goo-extern|extern-ref|last-extern-ref|raw-extern-ref|existing-ref|fix-typo|ouvrage-scan|ouvrage-complete|ouvrage-edit
-run: src/Infrastructure/resources/google_quota.json src/Infrastructure/resources/google_quota.lock
+run: src/Infrastructure/resources/google_quota.json src/Infrastructure/resources/google_quota.lock src/Application/resources/article_externRef_edited.txt src/Application/resources/article_rawExternRef_edited.txt src/Application/resources/article_existingRef_edited.txt
 	docker compose run --rm $(service)
 
 .PHONY: db-migrate # 	Apply pending schema migrations (src/Infrastructure/resources/migrations/*.sql)

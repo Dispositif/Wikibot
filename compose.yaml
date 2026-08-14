@@ -54,6 +54,7 @@ services:
       context: .
       dockerfile: docker/php/Dockerfile
     restart: "no"
+    container_name: wikibot-goo-extern
     profiles: ["workers"]
     command: ["php", "src/Application/CLI/gooExternProcess.php"]
     env_file:
@@ -98,6 +99,7 @@ services:
       context: .
       dockerfile: docker/php/Dockerfile
     restart: "no"
+    container_name: wikibot-extern-ref
     profiles: ["workers"]
     command: ["php", "src/Application/CLI/externRefProcess.php"]
     env_file:
@@ -118,12 +120,8 @@ services:
       context: .
       dockerfile: docker/php/Dockerfile
     restart: "no"
+    container_name: wikibot-raw-extern-ref
     profiles: ["workers"]
-    # Prod default : unattended (no confirmation prompts) and conservative (an
-    # uncertain/SemiAuto merge is skipped outright, not published unflagged) -- see
-    # RawExternLinkWorker's class docblock for what each flag changes. Override with
-    # `docker compose run --rm raw-extern-ref php src/Application/CLI/rawExternLinkProcess.php`
-    # (no flags) for local supervised runs with interactive validation prompts.
     command: ["php", "src/Application/CLI/rawExternLinkProcess.php", "--auto", "--reject-uncertain"]
     env_file:
       - .env
@@ -142,6 +140,7 @@ services:
       context: .
       dockerfile: docker/php/Dockerfile
     restart: "no"
+    container_name: wikibot-last-extern-ref
     profiles: ["workers"]
     command: ["php", "src/Application/CLI/lastExternRefProcess.php"]
     env_file:
@@ -163,6 +162,7 @@ services:
       context: .
       dockerfile: docker/php/Dockerfile
     restart: "no"
+    container_name: wikibot-existing-ref
     profiles: ["workers"]
     command: ["php", "src/Application/CLI/existingRefProcess.php"]
     env_file:
@@ -185,6 +185,7 @@ services:
       context: .
       dockerfile: docker/php/Dockerfile
     restart: "no"
+    container_name: wikibot-fix-typo
     profiles: ["workers"]
     command: ["php", "src/Application/CLI/fixTypo.php"]
     env_file:
