@@ -108,6 +108,28 @@ class ExternMapper implements MapperInterface
     }
 
     /**
+     * Applied to every field rather than just |site= : the Markdown came from the crawled
+     * page's own metadata, and nothing stops the next site from putting it in its title,
+     * author or publisher instead. No template parameter here has a legitimate use for
+     * "[label](url)".
+     */
+    private function unwrapMarkdownLinks(array $data): array
+    {
+        foreach ($data as $key => $value) {
+            if (!is_string($value)) {
+                continue;
+            }
+            $unwrapped = TextUtil::unwrapMarkdownLinks($value);
+            if ($unwrapped !== $value) {
+                $this->log->debug(sprintf('markdown link unwrapped in "%s"', $key));
+                $data[$key] = $unwrapped;
+            }
+        }
+
+        return $data;
+    }
+
+    /**
      * Data sanitization.
      * todo complexity/conditions
      * todo Config parameter for post-process
@@ -115,6 +137,7 @@ class ExternMapper implements MapperInterface
     protected function postProcess(array $data): array
     {
         $data = $this->deleteEmptyValueArray($data);
+        $data = $this->unwrapMarkdownLinks($data);
         if (isset($data['langue']) && 'fr' === $data['langue']) {
             unset($data['langue']);
         }

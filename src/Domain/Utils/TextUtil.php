@@ -188,6 +188,22 @@ abstract class TextUtil
     }
 
     /**
+     * Reduce a Markdown link "[label](url)" to its label alone.
+     *
+     * Crawled metadata is written straight into wiki template parameters, where Markdown
+     * is not markup but literal text : a site whose og:site_name held
+     * "[www.example.fr](https://www.example.fr)" got that published verbatim into a
+     * {{Lien web}} |site= on fr.wikipedia (2026-08-15, article "Kata Shotokan").
+     *
+     * Wikitext links are left alone : "[[Foo|Bar]]" and "[[Foo]] (bar)" have no "](" pair,
+     * which this pattern requires, so they never match.
+     */
+    public static function unwrapMarkdownLinks(string $text): string
+    {
+        return preg_replace('#\[([^\]\[]*)\]\((?:https?://|/|\#)[^)\s]*\)#i', '$1', $text) ?? $text;
+    }
+
+    /**
      * Strip punctuation
      * UTF-8 compatible ??
      * Note : can't use str_split() which cut on 1 byte length
