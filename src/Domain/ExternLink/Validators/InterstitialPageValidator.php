@@ -40,6 +40,7 @@ class InterstitialPageValidator implements LinkGateInterface
             '#Checking your browser#i',
             '#DDoS protection by#i',
             '#Unauthorized Request Blocked#i',
+            '#Un instant,? s\'il vous pla[iî]t#i', // fr, ex: fondationlitterairefleurdelys.com
         ];
 
     // language-independent, checked against the raw HTML body
