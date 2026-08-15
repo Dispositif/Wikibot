@@ -73,7 +73,8 @@ $list = new PageList($titles);
 
 // --dry-run can appear anywhere; strip it before reading the positional page title.
 $dryRun = in_array('--dry-run', $argv, true);
-$positionalArgs = array_values(array_filter($argv, static fn ($a) => $a !== '--dry-run'));
+$bot->setMaxTitles(WikiBotConfig::maxTitlesFromArgv($argv));
+$positionalArgs = array_values(array_filter($argv, static fn ($a) => $a !== '--dry-run' && !str_starts_with((string)$a, '--max-titles')));
 if (!empty($positionalArgs[1])) {
     $list = new PageList([trim($positionalArgs[1])]);
 }

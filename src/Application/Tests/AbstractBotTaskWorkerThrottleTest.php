@@ -45,8 +45,11 @@ class AbstractBotTaskWorkerThrottleTest extends TestCase
         putenv($this->previousBotName === false ? 'BOT_NAME' : 'BOT_NAME=' . $this->previousBotName);
     }
 
-    private function workerOverTitles(array $titles, bool $alreadyAnalyzed): AbstractBotTaskWorker
-    {
+    private function workerOverTitles(
+        array $titles,
+        bool $alreadyAnalyzed,
+        ?int $maxTitles = null
+    ): AbstractBotTaskWorker {
         // hand-written stub, not createMock() : run() calls the static getBotName(),
         // which PHPUnit mock objects cannot serve
         $bot = new class extends WikiBotConfig {
@@ -64,6 +67,7 @@ class AbstractBotTaskWorkerThrottleTest extends TestCase
                 return 'deadbeef';
             }
         };
+        $bot->setMaxTitles($maxTitles);
 
         // bypasses the parent constructor, which both hits the DB (analyzed-titles journal)
         // and calls run() itself
@@ -106,6 +110,11 @@ class AbstractBotTaskWorkerThrottleTest extends TestCase
             public function runNow(): void
             {
                 $this->run();
+            }
+
+            public function exposedMaxTitles(): ?int
+            {
+                return $this->bot->getMaxTitles();
             }
         };
     }
@@ -152,5 +161,59 @@ class AbstractBotTaskWorkerThrottleTest extends TestCase
             $elapsed
         );
         $this::assertSame(1, $worker->processedCount);
+    }
+
+    public function testMaxTitlesCapsTheRun()
+    {
+        $worker = $this->workerOverTitles(['A', 'B', 'C', 'D'], alreadyAnalyzed: false, maxTitles: 2);
+
+        $worker->runNow();
+
+        $this::assertSame(2, $worker->processedCount);
+    }
+
+    /**
+     * The cap counts titles that actually reached the wiki, not loop turns : a draw full
+     * of already-analyzed titles must not burn the budget without producing a single
+     * article to inspect.
+     */
+    public function testMaxTitlesIgnoresSkippedTitles()
+    {
+        $worker = $this->workerOverTitles(['A', 'B', 'C'], alreadyAnalyzed: true, maxTitles: 2);
+
+        $worker->runNow();
+
+        $this::assertSame(0, $worker->processedCount); // all skipped, cap never consumed
+    }
+
+    public function testNoMaxTitlesMeansUnbounded()
+    {
+        $worker = $this->workerOverTitles(['A', 'B', 'C'], alreadyAnalyzed: true);
+
+        $worker->runNow();
+
+        $this::assertNull($worker->exposedMaxTitles());
+    }
+
+    /**
+     * @dataProvider provideMalformedMaxTitles
+     */
+    public function testMaxTitlesFromArgvRejectsMalformedValues(string $arg)
+    {
+        $this::expectException(\InvalidArgumentException::class);
+        WikiBotConfig::maxTitlesFromArgv(['script.php', $arg]);
+    }
+
+    public static function provideMalformedMaxTitles(): array
+    {
+        // A typo must not silently mean "unbounded" — that is the one failure mode this
+        // option cannot afford, since it exists to cap a rollout run.
+        return [['--max-titles'], ['--max-titles='], ['--max-titles=0'], ['--max-titles=abc'], ['--max-titles=-5']];
+    }
+
+    public function testMaxTitlesFromArgvReadsAValidValue()
+    {
+        $this::assertSame(20, WikiBotConfig::maxTitlesFromArgv(['script.php', '--dry-run', '--max-titles=20']));
+        $this::assertNull(WikiBotConfig::maxTitlesFromArgv(['script.php', '--dry-run']));
     }
 }

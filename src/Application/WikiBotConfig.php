@@ -18,6 +18,7 @@ use DateInterval;
 use DateTime;
 use DateTimeImmutable;
 use DomainException;
+use InvalidArgumentException;
 use Mediawiki\Api\MediawikiFactory;
 use Mediawiki\Api\UsageException;
 use Psr\Log\LoggerInterface;
@@ -51,6 +52,8 @@ class WikiBotConfig
     protected const BOT_DAY = '2306'; // 23 june
 
     protected string $taskName = 'Amélioration';
+    /** Per-run cap on titles actually sent to the wiki ; null = unbounded. */
+    protected ?int $maxTitles = null;
     /**
      * @var LoggerInterface
      */
@@ -123,6 +126,49 @@ class WikiBotConfig
     {
         $this->taskName = $taskName;
         return $this;
+    }
+
+    /** null = unbounded run. See AbstractBotTaskWorker::run(). */
+    public function getMaxTitles(): ?int
+    {
+        return $this->maxTitles;
+    }
+
+    public function setMaxTitles(?int $maxTitles): WikiBotConfig
+    {
+        if ($maxTitles !== null && $maxTitles < 1) {
+            throw new InvalidArgumentException('maxTitles must be a positive integer or null.');
+        }
+        $this->maxTitles = $maxTitles;
+
+        return $this;
+    }
+
+    /**
+     * Read straight from $argv rather than getopt() : the CLIs are split between the two
+     * styles (externRefProcess uses getopt, lastExternRefProcess reads $argv), and the
+     * option has to behave identically in all of them.
+     *
+     * Throws on a malformed value instead of ignoring it. This option exists to cap a
+     * progressive rollout run — a typo silently meaning "unbounded" is the one failure
+     * mode that would defeat its purpose.
+     */
+    public static function maxTitlesFromArgv(array $argv): ?int
+    {
+        foreach ($argv as $arg) {
+            if (!str_starts_with((string)$arg, '--max-titles')) {
+                continue;
+            }
+            if (preg_match('#^--max-titles=(\d+)$#', (string)$arg, $matches) !== 1 || (int)$matches[1] < 1) {
+                throw new InvalidArgumentException(
+                    sprintf('Invalid "%s" : expected a positive integer, e.g. --max-titles=20', $arg)
+                );
+            }
+
+            return (int)$matches[1];
+        }
+
+        return null;
     }
 
     public function getCurrentGitCommitHash(): ?string

@@ -49,6 +49,7 @@ $logger->colorMode = true;
 //$logger->debug = true;
 $botConfig = new WikiBotConfig($wiki, $logger);
 $botConfig->setTaskName("🐭 Amélioration de références : URL ⇒ "); // 🐞🌐🧅🔗
+$botConfig->setMaxTitles(WikiBotConfig::maxTitlesFromArgv($argv));
 
 $botConfig->checkStopOnTalkpageOrException();
 

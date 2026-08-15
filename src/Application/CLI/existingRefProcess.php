@@ -44,6 +44,7 @@ $logger->colorMode = true;
 //$logger->debug = true;
 $botConfig = new WikiBotConfig($wiki, $logger);
 $botConfig->setTaskName("☑️ Consultation de {lien web} {article} :"); // ✔☑️✅
+$botConfig->setMaxTitles(WikiBotConfig::maxTitlesFromArgv($argv));
 
 $botConfig->checkStopOnTalkpageOrException();
 

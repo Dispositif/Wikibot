@@ -119,8 +119,23 @@ abstract class AbstractBotTaskWorker
         $this->log->notice('*** Stats: ' . $this->log->stats::class);
 
         SignalHandler::register();
+        $maxTitles = $this->bot->getMaxTitles();
+        $touchedCount = 0;
 
         foreach ($this->getTitles() as $title) {
+            // Counts titles that actually reached the wiki, not iterations : a draw is
+            // sieved against the journal beforehand but skips still happen here (ADQ,
+            // wrong namespace, too-recent human edit), and "--max-titles=20" is meant to
+            // buy 20 articles to inspect on-wiki, not 20 loop turns that may all be skips.
+            if ($maxTitles !== null && $touchedCount >= $maxTitles) {
+                $this->log->notice(
+                    sprintf('--max-titles=%d atteint : arrêt', $maxTitles),
+                    ['stats' => 'bottaskworker.stop.maxtitles']
+                );
+
+                return;
+            }
+
             // Checked at the title boundary, so a deploy's SIGTERM lets the article in
             // progress finish instead of cutting between an edit and its journal write.
             if (SignalHandler::isStopRequested()) {
@@ -146,6 +161,7 @@ abstract class AbstractBotTaskWorker
             }
 
             if ($touchedWiki) {
+                $touchedCount++;
                 sleep(self::THROTTLE_DELAY_AFTER_EACH_TITLE);
             }
         }

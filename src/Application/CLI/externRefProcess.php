@@ -31,8 +31,8 @@ use App\Infrastructure\WikiwixAdapter;
 include __DIR__.'/../myBootstrap.php';
 
 // --page="Skateboard" --stats=redis --stats=sqlite --debug --verbose --dry-run --no-direct-retry --no-robots-check
-echo "OPTIONS: --debug --verbose --stats=redis --stats=sqlite --page=\"Skateboard\" --offset=1000 --nofilter --dry-run --no-db --no-direct-retry --no-robots-check \n";
-$options = getopt('', ['page::', 'debug', 'verbose', 'stats::', 'offset::', 'dry-run', 'no-direct-retry', 'no-robots-check']);
+echo "OPTIONS: --debug --verbose --stats=redis --stats=sqlite --page=\"Skateboard\" --nofilter --dry-run --no-db --no-direct-retry --no-robots-check \n";
+$options = getopt('', ['page::', 'debug', 'verbose', 'stats::', 'nofilter', 'dry-run', 'no-direct-retry', 'no-robots-check']);
 $dryRun = isset($options['dry-run']);
 // 2nd pass without Tor when the Tor fetch looks blocked (403/429/503, cf-mitigated,
 // interstitial title/body markers) — on by default, self-identifies honestly (not a
@@ -52,7 +52,6 @@ if (isset($options["stats"]) && $options["stats"] === 'redis') {
 if (isset($options["stats"]) && $options["stats"] === 'sqlite') {
     $stats = new StatsSqlite3();
 }
-$offset = $options['offset'] ?? 0;
 
 $logger = new ConsoleLogger($stats);
 //$logger->colorMode = true;
@@ -61,6 +60,7 @@ $logger->verbose = isset($options['verbose']);
 
 $botConfig = new WikiBotConfig($wiki, $logger);
 $botConfig->setTaskName("🌐 Amélioration de références : URL ⇒ "); // 🐞🌐🔗🧅
+$botConfig->setMaxTitles(WikiBotConfig::maxTitlesFromArgv($argv));
 
 $botConfig->checkStopOnTalkpageOrException();
 

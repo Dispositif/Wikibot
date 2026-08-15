@@ -72,6 +72,7 @@ $logger->verbose = isset($options['verbose']);
 
 $botConfig = new WikiBotConfig($wiki, $logger);
 $botConfig->setTaskName("🌐🔖 Conversion de lien externe manuel :");
+$botConfig->setMaxTitles(WikiBotConfig::maxTitlesFromArgv($argv));
 
 $botConfig->checkStopOnTalkpageOrException();
 
