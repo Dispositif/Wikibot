@@ -265,14 +265,21 @@ abstract class GoogleBooksUtil
      * Derive a new-format title slug, in the shape Google itself emits : underscores for
      * spaces, UTF-8 percent-encoding for the rest ("Le_Bouquin_de_la_bande_dessin%C3%A9e").
      *
-     * The encoding is dictated by wikitext, not by Google : Google accepts a raw apostrophe or
-     * space in the slug, but "''" is italic markup on MediaWiki, a space cuts a bare URL short,
-     * and '|' / '[' / ']' break a template parameter. rawurlencode() leaves only [A-Za-z0-9_-.~],
-     * all safe there. The title is truncated *before* encoding, so an escape is never cut in half.
+     * Punctuation and symbols are dropped (turned into a separator) rather than encoded : a
+     * slug is decorative — Google serves the same page whatever it holds — so the only goal
+     * left is readability, and "L%27%C3%8Ele_d%27%C3%89lise_%3A_r%C3%A9cits" fails at that.
+     * Hyphen and underscore survive : both are readable and URL-safe ("Jean-Marc_Jancovici").
+     *
+     * The remaining encoding is dictated by wikitext, not by Google : Google accepts a raw
+     * apostrophe or space in the slug, but "''" is italic markup on MediaWiki, a space cuts a
+     * bare URL short, and '|' / '[' / ']' break a template parameter. rawurlencode() leaves only
+     * [A-Za-z0-9_-.~], all safe there. The title is truncated *before* encoding, so an escape is
+     * never cut in half.
      */
     public static function titleToSlug(string $title): string
     {
-        $slug = (string)preg_replace('#\s+#u', '_', trim($title));
+        $slug = (string)preg_replace('#(?![-_])[\p{P}\p{S}]#u', ' ', trim($title));
+        $slug = (string)preg_replace('#\s+#u', '_', trim($slug));
         $slug = trim($slug, '_');
         if ($slug === '') {
             return self::DEFAULT_TITLE_SLUG;

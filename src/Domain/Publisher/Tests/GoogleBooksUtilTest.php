@@ -403,13 +403,17 @@ class GoogleBooksUtilTest extends TestCase
                 'Le Bouquin de la bande dessinée',
                 'Le_Bouquin_de_la_bande_dessin%C3%A9e',
             ],
-            // "''" is italic markup on MediaWiki : an apostrophe must never reach the wikitext raw
-            'apostrophe encoded' => ["L'Île d'Élise", 'L%27%C3%8Ele_d%27%C3%89lise'],
+            // punctuation dropped, not encoded : the slug is decorative, readability is all
+            // that is left. "''" would also be italic markup on MediaWiki.
+            'apostrophe and colon dropped' => ["L'Île d'Élise : récits", 'L_%C3%8Ele_d_%C3%89lise_r%C3%A9cits'],
             // a '/' would create an extra path segment, '|' would break a template parameter
-            'slash and pipe encoded' => ['Rock/Pop | 1970', 'Rock%2FPop_%7C_1970'],
+            'slash, pipe and ampersand dropped' => ['Rock/Pop | Jazz & Blues', 'Rock_Pop_Jazz_Blues'],
+            // hyphen and underscore survive : readable and URL-safe
+            'hyphen kept' => ['Jean-Marc Jancovici', 'Jean-Marc_Jancovici'],
             'multiple spaces collapse' => ["A   B\tC", 'A_B_C'],
             'surrounding underscores trimmed' => ['  Titre  ', 'Titre'],
             'empty title falls back on the neutral slug' => ['   ', '_'],
+            'punctuation-only title falls back too' => ['?!…', '_'],
             // truncation happens before encoding, so an escape is never cut in half
             'long title truncated to 60 chars' => [
                 str_repeat('é', 80),
