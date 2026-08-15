@@ -139,7 +139,9 @@ class GoogleLivresTemplate extends AbstractWikiTemplate
     {
         $text = parent::serialize();
 
-        // Documentation suggère non affichage de ces 2 paramètres
-        return str_replace(['id=', 'titre='], '', $text);
+        // Documentation suggère non affichage de ces 2 paramètres.
+        // Only strip them in parameter-name position (right after a '|') : a plain str_replace()
+        // also ate any "id=" / "titre=" occurring inside a value, mangling 'surligne'.
+        return (string) preg_replace('#(?<=\|)(?:id|titre)\s*=\s*#', '', $text);
     }
 }

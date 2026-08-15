@@ -22,14 +22,41 @@ abstract class GoogleBooksUtil
     use ArrayProcessTrait;
 
     final public const DEFAULT_GOOGLEBOOKS_URL = 'https://books.google.com/books';
+
     /**
+     * Classic format : the volume is identified by a '?id=' / '?isbn=' query parameter.
      * todo refac regex with end of URL
      */
-    final public const GOOGLEBOOKS_START_URL_PATTERN = '(?:https?://(?:books|play)\.google\.[a-z\.]{2,6}/(?:books)?(?:books/[^\?]+\.html)?(?:/reader)?\?(?:[a-zA-Z=&]+&)?(?:[&=A-Z0-9-_%\+]+&)?(?:id|isbn)=|https://www\.google\.[a-z\.]{2,6}/books/edition/[^/]+/)';
+    final public const GOOGLEBOOKS_CLASSIC_START_URL_PATTERN = 'https?://(?:books|play)\.google\.[a-z\.]{2,6}/(?:books)?(?:books/[^\?]+\.html)?(?:/reader)?\?(?:[a-zA-Z=&]+&)?(?:[&=A-Z0-9-_%\+]+&)?(?:id|isbn)=';
 
-    final public const GOOGLEBOOKS_NEW_START_URL_PATTERN = 'https://www\.google\.[a-z.]{2,6}/books/edition/[^/]+/';
+    /**
+     * New format (nov 2019) : the volume ID is the last path segment, preceded by a title slug.
+     * All those hosts serve the same page and are normalized to "https://www.google.<tld>"
+     * by simplifyGoogleUrl() : http://www.google.*, https://books.google.*, https://google.*
+     * The slug segment may be empty ("/edition//<id>") : normalized to DEFAULT_TITLE_SLUG.
+     */
+    final public const GOOGLEBOOKS_NEW_START_URL_PATTERN = 'https?://(?:www\.|books\.)?google\.[a-z.]{2,6}/books/edition/[^/]*/';
+
+    /**
+     * The title slug of a new-format URL is cosmetic : Google resolves the page from the volume
+     * ID alone, and serves the very same page for "/edition/_/<id>" as for the real title slug.
+     * So a slug we can't read is never a reason to give up on an otherwise valid URL.
+     */
+    final public const DEFAULT_TITLE_SLUG = '_';
+
+    // New format first : more specific, and the classic branch can't match it (it requires a '?').
+    final public const GOOGLEBOOKS_START_URL_PATTERN = '(?:' . self::GOOGLEBOOKS_NEW_START_URL_PATTERN . '|'
+    . self::GOOGLEBOOKS_CLASSIC_START_URL_PATTERN . ')';
 
     final public const GOOGLEBOOKS_ID_REGEX = '[0-9A-Za-z_\-]{12}';
+
+    /**
+     * A Google volume ID is exactly 12 characters. Without this lookahead the ID regex silently
+     * matches the first 12 characters of a longer path segment, and the truncated ID is then sent
+     * to the Google API — which returns either another book or a "volume not found" that used to
+     * be published as a {{lien brisé}} on a perfectly valid URL.
+     */
+    final public const GOOGLEBOOKS_ID_END_PATTERN = '(?![0-9A-Za-z_\-])';
 
     /**
      * todo : add frontcover ?
@@ -117,7 +144,9 @@ abstract class GoogleBooksUtil
         if (empty($gooDat['id']) && empty($gooDat['isbn'])) {
             throw new DomainException("no GoogleBook 'id' or 'isbn' in URL");
         }
-        if (isset($gooDat['id']) && !self::validateGoogleBooksId($gooDat['id'])) {
+        // !empty() and not isset() : an empty "?id=&isbn=…" must fall back on the ISBN
+        // instead of being rejected as a malformed ID.
+        if (!empty($gooDat['id']) && !self::validateGoogleBooksId($gooDat['id'])) {
             throw new DomainException("GoogleBook 'id' malformed");
         }
 
@@ -138,6 +167,9 @@ abstract class GoogleBooksUtil
      * actually points to. Stripping the whole query string here (as this method did before
      * 2026-08-15) silently downgraded every converted reference.
      *
+     * The host is normalized to the canonical "https://www.google.<tld>" : http://, a bare
+     * "google.<tld>" and "books.google.<tld>" all reach the same page.
+     *
      * @param array|null $gooDat Pass an already-extracted extractGoogleBookData() result to avoid re-parsing $url.
      */
     private static function simplifyNewFormatGoogleUrl(string $url, ?array $gooDat = null): string
@@ -147,12 +179,30 @@ abstract class GoogleBooksUtil
         if (empty($id)) {
             throw new DomainException('no Google Book ID in URL');
         }
+        // Keep the real slug when readable — it makes the wikitext self-describing — and fall
+        // back on the neutral one otherwise (empty or malformed segment). Never a fatal error :
+        // the ID is what identifies the volume.
+        $slug = preg_match('~/books/edition/([^/?\#]+)/~', $url, $matches) === 1
+            ? $matches[1]
+            : self::DEFAULT_TITLE_SLUG;
 
-        $path = (string)preg_replace('~[?#].*$~', '', $url);
+        $path = sprintf(
+            'https://www.google%s/books/edition/%s/%s',
+            self::extractGoogleDomain($url) ?? '.com',
+            $slug,
+            $id
+        );
 
         $dat = self::parseAndCleanParams($gooDat);
         // 'id'/'isbn' are already in the path of this format, unlike the classic '?id=' one.
         unset($dat['id'], $dat['isbn']);
+
+        // This format needs gbpv=1 to open the preview : "?pg=PA56" alone lands on the book
+        // presentation page, "?pg=PA56&gbpv=1" on page 56 (verified 2026-08-15). The classic
+        // format opens the preview from 'pg' alone, hence the restriction to this branch.
+        if (!empty($dat['pg']) && empty($dat['gbpv'])) {
+            $dat['gbpv'] = '1';
+        }
 
         return $dat === [] ? $path : $path . '?' . http_build_query($dat);
     }
@@ -195,7 +245,8 @@ abstract class GoogleBooksUtil
     public static function isNewGoogleBookUrl(string $url): bool
     {
         return (bool)preg_match(
-            '#^' . self::GOOGLEBOOKS_NEW_START_URL_PATTERN . self::GOOGLEBOOKS_ID_REGEX . '(?:&.+)?#',
+            '#^' . self::GOOGLEBOOKS_NEW_START_URL_PATTERN . self::GOOGLEBOOKS_ID_REGEX
+            . self::GOOGLEBOOKS_ID_END_PATTERN . '#',
             $url
         );
     }
@@ -215,6 +266,13 @@ abstract class GoogleBooksUtil
             if (isset($gooDat[$keep])) {
                 $dat[$keep] = $gooDat[$keep];
             }
+        }
+        // an empty "?id=" alongside a valid "isbn=" (and vice versa) must not reach the output URL
+        if (empty($dat['id'])) {
+            unset($dat['id']);
+        }
+        if (empty($dat['isbn'])) {
+            unset($dat['isbn']);
         }
 
         // 1 exemple : https://fr.wikipedia.org/w/index.php?title=Foudre_de_Catatumbo&diff=next&oldid=168721836&diffmode=source
@@ -274,7 +332,8 @@ abstract class GoogleBooksUtil
     public static function getIDFromNewGBurl(string $url): ?string
     {
         if (preg_match(
-            '#^' . self::GOOGLEBOOKS_NEW_START_URL_PATTERN . '(' . self::GOOGLEBOOKS_ID_REGEX . ')(?:&.+)?#',
+            '#^' . self::GOOGLEBOOKS_NEW_START_URL_PATTERN . '(' . self::GOOGLEBOOKS_ID_REGEX . ')'
+            . self::GOOGLEBOOKS_ID_END_PATTERN . '#',
             $url,
             $matches
         )

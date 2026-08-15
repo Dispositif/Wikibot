@@ -103,4 +103,47 @@ class GoogleTransformerTest extends TestCase
         // tracking/query params stripped from the cleaned URL
         $this::assertStringNotContainsString('hl=fr', $citation);
     }
+
+    /**
+     * 'pg' => 'passage' mapping. Only PA (arabic) and PR (roman) carry a printed page number :
+     * PT is a scan-position locator, which {{Ouvrage}} cannot express (see {{Google Livres}}
+     * doc, where it maps to 'page autre'). Pages 1-2 are the default Google landing view, not
+     * a deliberate citation target.
+     *
+     * @dataProvider providePageParameter
+     */
+    public function testConvertGBurl2OuvrageCitationPassage(string $pg, ?string $expectedPassage)
+    {
+        $text = file_get_contents(__DIR__ . '/../Publisher/Tests/googleBook.json');
+        $json = json_decode($text, null, 512, JSON_THROW_ON_ERROR);
+        $volume = new Volume('KApgwgEACAAJ', $json->items[0]->volumeInfo);
+
+        $apiQuotaMock = $this->createMock(GoogleApiQuota::class);
+        $googleBooksAdapterMock = $this->createMock(GoogleBooksAdapter::class);
+        $googleBooksAdapterMock->method('getDataByGoogleId')->willReturn($volume);
+
+        $trans = new GoogleTransformer($apiQuotaMock, $googleBooksAdapterMock);
+        $citation = $trans->convertGBurl2OuvrageCitation(
+            'https://books.google.fr/books?id=KApgwgEACAAJ&pg=' . $pg
+        );
+
+        if ($expectedPassage === null) {
+            $this::assertStringNotContainsString('passage=', $citation);
+
+            return;
+        }
+        $this::assertStringContainsString('passage=' . $expectedPassage, $citation);
+    }
+
+    public static function providePageParameter(): array
+    {
+        return [
+            'PA : printed page' => ['PA333', '333'],
+            'PR : roman numbering' => ['PR7', 'vii'],
+            'RA1-PAx : printed page of a section' => ['RA1-PA184', '184'],
+            'PT : scan locator, no {{Ouvrage}} equivalent' => ['PT23', null],
+            'PA1 : default view, not a citation target' => ['PA1', null],
+            'PA2 : default view, not a citation target' => ['PA2', null],
+        ];
+    }
 }

@@ -151,12 +151,13 @@ class GoogleTransformer
         }
 
         try {
-            $identifiant = $gooDat['id'] ?? $gooDat['isbn'];
-            $isISBN = !empty($gooDat['isbn']);
+            // ?: and not ?? : an empty "?id=&isbn=…" must fall back on the ISBN
+            $identifiant = !empty($gooDat['id']) ? $gooDat['id'] : $gooDat['isbn'];
+            $isISBN = empty($gooDat['id']);
             $ouvrage = $this->generateOuvrageFromGoogleData($identifiant, $isISBN);
         } catch (Throwable $e) {
             // ID n'existe pas sur Google Books
-            if (strpos($e->getMessage(), '"message": "The volume ID could n')) {
+            if (str_contains($e->getMessage(), '"message": "The volume ID could n')) {
                 return sprintf(
                     '{{lien brisé |url= %s |titre=%s |brisé le=%s}}',
                     $url,
@@ -179,8 +180,11 @@ class GoogleTransformer
 
         // Google page => 'passage'
         if (!empty($gooDat['pg'])) {
+            // Only PA (arabic) and PR (roman) carry a printed page number. PT is a scan-position
+            // locator for books without real pagination : {{Google Livres}} maps it to
+            // 'page autre', and {{Ouvrage}} has no equivalent parameter — so no 'passage' from PT.
             // Exclusion de page=1, page=2 (vue par défaut sur Google Book)
-            if (preg_match('#(?:PA|PT)(\d+)$#', (string)$gooDat['pg'], $matches) && (int)$matches[1] >= 3) {
+            if (preg_match('#PA(\d+)$#', (string)$gooDat['pg'], $matches) && (int)$matches[1] >= 3) {
                 $page = $matches[1];
             }
             // conversion chiffres Romain pour PR
