@@ -47,27 +47,38 @@ $botConfig->setTaskName("☑️ Consultation de {lien web} {article} :"); // ✔
 
 $botConfig->checkStopOnTalkpageOrException();
 
+// Same recipe as lastExternRefProcess.php, for the same reason : the previous
+// last_edit_desc + stream(3) drew the 1500 most-recently-edited matches, a slice
+// renewing slower than the run cadence, so successive runs mostly re-served titles the
+// journal had already seen. Random draws a fresh sample from the ~400k corpus instead —
+// measured overlap between two consecutive draws : 0.2%.
+// srqiprofile and OPTION_REVERSE dropped : both are meaningless under a random sort.
+//
+// This query does report "the regex search timed out, so only partial results are
+// available" (echoed by CirrusSearch::echoApiWarnings) : [Ll]ien / [Aa]rticle are
+// character classes, so no trigram can be extracted to accelerate the scan. Left as is
+// on purpose — the alternatives all cost more than they fix. A literal "ref" term
+// removes the timeout but drops the corpus from 400k to 102k, and hastemplate: filters
+// do not prevent it. The timeout only makes totalhits an estimate and the scan partial ;
+// the draw still fills srlimit and stays fresh, which is all this needs.
+// See audits/audit-sources-listes-articles-2026-08.md
 $cirrusSearch = new CirrusSearch(
     [
         'srsearch' => 'insource:/\<ref[^\>]*\> ?\{\{ ?([Ll]ien web|[Aa]rticle)[ |]/',
-        'srlimit' => '500',
-        'srqiprofile' => CirrusSearch::SRQIPROFILE_DEFAULT,
-        'srsort' => CirrusSearch::SRSORT_LAST_EDIT_DESC,
+        'srlimit' => CirrusSearch::SRLIMIT_MAX, // 5000 with the bot account's apihighlimits, 500 otherwise
+        'srsort' => CirrusSearch::SRSORT_RANDOM,
     ],
-    [CirrusSearch::OPTION_REVERSE => true, CirrusSearch::OPTION_CONTINUE => false]
+    [CirrusSearch::OPTION_APILOGIN => true, CirrusSearch::OPTION_CONTINUE => false]
 );
 
-$edited = array_flip(
-    file(__DIR__ . '/../resources/article_existingRef_edited.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: []
-);
-$filtered = [];
-foreach ($cirrusSearch->stream(maxPages: 3, sleepBetweenPages: 3) as $title) {
-    if (!isset($edited[$title])) {
-        $filtered[] = $title;
-    }
-}
-$list = new PageList($filtered);
-echo ">" . $list->count() . " dans liste\n";
+// Sieved against the analyzed journal here rather than title by title in the worker
+// loop : one query per 1000 titles, and the count below is the real workload.
+$candidates = $cirrusSearch->getPageTitles();
+$titles = ServiceFactory::getBotEditJournal(ExistingRefWorker::ARTICLE_ANALYZED_FILENAME)
+    ->filterNotAnalyzed($candidates, ExistingRefWorker::JOURNAL_TASK);
+
+$list = new PageList($titles);
+echo sprintf(">%d dans liste (%d tirés, %d déjà analysés)\n", $list->count(), count($candidates), count($candidates) - $list->count());
 
 $httpClient = ServiceFactory::getHttpClient();
 $wikiwix = new WikiwixAdapter($httpClient, $logger);

@@ -89,24 +89,31 @@ if (!empty($options['page'])) {
     $botConfig->setTaskName('🐞' . $botConfig->getTaskName());
 } else {
     // Same angle as the Lot 0 mining queries (rawExternLinkCorpusScan.php) : any
-    // bracketed raw link inside a <ref>, prioritized by inbound-link popularity.
+    // bracketed raw link inside a <ref>.
+    //
+    // Same fix as extern-ref, same cause : OPTION_CONTINUE's sroffset cursor is written
+    // to /app/resources/, which no compose service bind-mounts, so it died with every
+    // `--rm` container and each run restarted at offset 0 on the same 500 titles.
+    // Random rather than a restored cursor, since sroffset caps at 10000 and this query
+    // matches 45k articles. srqiprofile dropped, meaningless under a random sort.
+    // See audits/audit-sources-listes-articles-2026-08.md
     $list = new CirrusSearch(
         [
             'srnamespace' => '0',
             'srsearch' => '"https" insource:/\<ref[^\>]*\> ?\[https?\:[^\]]+\]/',
-            'srlimit' => '500',
-            'srsort' => CirrusSearch::SRSORT_NONE,
-            'srqiprofile' => CirrusSearch::SRQIPROFILE_POPULAR_INCLINKS_PV,
+            'srlimit' => CirrusSearch::SRLIMIT_MAX, // 5000 with the bot account's apihighlimits, 500 otherwise
+            'srsort' => CirrusSearch::SRSORT_RANDOM,
         ],
-        [CirrusSearch::OPTION_CONTINUE => true]
+        [CirrusSearch::OPTION_APILOGIN => true, CirrusSearch::OPTION_CONTINUE => false]
     );
 
+    // Sieved against the analyzed journal rather than the flat edited.txt : same
+    // authority the worker consults, one query per 1000 titles instead of one per title.
     if (!isset($options['nofilter'])) {
-        $titles = $list->getPageTitles();
-        echo '> before filtering: ' . count($titles) . " articles.\n";
-        unset($list);
-        $edited = file($editedFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: [];
-        $titles = array_diff($titles, $edited);
+        $candidates = $list->getPageTitles();
+        $titles = ServiceFactory::getBotEditJournal(RawExternLinkWorker::ARTICLE_ANALYZED_FILENAME)
+            ->filterNotAnalyzed($candidates, RawExternLinkWorker::JOURNAL_TASK);
+        echo sprintf('> %d tirés, %d déjà analysés' . "\n", count($candidates), count($candidates) - count($titles));
         $list = new PageList($titles);
     }
 }

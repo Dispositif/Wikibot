@@ -61,7 +61,11 @@ $list = new CirrusSearch(
         'srlimit' => CirrusSearch::SRLIMIT_MAX, // 5000 with the bot account's apihighlimits, 500 otherwise
         'srqiprofile' => CirrusSearch::SRQIPROFILE_POPULAR_INCLINKS_PV,
     ],
-    [CirrusSearch::OPTION_APILOGIN => true, CirrusSearch::OPTION_CONTINUE => true]
+    // OPTION_CONTINUE off : it promised a resumable cursor it never delivered under
+    // Docker (the offset file lands in /app/resources/, which no compose service
+    // bind-mounts, so it dies with each --rm container). Moot here anyway — srlimit=max
+    // returns the whole ~161-article corpus in a single request, nothing to paginate.
+    [CirrusSearch::OPTION_APILOGIN => true, CirrusSearch::OPTION_CONTINUE => false]
 );
 $titles = $list->getPageTitles();
 echo 'CirrusSearch: '.count($titles).' titles found';

@@ -80,32 +80,38 @@ if (!empty($options['page'])) {
     $botConfig->setTaskName('🐞' . $botConfig->getTaskName());
 } else {
     // TODO : liste à puces * http://...
-    // RANDOM :
     // https://www.mediawiki.org/wiki/API:Search
-    // 5 nov 2023 :  54'045 https://w.wiki/83rQ
     // https://www.mediawiki.org/wiki/Help:CirrusSearch#Explicit_sort_orders
+    //
+    // Was SRSORT_NONE + OPTION_CONTINUE, i.e. a persisted sroffset cursor walking the
+    // corpus 500 titles at a time. That cursor never survived a run in Docker : it is
+    // written to /app/resources/cirrusSearch-<hash>.txt, a path no compose service
+    // bind-mounts, so it died with each `--rm` container and every run restarted at
+    // offset 0. This worker had been re-drawing the same 500 top-relevance titles —
+    // all long since analyzed — which is why it went silent with nothing to edit.
+    //
+    // Random instead of restoring the cursor : sroffset is capped at 10000 server-side,
+    // so on 59k matches a cursor could only ever reach a sixth of the corpus before
+    // locking up. srqiprofile dropped, meaningless under a random sort.
+    // See audits/audit-sources-listes-articles-2026-08.md
     $list = new CirrusSearch(
         [
             'srnamespace' => '0',
-            // intitle:bla* prefix:bla incategory;bla insource
-            // TODO "https:" insource:/\<ref[^\>]*\> ?\[https\:[^\<]+\</i
             'srsearch' => '"https" insource:/\<ref[^\>]*\> ?https?\:/',
-            'srlimit' => '500',
-            'srsort' => CirrusSearch::SRSORT_NONE,
-//            'sroffset' => $offset, //default: 0
-//            'srqiprofile' => CirrusSearch::SRQIPROFILE_POPULAR_INCLINKS_PV, // nombre de vues de la page
-	      'srqiprofile' => 'popular_inclinks',
+            'srlimit' => CirrusSearch::SRLIMIT_MAX, // 5000 with the bot account's apihighlimits, 500 otherwise
+            'srsort' => CirrusSearch::SRSORT_RANDOM,
         ],
-        [CirrusSearch::OPTION_CONTINUE => true]
+        [CirrusSearch::OPTION_APILOGIN => true, CirrusSearch::OPTION_CONTINUE => false]
     );
 
-    // filter titles already in edited.txt
+    // Sieved against the analyzed journal, not the flat edited.txt : the journal is the
+    // authority the worker itself consults, and doing it here means one query per 1000
+    // titles instead of one SELECT per title inside the loop.
     if (!isset($options['nofilter'])) {
-        $titles = $list->getPageTitles();
-        echo '> before filtering: '. count($titles)." articles.\n";
-        unset($list);
-        $edited = file(__DIR__ . '/../resources/article_externRef_edited.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        $titles = array_diff($titles, $edited);
+        $candidates = $list->getPageTitles();
+        $titles = ServiceFactory::getBotEditJournal(ExternRefWorker::ARTICLE_ANALYZED_FILENAME)
+            ->filterNotAnalyzed($candidates, ExternRefWorker::JOURNAL_TASK);
+        echo sprintf('> %d tirés, %d déjà analysés' . "\n", count($candidates), count($candidates) - count($titles));
         $list = new PageList($titles);
     }
 }
