@@ -82,18 +82,18 @@ class AbstractWikiTemplateTest extends TestCase
         $lienWeb->hydrate($data);
 
         $this::assertSame(
-            '{{lien web|auteur1=Bob|titre=Foo bar|url=http://google.com|date=2010-11-25|consulté le=}}',
+            '{{Lien web|auteur1=Bob|titre=Foo bar|url=http://google.com|date=2010-11-25|consulté le=}}',
             $lienWeb->serialize(true)
         );
 
         $this::assertSame(
-            '{{lien web|url=http://google.com|auteur1=Bob|date=2010-11-25|consulté le=|titre=Foo bar}}',
+            '{{Lien web|url=http://google.com|auteur1=Bob|date=2010-11-25|consulté le=|titre=Foo bar}}',
             $lienWeb->serialize()
         );
 
         $lienWeb->userSeparator = "\n|";
         $this::assertSame(
-            '{{lien web
+            '{{Lien web
 |url=http://google.com
 |auteur1=Bob
 |date=2010-11-25
@@ -106,7 +106,7 @@ class AbstractWikiTemplateTest extends TestCase
         $lienWeb->userMultiSpaced = true;
         $lienWeb->userSeparator = "\n|";
         $this::assertSame(
-            '{{lien web
+            '{{Lien web
 |url         = http://google.com
 |auteur1     = Bob
 |date        = 2010-11-25
@@ -126,7 +126,7 @@ class AbstractWikiTemplateTest extends TestCase
             ]
         );
         $this::assertSame(
-            '{{lien web|langue=fr|titre=|url=|consulté le=}}',
+            '{{Lien web|langue=fr|titre=|url=|consulté le=}}',
             $lienWeb->serialize()
         );
     }
@@ -144,7 +144,7 @@ class AbstractWikiTemplateTest extends TestCase
         $lienWeb->setParam('url', '');
 
         $this::assertSame(
-            '{{lien web|titre=|url=|consulté le=}}',
+            '{{Lien web|titre=|url=|consulté le=}}',
             $lienWeb->serialize(true)
         );
     }
@@ -160,7 +160,7 @@ class AbstractWikiTemplateTest extends TestCase
         $lienWeb->hydrate($data);
 
         $this::assertSame(
-            '{{lien web|langue=fr|titre=|url=http://google.com|consulté le=}}',
+            '{{Lien web|langue=fr|titre=|url=http://google.com|consulté le=}}',
             $lienWeb->serialize(true)
         );
     }

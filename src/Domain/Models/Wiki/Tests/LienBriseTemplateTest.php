@@ -57,6 +57,6 @@ class LienBriseTemplateTest extends TestCase
 
     public function testWikitemplateName()
     {
-        $this::assertSame('lien brisé', LienBriseTemplate::WIKITEMPLATE_NAME);
+        $this::assertSame('Lien brisé', LienBriseTemplate::WIKITEMPLATE_NAME);
     }
 }

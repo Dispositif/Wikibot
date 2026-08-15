@@ -206,7 +206,7 @@ class RawExternLinkTransformerTest extends TestCase
 
         $result = $transformer->process("* [http://www.libellules.org Société française d'Odonatologie].");
 
-        self::assertStringStartsWith('* {{lien web', $result->wikitext);
+        self::assertStringStartsWith('* {{Lien web', $result->wikitext);
     }
 
     public function testPassesUrlAndSummaryThroughToTheCrawlPipelineUnchanged()

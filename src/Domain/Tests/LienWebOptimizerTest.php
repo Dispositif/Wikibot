@@ -42,12 +42,12 @@ class LienWebOptimizerTest extends TestCase
         return [
             [
                 ['langue' => 'fr', 'titre' => 'bla', 'url' => 'http://test.com'],
-                "{{lien web|langue=fr|titre=Bla|url=http://test.com|consulté le=}}",
+                "{{Lien web|langue=fr|titre=Bla|url=http://test.com|consulté le=}}",
             ],
             [
                 // titre "Bla - PubMed
                 ['titre' => 'Mali - Vidéo Dailymotion', 'url' => 'http://test.com', 'site' => 'Dailymotion'],
-                "{{lien web|titre=Mali|url=http://test.com|site=Dailymotion|consulté le=}}",
+                "{{Lien web|titre=Mali|url=http://test.com|site=Dailymotion|consulté le=}}",
             ],
             [
                 // doublon site / périodique
@@ -57,22 +57,22 @@ class LienWebOptimizerTest extends TestCase
                     'site' => "[[L'Équipe]]",
                     'périodique' => "[[L'Équipe]]",
                 ],
-                "{{lien web|titre=Bla|url=http://test.com|site=[[L'Équipe]]|consulté le=}}",
+                "{{Lien web|titre=Bla|url=http://test.com|site=[[L'Équipe]]|consulté le=}}",
             ],
             [
                 // auteur1 = Rédaction
                 ['titre' => 'bla', 'url' => 'http://test.com', 'auteur1' => 'Rédaction'],
-                "{{lien web|titre=Bla|url=http://test.com|consulté le=}}",
+                "{{Lien web|titre=Bla|url=http://test.com|consulté le=}}",
             ],
             [
                 // doublon site / périodique
                 ['titre' => 'bla', 'url' => 'http://test.com', 'auteur1' => 'Le Monde', 'site' => '[[Le Monde]]'],
-                "{{lien web|titre=Bla|url=http://test.com|site=[[Le Monde]]|consulté le=}}",
+                "{{Lien web|titre=Bla|url=http://test.com|site=[[Le Monde]]|consulté le=}}",
             ],
             [
                 // quasi doublon site / périodique
                 ['titre' => 'Bla', 'site' => 'France24.com', 'périodique' => 'France 24'],
-                '{{lien web|titre=Bla|url=|site=France24.com|consulté le=}}',
+                '{{Lien web|titre=Bla|url=|site=France24.com|consulté le=}}',
             ],
         ];
     }
