@@ -44,6 +44,9 @@ abstract class GoogleBooksUtil
      */
     final public const DEFAULT_TITLE_SLUG = '_';
 
+    /** Characters of the *decoded* title kept in a derived slug — beyond that it only bloats the wikitext. */
+    final public const MAX_SLUG_LENGTH = 60;
+
     // New format first : more specific, and the classic branch can't match it (it requires a '?').
     final public const GOOGLEBOOKS_START_URL_PATTERN = '(?:' . self::GOOGLEBOOKS_NEW_START_URL_PATTERN . '|'
     . self::GOOGLEBOOKS_CLASSIC_START_URL_PATTERN . ')';
@@ -186,25 +189,96 @@ abstract class GoogleBooksUtil
             ? $matches[1]
             : self::DEFAULT_TITLE_SLUG;
 
-        $path = sprintf(
-            'https://www.google%s/books/edition/%s/%s',
-            self::extractGoogleDomain($url) ?? '.com',
+        return self::buildNewFormatUrl(
+            $id,
             $slug,
-            $id
+            self::extractGoogleDomain($url) ?? '.com',
+            self::parseAndCleanParams($gooDat)
         );
+    }
 
-        $dat = self::parseAndCleanParams($gooDat);
+    /**
+     * Assemble a canonical new-format URL from its parts.
+     *
+     * @param string   $domain Google TLD, dot included : '.fr', '.co.ma'…
+     * @param string[] $dat    parseAndCleanParams() output
+     */
+    private static function buildNewFormatUrl(string $id, string $slug, string $domain, array $dat): string
+    {
+        $path = sprintf('https://www.google%s/books/edition/%s/%s', $domain, $slug, $id);
+
         // 'id'/'isbn' are already in the path of this format, unlike the classic '?id=' one.
         unset($dat['id'], $dat['isbn']);
 
         // This format needs gbpv=1 to open the preview : "?pg=PA56" alone lands on the book
         // presentation page, "?pg=PA56&gbpv=1" on page 56 (verified 2026-08-15). The classic
         // format opens the preview from 'pg' alone, hence the restriction to this branch.
+        // Without 'pg' there is nothing to open : gbpv=1 would only land on a blank cover,
+        // which is less useful than the presentation page — so it is not invented.
         if (!empty($dat['pg']) && empty($dat['gbpv'])) {
             $dat['gbpv'] = '1';
         }
 
         return $dat === [] ? $path : $path . '?' . http_build_query($dat);
+    }
+
+    /**
+     * Convert any Google Books URL to the new format (nov 2019).
+     *
+     * NOT WIRED IN YET — see audits/audit-google-livres-nouveau-format-url.md. Converting the
+     * whole fr.wikipedia stock of "?id=" links is a mass behaviour change, pending a decision
+     * and a confirmed shutdown date for the classic interface.
+     *
+     * Verified 2026-08-15 : the title slug is decorative — Google serves the same page for an
+     * invented slug, an accented one, or "_", with no redirect, and the query params survive.
+     * So a classic URL can be modernized even though it carries no slug of its own.
+     *
+     * @param string|null $title Book title, to derive a human-readable slug from. Without it
+     *                           the neutral "_" slug is used, which works just as well.
+     *
+     * @throws Exception
+     */
+    public static function toNewFormatUrl(string $url, ?string $title = null): string
+    {
+        if (!self::isGoogleBookURL($url)) {
+            throw new Exception('not a Google Book URL');
+        }
+
+        $gooDat = self::extractGoogleBookData($url);
+        if (empty($gooDat['id'])) {
+            // An "?isbn=" link has no volume ID, and the new format has no ISBN equivalent.
+            throw new DomainException("no GoogleBook 'id' in URL : cannot build a new-format URL");
+        }
+        if (!self::validateGoogleBooksId($gooDat['id'])) {
+            throw new DomainException("GoogleBook 'id' malformed");
+        }
+
+        return self::buildNewFormatUrl(
+            $gooDat['id'],
+            $title === null ? self::DEFAULT_TITLE_SLUG : self::titleToSlug($title),
+            self::extractGoogleDomain($url) ?? '.com',
+            self::parseAndCleanParams($gooDat)
+        );
+    }
+
+    /**
+     * Derive a new-format title slug, in the shape Google itself emits : underscores for
+     * spaces, UTF-8 percent-encoding for the rest ("Le_Bouquin_de_la_bande_dessin%C3%A9e").
+     *
+     * The encoding is dictated by wikitext, not by Google : Google accepts a raw apostrophe or
+     * space in the slug, but "''" is italic markup on MediaWiki, a space cuts a bare URL short,
+     * and '|' / '[' / ']' break a template parameter. rawurlencode() leaves only [A-Za-z0-9_-.~],
+     * all safe there. The title is truncated *before* encoding, so an escape is never cut in half.
+     */
+    public static function titleToSlug(string $title): string
+    {
+        $slug = (string)preg_replace('#\s+#u', '_', trim($title));
+        $slug = trim($slug, '_');
+        if ($slug === '') {
+            return self::DEFAULT_TITLE_SLUG;
+        }
+
+        return rawurlencode(mb_substr($slug, 0, self::MAX_SLUG_LENGTH));
     }
 
     /**

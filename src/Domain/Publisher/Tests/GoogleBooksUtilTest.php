@@ -387,6 +387,90 @@ class GoogleBooksUtilTest extends TestCase
         ];
     }
 
+    /**
+     * @dataProvider provideTitleToSlug
+     */
+    public function testTitleToSlug(string $title, string $expected)
+    {
+        $this::assertSame($expected, GoogleBooksUtil::titleToSlug($title));
+    }
+
+    public static function provideTitleToSlug(): array
+    {
+        return [
+            'spaces become underscores' => ['Les oracles de Shirataka', 'Les_oracles_de_Shirataka'],
+            'accents percent-encoded, like Google does' => [
+                'Le Bouquin de la bande dessinée',
+                'Le_Bouquin_de_la_bande_dessin%C3%A9e',
+            ],
+            // "''" is italic markup on MediaWiki : an apostrophe must never reach the wikitext raw
+            'apostrophe encoded' => ["L'Île d'Élise", 'L%27%C3%8Ele_d%27%C3%89lise'],
+            // a '/' would create an extra path segment, '|' would break a template parameter
+            'slash and pipe encoded' => ['Rock/Pop | 1970', 'Rock%2FPop_%7C_1970'],
+            'multiple spaces collapse' => ["A   B\tC", 'A_B_C'],
+            'surrounding underscores trimmed' => ['  Titre  ', 'Titre'],
+            'empty title falls back on the neutral slug' => ['   ', '_'],
+            // truncation happens before encoding, so an escape is never cut in half
+            'long title truncated to 60 chars' => [
+                str_repeat('é', 80),
+                str_repeat('%C3%A9', 60),
+            ],
+        ];
+    }
+
+    /**
+     * Modernization is written and locked in, but not wired into any pipeline yet.
+     *
+     * @dataProvider provideToNewFormatUrl
+     *
+     * @throws Exception
+     */
+    public function testToNewFormatUrl(string $url, ?string $title, string $expected)
+    {
+        $this::assertSame($expected, GoogleBooksUtil::toNewFormatUrl($url, $title));
+    }
+
+    public static function provideToNewFormatUrl(): array
+    {
+        return [
+            'classic without title : neutral slug' => [
+                'https://books.google.fr/books?id=26gcP_Yz-i8C&pg=PA56',
+                null,
+                'https://www.google.fr/books/edition/_/26gcP_Yz-i8C?pg=PA56&gbpv=1',
+            ],
+            'classic with title : readable slug, gbpv added for the preview' => [
+                'https://books.google.fr/books?id=26gcP_Yz-i8C&pg=PA56&dq=Poznanski&hl=fr&sa=X',
+                'André Poznanski',
+                'https://www.google.fr/books/edition/Andr%C3%A9_Poznanski/26gcP_Yz-i8C?pg=PA56&dq=Poznanski&gbpv=1',
+            ],
+            'no page : nothing to preview, no gbpv invented' => [
+                'https://books.google.fr/books?id=26gcP_Yz-i8C',
+                'Titre',
+                'https://www.google.fr/books/edition/Titre/26gcP_Yz-i8C',
+            ],
+            'TLD preserved' => [
+                'https://books.google.co.ma/books?id=26gcP_Yz-i8C&pg=PA56',
+                null,
+                'https://www.google.co.ma/books/edition/_/26gcP_Yz-i8C?pg=PA56&gbpv=1',
+            ],
+            'already new format : re-slugged, otherwise unchanged' => [
+                'https://www.google.fr/books/edition/Ancien_slug/26gcP_Yz-i8C?pg=PA56&gbpv=1',
+                'Nouveau titre',
+                'https://www.google.fr/books/edition/Nouveau_titre/26gcP_Yz-i8C?pg=PA56&gbpv=1',
+            ],
+        ];
+    }
+
+    /**
+     * An "?isbn=" link carries no volume ID, and the new format has no ISBN equivalent.
+     */
+    public function testToNewFormatUrlRejectsIsbnOnlyUrl()
+    {
+        $this::expectException(DomainException::class);
+        $this::expectExceptionMessage("no GoogleBook 'id' in URL");
+        GoogleBooksUtil::toNewFormatUrl('https://books.google.fr/books?isbn=0403099501');
+    }
+
     public function testIsTrackingUrl()
     {
         $url

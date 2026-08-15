@@ -216,9 +216,14 @@ class GoogleTransformer
      */
     protected function generateOuvrageFromGoogleData(string $id, ?bool $isISBN = false): OuvrageTemplate
     {
+        // Namespaced key : ISBN results used to be written to the cache but never read back,
+        // burning API quota on repeats. The prefix also keeps the two keyspaces apart — a
+        // hyphenated ISBN-10 can be 12 characters, just like a Google volume ID.
+        $cacheKey = ($isISBN ? 'isbn:' : 'gb:') . $id;
+
         // return cached OuvrageTemplate
-        if (!$isISBN && isset($this->cacheOuvrageTemplate[$id])) {
-            return clone $this->cacheOuvrageTemplate[$id];
+        if (isset($this->cacheOuvrageTemplate[$cacheKey])) {
+            return clone $this->cacheOuvrageTemplate[$cacheKey];
         }
 
         // Get Google data by ID ZvhBAAAAcAAJ
@@ -239,7 +244,7 @@ class GoogleTransformer
         $ouvrage->setParam('consulté le', date('d-m-Y'));
 
         // cache
-        $this->cacheOuvrageTemplate[$id] = clone $ouvrage;
+        $this->cacheOuvrageTemplate[$cacheKey] = clone $ouvrage;
 
         return $ouvrage;
     }
