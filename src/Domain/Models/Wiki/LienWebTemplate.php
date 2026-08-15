@@ -65,6 +65,11 @@ class LienWebTemplate extends AbstractWikiTemplate
             'co-auteur' => 'coauteurs', // coauteurs lui-même déconseillé, cf. auteur2/auteur3...
             'coauteur' => 'coauteurs',
             'coauthors' => 'coauteurs',
+            // alias déprécié de 'date' (cf. catégorie d'erreur "paramètre date et en ligne le
+            // présents simultanément") -- sans ça 'en ligne le' n'était pas reconnu et restait
+            // en doublon à côté d'un 'date' rajouté par le crawl (bug signalé par Remy34, 2026-08-15)
+            'en ligne le' => 'date',
+            'en ligne' => 'date',
             'extrait' => 'citation', // 'extrait' devenu nom documenté, 'citation' reste le nom géré ici
             'quote' => 'citation',
             'pmc' => 'pmcid',

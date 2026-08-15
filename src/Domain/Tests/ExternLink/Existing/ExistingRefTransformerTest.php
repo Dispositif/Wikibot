@@ -245,6 +245,28 @@ class ExistingRefTransformerTest extends TestCase
         self::assertNull($get('auteur1'), 'crawled numbered auteur1 must not be added alongside the existing bare auteur');
     }
 
+    /**
+     * Regression (bug reported live by Remy34, 2026-08-15, "Championnat de France
+     * masculin de handball 2011-2012") : 'en ligne le' is a deprecated alias of 'date'
+     * on {{lien web}} (cf. the "paramètre date et en ligne le présents simultanément"
+     * error category), but LienWebTemplate didn't recognize it as such -- it survived
+     * hydrate() as an unrecognized param and was left standing alongside a freshly
+     * crawled 'date', both naming the same event under a different value format.
+     */
+    public function testCrawledDateDoesNotDuplicateExistingEnLigneLe()
+    {
+        $transformer = $this->transformer(
+            '{{lien web |titre=Titre |url=http://x.fr/a |site=x.fr |date=07-09-2011 |consulté le=' . date('d-m-Y') . '}}'
+        );
+
+        $fragment = '{{lien web |titre=Titre |url=http://x.fr/a |site=x.fr |en ligne le=7 septembre 2011 |consulté le=2020-01-01}}';
+        $result = $transformer->process($fragment);
+
+        $get = $this->paramFromSerialized('lien web', $result->refContent);
+        self::assertSame('7 septembre 2011', $get('date'), 'existing en ligne le value is kept, canonicalized as date');
+        self::assertStringNotContainsString('en ligne le', $result->refContent, 'en ligne le must not survive as a separate duplicate param');
+    }
+
     public function testSkipsWhenNothingChanges()
     {
         // 'consulté le' kept old on purpose (not $today) : this exercises the

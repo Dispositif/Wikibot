@@ -33,28 +33,33 @@ class WebSitePeriodiqueHandler implements OptimizeHandlerInterface
     public function handle()
     {
         $this->siteNameInTitle();
+        $this->unsetDoublon('périodique');
+        $this->unsetDoublon('éditeur');
+    }
 
-        if (empty($this->template->getParam('périodique'))) {
+    /**
+     * 'site' is the field kept ; the other one is dropped when it merely restates the
+     * same publisher/site under a different param name (exact match, or one containing
+     * the other once spacing/dashes/case are stripped).
+     */
+    private function unsetDoublon(string $otherParam): void
+    {
+        if (empty($this->template->getParam($otherParam))) {
             return;
         }
-        // doublon site - périodique
-        if ($this->template->getParam('site') === $this->template->getParam('périodique')) {
-            $this->template->unsetParam('périodique');
-            $this->log->info('doublon site/périodique');
+
+        if ($this->template->getParam('site') === $this->template->getParam($otherParam)) {
+            $this->template->unsetParam($otherParam);
+            $this->log->info("doublon site/$otherParam");
 
             return;
         }
 
-        //quasi doublon site - périodique
-        $periodiqueWords = strtolower(str_replace(
-            [' ', '-'],
-            '',
-            $this->template->getParam('périodique')
-        ));
+        $otherWords = strtolower(str_replace([' ', '-'], '', $this->template->getParam($otherParam)));
         $siteWords = strtolower(str_replace([' ', '-'], '', $this->template->getParam('site')));
-        if (str_contains($siteWords, $periodiqueWords)) {
-            $this->template->unsetParam('périodique');
-            $this->log->info('quasi doublon site/périodique');
+        if (str_contains($siteWords, $otherWords)) {
+            $this->template->unsetParam($otherParam);
+            $this->log->info("quasi doublon site/$otherParam");
         }
     }
 

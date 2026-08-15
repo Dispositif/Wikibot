@@ -74,6 +74,16 @@ class LienWebOptimizerTest extends TestCase
                 ['titre' => 'Bla', 'site' => 'France24.com', 'périodique' => 'France 24'],
                 '{{Lien web|titre=Bla|url=|site=France24.com|consulté le=}}',
             ],
+            [
+                // doublon site / éditeur
+                ['titre' => 'bla', 'url' => 'http://test.com', 'site' => 'Le Monde', 'éditeur' => 'Le Monde'],
+                "{{Lien web|titre=Bla|url=http://test.com|site=Le Monde|consulté le=}}",
+            ],
+            [
+                // quasi doublon site / éditeur
+                ['titre' => 'Bla', 'site' => 'lemonde.fr', 'éditeur' => 'Le Monde'],
+                '{{Lien web|titre=Bla|url=|site=lemonde.fr|consulté le=}}',
+            ],
         ];
     }
 }
