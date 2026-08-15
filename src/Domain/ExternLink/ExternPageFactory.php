@@ -60,6 +60,12 @@ class ExternPageFactory
         $stats = null;
         $options = [
             'timeout' => 35,
+            // Connect phase only, so an unreachable host fails in 15s instead of burning
+            // the whole 35s budget (cURL's own connect default is 300s, i.e. never first).
+            // Slow-but-responding sites are unaffected. Mirrors
+            // TorClientAdapter::DEFAULT_CONNECT_TIMEOUT, since this per-request array
+            // overrides that client's constructor options.
+            'connect_timeout' => 15,
             'allow_redirects' => true, /* note : marche pas en mode proxy Tor, TorClientAdapter gère lui-même */
             // Full-ish browser header set, not just User-Agent : some anti-bot heuristics
             // fire on a bare/incomplete header set alone, before any JS challenge kicks in.

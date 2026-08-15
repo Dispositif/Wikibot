@@ -120,3 +120,5 @@ resources/wikibot-data-dump-*.sql
 /resources/wikibot-page_ouvrages-20260706.sql
 /resources/wikiprofiling-dump-20260706.sql
 /resources/wikiwix-log-11-01.txt
+
+compose.override.yml

@@ -40,6 +40,18 @@ class TorClientAdapter extends GuzzleClientAdapter implements HttpClientInterfac
     // without letting one stuck URL stall a whole batch run.
     protected const DEFAULT_MAX_REDIRECTS = 3;
     public const DEFAULT_TIMEOUT = 35;
+    /**
+     * Budget for establishing the connection alone, distinct from DEFAULT_TIMEOUT which
+     * covers the whole request. Without it cURL applies its own 300s default, so an
+     * unreachable host burned the full 35s before failing — measured on a 20-article run
+     * (2026-08-15) : 7 such timeouts, 245s, 11% of the wall clock, every one of them a
+     * host that never answered rather than a slow one.
+     *
+     * Deliberately generous for a connect phase : this goes through the Tor SOCKS proxy,
+     * where building a cold circuit alone can exceed 10s (see GET_IP_TIMEOUT). Slow-but-
+     * alive sites keep their full DEFAULT_TIMEOUT budget — only dead hosts are cut short.
+     */
+    public const DEFAULT_CONNECT_TIMEOUT = 15;
     protected int $maxRedirects = 0;
 
     public function __construct(array $options = [])
@@ -59,6 +71,7 @@ class TorClientAdapter extends GuzzleClientAdapter implements HttpClientInterfac
             // Same reasoning as ExternPageFactory's per-request override (which normally
             // wins anyway): cold Tor circuit-building alone can take >10s (see GET_IP_TIMEOUT).
             'timeout' => $options['timeout'] ?? self::DEFAULT_TIMEOUT,
+            'connect_timeout' => $options['connect_timeout'] ?? self::DEFAULT_CONNECT_TIMEOUT,
             'allow_redirects' => $options['allow_redirects'] ?? true,
             'headers' => $options['headers'] ?? ['User-Agent' => getenv('USER_AGENT')],
             'verify' => false,
