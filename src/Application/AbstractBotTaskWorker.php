@@ -118,7 +118,20 @@ abstract class AbstractBotTaskWorker
         ));
         $this->log->notice('*** Stats: ' . $this->log->stats::class);
 
+        SignalHandler::register();
+
         foreach ($this->getTitles() as $title) {
+            // Checked at the title boundary, so a deploy's SIGTERM lets the article in
+            // progress finish instead of cutting between an edit and its journal write.
+            if (SignalHandler::isStopRequested()) {
+                $this->log->notice(
+                    'SIGTERM : arrêt propre en fin de titre',
+                    ['stats' => 'bottaskworker.stop.sigterm']
+                );
+
+                return;
+            }
+
             try {
                 $touchedWiki = $this->titleProcess($title);
             } catch (Exception $exception) {

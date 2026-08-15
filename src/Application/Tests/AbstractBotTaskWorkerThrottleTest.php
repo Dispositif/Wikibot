@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Application\Tests;
 
 use App\Application\AbstractBotTaskWorker;
+use App\Application\SignalHandler;
 use App\Application\WikiBotConfig;
 use App\Infrastructure\Monitor\NullLogger;
 use App\Infrastructure\PageList;
@@ -32,6 +33,7 @@ class AbstractBotTaskWorkerThrottleTest extends TestCase
     protected function setUp(): void
     {
         // run() logs the bot name, which reads the environment
+        SignalHandler::reset();
         $this->previousBotName = getenv('BOT_NAME');
         putenv('BOT_NAME=phpunit-bot');
     }
@@ -118,6 +120,22 @@ class AbstractBotTaskWorkerThrottleTest extends TestCase
 
         // 3 × THROTTLE_DELAY_AFTER_EACH_TITLE = 6s before the shortcut
         $this::assertLessThan(1.0, $elapsed);
+        $this::assertSame(0, $worker->processedCount);
+    }
+
+    /**
+     * A deploy recreates the non-stop container : Docker SIGTERMs, and the worker must
+     * stop at the next title boundary rather than mid-article. Checked here on the
+     * flag itself — raising a real signal would race with the test runner.
+     */
+    public function testStopRequestedEndsTheLoopAtTheNextTitle()
+    {
+        $worker = $this->workerOverTitles(['A', 'B', 'C'], alreadyAnalyzed: false);
+        SignalHandler::requestStopForTesting();
+
+        $worker->runNow();
+
+        // stopped before touching the very first title, so nothing was fetched
         $this::assertSame(0, $worker->processedCount);
     }
 

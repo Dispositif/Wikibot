@@ -86,6 +86,20 @@ src/Application/resources/article_externRef_edited.txt src/Application/resources
 run: src/Infrastructure/resources/google_quota.json src/Infrastructure/resources/google_quota.lock src/Application/resources/article_externRef_edited.txt src/Application/resources/article_rawExternRef_edited.txt src/Application/resources/article_existingRef_edited.txt
 	docker compose run --rm $(service)
 
+# Deploy loop for a non-stop worker (restart: unless-stopped, e.g. last-extern-ref).
+# `up -d` recreates the container on the freshly built image: SIGTERM first, the worker
+# finishes the article it is on and exits 0, then the new one starts. Nothing to stop by
+# hand, and no window where two workers overlap.
+# NOT for one-shot workers -- those pick up a new image on their next `make run`.
+.PHONY: deploy # 	Rebuild + restart a non-stop worker gracefully: make deploy service=last-extern-ref
+deploy: src/Infrastructure/resources/google_quota.json src/Infrastructure/resources/google_quota.lock src/Application/resources/article_externRef_edited.txt src/Application/resources/article_rawExternRef_edited.txt src/Application/resources/article_existingRef_edited.txt
+	docker compose build $(service)
+	docker compose --profile workers up -d $(service)
+
+.PHONY: stop-worker # 	Stop a non-stop worker for good (restart policy won't revive it): make stop-worker service=last-extern-ref
+stop-worker:
+	docker compose stop $(service)
+
 .PHONY: db-migrate # 	Apply pending schema migrations (src/Infrastructure/resources/migrations/*.sql)
 db-migrate:
 	docker compose run --rm db-migrate

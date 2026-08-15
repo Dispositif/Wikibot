@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Application\CLI;
 
 use App\Application\ExternLink\ExternRefWorker;
+use App\Application\SignalHandler;
 use App\Application\WikiBotConfig;
 use App\Domain\ExternLink\ExternRefTransformer;
 use App\Domain\Publisher\ExternMapper;
@@ -28,6 +29,18 @@ use App\Infrastructure\WikiwixAdapter;
 include __DIR__.'/../myBootstrap.php';
 
 // todo VOIR EN BAS
+
+/**
+ * Floor on one full pass, because this CLI runs as a long-lived container
+ * (restart: unless-stopped in compose.yaml) : Docker restarts the process the moment it
+ * exits, so a pass that ends almost immediately — an empty draw, a CirrusSearch hiccup,
+ * a list entirely filtered out by the journal — would otherwise re-draw in a tight loop.
+ * Only covers the success path ; a crash bypasses it and is caught instead by Docker's
+ * own restart backoff (100ms doubling, capped at 1 min).
+ */
+const MIN_CYCLE_SECONDS = 600;
+
+$startedAt = time();
 
 /** @noinspection PhpUnhandledExceptionInspection */
 $wiki = ServiceFactory::getMediawikiFactory();
@@ -61,18 +74,20 @@ $cirrusSearch = new CirrusSearch(
     [CirrusSearch::OPTION_APILOGIN => true, CirrusSearch::OPTION_CONTINUE => false]
 );
 
-// filter titles already in edited.txt
-$edited = array_flip(
-    file(__DIR__ . '/../resources/article_externRef_edited.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES)
-);
-$filtered = [];
-foreach ($cirrusSearch->getPageTitles() as $title) {
-    if (!isset($edited[$title])) {
-        $filtered[] = $title;
-    }
-}
-$list = new PageList($filtered);
-echo ">" . $list->count() . " dans liste\n";
+// Sieve against the analyzed journal here, not title by title inside the worker loop.
+// This used to filter on the flat article_externRef_edited.txt, a leftover from before
+// the journal moved to MySQL : on a 5000-title draw it caught 8% and the worker then
+// re-discovered all the rest one "Skip : déjà analysé" at a time. Two consequences of
+// doing it up front : one query per 1000 titles instead of one SELECT per title, and
+// the count printed below is the real workload — which is what the cron interval has
+// to be derived from. The per-title wasAnalyzed() check stays in the worker as a guard
+// against a concurrent run analyzing a title while this one is in flight.
+$candidates = $cirrusSearch->getPageTitles();
+$titles = ServiceFactory::getBotEditJournal(ExternRefWorker::ARTICLE_ANALYZED_FILENAME)
+    ->filterNotAnalyzed($candidates, ExternRefWorker::JOURNAL_TASK);
+
+$list = new PageList($titles);
+echo sprintf(">%d dans liste (%d tirés, %d déjà analysés)\n", $list->count(), count($candidates), count($candidates) - $list->count());
 
 
 $httpClient = ServiceFactory::getHttpClient();
@@ -103,3 +118,12 @@ $dryRun = in_array('--dry-run', $argv, true);
 new ExternRefWorker($botConfig, $wiki, $list, $transformer, $dryRun);
 
 echo "END of process\n";
+
+// Skipped when a SIGTERM is already pending : that means `docker compose up -d` is
+// waiting on stop_grace_period to recreate this container for a deploy, and sleeping
+// here would just get the process SIGKILLed instead of exiting cleanly.
+$remaining = MIN_CYCLE_SECONDS - (time() - $startedAt);
+if ($remaining > 0 && !SignalHandler::isStopRequested()) {
+    echo sprintf("Cycle court (%ds) : pause de %ds avant redémarrage du conteneur\n", time() - $startedAt, $remaining);
+    sleep($remaining);
+}

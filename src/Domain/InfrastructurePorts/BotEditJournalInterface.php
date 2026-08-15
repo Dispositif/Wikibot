@@ -24,6 +24,20 @@ interface BotEditJournalInterface
 {
     public function wasAnalyzed(string $page, string $task): bool;
 
+    /**
+     * Bulk counterpart of wasAnalyzed(), for sieving a whole candidate list before the
+     * worker loop starts. Two reasons it is not just a loop over wasAnalyzed() : it
+     * collapses thousands of round-trips into a handful of queries, and it lets a CLI
+     * announce the real amount of work up front instead of a figure that only becomes
+     * true once most titles have been skipped one by one.
+     *
+     * @param string[] $pages
+     *
+     * @return string[] the subset of $pages never analyzed for $task, in input order,
+     *                  duplicates removed
+     */
+    public function filterNotAnalyzed(array $pages, string $task): array;
+
     public function recordAnalyzed(string $page, string $task): void;
 
     /** Un-marks (page, task) as analyzed — e.g. to force a worker to re-pass on it. */

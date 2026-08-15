@@ -41,6 +41,18 @@ class FileBotEditJournal implements BotEditJournalInterface
         return isset($this->loadAnalyzed()[$page]);
     }
 
+    public function filterNotAnalyzed(array $pages, string $task): array
+    {
+        $analyzed = $this->loadAnalyzed();
+
+        return array_values(
+            array_filter(
+                array_unique($pages),
+                static fn(string $page): bool => !isset($analyzed[$page])
+            )
+        );
+    }
+
     public function recordAnalyzed(string $page, string $task): void
     {
         if ($this->wasAnalyzed($page, $task)) {

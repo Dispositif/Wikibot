@@ -23,6 +23,8 @@ class BotEditJournalAdapter implements BotEditJournalInterface
 {
     private const TABLE_ANALYZED = 'bot_page_analyzed';
     private const TABLE_EDIT = 'bot_edit';
+    /** Keeps the expanded IN(...) placeholder list well under MySQL's statement limits. */
+    private const ANALYZED_LOOKUP_CHUNK = 1000;
 
     public function __construct(private readonly Mysql $db)
     {
@@ -36,6 +38,32 @@ class BotEditJournalAdapter implements BotEditJournalInterface
         );
 
         return $row !== null;
+    }
+
+    public function filterNotAnalyzed(array $pages, string $task): array
+    {
+        $pages = array_values(array_unique($pages));
+        if ($pages === []) {
+            return [];
+        }
+
+        $analyzed = [];
+        foreach (array_chunk($pages, self::ANALYZED_LOOKUP_CHUNK) as $chunk) {
+            // fetchRowMany and not fetchColumnMany : the latter loops on
+            // `while ($v = fetchColumn())`, so it would stop dead on a falsy value —
+            // and "0" is a real article title on fr.wikipedia.
+            $rows = $this->db->fetchRowMany(
+                'SELECT page FROM ' . self::TABLE_ANALYZED . ' WHERE task = :task AND page IN (:pages)',
+                ['task' => $task, 'pages' => $chunk]
+            );
+            foreach ($rows ?? [] as $row) {
+                $analyzed[(string)$row['page']] = true;
+            }
+        }
+
+        return array_values(
+            array_filter($pages, static fn(string $page): bool => !isset($analyzed[$page]))
+        );
     }
 
     public function recordAnalyzed(string $page, string $task): void

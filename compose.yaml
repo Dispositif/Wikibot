@@ -135,11 +135,18 @@ services:
   # Same external link crawling, but sorted by most-recently-edited pages
   # instead of relevance — a distinct entry point, not a replacement for
   # extern-ref. Shares the same dedup file.
+  # The only worker running non-stop : `restart: unless-stopped` relaunches the process
+  # as soon as a pass ends, so passes chain by themselves — no cron, no interval to
+  # guess, and mutual exclusion for free (one `up` service = one container, Docker
+  # refuses a second). That last point is why the cron+flock setup was dropped : flock
+  # only guarded the cron invocation, and `make run` (docker compose run) bypassed it
+  # entirely, which is how two identical workers ended up running at once.
+  # Deploy: make deploy service=last-extern-ref (SIGTERM, finishes its article, exits).
   last-extern-ref:
     build:
       context: .
       dockerfile: docker/php/Dockerfile
-    restart: "no"
+    restart: unless-stopped
     container_name: wikibot-last-extern-ref
     profiles: ["workers"]
     command: ["php", "src/Application/CLI/lastExternRefProcess.php"]
@@ -151,6 +158,15 @@ services:
       tor:
         condition: service_healthy
     mem_limit: 256m
+    # Long enough for the article in progress to finish (up to MAX_REFS_PROCESSED_IN_ARTICLE
+    # crawls over Tor, plus SLEEP_AFTER_EDITION) before Docker escalates to SIGKILL.
+    stop_grace_period: 180s
+    # A non-stop worker writes non-stop : uncapped json-file logs fill matou's disk.
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
 
   # Re-crawls the URL of ALREADY-EXISTING {{lien web}}/{{article}} citations --
   # refreshes 'consulté le' + fills gaps on a live page, converts to {{Lien

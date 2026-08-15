@@ -18,7 +18,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         pdo_mysql \
         mbstring \
         sockets \
+        pcntl \
     && rm -rf /var/lib/apt/lists/*
+
+# pcntl : SIGTERM handling, so a long-lived worker (restart: unless-stopped) can finish
+# the article it is on and exit cleanly when `docker compose up -d` recreates it for a
+# deploy, instead of being killed mid-edit. Absent from the base image, and unlike
+# readline/sqlite3 above it does compile here.
 
 # ext-sqlite3/pdo_sqlite/readline are already shipped precompiled in the
 # php:8.3-cli-bookworm base image — no need, and even risky, to rebuild them:
