@@ -71,9 +71,15 @@ class GoogleLivresTemplateTest extends TestCase
                 'https://books.google.com.br/books?id=tERyAAAAMAAJ'
             ],
             [
-                // new Google Book format (nov 2019) : trailing query string stripped
+                // new Google Book format (nov 2019) : only 'hl' left, nothing worth keeping
                 'https://www.google.fr/books/edition/_/U4NmPwAACAAJ?hl=en',
                 'https://www.google.fr/books/edition/_/U4NmPwAACAAJ',
+            ],
+            [
+                // new format : keep the params selecting the preview page, drop 'hl'.
+                // Without them Google serves the book presentation page, not the cited page.
+                'https://www.google.fr/books/edition/Le_Bouquin_de_la_bande_dessin%C3%A9e/hAkCEAAAQBAJ?hl=fr&gbpv=1&dq=%22gwendal+rannou%22&pg=PT23&printsec=frontcover',
+                'https://www.google.fr/books/edition/Le_Bouquin_de_la_bande_dessin%C3%A9e/hAkCEAAAQBAJ?pg=PT23&printsec=frontcover&dq=%22gwendal+rannou%22&gbpv=1',
             ],
             [
                 // new Google Book format (nov 2019)

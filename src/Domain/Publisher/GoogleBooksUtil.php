@@ -94,9 +94,8 @@ abstract class GoogleBooksUtil
     /**
      * TODO refac (responsability).
      *
-     * Clean the google book old URL : delete tracking and user optional params,
+     * Clean the google book URL : delete tracking and user optional params,
      * also redondat search query params.
-     * For new URL 2019 format : just strip trailing query string/fragment (tracking params, hl=...).
      *
      * @param array|null $gooDat Pass an already-extracted extractGoogleBookData() result to avoid re-parsing $url.
      *
@@ -110,12 +109,7 @@ abstract class GoogleBooksUtil
         }
 
         if (self::isNewGoogleBookUrl($url)) {
-            $id = $gooDat['id'] ?? self::getIDFromNewGBurl($url);
-            if (empty($id)) {
-                throw new DomainException('no Google Book ID in URL');
-            }
-
-            return (string) preg_replace('~[?#].*$~', '', $url);
+            return self::simplifyNewFormatGoogleUrl($url, $gooDat);
         }
 
         $gooDat ??= self::parseGoogleBookQuery($url);
@@ -133,6 +127,34 @@ abstract class GoogleBooksUtil
         // todo verify http_build_query() enc_type parameter
         // todo http_build_query() process an urlencode, but a not encoded q= value ("fu+bar") is beautiful
         return $googleURL . '?' . http_build_query($dat);
+    }
+
+    /**
+     * Clean a new-format (nov 2019) Google Books URL : the volume ID lives in the path
+     * (with a title slug), the rest of the query behaves like the classic format.
+     *
+     * Keeping the view-selecting params (pg, printsec, gbpv, q/dq) is not cosmetic : without
+     * them Google serves the book presentation page instead of the preview page the citation
+     * actually points to. Stripping the whole query string here (as this method did before
+     * 2026-08-15) silently downgraded every converted reference.
+     *
+     * @param array|null $gooDat Pass an already-extracted extractGoogleBookData() result to avoid re-parsing $url.
+     */
+    private static function simplifyNewFormatGoogleUrl(string $url, ?array $gooDat = null): string
+    {
+        $gooDat ??= self::extractGoogleBookData($url);
+        $id = $gooDat['id'] ?? self::getIDFromNewGBurl($url);
+        if (empty($id)) {
+            throw new DomainException('no Google Book ID in URL');
+        }
+
+        $path = (string)preg_replace('~[?#].*$~', '', $url);
+
+        $dat = self::parseAndCleanParams($gooDat);
+        // 'id'/'isbn' are already in the path of this format, unlike the classic '?id=' one.
+        unset($dat['id'], $dat['isbn']);
+
+        return $dat === [] ? $path : $path . '?' . http_build_query($dat);
     }
 
     /**
