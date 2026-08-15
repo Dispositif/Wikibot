@@ -71,6 +71,17 @@ class GoogleBooksUrlHandler extends AbstractOuvrageHandler
                 $this->addSummaryLog('tracking');
                 $this->optiStatus->setNotCosmetic(true);
             }
+            // Upgrading the scheme is a real improvement for the reader, not a reformatting :
+            // worth an edit of its own, unlike the other URL normalizations done here.
+            if ($this->isSchemeUpgraded($url, $goo)) {
+                $this->addSummaryLog('https');
+                $this->optiStatus->setNotCosmetic(true);
+            }
         }
+    }
+
+    private function isSchemeUpgraded(string $before, string $after): bool
+    {
+        return stripos($before, 'http://') === 0 && stripos($after, 'https://') === 0;
     }
 }
