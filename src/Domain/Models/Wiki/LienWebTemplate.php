@@ -80,6 +80,28 @@ class LienWebTemplate extends AbstractWikiTemplate
             // comme paramètre inconnu au lieu d'être reconnu.
             'prénom' => 'prénom1',
             'nom' => 'nom1',
+            'directeur' => 'directeur1',
+            // 2026-08-15 sweep vs. official TemplateData (Modèle:Lien web) -- plain missing aliases
+            'language' => 'langue',
+            'author' => 'auteur',
+            'first' => 'prénom1',
+            'first1' => 'prénom1',
+            'last' => 'nom1',
+            'last1' => 'nom1',
+            'title' => 'titre',
+            'format électronique' => 'format',
+            'et alii' => 'et al.',
+            'day' => 'jour',
+            'month' => 'mois',
+            'year' => 'année',
+            'ISBN' => 'isbn',
+            'PMID' => 'pmid',
+            'DOI' => 'doi',
+            'pages' => 'page',
+            'passage' => 'page',
+            'archiveurl' => 'archive-url',
+            'archivedate' => 'archive-date',
+            'lien brisé' => 'brisé le',
         ]; // test purpose
 
     public $parametersByOrder
@@ -160,6 +182,7 @@ class LienWebTemplate extends AbstractWikiTemplate
             'périodique',
             'lieu',
             'éditeur',
+            'lien éditeur',
             'jour',
             'mois',
             'année',
