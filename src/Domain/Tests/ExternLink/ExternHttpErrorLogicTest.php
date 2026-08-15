@@ -46,7 +46,7 @@ class ExternHttpErrorLogicTest extends TestCase
 
     public function testAccessErrorsLeaveUrlUnchanged()
     {
-        foreach ([401, 403] as $status) {
+        foreach ([401, 402, 403] as $status) {
             $deadLinkTransformer = $this->createMock(DeadLinkTransformer::class);
             $deadLinkTransformer->expects($this->never())->method('formatFromUrl');
 
@@ -194,5 +194,61 @@ class ExternHttpErrorLogicTest extends TestCase
             'https://example.com/page',
             $logic->manageByFetchResult($this->fetch(null, FetchErrorKind::ConnectionTimeout))
         );
+    }
+
+    /**
+     * A 3xx only reaches this class when the redirect chain could not be resolved —
+     * observed in prod on 2026-08-15 with cagematch.net and areditions.com, both serving
+     * a bare 307 with no Location header. The resource is most likely alive behind a
+     * redirect the bot cannot follow, so turning it into a dead link would be wrong.
+     *
+     * @dataProvider provideUnresolvedRedirectStatuses
+     */
+    public function testUnresolvedRedirectIsNeverADeadLink(int $status)
+    {
+        $deadLinkTransformer = $this->createMock(DeadLinkTransformer::class);
+        $deadLinkTransformer->expects($this->never())->method('formatFromUrl');
+
+        $logic = new ExternHttpErrorLogic($deadLinkTransformer);
+
+        $this::assertSame(
+            'https://example.com/page',
+            $logic->manageByFetchResult($this->fetch($status)),
+            "status $status must not be turned into a dead link"
+        );
+    }
+
+    public static function provideUnresolvedRedirectStatuses(): array
+    {
+        return [[300], [301], [302], [307], [308], [399]];
+    }
+
+    /** Recorded like 429/503, so findDueForRecheck() can offer it up again later. */
+    public function testUnresolvedRedirectIsRecordedAsTransient()
+    {
+        $repository = $this->createMock(ExternLinkCheckRepositoryInterface::class);
+        $repository->expects($this->once())
+            ->method('recordFailure')
+            ->with(
+                'Page citante',
+                'https://example.com/page',
+                'example.com',
+                307,
+                null,
+                ExternLinkCheckVerdict::TransientError
+            );
+
+        $logic = new ExternHttpErrorLogic($this->createMock(DeadLinkTransformer::class), linkCheckRepository: $repository);
+        $logic->manageByFetchResult($this->fetch(307), 'example.com', 'Page citante');
+    }
+
+    /** No citing page => nothing actionable to persist later, so no write at all. */
+    public function testUnresolvedRedirectWithoutPageTitleRecordsNothing()
+    {
+        $repository = $this->createMock(ExternLinkCheckRepositoryInterface::class);
+        $repository->expects($this->never())->method('recordFailure');
+
+        $logic = new ExternHttpErrorLogic($this->createMock(DeadLinkTransformer::class), linkCheckRepository: $repository);
+        $logic->manageByFetchResult($this->fetch(307));
     }
 }

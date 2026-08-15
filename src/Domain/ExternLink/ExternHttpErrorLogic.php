@@ -45,6 +45,14 @@ class ExternHttpErrorLogic
     private const IMMEDIATE_DEAD_STATUSES = [400, 500, 502, 451];
 
     /**
+     * @var int[] "the page exists, access is refused" — never a dead link, and never a
+     * candidate for archive substitution either : swapping a paywalled Le Monde URL for
+     * an archive of its teaser would be worse than leaving the reference alone.
+     * 403 keeps its own branch below (warning level, plus a pending TODO).
+     */
+    private const ACCESS_DENIED_STATUSES = [401, 402];
+
+    /**
      * @var FetchErrorKind[] network failures treated as a dead link only because LOOSE is enabled.
      * ProxyFailure (SOCKS5/Tor tunnel) is deliberately excluded : it's a failure of the bot's own
      * network path, not evidence the target site is down (see docs/audit-gestion-erreurs-crawl-2026-08.md §9.5).
@@ -102,8 +110,37 @@ class ExternHttpErrorLogic
 
             return $url;
         }
-        if ($fetch->httpStatus === 401) {
-            $this->log->notice('401 Unauthorized : skip ' . $url, ['stats' => 'externHttpErrorLogic.401']);
+        if (in_array($fetch->httpStatus, self::ACCESS_DENIED_STATUSES, true)) {
+            $this->log->notice(
+                sprintf('%d %s : skip %s', $fetch->httpStatus, $fetch->httpStatus === 402 ? 'Payment Required (paywall)' : 'Unauthorized', $url),
+                ['stats' => 'externHttpErrorLogic.' . $fetch->httpStatus]
+            );
+
+            return $url;
+        }
+
+        // A 3xx reaching this point means the redirect chain could NOT be resolved : either
+        // the response carried no Location header at all (what cagematch.net and
+        // areditions.com actually serve — a 307 with nothing to follow, almost certainly an
+        // anti-bot response to a non-browser client), or it ran past
+        // TorClientAdapter::DEFAULT_MAX_REDIRECTS hops. Never a dead link : the resource is
+        // most likely alive behind a redirect this bot cannot follow. Recorded like 429/503
+        // so ExternLinkCheckRepository can offer it up again later rather than concluding now.
+        if ($fetch->httpStatus !== null && $fetch->httpStatus >= 300 && $fetch->httpStatus < 400) {
+            $this->log->notice(
+                $fetch->httpStatus . ' (redirection non résolue, à revérifier) : ' . $url,
+                ['stats' => 'externHttpErrorLogic.3xx']
+            );
+            if ($pageTitle !== null) {
+                $this->linkCheckRepository->recordFailure(
+                    $pageTitle,
+                    $url,
+                    $registrableDomain,
+                    $fetch->httpStatus,
+                    null,
+                    ExternLinkCheckVerdict::TransientError
+                );
+            }
 
             return $url;
         }
