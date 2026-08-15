@@ -244,9 +244,10 @@ services:
     mem_limit: 256m
 
   # First stage of the ISBN pipeline, upstream of ouvrage-complete: finds
-  # {{Ouvrage}} citations on fr.wikipedia.org (CirrusSearch, 500 most
-  # recently-edited matching articles) and inserts them as raw rows into
-  # MySQL for ouvrage-complete/ouvrage-edit to pick up. One-shot batch
+  # {{Ouvrage}} citations on fr.wikipedia.org (CirrusSearch, random draw of up to
+  # 5000 matching articles, sieved against page_ouvrages and capped at 500 titles
+  # per run — see ouvrageScanProcess.php) and inserts them as raw rows into MySQL
+  # for ouvrage-complete/ouvrage-edit to pick up. One-shot batch.
   # Takes an optional page title argument for a manual one-off
   # import instead of the CirrusSearch batch, e.g.:
   #   docker compose run --rm ouvrage-scan php src/Application/CLI/ouvrageScanProcess.php "Some Title"

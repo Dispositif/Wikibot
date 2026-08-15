@@ -23,6 +23,12 @@ interface DbAdapterInterface
 
     public function insertPageOuvrages(array $data);
 
+    /**
+     * @param string[] $titles
+     * @return string[]
+     */
+    public function filterNotScanned(array $titles): array;
+
     public function getAllRowsOfOneTitleToEdit(?int $limit = 100): ?string;
 
     public function skipArticle(string $title): bool;

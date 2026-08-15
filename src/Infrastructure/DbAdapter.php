@@ -28,6 +28,8 @@ use Throwable;
 class DbAdapter implements DbAdapterInterface
 {
     final public const OPTI_VALID_DATE = '2023-01-01 00:00:00'; // v1.0
+    /** Keeps the expanded IN(...) placeholder list well under MySQL's statement limits. */
+    protected const SCANNED_LOOKUP_CHUNK = 1000;
     protected Mysql $db;
     protected $pdoConn;
 
@@ -62,6 +64,40 @@ class DbAdapter implements DbAdapterInterface
 
         // add the citations
         return $this->db->insertMany('page_ouvrages', $datas);
+    }
+
+    /**
+     * Subset of $titles with no row in page_ouvrages yet.
+     *
+     * insertPageOuvrages() already refuses a page it has seen, but only once ScanWiki2DB
+     * has fetched and parsed it : ~6s of throttling and one API call burnt per
+     * already-scanned title. Sieving the whole draw up front costs one query per 1000
+     * titles instead, and makes the announced count the real workload — which is what a
+     * run duration has to be derived from. The per-page check stays in
+     * insertPageOuvrages() as a guard against a concurrent run inserting the same title.
+     *
+     * @param string[] $titles
+     * @return string[]
+     */
+    public function filterNotScanned(array $titles): array
+    {
+        $titles = array_values(array_unique($titles));
+        if ($titles === []) {
+            return [];
+        }
+
+        $scanned = [];
+        foreach (array_chunk($titles, self::SCANNED_LOOKUP_CHUNK) as $chunk) {
+            $rows = $this->db->fetchRowMany(
+                'SELECT DISTINCT page FROM page_ouvrages WHERE page IN (:pages)',
+                ['pages' => $chunk]
+            );
+            foreach ($rows ?? [] as $row) {
+                $scanned[(string)$row['page']] = true;
+            }
+        }
+
+        return array_values(array_filter($titles, static fn(string $title): bool => !isset($scanned[$title])));
     }
 
     /**

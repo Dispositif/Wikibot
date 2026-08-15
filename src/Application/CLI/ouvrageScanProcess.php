@@ -44,20 +44,53 @@ if (!empty($argv[1])) {
 //exit;
 
 
-// 100 dernier articles édités contenant un {ouvrage}
-echo "dernier articles édités contenant un {ouvrage} \n";
-$list = new CirrusSearch(
+// Random draw of articles containing an {ouvrage}, same recipe as the extern-link
+// workers (see audits/audit-sources-listes-articles-2026-08.md §10). It replaces
+// "srsort=last_edit_desc + OPTION_CONTINUE" :
+//  - the persisted sroffset cursor was written to /app/resources/cirrusSearch-<hash>.txt,
+//    a path no compose.yaml service bind-mounts, so `docker compose run --rm` destroyed it
+//    and every run restarted at offset 0 on the same head-of-list titles. Restoring the
+//    file would not fix it either : sroffset is capped at 10000 server-side.
+//  - "prefix:j" restricted the whole ISBN pipeline to article titles starting with "j",
+//    i.e. 3191 of the 51095 matching articles. Added along with the cursor in d644e92
+//    (2023-12) with no rationale, and absent from every earlier revision of this query :
+//    leftover debug scoping, removed.
+// srqiprofile stays dropped : a random sort overrides any relevance profile.
+echo "articles contenant un {ouvrage} (tirage aléatoire) \n";
+$cirrusSearch = new CirrusSearch(
     [
-        'srsearch' => '"{{ouvrage" insource:/\{\{[oO]uvrage/ prefix:j',
+        'srsearch' => '"{{ouvrage" insource:/\{\{[oO]uvrage/',
         'srnamespace' => '0',
-        'srlimit' => '500',
-//        'srqiprofile' => 'popular_inclinks_pv',
-        'srsort' => 'last_edit_desc',
+        'srlimit' => CirrusSearch::SRLIMIT_MAX, // 5000 with the bot account's apihighlimits, 500 otherwise
+        'srsort' => CirrusSearch::SRSORT_RANDOM,
     ],
-    [CirrusSearch::OPTION_CONTINUE => true]
+    [CirrusSearch::OPTION_APILOGIN => true, CirrusSearch::OPTION_CONTINUE => false]
 );
+
+// Sieve against page_ouvrages up front, the equivalent here of the extern-link workers'
+// journal pre-filter : this pipeline has no bot_page_analyzed entry, ScanWiki2DB dedups
+// through insertPageOuvrages() alone — and only after paying the page fetch (see
+// DbAdapter::filterNotScanned).
+$db = new DbAdapter();
+$candidates = $cirrusSearch->getPageTitles();
+$notScanned = $db->filterNotScanned($candidates);
+
+// ScanWiki2DB throttles at ~6s per title, so a full 5000-title draw would run for
+// 8 hours in a `restart: "no"` one-shot container. The draw stays wide (a wide random
+// sample is what keeps successive runs fresh, and it costs one request), the *run* is
+// what gets bounded — to the 500 titles the previous srlimit already implied.
+// Override with --max-titles=N.
+$maxTitles = WikiBotConfig::maxTitlesFromArgv($argv) ?? 500;
+$titles = array_slice($notScanned, 0, $maxTitles);
+
+$list = new PageList($titles);
+echo sprintf(
+    ">%d dans liste (%d tirés, %d déjà scannés, plafond %d)\n",
+    $list->count(), count($candidates), count($candidates) - count($notScanned), $maxTitles
+);
+
 $logger = new ConsoleLogger();
-new ScanWiki2DB($wiki, new DbAdapter(), new WikiBotConfig($wiki, $logger), $list, 11);
+new ScanWiki2DB($wiki, $db, new WikiBotConfig($wiki, $logger), $list, 11);
 
 exit;
 
