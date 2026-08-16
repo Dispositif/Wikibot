@@ -27,20 +27,20 @@ class InterstitialPageValidator implements LinkGateInterface
 {
     public const KNOWN_INTERSTITIAL_TITLES
         = [
-            '#Radware Captcha Page#i',
-            '#Just a moment\.\.\.#i',
-            '#Attention Required#i',
-            '#Access Denied#i',
-            '#Pardon Our Interruption#i',
-            '#Are you a (human|robot)#i',
-            '#V[ée]rifi(cation|ez) que vous [êe]tes (un )?humain#i',
-            '#Please Wait\.\.\. \| Cloudflare#i',
-            '#Just a moment\.\.\.#', // Cloudflare
-            '#One moment, please\.\.\.#i', // Cloudflare
-            '#Checking your browser#i',
-            '#DDoS protection by#i',
-            '#Unauthorized Request Blocked#i',
-            '#Un instant,? s\'il vous pla[iî]t#i', // fr, ex: fondationlitterairefleurdelys.com
+            '#Radware Captcha Page#iu',
+            '#Just a moment\.\.\.#iu',
+            '#Attention Required#iu',
+            '#Access Denied#iu',
+            '#Pardon Our Interruption#iu',
+            '#Are you a (human|robot)#iu',
+            '#V[ée]rifi(cation|ez) que vous [êe]tes (un )?humain#iu',
+            '#Please Wait\.\.\. \| Cloudflare#iu',
+            '#Just a moment\.\.\.#u', // Cloudflare
+            '#One moment, please\.\.\.#iu', // Cloudflare
+            '#Checking your browser#iu',
+            '#DDoS protection by#iu',
+            '#Unauthorized Request Blocked#iu',
+            '#Un instant,? s\'il vous pla[iî]t#iu', // fr, ex: fondationlitterairefleurdelys.com, togo-port.net
         ];
 
     // language-independent, checked against the raw HTML body
@@ -75,9 +75,13 @@ class InterstitialPageValidator implements LinkGateInterface
         $title = $this->pageData['meta']['html-title'] ?? null;
 
         if (!empty($title)) {
+            // ExternPage::parseHtmlTitle() doesn't decode HTML entities, so an interstitial
+            // page whose <title> uses entities (ex: "s&#8217;il", "pla&icirc;t...") would
+            // otherwise slip past these literal-character patterns.
+            $title = html_entity_decode((string)$title);
             foreach (self::KNOWN_INTERSTITIAL_TITLES as $pattern) {
-                if (preg_match($pattern, (string)$title)) {
-                    $this->logDetection((string)$title);
+                if (preg_match($pattern, $title)) {
+                    $this->logDetection($title);
 
                     return LinkVerdict::KeepUrlAsIs;
                 }
