@@ -11,14 +11,17 @@ namespace App\Infrastructure;
 
 use App\Application\InfrastructurePorts\HttpClientInterface;
 use App\Application\WikiPageAction;
+use App\Domain\ExternLink\ExternRefTransformer;
 use App\Domain\InfrastructurePorts\BotEditJournalInterface;
 use App\Domain\InfrastructurePorts\ExternLinkCheckRepositoryInterface;
+use App\Domain\Publisher\ExternMapper;
 use Exception;
 use Mediawiki\Api\ApiUser;
 use Mediawiki\Api\MediawikiApi;
 use Mediawiki\Api\MediawikiFactory;
 use Mediawiki\Api\UsageException;
 use Mediawiki\DataModel\EditInfo;
+use Psr\Log\LoggerInterface;
 use Simplon\Mysql\Mysql;
 use Simplon\Mysql\PDOConnector;
 
@@ -142,6 +145,37 @@ class ServiceFactory
         }
 
         return new ExternLinkCheckAdapter(self::getMysqlConnection());
+    }
+
+    /**
+     * Shared wiring for the extern-link crawl/transform pipeline (Tor client for the crawl,
+     * direct client for the webarchivers + optional anti-bot direct-retry fallback) — used by
+     * every extern-ref/raw-extern-ref/existing-ref/last-extern-ref CLI entrypoint plus
+     * testExternLink.php, so the constructor wiring can't silently drift between them the way
+     * it did before 2026-08 (see audits/synthese-anti-bot-crawling-tor-2026-08.md).
+     *
+     * @param string[] $argv the CLI script's own $argv, forwarded to getExternLinkCheckRepository()
+     */
+    public static function getExternRefTransformer(
+        LoggerInterface $log,
+        array $argv = [],
+        bool $torEnabled = true,
+        bool $directRetryEnabled = true,
+        bool $respectRobotsTxt = true
+    ): ExternRefTransformer {
+        $directClient = self::getHttpClient();
+        $mainClient = $torEnabled ? self::getHttpClient(true) : $directClient;
+
+        return new ExternRefTransformer(
+            new ExternMapper($log),
+            $mainClient,
+            new InternetDomainParser(),
+            $log,
+            [new InternetArchiveAdapter($directClient, $log), new WikiwixAdapter($directClient, $log)],
+            self::getExternLinkCheckRepository($argv),
+            $directRetryEnabled ? $directClient : null,
+            $respectRobotsTxt
+        );
     }
 
     /**

@@ -12,15 +12,10 @@ namespace App\Application\CLI;
 use App\Application\ExternLink\ExistingRefWorker;
 use App\Application\WikiBotConfig;
 use App\Domain\ExternLink\Existing\ExistingRefTransformer;
-use App\Domain\ExternLink\ExternRefTransformer;
-use App\Domain\Publisher\ExternMapper;
 use App\Infrastructure\CirrusSearch;
-use App\Infrastructure\InternetArchiveAdapter;
-use App\Infrastructure\InternetDomainParser;
 use App\Infrastructure\Monitor\ConsoleLogger;
 use App\Infrastructure\PageList;
 use App\Infrastructure\ServiceFactory;
-use App\Infrastructure\WikiwixAdapter;
 
 /**
  * Re-crawls the URL of ALREADY-EXISTING {{lien web}}/{{article}} citations -- refreshes
@@ -81,27 +76,13 @@ $titles = ServiceFactory::getBotEditJournal(ExistingRefWorker::ARTICLE_ANALYZED_
 $list = new PageList($titles);
 echo sprintf(">%d dans liste (%d tirés, %d déjà analysés)\n", $list->count(), count($candidates), count($candidates) - $list->count());
 
-$httpClient = ServiceFactory::getHttpClient();
-$wikiwix = new WikiwixAdapter($httpClient, $logger);
-$internetArchive = new InternetArchiveAdapter($httpClient, $logger);
-
 // Same anti-bot posture as extern-ref/raw-extern-ref : Tor first, then a direct 2nd pass
 // only when the Tor fetch looks blocked, honoring robots.txt by default. See
 // audits/synthese-anti-bot-crawling-tor-2026-08.md
 $directRetryEnabled = !in_array('--no-direct-retry', $argv, true);
 $respectRobotsTxt = !in_array('--no-robots-check', $argv, true);
 
-$domainParser = new InternetDomainParser();
-$externRefTransformer = new ExternRefTransformer(
-    new ExternMapper($logger),
-    ServiceFactory::getHttpClient(true),
-    $domainParser,
-    $logger,
-    [$internetArchive, $wikiwix],
-    ServiceFactory::getExternLinkCheckRepository($argv),
-    $directRetryEnabled ? $httpClient : null,
-    $respectRobotsTxt
-);
+$externRefTransformer = ServiceFactory::getExternRefTransformer($logger, $argv, true, $directRetryEnabled, $respectRobotsTxt);
 
 $transformer = new ExistingRefTransformer($externRefTransformer);
 

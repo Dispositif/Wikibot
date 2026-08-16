@@ -11,14 +11,9 @@ declare(strict_types=1);
 namespace App\Application\ExternLink;
 
 use App\Application\WikiBotConfig;
-use App\Domain\ExternLink\ExternRefTransformer;
-use App\Domain\Publisher\ExternMapper;
-use App\Infrastructure\InternetArchiveAdapter;
-use App\Infrastructure\InternetDomainParser;
 use App\Infrastructure\Monitor\NullLogger;
 use App\Infrastructure\PageList;
 use App\Infrastructure\ServiceFactory;
-use App\Infrastructure\WikiwixAdapter;
 use Mediawiki\Api\MediawikiApi;
 use Mediawiki\Api\SimpleRequest;
 use Psr\Log\LoggerInterface;
@@ -109,19 +104,14 @@ class TrackedUserRefWorker
         $botConfig->setTaskName($this->taskName);
 
         // refactored not tested :
-        $httpClient = ServiceFactory::getHttpClient();
-        $wikiwix = new WikiwixAdapter($httpClient, $this->logger);
-        $internetArchive = new InternetArchiveAdapter($httpClient, $this->logger);
-
-        $domainParser = new InternetDomainParser();
-        $transformer = new ExternRefTransformer(
-            new ExternMapper($this->logger),
-            ServiceFactory::getHttpClient(true),
-            $domainParser,
+        // '--no-db' : this class has no CLI $argv of its own, and never wired the
+        // ExternLinkCheckRepository before -- kept off to preserve that behavior.
+        $transformer = ServiceFactory::getExternRefTransformer(
             $this->logger,
-            [$internetArchive, $wikiwix],
-            directRetryClient: $this->directRetryEnabled ? $httpClient : null,
-            respectRobotsTxt: $this->respectRobotsTxt
+            ['--no-db'],
+            true,
+            $this->directRetryEnabled,
+            $this->respectRobotsTxt
         );
 
         new ExternRefWorker($botConfig, $wiki, $list, $transformer);

@@ -11,20 +11,15 @@ namespace App\Application\CLI;
 
 use App\Application\ExternLink\RawExternLinkWorker;
 use App\Application\WikiBotConfig;
-use App\Domain\ExternLink\ExternRefTransformer;
 use App\Domain\ExternLink\Raw\RawExternLinkParser;
 use App\Domain\ExternLink\Raw\RawExternLinkTransformer;
-use App\Domain\Publisher\ExternMapper;
 use App\Infrastructure\CirrusSearch;
-use App\Infrastructure\InternetArchiveAdapter;
-use App\Infrastructure\InternetDomainParser;
 use App\Infrastructure\Monitor\ConsoleLogger;
 use App\Infrastructure\Monitor\NullStats;
 use App\Infrastructure\Monitor\StatsRedis;
 use App\Infrastructure\Monitor\StatsSqlite3;
 use App\Infrastructure\PageList;
 use App\Infrastructure\ServiceFactory;
-use App\Infrastructure\WikiwixAdapter;
 
 /**
  * Lot 5 : "[url Libellé]" (bracketed, manuscript citations) => {{lien web}}/{{article}}/
@@ -76,7 +71,9 @@ $botConfig->setMaxTitles(WikiBotConfig::maxTitlesFromArgv($argv));
 
 $botConfig->checkStopOnTalkpageOrException();
 
-$torClient = ServiceFactory::getHttpClient(true);
+// instanciate the transformer (and its Tor client) now, so there is no CirrusSearch
+// request if there is a Tor connection error
+$externRefTransformer = ServiceFactory::getExternRefTransformer($logger, $argv, true, $directRetryEnabled, $respectRobotsTxt);
 $editedFile = __DIR__ . '/../resources/article_rawExternRef_edited.txt';
 
 if (!empty($options['page'])) {
@@ -127,22 +124,6 @@ if ($list->count() === 0) {
 }
 
 try {
-    $httpClient = ServiceFactory::getHttpClient();
-    $wikiwix = new WikiwixAdapter($httpClient, $logger);
-    $internetArchive = new InternetArchiveAdapter($httpClient, $logger);
-    $domainParser = new InternetDomainParser();
-
-    $externRefTransformer = new ExternRefTransformer(
-        new ExternMapper($logger),
-        $torClient,
-        $domainParser,
-        $logger,
-        [$internetArchive, $wikiwix],
-        ServiceFactory::getExternLinkCheckRepository($argv),
-        $directRetryEnabled ? $httpClient : null,
-        $respectRobotsTxt
-    );
-
     $transformer = new RawExternLinkTransformer(new RawExternLinkParser(), $externRefTransformer);
 
     new RawExternLinkWorker($botConfig, $wiki, $list, $transformer, $dryRun, $fullAuto, $rejectUncertain);

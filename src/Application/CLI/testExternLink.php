@@ -9,59 +9,84 @@ declare(strict_types=1);
 
 namespace App\Application\CLI;
 
-use App\Domain\ExternLink\ExternRefTransformer;
+use App\Domain\ExternLink\Raw\RawExternLinkParser;
+use App\Domain\ExternLink\Raw\RawExternLinkTransformer;
 use App\Domain\Models\Summary;
-use App\Domain\Publisher\ExternMapper;
-use App\Infrastructure\InternetArchiveAdapter;
-use App\Infrastructure\InternetDomainParser;
 use App\Infrastructure\Monitor\ConsoleLogger;
 use App\Infrastructure\ServiceFactory;
-use App\Infrastructure\WikiwixAdapter;
 use Codedungeon\PHPCliColors\Color;
-use Exception;
+use Throwable;
 
 require_once __DIR__.'/../myBootstrap.php';
 
-$url = $argv[1];
-if (empty($url)) {
-    die("php testPress.php 'http://...'\n");
+echo "OPTIONS: --no-tor --no-direct-retry --no-robots-check --db --as-ref\n";
+$options = getopt('', ['no-tor', 'no-direct-retry', 'no-robots-check', 'db', 'as-ref']);
+$inputs = array_values(array_filter(
+    array_slice($argv, 1),
+    static fn (string $arg): bool => !str_starts_with($arg, '--')
+));
+if (empty($inputs)) {
+    die(
+        "Usage : php testExternLink.php 'http://...' ['http://...' ...] [options]\n"
+        ."       php testExternLink.php --as-ref '[http://... Libellé, 2020]' [options]\n"
+    );
 }
 
-echo Color::BG_LIGHT_RED.$url.Color::NORMAL."\n";
+// --as-ref : replays the raw-extern-ref merge path (manuscript "[url Libellé]" fragment
+// + crawl -> merged {{lien web}}/{{article}}), not just the bare crawl -- see
+// RawExternLinkWorker::processRefContent(), the actual worker this mirrors.
+$asRef = isset($options['as-ref']);
+
+// Mirrors the flags of lastExternRefProcess.php/externRefProcess.php/etc. so this script
+// exercises the same code path as production instead of a fixed, silently-stale one —
+// see audits/synthese-anti-bot-crawling-tor-2026-08.md.
+$torEnabled = !isset($options['no-tor']);
+$directRetryEnabled = !isset($options['no-direct-retry']);
+$respectRobotsTxt = !isset($options['no-robots-check']);
+// Off by default : this is a one-off debug tool, not a worker -- no reason to open a
+// MySQL connection (or touch the extern_link_check circuit breaker) just to replay a URL.
+$repositoryArgv = isset($options['db']) ? [] : ['--no-db'];
+
+echo sprintf(
+    "Tor : %s | direct-retry fallback : %s | robots.txt : %s\n",
+    $torEnabled ? 'oui' : 'non',
+    $directRetryEnabled ? 'oui' : 'non',
+    $respectRobotsTxt ? 'oui' : 'non'
+);
 
 $logger = new ConsoleLogger();
 $logger->debug = true;
 $logger->verbose = true;
 $logger->colorMode = true;
-$summary = new Summary('test');
 
-// todo command --tor --wikiwix --internetarchive
-$torEnabled = false;
-echo "TOR enabled : ".($torEnabled ? "oui" : "non"). "\n";
-
-$client = ServiceFactory::getHttpClient();
-$wikiwix = new WikiwixAdapter($client, $logger);
-$internetArchive = new InternetArchiveAdapter($client, $logger);
-
-$trans = new ExternRefTransformer(
-    new ExternMapper($logger),
-    $torEnabled ? ServiceFactory::getHttpClient($torEnabled) : $client,
-    new InternetDomainParser(),
+$trans = ServiceFactory::getExternRefTransformer(
     $logger,
-    [$internetArchive, $wikiwix]
+    $repositoryArgv,
+    $torEnabled,
+    $directRetryEnabled,
+    $respectRobotsTxt
 );
 $trans->skipSiteBlacklisted = false;
 $trans->skipRobotNoIndex = false;
-try {
-    // Attention : pas de post-processing (sanitize title, etc.)
-    $result = $trans->process($url, $summary);
-} catch (Exception $e) {
-    $result = "EXCEPTION ". $e->getMessage().$e->getFile().$e->getLine();
+$rawTrans = $asRef ? new RawExternLinkTransformer(new RawExternLinkParser(), $trans) : null;
+
+foreach ($inputs as $input) {
+    echo Color::BG_LIGHT_RED.$input.Color::NORMAL."\n";
+    $summary = new Summary('test');
+    try {
+        if ($rawTrans !== null) {
+            $result = $rawTrans->process($input, $summary);
+            echo '>>> ['.$result->confidence->name.'] '.$result->wikitext."\n";
+        } else {
+            // Attention : pas de post-processing (sanitize title, etc.)
+            $result = $trans->process($input, $summary);
+            echo '>>> '.$result."\n";
+        }
+    } catch (Throwable $e) {
+        echo '>>> EXCEPTION '.$e->getMessage().' '.$e->getFile().':'.$e->getLine()."\n";
+    }
+
+    if (!empty($summary->memo)) {
+        echo 'memo : '.json_encode($summary->memo, JSON_UNESCAPED_UNICODE)."\n";
+    }
 }
-
-echo '>>> '. $result."\n";
-
-
-
-
-

@@ -190,6 +190,27 @@ services:
         condition: service_healthy
     mem_limit: 256m
 
+  # One-off debug tool, not a production worker : replays a single URL (or, with
+  # --as-ref, a manuscript "[url Libellé]" fragment) through the same crawl/transform
+  # pipeline as extern-ref/last-extern-ref/raw-extern-ref, to see the metadata and the
+  # resulting {{lien web}}/{{article}}/{{lien brisé}} without touching Wikipedia.
+  # Usage : make run service=test-extern-link args="'http://...'"
+  #     or : make run service=test-extern-link args="--as-ref '[http://... Libellé]'"
+  test-extern-link:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    restart: "no"
+    container_name: wikibot-test-extern-link
+    profiles: ["workers"]
+    entrypoint: ["php", "src/Application/CLI/testExternLink.php"]
+    env_file:
+      - .env
+    depends_on:
+      tor:
+        condition: service_healthy
+    mem_limit: 256m
+
   # Ref-separator syntax fix
   # inserts {{,}} between concatenated <ref>/{{Sfn}} tags and
   # trims stray whitespace before <ref>. Batch script like goo-extern: up to

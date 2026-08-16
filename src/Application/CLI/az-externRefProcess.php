@@ -11,17 +11,12 @@ namespace App\Application\CLI;
 
 use App\Application\ExternLink\ExternRefWorker;
 use App\Application\WikiBotConfig;
-use App\Domain\ExternLink\ExternRefTransformer;
-use App\Domain\Publisher\ExternMapper;
-use App\Infrastructure\InternetArchiveAdapter;
-use App\Infrastructure\InternetDomainParser;
 use App\Infrastructure\Monitor\ConsoleLogger;
 use App\Infrastructure\Monitor\NullStats;
 use App\Infrastructure\Monitor\StatsRedis;
 use App\Infrastructure\Monitor\StatsSqlite3;
 use App\Infrastructure\PageList;
 use App\Infrastructure\ServiceFactory;
-use App\Infrastructure\WikiwixAdapter;
 
 /**
  * Traitement synchrone des URL brutes http:// transformée en {lien web} ou {article}
@@ -62,9 +57,9 @@ $botConfig->setTaskName("🔡⁵ Amélioration de références : URL ⇒ "); // 
 
 $botConfig->checkStopOnTalkpageOrException();
 
-// instanciate TorClient now, so there is no CirrusSearch request if there is a Tor connection error
-$torClient = ServiceFactory::getHttpClient(true);
-
+// instanciate the transformer (and its Tor client) now, so there is no CirrusSearch
+// request if there is a Tor connection error
+$transformer = ServiceFactory::getExternRefTransformer($logger, $argv, true, $directRetryEnabled, $respectRobotsTxt);
 
 $list = PageList::FromFile(__DIR__ . '/../../../resources/titles/titles100kan');
 
@@ -83,22 +78,6 @@ if ($list->count() === 0) {
     sleep(120);
     exit(1);
 }
-
-$httpClient = ServiceFactory::getHttpClient();
-$wikiwix = new WikiwixAdapter($httpClient, $logger);
-$internetArchive = new InternetArchiveAdapter($httpClient, $logger);
-
-$domainParser = new InternetDomainParser();
-$transformer = new ExternRefTransformer(
-    new ExternMapper($logger),
-    $torClient,
-    $domainParser,
-    $logger,
-    [$internetArchive, $wikiwix],
-    ServiceFactory::getExternLinkCheckRepository($argv),
-    $directRetryEnabled ? $httpClient : null,
-    $respectRobotsTxt
-);
 
 new ExternRefWorker($botConfig, $wiki, $list, $transformer);
 

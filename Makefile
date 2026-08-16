@@ -82,9 +82,9 @@ src/Application/resources/article_externRef_edited.txt src/Application/resources
 
 # To dry-run a worker instead, replaces the default rather than appending to it, e.g.:
 #   docker compose run --rm extern-ref php src/Application/CLI/externRefProcess.php --dry-run --page="Some Title"
-.PHONY: run # 	Run a one-shot worker for real: make run service=goo-extern|extern-ref|last-extern-ref|raw-extern-ref|existing-ref|fix-typo|ouvrage-scan|ouvrage-complete|ouvrage-edit
+.PHONY: run # 	Run a one-shot worker for real: make run service=goo-extern|extern-ref|last-extern-ref|raw-extern-ref|existing-ref|fix-typo|ouvrage-scan|ouvrage-complete|ouvrage-edit|test-extern-link (add args="'http://...'" for test-extern-link)
 run: src/Infrastructure/resources/google_quota.json src/Infrastructure/resources/google_quota.lock src/Application/resources/article_externRef_edited.txt src/Application/resources/article_rawExternRef_edited.txt src/Application/resources/article_existingRef_edited.txt
-	docker compose run --rm $(service)
+	docker compose run --rm $(service) $(args)
 
 # Deploy loop for a non-stop worker (restart: unless-stopped, e.g. last-extern-ref).
 # `up -d` recreates the container on the freshly built image: SIGTERM first, the worker

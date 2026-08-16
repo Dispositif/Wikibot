@@ -12,15 +12,10 @@ namespace App\Application\CLI;
 use App\Application\ExternLink\ExternRefWorker;
 use App\Application\SignalHandler;
 use App\Application\WikiBotConfig;
-use App\Domain\ExternLink\ExternRefTransformer;
-use App\Domain\Publisher\ExternMapper;
 use App\Infrastructure\CirrusSearch;
-use App\Infrastructure\InternetArchiveAdapter;
-use App\Infrastructure\InternetDomainParser;
 use App\Infrastructure\Monitor\ConsoleLogger;
 use App\Infrastructure\PageList;
 use App\Infrastructure\ServiceFactory;
-use App\Infrastructure\WikiwixAdapter;
 
 /**
  * Traitement synchrone des URL brutes http:// transformée en {lien web} ou {article}
@@ -91,10 +86,6 @@ $list = new PageList($titles);
 echo sprintf(">%d dans liste (%d tirés, %d déjà analysés)\n", $list->count(), count($candidates), count($candidates) - $list->count());
 
 
-$httpClient = ServiceFactory::getHttpClient();
-$wikiwix = new WikiwixAdapter($httpClient, $logger);
-$internetArchive = new InternetArchiveAdapter($httpClient, $logger);
-
 // 2nd pass without Tor when the Tor fetch looks blocked (403/429/503, cf-mitigated,
 // interstitial title/body markers) — on by default, self-identifies honestly (not a
 // fake browser UA) on that direct pass. --no-direct-retry opts back out entirely.
@@ -103,17 +94,7 @@ $internetArchive = new InternetArchiveAdapter($httpClient, $logger);
 $directRetryEnabled = !in_array('--no-direct-retry', $argv, true);
 $respectRobotsTxt = !in_array('--no-robots-check', $argv, true);
 
-$domainParser = new InternetDomainParser();
-$transformer = new ExternRefTransformer(
-    new ExternMapper($logger),
-    ServiceFactory::getHttpClient(true),
-    $domainParser,
-    $logger,
-    [$internetArchive, $wikiwix],
-    ServiceFactory::getExternLinkCheckRepository($argv),
-    $directRetryEnabled ? $httpClient : null,
-    $respectRobotsTxt
-);
+$transformer = ServiceFactory::getExternRefTransformer($logger, $argv, true, $directRetryEnabled, $respectRobotsTxt);
 
 $dryRun = in_array('--dry-run', $argv, true);
 new ExternRefWorker($botConfig, $wiki, $list, $transformer, $dryRun);
