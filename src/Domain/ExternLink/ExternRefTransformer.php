@@ -56,6 +56,8 @@ class ExternRefTransformer implements ExternRefTransformerInterface
 
     protected $config;
     protected ?string $registrableDomain = null;
+    /** full host of the processed URL ("gallica.bnf.fr"), for subdomain-specific config_presse keys */
+    protected ?string $hostname = null;
     protected string $url;
     protected array $publisherData = [];
     protected array $skip_domain = [];
@@ -120,6 +122,7 @@ class ExternRefTransformer implements ExternRefTransformerInterface
             return $url;
         }
         $this->registrableDomain = $this->urlChecker->getRegistrableDomain($url); // hack
+        $this->hostname = strtolower((string) parse_url($url, PHP_URL_HOST)) ?: null;
         if ($this->isSiteBlackListed()) {
             $this->log->debug('Site blacklisted : ' . $this->registrableDomain, ['stats' => 'externref.skip.blacklisted']);
             return $url;
@@ -206,9 +209,16 @@ class ExternRefTransformer implements ExternRefTransformerInterface
 
     protected function isSiteBlackListed(): bool
     {
-        if ($this->registrableDomain && $this->skipSiteBlacklisted && in_array($this->registrableDomain, $this->skip_domain)) {
-            $this->log->notice("Skip web site " . $this->registrableDomain);
-            return true;
+        if (!$this->skipSiteBlacklisted) {
+            return false;
+        }
+        // config_skip_domain.txt holds subdomain entries too ("pop.culture.gouv.fr"), which never
+        // matched while only the registrable domain was compared -- same dead-key issue as config_presse.
+        foreach ($this->getConfigDomainKeys() as $domainKey) {
+            if (in_array($domainKey, $this->skip_domain, true)) {
+                $this->log->notice("Skip web site " . $domainKey);
+                return true;
+            }
         }
         return false;
     }
@@ -220,11 +230,7 @@ class ExternRefTransformer implements ExternRefTransformerInterface
     {
         $this->logDebugConfigWebDomain($domain);
 
-        // todo move to config
-        $this->config[$domain] ??= [];
-        $this->config[$domain] = is_array($this->config[$domain]) ? $this->config[$domain] : [];
-
-        if ($this->config[$domain] === 'deactivated' || isset($this->config[$domain]['deactivated'])) {
+        if (isset($this->getDomainConfig()['deactivated'])) {
             $this->log->info("Domain " . $domain . " disabled\n");
 
             return false;
@@ -235,7 +241,7 @@ class ExternRefTransformer implements ExternRefTransformerInterface
 
     protected function logDebugConfigWebDomain(string $domain): void
     {
-        if (!isset($this->config[$domain])) {
+        if ($this->getDomainConfig() === []) {
             $this->log->debug("Domain " . $domain . " non configuré");
         } else {
             $this->log->debug("Domain " . $domain . " configuré");
@@ -363,21 +369,21 @@ class ExternRefTransformer implements ExternRefTransformerInterface
         if (!$domain) {
             return 'lien web';
         }
-        $this->config[$domain]['template'] ??= [];
+        $configTemplate = $this->getDomainConfig()['template'] ?? null;
         $mapData['DATA-ARTICLE'] ??= false;
 
         if (!empty($mapData['doi'])) {
             $templateName = 'article';
         }
 
-        if ($this->config[$domain]['template'] === 'article'
-            || ($this->config[$domain]['template'] === 'auto' && $mapData['DATA-ARTICLE'])
+        if ($configTemplate === 'article'
+            || ($configTemplate === 'auto' && $mapData['DATA-ARTICLE'])
             || ($mapData['DATA-ARTICLE'] && !empty($this->publisherData['newspaper'][$domain]))
             || $this->isScientificDomain()
         ) {
             $templateName = 'article';
         }
-        if (!isset($templateName) || $this->config[$domain]['template'] === 'lien web') {
+        if (!isset($templateName) || $configTemplate === 'lien web') {
             $templateName = 'lien web';
         }
 

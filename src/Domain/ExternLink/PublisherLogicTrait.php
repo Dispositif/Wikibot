@@ -132,10 +132,65 @@ trait PublisherLogicTrait
         return $this->stripParamValue('stripfromtitle', $mapData, 'titre');
     }
 
+    /**
+     * config_presse.yaml entries that apply to the current URL, merged from least to most
+     * specific host key : "bnf.fr", then "gallica.bnf.fr", then "www.gallica.bnf.fr".
+     *
+     * Lookups used to key on the registrable domain only, so every subdomain entry of the file
+     * was dead config -- "gallica.bnf.fr: site: [[Gallica]]" never fired, and the (wrong)
+     * Wikidata newspaper mapping for the whole of 'bnf.fr' won instead. Same for the file's
+     * other subdomain keys, all flagged "todo vérifier sous-domaine" (link.springer.com,
+     * journals.plos.org, hal.archives-ouvertes.fr, ncbi.nlm.nih.gov...).
+     */
+    protected function getDomainConfig(): array
+    {
+        $domainConfig = [];
+        foreach ($this->getConfigDomainKeys() as $key) {
+            $value = $this->config[$key] ?? null;
+            if (is_array($value)) {
+                $domainConfig = array_merge($domainConfig, $value);
+            } elseif ('deactivated' === $value) {
+                $domainConfig['deactivated'] = true; // shorthand "domain.com: deactivated"
+            }
+        }
+
+        return $domainConfig;
+    }
+
+    /**
+     * Host keys to look up, least specific first.
+     * hostname "www.gallica.bnf.fr" => ['bnf.fr', 'gallica.bnf.fr', 'www.gallica.bnf.fr'].
+     *
+     * @return string[]
+     */
+    protected function getConfigDomainKeys(): array
+    {
+        $registrableDomain = $this->registrableDomain ?? '';
+        $keys = ('' === $registrableDomain) ? [] : [$registrableDomain];
+
+        $hostname = $this->hostname ?? '';
+        if ('' === $hostname || $hostname === $registrableDomain) {
+            return $keys;
+        }
+
+        $subdomains = ('' !== $registrableDomain && str_ends_with($hostname, '.' . $registrableDomain))
+            ? substr($hostname, 0, -strlen('.' . $registrableDomain))
+            : $hostname;
+
+        $key = $registrableDomain;
+        foreach (array_reverse(explode('.', $subdomains)) as $label) {
+            $key = ('' === $key) ? $label : $label . '.' . $key;
+            $keys[] = $key;
+        }
+
+        return $keys;
+    }
+
     protected function replaceSiteForLienWeb(AbstractWikiTemplate $template, array $mapData): array
     {
-        if (isset($this->config[$this->registrableDomain]['site']) && $template instanceof LienWebTemplate) {
-            $mapData['site'] = $this->config[$this->registrableDomain]['site'];
+        $domainConfig = $this->getDomainConfig();
+        if (isset($domainConfig['site']) && $template instanceof LienWebTemplate) {
+            $mapData['site'] = $domainConfig['site'];
             if (empty($mapData['site'])) {
                 unset($mapData['site']);
             }
@@ -145,11 +200,12 @@ trait PublisherLogicTrait
 
     protected function replacePeriodique(array $mapData, AbstractWikiTemplate $template): array
     {
-        if (isset($this->config[$this->registrableDomain]['périodique'])
+        $domainConfig = $this->getDomainConfig();
+        if (isset($domainConfig['périodique'])
             && (!empty($mapData['périodique'])
                 || $template instanceof OuvrageTemplate)
         ) {
-            $mapData['périodique'] = $this->config[$this->registrableDomain]['périodique'];
+            $mapData['périodique'] = $domainConfig['périodique'];
             if (empty($mapData['périodique'])) {
                 unset($mapData['périodique']);
             }
@@ -162,9 +218,10 @@ trait PublisherLogicTrait
      */
     protected function replaceEditor(array $mapData): array
     {
-        if (isset($this->config[$this->registrableDomain]['éditeur'])
+        $domainConfig = $this->getDomainConfig();
+        if (isset($domainConfig['éditeur'])
             && !empty($mapData['éditeur'])) {
-            $mapData['éditeur'] = $this->config[$this->registrableDomain]['éditeur'];
+            $mapData['éditeur'] = $domainConfig['éditeur'];
             if (empty($mapData['éditeur'])) {
                 unset($mapData['éditeur']);
             }
@@ -177,10 +234,10 @@ trait PublisherLogicTrait
      */
     protected function stripParamValue(string $configParam, array $mapData, string $templateParam): array
     {
-        if (!empty($this->config[$this->registrableDomain][$configParam])
-            && isset($this->config[$this->registrableDomain][$configParam])
+        $domainConfig = $this->getDomainConfig();
+        if (!empty($domainConfig[$configParam])
             && !empty($mapData[$templateParam])) {
-            $stripText = $this->config[$this->registrableDomain][$configParam]; // string|array
+            $stripText = $domainConfig[$configParam]; // string|array
             $mapData[$templateParam] = trim(str_ireplace($stripText, '', (string) $mapData[$templateParam]));
             if (empty($mapData[$templateParam])) {
                 unset($mapData[$templateParam]);

@@ -19,6 +19,8 @@ use Normalizer;
  * from Wikidata. SPARQL query source: docs/wikidata.txt, section "scientif journals URL".
  *
  * php src/Application/CLI/wikidataFetchScientific.php
+ * php src/Application/CLI/wikidataFetchScientific.php --from-cache   (rebuild the derived files
+ *     from the data_scientific_journals.json rows already fetched, no WDQS call)
  */
 
 include __DIR__.'/../myBootstrap.php';
@@ -79,30 +81,44 @@ function sitelinkToEncodedTitle(string $sitelinkUrl): string
     return basename((string) parse_url($sitelinkUrl, PHP_URL_PATH));
 }
 
-echo "Fetching Wikidata SPARQL (scientific journals)...\n";
-$bindings = fetchSparqlBindings(SPARQL_SCIENTIFIC);
-echo count($bindings)." rows received.\n";
-
+$fromCache = in_array('--from-cache', $argv, true);
 $domainParser = new InternetDomainParser();
 
-$dataScientificJournals = [];
-foreach ($bindings as $row) {
-    if (empty($row['url']['value']) || empty($row['wiki']['value'])) {
-        continue;
-    }
-    $dataScientificJournals[] = [
-        'itemLabel' => $row['itemLabel']['value'],
-        'url' => $row['url']['value'],
-        'wiki' => sitelinkToEncodedTitle($row['wiki']['value']),
-    ];
-}
+if ($fromCache) {
+    // Rebuild the derived files from the raw rows already on disk : lets a filtering fix be
+    // applied without waiting on WDQS.
+    echo "Reading cached rows from ".DATA_SCIENTIFIC_JOURNALS_JSON."...\n";
+    $dataScientificJournals = json_decode(
+        file_get_contents(DATA_SCIENTIFIC_JOURNALS_JSON),
+        true,
+        512,
+        JSON_THROW_ON_ERROR
+    );
+    echo count($dataScientificJournals)." cached entries.\n";
+} else {
+    echo "Fetching Wikidata SPARQL (scientific journals)...\n";
+    $bindings = fetchSparqlBindings(SPARQL_SCIENTIFIC);
+    echo count($bindings)." rows received.\n";
 
-file_put_contents(
-    DATA_SCIENTIFIC_JOURNALS_JSON,
-    json_encode($dataScientificJournals, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)
-);
-chmod(DATA_SCIENTIFIC_JOURNALS_JSON, 0666);
-echo count($dataScientificJournals)." entries written to ".DATA_SCIENTIFIC_JOURNALS_JSON."\n";
+    $dataScientificJournals = [];
+    foreach ($bindings as $row) {
+        if (empty($row['url']['value']) || empty($row['wiki']['value'])) {
+            continue;
+        }
+        $dataScientificJournals[] = [
+            'itemLabel' => $row['itemLabel']['value'],
+            'url' => $row['url']['value'],
+            'wiki' => sitelinkToEncodedTitle($row['wiki']['value']),
+        ];
+    }
+
+    file_put_contents(
+        DATA_SCIENTIFIC_JOURNALS_JSON,
+        json_encode($dataScientificJournals, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)
+    );
+    chmod(DATA_SCIENTIFIC_JOURNALS_JSON, 0666);
+    echo count($dataScientificJournals)." entries written to ".DATA_SCIENTIFIC_JOURNALS_JSON."\n";
+}
 
 $domains = [];
 foreach ($dataScientificJournals as $entry) {
@@ -111,7 +127,13 @@ foreach ($dataScientificJournals as $entry) {
     } catch (Exception) {
         continue; // unparsable URL
     }
-    if (!empty($domain) && !in_array($domain, InternetDomainParser::GENERIC_HOSTING_DOMAINS, true)) {
+    // A journal scanned on gallica/archive.org doesn't make the archive a scientific domain :
+    // this set forces {{article}} over {{lien web}}, so an aggregator here mislabels every
+    // citation to it. Scholarly portals (jstor, persee, cairn...) are deliberately NOT excluded.
+    if (!empty($domain)
+        && !in_array($domain, InternetDomainParser::GENERIC_HOSTING_DOMAINS, true)
+        && !in_array($domain, InternetDomainParser::ARCHIVE_AGGREGATOR_DOMAINS, true)
+    ) {
         $domains[$domain] = true; // dedupe
     }
 }

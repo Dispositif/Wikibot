@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Application\CLI;
 
+use App\Application\Wikidata\NewspaperDomainMapBuilder;
 use App\Infrastructure\InternetDomainParser;
 use Exception;
 use GuzzleHttp\Client;
@@ -19,6 +20,8 @@ use Normalizer;
  * SPARQL query source: docs/wikidata.txt, section "PRESSE 1415".
  *
  * php src/Application/CLI/wikidataFetchPresse.php
+ * php src/Application/CLI/wikidataFetchPresse.php --from-cache   (rebuild data_newspapers.json
+ *     from the wd_journaux.json rows already fetched, no WDQS call)
  */
 
 include __DIR__.'/../myBootstrap.php';
@@ -80,73 +83,59 @@ function sitelinkToEncodedTitle(string $sitelinkUrl): string
     return basename((string) parse_url($sitelinkUrl, PHP_URL_PATH));
 }
 
-echo "Fetching Wikidata SPARQL (PRESSE)...\n";
-$bindings = fetchSparqlBindings(SPARQL_PRESSE);
-echo count($bindings)." rows received.\n";
+$fromCache = in_array('--from-cache', $argv, true);
 
-$domainParser = new InternetDomainParser();
+if ($fromCache) {
+    // Rebuild data_newspapers.json from the raw rows already on disk : lets a filtering fix
+    // (see NewspaperDomainMapBuilder) be applied without waiting on WDQS.
+    echo "Reading cached rows from ".WD_JOURNAUX_JSON."...\n";
+    $wdJournaux = json_decode(file_get_contents(WD_JOURNAUX_JSON), true, 512, JSON_THROW_ON_ERROR);
+    echo count($wdJournaux)." cached entries.\n";
+} else {
+    echo "Fetching Wikidata SPARQL (PRESSE)...\n";
+    $bindings = fetchSparqlBindings(SPARQL_PRESSE);
+    echo count($bindings)." rows received.\n";
 
-$wdJournaux = [];
-foreach ($bindings as $row) {
-    if (empty($row['url']['value'])) {
-        continue; // no P856 website => no domain to key on
-    }
-    try {
-        $domain = $domainParser->getRegistrableDomainFromURL($row['url']['value']);
-    } catch (Exception) {
-        continue; // unparsable URL
-    }
-    if (empty($domain)) {
-        continue;
-    }
-    if (in_array($domain, InternetDomainParser::GENERIC_HOSTING_DOMAINS, true)) {
-        // A journal's Wikidata website hosted on a shared blog platform would poison
-        // this domain key for every unrelated page hosted there -- see
-        // InternetDomainParser::GENERIC_HOSTING_DOMAINS.
-        continue;
-    }
+    $domainParser = new InternetDomainParser();
 
-    $wdJournaux[] = [
-        'fr' => $row['itemLabel']['value'],
-        'domain' => $domain,
-        'frwiki' => sitelinkToEncodedTitle($row['wp']['value']),
-    ];
-}
-
-file_put_contents(WD_JOURNAUX_JSON, json_encode($wdJournaux, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-chmod(WD_JOURNAUX_JSON, 0666);
-echo count($wdJournaux)." entries written to ".WD_JOURNAUX_JSON."\n";
-
-// Several Wikidata items can share the same P856 (website) URL. When the item picked by the
-// label service has no French label, WD falls back to the raw entity ID (e.g. "Q11148") as
-// itemLabel -- prefer a sibling row with a real label for that domain, and drop domains where
-// none of the rows have one (a bare QID would produce garbage wikitext).
-$candidatesByDomain = [];
-foreach ($wdJournaux as $entry) {
-    $candidatesByDomain[$entry['domain']][] = $entry;
-}
-
-$dataNewspapers = [];
-$skippedNoLabel = 0;
-foreach ($candidatesByDomain as $domain => $candidates) {
-    $chosen = null;
-    foreach ($candidates as $candidate) {
-        if (!preg_match('/^Q\d+$/', $candidate['fr'])) {
-            $chosen = $candidate;
-            break;
+    $wdJournaux = [];
+    foreach ($bindings as $row) {
+        if (empty($row['url']['value'])) {
+            continue; // no P856 website => no domain to key on
         }
-    }
-    if (null === $chosen) {
-        $skippedNoLabel++;
-        continue; // every candidate for this domain is a bare Wikidata ID, no usable label
+        try {
+            $domain = $domainParser->getRegistrableDomainFromURL($row['url']['value']);
+        } catch (Exception) {
+            continue; // unparsable URL
+        }
+        if (empty($domain)) {
+            continue;
+        }
+
+        $wdJournaux[] = [
+            'fr' => $row['itemLabel']['value'],
+            'domain' => $domain,
+            'frwiki' => sitelinkToEncodedTitle($row['wp']['value']),
+        ];
     }
 
-    $dataNewspapers[$domain] = [
-        'fr' => $chosen['fr'],
-        'frwiki' => urldecode(str_replace('_', ' ', $chosen['frwiki'])),
-    ];
+    file_put_contents(WD_JOURNAUX_JSON, json_encode($wdJournaux, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+    chmod(WD_JOURNAUX_JSON, 0666);
+    echo count($wdJournaux)." entries written to ".WD_JOURNAUX_JSON."\n";
 }
+
+// Domains shared by several papers, hosting platforms and archive aggregators are dropped here
+// rather than resolved to an arbitrary winner -- see NewspaperDomainMapBuilder.
+$builder = new NewspaperDomainMapBuilder();
+$dataNewspapers = $builder->build($wdJournaux);
+
+$dropped = $builder->getDroppedDomains();
+asort($dropped);
+foreach ($dropped as $droppedDomain => $reason) {
+    echo "  dropped ".$droppedDomain." : ".$reason."\n";
+}
+echo count($dropped)." domains dropped (pin any of them by hand in config_presse.yaml if needed).\n";
 
 file_put_contents(DATA_NEWSPAPERS_JSON, json_encode($dataNewspapers, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE));
 chmod(DATA_NEWSPAPERS_JSON, 0666);
-echo count($dataNewspapers)." domains written to ".DATA_NEWSPAPERS_JSON." (".$skippedNoLabel." skipped: no French label)\n";
+echo count($dataNewspapers)." domains written to ".DATA_NEWSPAPERS_JSON."\n";

@@ -20,9 +20,17 @@ use Throwable;
 require_once __DIR__.'/../myBootstrap.php';
 
 echo "OPTIONS: --no-tor --no-direct-retry --no-robots-check --db --as-ref\n";
-$options = getopt('', ['no-tor', 'no-direct-retry', 'no-robots-check', 'db', 'as-ref']);
+// Hand-rolled instead of getopt() : getopt() stops at the first non-option argument, so
+// "testExternLink.php 'http://...' --no-tor" silently ignored every flag placed after the URL.
+$arguments = array_slice($argv, 1);
+$options = array_flip(
+    array_map(
+        static fn(string $arg): string => substr($arg, 2),
+        array_filter($arguments, static fn(string $arg): bool => str_starts_with($arg, '--'))
+    )
+);
 $inputs = array_values(array_filter(
-    array_slice($argv, 1),
+    $arguments,
     static fn (string $arg): bool => !str_starts_with($arg, '--')
 ));
 if (empty($inputs)) {

@@ -54,6 +54,55 @@ class InternetDomainParser implements InternetDomainParserInterface
         'github.io',
     ];
 
+    /**
+     * Digital libraries, press archives and bibliographic databases : same poisoning as
+     * GENERIC_HOSTING_DOMAINS, different cause. They host/index content from EVERY publisher,
+     * so a registrable domain here identifies the archive, never the periodical -- yet hundreds
+     * of Wikidata press items use such a URL as their P856 "official website" (a defunct
+     * newspaper has no site of its own, so the editor links its Gallica or RetroNews holdings).
+     *
+     * Incident found live, 2026-08-16 : 153 different newspapers claimed 'bnf.fr', so every
+     * gallica/data/catalogue.bnf.fr citation got site=[[Pariser Zeitung]] (the arbitrary winner).
+     * Same for archive.org => "Ilkka", google.com => "The Register-Guard", retronews.fr (67
+     * claimants) => "Le Petit Parisien".
+     *
+     * Also excluded from the "is this a scientific domain?" set : hosting a scanned journal
+     * doesn't make gallica or archive.org a scholarly publisher, and that set decides
+     * {{article}} vs {{lien web}}. Scholarly PORTALS (jstor, persee, cairn, openedition)
+     * deliberately stay out of this list : they're wrong as a periodical identity but right
+     * as a scientific-domain signal, and the ambiguity rule already drops them from the
+     * newspaper map.
+     */
+    public const ARCHIVE_AGGREGATOR_DOMAINS = [
+        'bnf.fr',
+        'retronews.fr',
+        'archive.org',
+        'hathitrust.org',
+        'loc.gov',
+        'europeana.eu',
+        'google.com',
+        'google.fr',
+        'handle.net',
+        'doi.org',
+        'proquest.com',
+        'umi.com',
+        'serialssolutions.com',
+        'ebscohost.com',
+        'lexisnexis.com',
+        'lexis-nexis.com',
+        'newsbank.com',
+        'pressreader.com',
+        'europresse.com',
+        'oclc.org',
+        'worldcat.org',
+        'issuu.com',
+        'calameo.com',
+        'scribd.com',
+        'wikipedia.org',
+        'wikisource.org',
+        'wikimedia.org',
+    ];
+
     private readonly Rules $rules;
 
     public function __construct()
