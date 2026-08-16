@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace App\Domain\Publisher;
 
 
+use App\Domain\ExternLink\Raw\Hints\FrenchDate;
 use App\Domain\Publisher\Traits\AuthorConverterTrait;
 use App\Domain\Publisher\Traits\MapperConverterTrait;
 use App\Domain\Publisher\Traits\OpenAccessTrait;
@@ -67,7 +68,7 @@ class OpenGraphMapper implements MapperInterface
                 $meta['language'] ??
                 $meta['content-language'] ?? $meta['Content-Language'] ?? $meta['html-lang'] ?? null
             ),
-            'consulté le' => date('d-m-Y'),
+            'consulté le' => FrenchDate::toFrenchText((int) date('j'), (int) date('n'), (int) date('Y')),
             'auteur' => $this->cleanAuthor($this->clean(
                 $meta['og:article:author'] ??
                 $meta['article:author'] ?? $meta['citation_author'] ?? $meta['article:author_name'] ?? null

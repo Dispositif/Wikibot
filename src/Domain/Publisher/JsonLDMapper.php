@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace App\Domain\Publisher;
 
 
+use App\Domain\ExternLink\Raw\Hints\FrenchDate;
 use App\Domain\Publisher\Traits\AuthorConverterTrait;
 use App\Domain\Publisher\Traits\MapperConverterTrait;
 use App\Domain\Publisher\Traits\OpenAccessTrait;
@@ -43,7 +44,7 @@ class JsonLDMapper implements MapperInterface
                 )
             ),
             //'éditeur' => $jsonLD['publisher']['name'] ?? null,
-            'consulté le' => date('d-m-Y'),
+            'consulté le' => FrenchDate::toFrenchText((int) date('j'), (int) date('n'), (int) date('Y')),
             'accès url' => $this->convertURLaccess($jsonLD),
         ];
     }

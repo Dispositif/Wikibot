@@ -429,7 +429,7 @@ class ExistingRefTransformerTest extends TestCase
 
         $get = $this->paramFromSerialized('lien brisé', $result->refContent);
         self::assertSame('20-06-2023', $get('consulté le'), 'old consulté le kept as last-confirmed-alive date');
-        self::assertSame('14-08-2026', $get('brisé le'), 'brisé le is today, not the crawl\'s own now()');
+        self::assertSame('14 août 2026', $get('brisé le'), 'brisé le is today, not the crawl\'s own now()');
     }
 
     public function testPassesUrlAndSummaryThroughToTheCrawlPipelineUnchanged()

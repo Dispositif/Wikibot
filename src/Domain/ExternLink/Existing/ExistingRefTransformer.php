@@ -11,6 +11,7 @@ namespace App\Domain\ExternLink\Existing;
 
 use App\Domain\ExternLink\DeadLinkTransformer;
 use App\Domain\ExternLink\ExternRefTransformerInterface;
+use App\Domain\ExternLink\Raw\Hints\FrenchDate;
 use App\Domain\ExternLink\Raw\MergeConfidence;
 use App\Domain\Models\Summary;
 use App\Domain\Models\Wiki\AbstractWikiTemplate;
@@ -225,7 +226,7 @@ final class ExistingRefTransformer
         }
         if ($hasOldConsulteLe) {
             $data['consulté le'] = $existingData['consulté le'];
-            $data['brisé le'] = $now->format('d-m-Y');
+            $data['brisé le'] = FrenchDate::toFrenchText((int) $now->format('j'), (int) $now->format('n'), (int) $now->format('Y'));
         }
 
         return $this->freshTemplate($crawledTemplateName, $data)->serialize(true);
@@ -255,7 +256,8 @@ final class ExistingRefTransformer
         $crawledData = $this->stripRedundantAuthorFields($crawledData, $existingData);
 
         $merged = array_merge($crawledData, array_filter($existingData, static fn ($v) => $v !== ''));
-        $merged['consulté le'] = $crawledData['consulté le'] ?? date('d-m-Y');
+        $merged['consulté le'] = $crawledData['consulté le']
+            ?? FrenchDate::toFrenchText((int) date('j'), (int) date('n'), (int) date('Y'));
 
         $template = $this->freshTemplate($existingTemplateName, $merged);
         $optimizer = OptimizerFactory::fromTemplate($template);

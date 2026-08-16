@@ -11,6 +11,7 @@ namespace App\Domain\Tests\ExternLink;
 
 use App\Domain\ExternLink\DeadLinkTransformer;
 use App\Domain\ExternLink\ExternRefTransformerInterface;
+use App\Domain\ExternLink\Raw\Hints\FrenchDate;
 use App\Domain\InfrastructurePorts\DeadlinkArchiverInterface;
 use App\Domain\InfrastructurePorts\InternetDomainParserInterface;
 use App\Domain\Models\Summary;
@@ -25,7 +26,7 @@ class DeadLinkTransformerTest extends TestCase
         $now = new \DateTimeImmutable();
 
         $this::assertSame(
-            sprintf('{{Lien brisé |url= bla |titre=bla |brisé le=%s}}', $now->format('d-m-Y')),
+            sprintf('{{Lien brisé |url= bla |titre=bla |brisé le=%s}}', FrenchDate::toFrenchText((int) $now->format('j'), (int) $now->format('n'), (int) $now->format('Y'))),
             $transformer->formatFromUrl('bla', $now)
         );
     }
@@ -195,7 +196,7 @@ class DeadLinkTransformerTest extends TestCase
         $now = new \DateTimeImmutable();
 
         $this::assertSame(
-            sprintf('{{Lien brisé |url= bla |titre=bla |brisé le=%s |note=HTTP 500}}', $now->format('d-m-Y')),
+            sprintf('{{Lien brisé |url= bla |titre=bla |brisé le=%s |note=HTTP 500}}', FrenchDate::toFrenchText((int) $now->format('j'), (int) $now->format('n'), (int) $now->format('Y'))),
             (new DeadLinkTransformer())->formatFromUrl('bla', $now, null, 500)
         );
     }

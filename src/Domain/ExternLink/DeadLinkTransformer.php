@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace App\Domain\ExternLink;
 
+use App\Domain\ExternLink\Raw\Hints\FrenchDate;
 use App\Domain\InfrastructurePorts\DeadlinkArchiverInterface;
 use App\Domain\InfrastructurePorts\InternetDomainParserInterface;
 use App\Domain\Models\Summary;
@@ -169,7 +170,7 @@ class DeadLinkTransformer
             '{{Lien brisé |url= %s |titre=%s |brisé le=%s%s}}',
             $this->stripWebArchivePrefix($url),
             $this->generateTitleFromURLText($url),
-            $now->format('d-m-Y'),
+            FrenchDate::toFrenchText((int) $now->format('j'), (int) $now->format('n'), (int) $now->format('Y')),
             $httpStatus !== null ? sprintf(' |note=HTTP %d', $httpStatus) : ''
         );
     }

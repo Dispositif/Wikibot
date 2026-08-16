@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Domain\Transformers;
 
 use App\Domain\Exceptions\QuotaExceededException;
+use App\Domain\ExternLink\Raw\Hints\FrenchDate;
 use App\Domain\InfrastructurePorts\GoogleApiQuotaInterface;
 use App\Domain\InfrastructurePorts\GoogleBooksInterface;
 use App\Domain\Models\Wiki\OuvrageTemplate;
@@ -162,7 +163,7 @@ class GoogleTransformer
                     '{{lien brisé |url= %s |titre=%s |brisé le=%s}}',
                     $url,
                     'Ouvrage inexistant sur Google Books',
-                    date('d-m-Y')
+                    FrenchDate::toFrenchText((int) date('j'), (int) date('n'), (int) date('Y'))
                 );
             }
             throw $e;
@@ -241,7 +242,7 @@ class GoogleTransformer
         // Generate wiki-template {ouvrage}
         $ouvrage = WikiTemplateFactory::create('ouvrage');
         $ouvrage->hydrate($data);
-        $ouvrage->setParam('consulté le', date('d-m-Y'));
+        $ouvrage->setParam('consulté le', FrenchDate::toFrenchText((int) date('j'), (int) date('n'), (int) date('Y')));
 
         // cache
         $this->cacheOuvrageTemplate[$cacheKey] = clone $ouvrage;
