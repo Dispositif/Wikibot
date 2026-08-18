@@ -298,6 +298,16 @@ class ExternRefTransformer implements ExternRefTransformerInterface
             return true;
         }
 
+        // A network-level failure (no HTTP response at all : DNS, empty reply, proxy
+        // tunnel...) is ambiguous over Tor — it may be a genuinely dead site, or just
+        // this Tor circuit/exit node failing independently of the target (observed
+        // 2026-08-18 on maitron.fr : Tor got "cURL 52 Empty reply", a direct fetch of
+        // the same URL succeeded instantly). Worth a direct-retry confirmation before
+        // ExternHttpErrorLogic gets to treat it as dead.
+        if ($fetch->errorKind !== null) {
+            return true;
+        }
+
         if (!$fetch->isSuccess()) {
             return false;
         }
