@@ -35,7 +35,13 @@ class MapperConverterTraitTest extends TestCase
                 'author of <span style="color : orange;"><i>Ancillary Justice</i></span> (Imperial Radch 1 )',
                 'author of Ancillary Justice (Imperial Radch 1 )',
             ],
-            ['{{bla}}','bla']
+            ['{{bla}}','bla'],
+            ['null', null],
+            ['undefined', null],
+            ['null null', null],
+            ['undefined undefined', null],
+            ['NULL', null],
+            ['Undefined Undefined', null],
         ];
     }
 

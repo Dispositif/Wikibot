@@ -91,8 +91,15 @@ trait MapperConverterTrait
 
         $str = html_entity_decode($str);
         $str = strip_tags($str);
+        $str = trim($str);
 
-        return trim($str);
+        // Crawled JS-rendered pages sometimes bake literal "undefined"/"null" placeholders
+        // into their own metadata (e.g. author = firstName + ' ' + lastName, both unset).
+        if (preg_match('#^(null|undefined)( \1)?$#i', $str)) {
+            return null;
+        }
+
+        return $str;
     }
 
     protected function stripEmailAdress(?string $str = null): ?string
