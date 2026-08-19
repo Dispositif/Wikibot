@@ -342,7 +342,13 @@ class ExternRefTransformer implements ExternRefTransformerInterface
 
     private function extractRawTitle(?string $html): ?string
     {
-        if ($html !== null && preg_match('#<title>([^<]+)</title>#i', $html, $matches)) {
+        if ($html === null) {
+            return null;
+        }
+        // Comments stripped first : same reasoning as ExternPage::parseHtmlTitle() (a
+        // stale commented-out <title> would otherwise win over the real active one).
+        $html = (string) preg_replace('#<!--.*?-->#s', '', $html);
+        if (preg_match('#<title>([^<]+)</title>#i', $html, $matches)) {
             return trim(strip_tags($matches[1]));
         }
 

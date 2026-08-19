@@ -190,6 +190,31 @@ services:
         condition: service_healthy
     mem_limit: 256m
 
+  # Mass campaign on already-existing {{Lien brisé}} : re-attempts a web archive
+  # (Internet Archive, then Wikiwix) on each one's url= via LienBriseArchiveFixer
+  # (src/Domain/ExternLink/LienBriseArchiveFixer.php), reused from
+  # DeadLinkTransformer::formatFromUrl() -- the same logic the live crawl workers use
+  # when a URL first goes dead, applied here to links already tagged broken. Only
+  # touches archive-finding, no live re-crawl of the original (now-dead) URL -- see
+  # fixDeadLinkNetworkFailureBug.php for that narrower, one-off concern. No Tor : unlike
+  # extern-ref/existing-ref, nothing here crawls an arbitrary third-party site directly --
+  # only the archivers' own APIs (CDX, Wikiwix handshake) and the archive snapshot itself,
+  # all fetched via the direct client (see ServiceFactory::getDeadLinkTransformer()). Own
+  # dedup file, own CirrusSearch query, own JOURNAL_TASK, independent of extern-ref/existing-ref.
+  dead-link-archive:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    restart: "no"
+    container_name: wikibot-dead-link-archive
+    profiles: ["workers"]
+    command: ["php", "src/Application/CLI/lienBriseArchiveProcess.php"]
+    env_file:
+      - .env
+    volumes:
+      - ./src/Application/resources/article_lienBriseArchive_edited.txt:/app/src/Application/resources/article_lienBriseArchive_edited.txt
+    mem_limit: 256m
+
   # One-off debug tool, not a production worker : replays a single URL (or, with
   # --as-ref, a manuscript "[url Libellé]" fragment) through the same crawl/transform
   # pipeline as extern-ref/last-extern-ref/raw-extern-ref, to see the metadata and the

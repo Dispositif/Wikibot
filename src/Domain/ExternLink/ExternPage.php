@@ -206,11 +206,14 @@ class ExternPage
     }
 
     /**
-     * Extract webpage title from HTML <title>
-     * not foolproof : example <!-- <title>bla</title> -->
+     * Extract webpage title from HTML <title>.
+     * Comments stripped first : a stale <title> left commented-out after a CMS content
+     * update (ex: mom.fr/mecquenem, reported 2026-08-19) would otherwise be matched
+     * before the real active one, since the regex below takes the first occurrence.
      */
     private function parseHtmlTitle(string $html): ?string
     {
+        $html = (string) preg_replace('#<!--.*?-->#s', '', $html);
         if (preg_match('#<title>([^<]+)</title>#i', $html, $matches)) {
             return trim(strip_tags($matches[1]));
         }

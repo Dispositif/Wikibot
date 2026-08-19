@@ -144,7 +144,11 @@ class DeadLinkTransformer
         return $this->externRefTransformer->process($dto->getArchiveUrl(), $summary, $options);
     }
 
-    protected function generateTitleFromURLText(string $url): string
+    /**
+     * Public : also used by LienBriseArchiveFixer to recognize its own placeholder
+     * (vs. a human-curated titre worth preserving) on an existing {{Lien brisé}}.
+     */
+    public function generateTitleFromURLText(string $url): string
     {
         $text = str_replace(['https://', 'http://', 'www.'], '', $url);
         if (strlen($text) > 30) {

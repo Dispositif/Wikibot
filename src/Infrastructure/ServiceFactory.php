@@ -11,6 +11,7 @@ namespace App\Infrastructure;
 
 use App\Application\InfrastructurePorts\HttpClientInterface;
 use App\Application\WikiPageAction;
+use App\Domain\ExternLink\DeadLinkTransformer;
 use App\Domain\ExternLink\ExternRefTransformer;
 use App\Domain\ExternLink\WikiwixContentResolver;
 use App\Domain\InfrastructurePorts\BotEditJournalInterface;
@@ -180,6 +181,27 @@ class ServiceFactory
             // the requesting IP, and there is nothing to anonymize towards an archive
             // service crawled under agreement
             new WikiwixContentResolver($directClient, $log)
+        );
+    }
+
+    /**
+     * Same archiver wiring/order as getExternRefTransformer() (Internet Archive, then
+     * Wikiwix — see that method's docblock), but standalone : for callers that only need
+     * to re-attempt an archive for a URL already known dead (e.g. an existing {{Lien
+     * brisé}}), not the full live-crawl-then-fallback pipeline. DeadLinkTransformer
+     * self-constructs its own minimal ExternRefTransformer (no Tor, no archivers, no
+     * direct-retry) to extract title/author/date from the archive snapshot itself — see
+     * DeadLinkTransformer::externRefProcessOnArchive().
+     */
+    public static function getDeadLinkTransformer(LoggerInterface $log): DeadLinkTransformer
+    {
+        $directClient = self::getHttpClient();
+
+        return new DeadLinkTransformer(
+            [new InternetArchiveAdapter($directClient, $log), new WikiwixAdapter($directClient, $log)],
+            new InternetDomainParser(),
+            null,
+            $log
         );
     }
 

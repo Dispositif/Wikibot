@@ -77,13 +77,13 @@ src/Infrastructure/resources/google_quota.lock:
 # read them with file() on startup) bind-mounted individually in compose.yaml -- must
 # exist as plain files BEFORE `docker compose run` on a fresh checkout, else Docker
 # bind-mounts a directory in their place (2026-08-14 : bit existing-ref in prod).
-src/Application/resources/article_externRef_edited.txt src/Application/resources/article_rawExternRef_edited.txt src/Application/resources/article_existingRef_edited.txt:
+src/Application/resources/article_externRef_edited.txt src/Application/resources/article_rawExternRef_edited.txt src/Application/resources/article_existingRef_edited.txt src/Application/resources/article_lienBriseArchive_edited.txt:
 	touch $@
 
 # To dry-run a worker instead, replaces the default rather than appending to it, e.g.:
 #   docker compose run --rm extern-ref php src/Application/CLI/externRefProcess.php --dry-run --page="Some Title"
-.PHONY: run # 	Run a one-shot worker for real: make run service=goo-extern|extern-ref|last-extern-ref|raw-extern-ref|existing-ref|fix-typo|ouvrage-scan|ouvrage-complete|ouvrage-edit|test-extern-link (add args="'http://...'" for test-extern-link)
-run: src/Infrastructure/resources/google_quota.json src/Infrastructure/resources/google_quota.lock src/Application/resources/article_externRef_edited.txt src/Application/resources/article_rawExternRef_edited.txt src/Application/resources/article_existingRef_edited.txt
+.PHONY: run # 	Run a one-shot worker for real: make run service=goo-extern|extern-ref|last-extern-ref|raw-extern-ref|existing-ref|dead-link-archive|fix-typo|ouvrage-scan|ouvrage-complete|ouvrage-edit|test-extern-link (add args="'http://...'" for test-extern-link)
+run: src/Infrastructure/resources/google_quota.json src/Infrastructure/resources/google_quota.lock src/Application/resources/article_externRef_edited.txt src/Application/resources/article_rawExternRef_edited.txt src/Application/resources/article_existingRef_edited.txt src/Application/resources/article_lienBriseArchive_edited.txt
 	docker compose run --rm $(service) $(args)
 
 # Deploy loop for a non-stop worker (restart: unless-stopped, e.g. last-extern-ref).
@@ -92,7 +92,7 @@ run: src/Infrastructure/resources/google_quota.json src/Infrastructure/resources
 # hand, and no window where two workers overlap.
 # NOT for one-shot workers -- those pick up a new image on their next `make run`.
 .PHONY: deploy # 	Rebuild + restart a non-stop worker gracefully: make deploy service=last-extern-ref
-deploy: src/Infrastructure/resources/google_quota.json src/Infrastructure/resources/google_quota.lock src/Application/resources/article_externRef_edited.txt src/Application/resources/article_rawExternRef_edited.txt src/Application/resources/article_existingRef_edited.txt
+deploy: src/Infrastructure/resources/google_quota.json src/Infrastructure/resources/google_quota.lock src/Application/resources/article_externRef_edited.txt src/Application/resources/article_rawExternRef_edited.txt src/Application/resources/article_existingRef_edited.txt src/Application/resources/article_lienBriseArchive_edited.txt
 	docker compose build $(service)
 	docker compose --profile workers up -d $(service)
 
