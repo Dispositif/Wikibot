@@ -28,6 +28,15 @@ PATHS=(
   src/Application/resources/phrases_voteAdmin_pour.txt
   src/Application/resources/polarity-PDDpour.txt
   src/Application/resources/polarity-PDDcontre.txt
+  # Gitignored press/journal routing data. config_presse.yaml is hand-curated with NO way to
+  # regenerate it; the others come from Wikidata (wikidataFetch*.php) but a fetch replays
+  # today's Wikidata, not the filtered state a given deployment was running.
+  src/Domain/resources/config_presse.yaml
+  src/Domain/resources/data_newspapers.json
+  src/Domain/resources/data_scientific_domain.json
+  src/Domain/resources/data_scientific_wiki.json
+  src/Application/resources/wd_journaux.json
+  src/Domain/resources/data_scientific_journals.json
   .env
   .env.codexbot2
   .env.ironie
