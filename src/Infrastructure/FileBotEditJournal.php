@@ -86,6 +86,36 @@ class FileBotEditJournal implements BotEditJournalInterface
         @file_put_contents($this->editionsFilePath, $line . PHP_EOL, FILE_APPEND);
     }
 
+    /**
+     * Only ever sees this instance's own task/file (see class docblock) : $tasks values
+     * other than the one this instance was constructed for are silently absent from the
+     * result, same "not really multi-task" limitation as every other method here.
+     */
+    public function getEditedPages(array $tasks, ?DateTimeImmutable $since = null): array
+    {
+        $lines = @file($this->editionsFilePath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        if ($lines === false) {
+            return [];
+        }
+
+        $rows = [];
+        foreach ($lines as $line) {
+            // '%s | %s | %s' from recordEdit() above : date | task | page
+            $parts = array_map('trim', explode('|', $line, 3));
+            if (count($parts) !== 3 || !in_array($parts[1], $tasks, true)) {
+                continue;
+            }
+            if (null !== $since && $parts[0] < $since->format('Y-m-d H:i:s')) {
+                continue;
+            }
+            $rows[] = ['page' => $parts[2], 'task' => $parts[1], 'revid' => null, 'edited_at' => $parts[0]];
+        }
+
+        usort($rows, static fn(array $a, array $b): int => $b['edited_at'] <=> $a['edited_at']);
+
+        return $rows;
+    }
+
     /** @return array<string, true> */
     private function loadAnalyzed(): array
     {

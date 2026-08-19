@@ -98,4 +98,22 @@ class BotEditJournalAdapter implements BotEditJournalInterface
             ]
         );
     }
+
+    public function getEditedPages(array $tasks, ?DateTimeImmutable $since = null): array
+    {
+        if ($tasks === []) {
+            return [];
+        }
+
+        $query = 'SELECT page, task, revid, edited_at FROM ' . self::TABLE_EDIT
+            . ' WHERE task IN (:tasks)';
+        $params = ['tasks' => $tasks];
+        if (null !== $since) {
+            $query .= ' AND edited_at >= :since';
+            $params['since'] = $since->format('Y-m-d H:i:s');
+        }
+        $query .= ' ORDER BY edited_at DESC';
+
+        return $this->db->fetchRowMany($query, $params) ?? [];
+    }
 }

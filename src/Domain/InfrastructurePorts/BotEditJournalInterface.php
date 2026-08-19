@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace App\Domain\InfrastructurePorts;
 
+use DateTimeImmutable;
+
 /**
  * Bot's own analysis/edit journal — replaces the per-worker flat files
  * (article_edited.txt, article_externRef_edited.txt, gooBot_edited.txt) that were read
@@ -44,4 +46,17 @@ interface BotEditJournalInterface
     public function forgetAnalyzed(string $page, string $task): void;
 
     public function recordEdit(string $page, string $task, ?int $revid = null): void;
+
+    /**
+     * "every page the extern-ref pipeline actually touched" (see class docblock) — what a
+     * correction script selects against : e.g. all pages a given task edited since a bug was
+     * introduced, to replay/fix them instead of re-sweeping the whole of Wikipedia.
+     *
+     * @param string[] $tasks
+     *
+     * @return array<array{page: string, task: string, revid: ?int, edited_at: string}> one row
+     *              per bot_edit entry (a page edited twice by the same task appears twice),
+     *              most recent first
+     */
+    public function getEditedPages(array $tasks, ?DateTimeImmutable $since = null): array;
 }
