@@ -240,7 +240,7 @@ services:
     profiles: ["workers"]
     command: ["php", "src/Application/CLI/ouvrageCompleteProcess.php"]
     env_file:
-      - .env.zizibot
+      - .env
     volumes:
       - ./src/Infrastructure/resources:/app/src/Infrastructure/resources
     depends_on:
@@ -258,7 +258,7 @@ services:
     profiles: ["workers"]
     command: ["php", "src/Application/CLI/ouvrageEditProcess.php"]
     env_file:
-      - .env.zizibot
+      - .env.codexbot2
     depends_on:
       mysql:
         condition: service_healthy
@@ -280,7 +280,7 @@ services:
     profiles: ["workers"]
     command: ["php", "src/Application/CLI/ouvrageScanProcess.php"]
     env_file:
-      - .env.zizibot
+      - .env
     depends_on:
       mysql:
         condition: service_healthy
@@ -315,7 +315,7 @@ services:
     profiles: ["workers"]
     command: ["php", "src/Application/CLI/recentChangeScanProcess.php"]
     env_file:
-      - .env.zizibot
+      - .env
     depends_on:
       mysql:
         condition: service_healthy
