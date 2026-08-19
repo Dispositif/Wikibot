@@ -25,6 +25,17 @@ use Throwable;
  */
 class RobotsTxtChecker
 {
+    /**
+     * Hosts (registrable domain, subdomains included) crawled under an explicit agreement
+     * with the site, where robots.txt doesn't apply to this bot.
+     *
+     * wikiwix.com : Wikiwix archives fr.wikipedia's external links for the Wikimedia
+     * projects, and its archive.wikiwix.com host serves a blanket "Disallow :/" — obeying
+     * it would mean never reading back a single archived snapshot. Crawl permission
+     * confirmed by the bot operator (2026-08-19).
+     */
+    public const AGREED_CRAWL_DOMAINS = ['wikiwix.com'];
+
     /** @var array<string, list<array{type: string, pattern: string}>> host => rules for the matched group */
     private array $cache = [];
 
@@ -38,6 +49,10 @@ class RobotsTxtChecker
 
     public function isAllowed(string $url): bool
     {
+        if ($this->hasAgreedCrawlPermission($url)) {
+            return true;
+        }
+
         $host = parse_url($url, PHP_URL_SCHEME) . '://' . parse_url($url, PHP_URL_HOST);
         $path = parse_url($url, PHP_URL_PATH) ?: '/';
         $query = parse_url($url, PHP_URL_QUERY);
@@ -50,6 +65,24 @@ class RobotsTxtChecker
         }
 
         return $this->pathAllowed($path, $this->cache[$host]);
+    }
+
+    private function hasAgreedCrawlPermission(string $url): bool
+    {
+        $host = strtolower((string)parse_url($url, PHP_URL_HOST));
+        if ($host === '') {
+            return false;
+        }
+
+        foreach (self::AGREED_CRAWL_DOMAINS as $domain) {
+            if ($host === $domain || str_ends_with($host, '.' . $domain)) {
+                $this->log->debug('robots.txt skipped, crawl agreed with ' . $domain . ' : ' . $url);
+
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

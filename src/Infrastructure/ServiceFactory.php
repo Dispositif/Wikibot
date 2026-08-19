@@ -12,6 +12,7 @@ namespace App\Infrastructure;
 use App\Application\InfrastructurePorts\HttpClientInterface;
 use App\Application\WikiPageAction;
 use App\Domain\ExternLink\ExternRefTransformer;
+use App\Domain\ExternLink\WikiwixContentResolver;
 use App\Domain\InfrastructurePorts\BotEditJournalInterface;
 use App\Domain\InfrastructurePorts\ExternLinkCheckRepositoryInterface;
 use App\Domain\Publisher\ExternMapper;
@@ -174,7 +175,11 @@ class ServiceFactory
             [new InternetArchiveAdapter($directClient, $log), new WikiwixAdapter($directClient, $log)],
             self::getExternLinkCheckRepository($argv),
             $directRetryEnabled ? $directClient : null,
-            $respectRobotsTxt
+            $respectRobotsTxt,
+            // never over Tor, like the archivers above : the handshake's token is tied to
+            // the requesting IP, and there is nothing to anonymize towards an archive
+            // service crawled under agreement
+            new WikiwixContentResolver($directClient, $log)
         );
     }
 

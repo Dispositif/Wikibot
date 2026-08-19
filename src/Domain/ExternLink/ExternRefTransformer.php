@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Domain\ExternLink;
 
 use App\Application\InfrastructurePorts\HttpClientInterface;
+use App\Domain\ExternLink\Validators\ArchiveNoContentValidator;
 use App\Domain\ExternLink\Validators\InterstitialPageValidator;
 use App\Domain\ExternLink\Validators\LinkGateInterface;
 use App\Domain\ExternLink\Validators\RobotNoIndexValidator;
@@ -69,6 +70,7 @@ class ExternRefTransformer implements ExternRefTransformerInterface
     private readonly CheckURL $urlChecker;
     private readonly DeadLinkTransformer $deadLinkTransformer;
     private readonly ?RobotsTxtChecker $robotsTxtChecker;
+    private readonly WikiwixContentResolver $wikiwixContentResolver;
 
     /**
      * @param DeadlinkArchiverInterface[] $deadlinkArchivers
@@ -90,8 +92,13 @@ class ExternRefTransformer implements ExternRefTransformerInterface
         // disallows), on by default. Workers expose a --no-robots-check opt-out (e.g.
         // for debugging a specific URL). See audits/synthese-anti-bot-crawling-tor-2026-08.md
         private readonly bool $respectRobotsTxt = true,
+        // Wikiwix only serves its archived pages behind a token handshake since its SPA
+        // migration : without this the crawl lands on the JS shell and no citation can be
+        // built at all (see WikiwixContentResolver / ArchiveNoContentValidator).
+        ?WikiwixContentResolver $wikiwixContentResolver = null,
     )
     {
+        $this->wikiwixContentResolver = $wikiwixContentResolver ?? new WikiwixContentResolver($this->httpClient, $log);
         $this->importConfigAndData();
         $this->deadLinkTransformer = new DeadLinkTransformer($deadlinkArchivers, $domainParser, null, $log);
         $this->externHttpErrorLogic = new ExternHttpErrorLogic($this->deadLinkTransformer, $log, $this->linkCheckRepository);
@@ -111,8 +118,9 @@ class ExternRefTransformer implements ExternRefTransformerInterface
      */
     public function process(string $url, Summary $summary = new Summary(), array $options = []): string
     {
-        $this->url = $url;
         $this->options = $options; // used only to pass RegistrableDomain of archived deadlink, or pageTitle
+        $url = $this->prepareWikiwixUrl($url);
+        $this->url = $url;
         // pageTitle absent (e.g. the recursive call DeadLinkTransformer makes on an archive
         // URL) => no ExternLinkCheckRepository persistence : a failure without a citing
         // page to go back to isn't actionable, see docs/audit-gestion-erreurs-crawl-2026-08.md §9.6.
@@ -144,17 +152,26 @@ class ExternRefTransformer implements ExternRefTransformerInterface
         }
 
         sleep(self::HTTP_REQUEST_LOOP_DELAY);
-        $fetch = $this->fetchWithOptionalDirectRetry($url);
+        // crawled URL != published URL on Wikiwix : the |url= reader-facing viewer page
+        // only carries the archived content behind the handshake resolved here
+        $crawledUrl = $this->resolveCrawledUrl($url);
+        $fetch = $this->fetchWithOptionalDirectRetry($crawledUrl);
         if (!$fetch->isSuccess()) {
             return $this->externHttpErrorLogic->manageByFetchResult($fetch, $this->registrableDomain, $pageTitle, $summary);
         }
 
-        $this->externalPage = (new ExternPageFactory($this->httpClient, $this->log))->fromFetchResult($url, $fetch, $this->domainParser);
+        $this->externalPage = (new ExternPageFactory($this->httpClient, $this->log))->fromFetchResult($crawledUrl, $fetch, $this->domainParser);
         $pageData = $this->externalPage->getData();
         $this->log->debug('metaData', $pageData);
 
         if ($this->emptyPageData($pageData, $url)) {
             $this->log->debug('Empty page data', ['stats' => 'externref.skip.emptyPageData']);
+            return $url;
+        }
+
+        // the archive answered, but with its own viewer shell or a "never archived" page :
+        // its metadata describes the archive service, not the source (ArchiveNoContentValidator)
+        if ($this->runGate(new ArchiveNoContentValidator($pageData, $url, $fetch->body, $this->log)) === LinkVerdict::KeepUrlAsIs) {
             return $url;
         }
 
@@ -269,6 +286,11 @@ class ExternRefTransformer implements ExternRefTransformerInterface
      */
     private function fetchWithOptionalDirectRetry(string $url): FetchResult
     {
+        if (WikiwixUrl::isWikiwixUrl($url)) {
+            // Wikiwix is never crawled over Tor (same rule as the archiver adapters, which
+            return (new ExternPageFactory($this->directRetryClient ?? $this->httpClient, $this->log))->fetch($url);
+        }
+
         $fetch = (new ExternPageFactory($this->httpClient, $this->log))->fetch($url, getenv('FAKE_USER_AGENT') ?: null);
 
         if ($this->directRetryClient === null || !$this->looksBlocked($fetch)) {
@@ -325,6 +347,70 @@ class ExternRefTransformer implements ExternRefTransformerInterface
         }
 
         return null;
+    }
+
+    /**
+     * A Wikiwix cache URL, whether found as-is in the article or handed over by
+     * DeadLinkTransformer :
+     *  - return its HTTPS canonical form, for the reader's security : the plain-HTTP
+     *    flavours are served as-is by Wikiwix, no redirect (checked 2026-08-19), so
+     *    nothing upgrades them once published ;
+     *  - remember the archived site, so correctSiteViaWebarchiver() can write
+     *    "ign.fr via [[Wikiwix]]" instead of the bare "[[Wikiwix]]" config_presse maps
+     *    the wikiwix.com domain to. DeadLinkTransformer already passes
+     *    'originalRegistrableDomain' on its own recursive call ; it's only derived from
+     *    the URL itself when it doesn't.
+     *
+     * This is the READER-facing URL (what lands in |url=). The crawl goes one step
+     * further, through resolveCrawledUrl()/WikiwixContentResolver, since the viewer page
+     * itself carries no archived content any more. Both only reach Wikiwix at all because
+     * RobotsTxtChecker::AGREED_CRAWL_DOMAINS exempts wikiwix.com : archive.wikiwix.com
+     * answers "Disallow :/" to everyone, unlike wikiwix.com which allows everything.
+     */
+    protected function prepareWikiwixUrl(string $url): string
+    {
+        if (!WikiwixUrl::isWikiwixUrl($url)) {
+            return $url;
+        }
+
+        $originalHost = WikiwixUrl::extractOriginalHost($url);
+        if ($originalHost !== null && empty($this->options['originalRegistrableDomain'])) {
+            $this->options['originalHostname'] = $originalHost;
+            $this->options['originalRegistrableDomain'] = $this->registrableDomainOfHost($originalHost) ?? $originalHost;
+        }
+
+        $secureUrl = WikiwixUrl::toSecureUrl($url);
+        if ($secureUrl !== $url) {
+            $this->log->debug(
+                'Wikiwix URL published as HTTPS : ' . $secureUrl,
+                ['stats' => 'externref.wikiwix.httpsUpgrade']
+            );
+        }
+
+        return $secureUrl;
+    }
+
+    /**
+     * Wikiwix's archived HTML lives behind a token handshake, everything else is crawled
+     * where it stands. A failed handshake falls back to the plain URL : the crawl then
+     * lands on the JS shell, which ArchiveNoContentValidator turns into a no-op.
+     */
+    protected function resolveCrawledUrl(string $url): string
+    {
+        if (!WikiwixUrl::isWikiwixUrl($url)) {
+            return $url;
+        }
+
+        return $this->wikiwixContentResolver->resolveContentUrl($url) ?? $url;
+    }
+
+    private function registrableDomainOfHost(string $host): ?string
+    {
+        try {
+            return $this->domainParser->getRegistrableDomainFromURL('http://' . $host . '/');
+        } catch (Throwable) {
+            return null;
+        }
     }
 
     // stay
@@ -447,11 +533,28 @@ class ExternRefTransformer implements ExternRefTransformerInterface
         return $mapData;
     }
 
+    /**
+     * On a webarchive URL, |site= otherwise names the archiver alone ("[[Wikiwix]]"), which
+     * tells the reader nothing about where the content comes from : prefix it with the
+     * archived site, wikified when config_presse/Wikidata know it ("[[Gallica]] via
+     * [[Wikiwix]]"), bare domain otherwise ("ign.fr via [[Wikiwix]]").
+     */
     protected function correctSiteViaWebarchiver(array $mapData): array
     {
-        if (!empty($this->options['originalRegistrableDomain']) && $mapData['site']) {
-            $mapData['site'] = $this->options['originalRegistrableDomain'] . ' via ' . $mapData['site'];
+        $originalRegistrableDomain = $this->options['originalRegistrableDomain'] ?? null;
+        if (empty($originalRegistrableDomain) || empty($mapData['site'])) {
+            return $mapData;
         }
+        if (str_contains((string)$mapData['site'], ' via ')) {
+            return $mapData; // already "source via archiver"
+        }
+
+        $originalSite = $this->findWikifiedSiteName(
+            $originalRegistrableDomain,
+            $this->options['originalHostname'] ?? ''
+        ) ?? $originalRegistrableDomain;
+
+        $mapData['site'] = $originalSite . ' via ' . $mapData['site'];
 
         return $mapData;
     }

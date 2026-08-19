@@ -51,6 +51,28 @@ class RobotsTxtCheckerTest extends TestCase
         $this::assertTrue($checker->isAllowed('https://example.com/page'));
     }
 
+    /**
+     * Crawl agreed with Wikiwix, whose archive host disallows everyone — see
+     * RobotsTxtChecker::AGREED_CRAWL_DOMAINS. No robots.txt request is even made
+     * (the MockHandler queue below stays untouched).
+     */
+    public function testAgreedCrawlDomainIgnoresDisallowAll(): void
+    {
+        $client = $this->clientFor(new MockHandler([new Response(200, [], "User-agent: *\nDisallow :/\n")]));
+        $checker = new RobotsTxtChecker($client, 'CodexBot');
+
+        $this::assertTrue($checker->isAllowed('https://archive.wikiwix.com/cache/index2.php?url=http://x.fr/a'));
+        $this::assertTrue($checker->isAllowed('http://wikiwix.com/cache/?url=http://x.fr/a'));
+    }
+
+    public function testAgreedCrawlDomainDoesNotLeakToLookalikeHost(): void
+    {
+        $client = $this->clientFor(new MockHandler([new Response(200, [], "User-agent: *\nDisallow: /\n")]));
+        $checker = new RobotsTxtChecker($client, 'CodexBot');
+
+        $this::assertFalse($checker->isAllowed('https://notwikiwix.com/cache/?url=http://x.fr/a'));
+    }
+
     public function testDisallowAllForWildcardBlocksUnmatchedBot(): void
     {
         $client = $this->clientFor(new MockHandler([new Response(200, [], "User-agent: *\nDisallow: /\n")]));

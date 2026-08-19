@@ -165,10 +165,19 @@ trait PublisherLogicTrait
      */
     protected function getConfigDomainKeys(): array
     {
-        $registrableDomain = $this->registrableDomain ?? '';
+        return $this->buildConfigDomainKeys($this->registrableDomain ?? '', $this->hostname ?? '');
+    }
+
+    /**
+     * Same key list for an arbitrary host, not necessarily the URL being processed
+     * (e.g. the site archived behind a webarchive URL).
+     *
+     * @return string[]
+     */
+    protected function buildConfigDomainKeys(string $registrableDomain, string $hostname): array
+    {
         $keys = ('' === $registrableDomain) ? [] : [$registrableDomain];
 
-        $hostname = $this->hostname ?? '';
         if ('' === $hostname || $hostname === $registrableDomain) {
             return $keys;
         }
@@ -184,6 +193,36 @@ trait PublisherLogicTrait
         }
 
         return $keys;
+    }
+
+    /**
+     * Prettiest known name for an arbitrary site, e.g. "[[Gallica]]" or "[[Le Monde]]" —
+     * from the same two sources |site= itself uses (config_presse.yaml first, since it's
+     * manually curated, then the Wikidata newspaper mapping). Null when neither knows it,
+     * the caller then falls back to the bare domain.
+     *
+     * Used for the site archived behind a webarchive URL, where the crawled host is the
+     * archiver's ("wikiwix.com") and not the source the reader cares about.
+     */
+    protected function findWikifiedSiteName(string $registrableDomain, string $hostname = ''): ?string
+    {
+        $configSite = null;
+        foreach ($this->buildConfigDomainKeys($registrableDomain, $hostname) as $key) {
+            $value = $this->config[$key] ?? null;
+            if (is_array($value) && !empty($value['site'])) {
+                $configSite = (string)$value['site']; // most specific host key wins
+            }
+        }
+        if ($configSite !== null) {
+            return $configSite;
+        }
+
+        $newspaper = $this->publisherData['newspaper'][$registrableDomain] ?? null;
+        if (!empty($newspaper['fr']) && !empty($newspaper['frwiki'])) {
+            return WikiTextUtil::wikilink($newspaper['fr'], $newspaper['frwiki']);
+        }
+
+        return null;
     }
 
     protected function replaceSiteForLienWeb(AbstractWikiTemplate $template, array $mapData): array

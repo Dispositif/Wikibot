@@ -205,6 +205,8 @@ class DeadLinkTransformer
         return str_starts_with($url, 'http://web.archive.org/web/')
             || str_starts_with($url, 'https://web.archive.org/web/')
             || (bool)preg_match('#^https?://' . self::ARCHIVE_TODAY_DOMAINS_REGEX . '/#', $url)
-            || str_starts_with($url, 'https://archive.wikiwix.com/cache/');
+            // every wikiwix.com flavour, not just the HTTPS longform WikiwixAdapter returns :
+            // "http://wikiwix.com/cache/?url=..." links sitting in articles are archive URLs too
+            || WikiwixUrl::isWikiwixUrl($url);
     }
 }
