@@ -50,7 +50,7 @@ class DeadLinkTransformer
      * logic reads it directly instead of re-deriving it by string-matching the
      * serialized result (see docs/audit-gestion-erreurs-crawl-2026-08.md §9.8).
      */
-    public function formatFromUrl(string $url, DateTimeInterface $now = new DateTimeImmutable(), ?Summary $summary = null, ?int $httpStatus = null): string
+    public function formatFromUrl(string $url, DateTimeInterface $now = new DateTimeImmutable(), ?Summary $summary = null, ?int $httpStatus = null, ?DateTimeInterface $before = null): string
     {
         // HACK : Temporary skip transform on archiver URL (éviter archive IA sur url Wikiwix)
         if ($this->isWebArchiveUrl($url)) {
@@ -62,7 +62,7 @@ class DeadLinkTransformer
             if (!$archiver instanceof DeadlinkArchiverInterface) {
                 continue;
             }
-            $candidates = $archiver->searchWebarchiveCandidates($url, $now, self::MAX_CANDIDATES_PER_ARCHIVER);
+            $candidates = $archiver->searchWebarchiveCandidates($url, $now, self::MAX_CANDIDATES_PER_ARCHIVER, $before);
             if (empty($candidates)) {
                 // fallback for archivers only implementing the single-result method
                 $single = $archiver->searchWebarchive($url);

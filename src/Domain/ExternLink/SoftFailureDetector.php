@@ -42,12 +42,7 @@ class SoftFailureDetector implements LinkGateInterface
             '#\bhugedomains\b#i',
             '#related searches#i', // typical parking-page filler section
             // Below : curated from gr3atest/excludeparked (MIT, github.com/gr3atest/
-            // excludeparked/blob/master/excludeparked.py) -- checked license before use
-            // (unlike IABot/DeadlinkChecker, AGPL/GPL, ideas-only per
-            // audits/audit-code-internetarchivebot-2026-08.md §1). Not the whole list :
-            // skipped entries too generic for a body/URL substring match on arbitrary
-            // article-source pages ("this domain name" bare, "related links", "search
-            // ads", "domain expert", "buy now for" -- all plausible outside parking).
+            // excludeparked/blob/master/excludeparked.py)
             '#\bdomain parking\b#i',
             '#\brenew now\b#i',
             '#is owned and listed by#i',
@@ -59,30 +54,14 @@ class SoftFailureDetector implements LinkGateInterface
             '#\bunited domains\b#i',
             '#this domain has expired#i',
             '#\bdomainpage\.io\b#i',
-            '#\bparking-lander\b#i', // CSS/wrapper class name shared across several parking templates
-            // registrar's own splash page rather than a marketplace listing (no "for
-            // sale" wording at all) : reported 2026-08-19 on an archived cinemovies.fr
-            // snapshot -- <title> was just the bare domain (already scored by
-            // titleIsBareDomain()), the actual "registered with Gandi.net" text only
-            // ever showed up in the body's <h1>, which this list wasn't checked against
-            // until now (see score()).
+            '#\bparking-lander\b#i',
             '#this domain name has been registered#i',
             '#\bgandi\.net\b#i',
             // fr : "Ce site web est à vendre !" -- a common French domain-marketplace
-            // template (reported 2026-08-19 on a Wikiwix snapshot of courrierdusaguenay.com,
-            // itself already parked when Wikiwix archived it). \b around "site"/"vendre"
-            // survives the &nbsp; entities these titles are riddled with (no real spaces
-            // to match on) ; /u so "à" matches as one UTF-8 codepoint, not two bytes.
             '#\bsite\b.{0,30}\bvendre\b#iu',
-            // A very frequent cybersquatting/ad-injection filler on parked and expired
-            // domains (2026-08-19). Deliberately as strong a signal as the rest of this
-            // list (this alone reaches SCORE_THRESHOLD), not softened into a secondary
-            // signal requiring combination -- checked against title/body/URL like every
-            // other entry here. Trade-off, on purpose : a real page *about* an actual
-            // casino (regulation, architecture, a place name) would also match and get
-            // wrongly treated as dead. If that turns out to bite, narrow this pattern
-            // (e.g. combine with another parking marker) rather than dropping it outright.
+            // A very frequent cybersquatting/ad-injection filler on parked site
             '#\bcasino\b#i',
+            '#ovh redirect technology#i',
         ];
 
     private const SOFT_404_TITLE_SIGNATURES
@@ -94,6 +73,16 @@ class SoftFailureDetector implements LinkGateInterface
             '#^(not found|page not found)#i',
             '#has been removed#i',
             '#no longer available#i',
+            // Generic app-error-page title shape ("SiteName / Erreur - Portail X"),
+            // not tied to any one framework (reported 2026-08-19 on a Wikiwix snapshot
+            // of philidor.cmbv.fr, title "kernel (20) / Erreur - Portail PHILIDOR").
+            '#/\s*erreur\b#i',
+            // A raw upstream gateway error (IIS/ARR-style), no <title> at all -- checked
+            // against the body too (see score()), which is the only place this text
+            // exists. Reported 2026-08-19, Wikiwix snapshot of rangers.premiumtv.co.uk :
+            // body was literally these two lines and nothing else, HTTP 200.
+            '#503 service unavailable#i',
+            '#no server is available to handle this request#i',
         ];
 
     public function __construct(
@@ -142,7 +131,13 @@ class SoftFailureDetector implements LinkGateInterface
         ) {
             $score += 3;
         }
-        if ($this->matchesAny($title, self::SOFT_404_TITLE_SIGNATURES)) {
+        // Checked against the body too, not just the title : a raw upstream gateway
+        // error (ex: "503 Service Unavailable\nNo server is available to handle this
+        // request.", reported 2026-08-19) can be the entire response with no <title> at
+        // all to carry the signal.
+        if ($this->matchesAny($title, self::SOFT_404_TITLE_SIGNATURES)
+            || $this->matchesAny((string)$this->fetch->body, self::SOFT_404_TITLE_SIGNATURES)
+        ) {
             $score += 3;
         }
         if ($this->fetch->redirectedToRoot()) {

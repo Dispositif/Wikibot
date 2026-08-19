@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Domain\Utils;
 
 use DateTime;
+use DateTimeImmutable;
 use DateTimeZone;
 
 /**
@@ -27,6 +28,42 @@ class DateUtil
         $dateTime = DateTime::createFromFormat('d F Y', $string);
 
         return $dateTime ?: null;
+    }
+
+    /**
+     * Parses a wiki template date parameter value ("date", "consulté le", "brisé
+     * le"...) into a DateTimeImmutable. Formats seen in the wild : this bot's own
+     * "d-m-Y" (DeadLinkTransformer/mappers), plain ISO "Y-m-d" (common on
+     * machine-imported citations), "d/m/Y", and French long-form ("13 décembre 2023",
+     * via simpleFrench2object()). Extracted from ExistingRefTransformer::
+     * parseConsulteLe() (2026-08), which needed the exact same cascade for its own
+     * "recently consulted" skip check and now delegates here.
+     *
+     * The round-trip format()===$value check on the numeric formats guards against
+     * DateTime::createFromFormat()'s lenient overflow (e.g. silently rolling
+     * "31-02-2023" into a different, valid date) -- same rationale as FrenchDate's own
+     * docblock. simpleFrench2object() itself has no such guard (documented there).
+     *
+     * Returns null on failure, never throws -- callers treat an unparseable/missing
+     * date as "unknown", not as "recent" or "now".
+     */
+    public static function parseTemplateDate(string $value): ?DateTimeImmutable
+    {
+        $value = trim($value);
+        if ($value === '') {
+            return null;
+        }
+
+        foreach (['Y-m-d', 'd-m-Y', 'd/m/Y'] as $format) {
+            $date = DateTime::createFromFormat('!' . $format, $value);
+            if ($date instanceof DateTime && $date->format($format) === $value) {
+                return DateTimeImmutable::createFromMutable($date);
+            }
+        }
+
+        $french = self::simpleFrench2object($value);
+
+        return $french instanceof DateTime ? DateTimeImmutable::createFromMutable($french) : null;
     }
 
     /**

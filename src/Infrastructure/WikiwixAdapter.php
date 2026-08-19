@@ -91,11 +91,12 @@ class WikiwixAdapter implements DeadlinkArchiverInterface
 
     /**
      * Wikiwix keeps (at most) one snapshot per URL and has no CDX-style listing, so this
-     * just wraps searchWebarchive().
+     * just wraps searchWebarchive(). $before is accepted for interface compliance and
+     * ignored, same as $date -- there is nothing to filter or re-rank.
      *
      * @return WebarchiveDTO[]
      */
-    public function searchWebarchiveCandidates(string $url, ?DateTimeInterface $date = null, int $limit = 5): array
+    public function searchWebarchiveCandidates(string $url, ?DateTimeInterface $date = null, int $limit = 5, ?DateTimeInterface $before = null): array
     {
         $single = $this->searchWebarchive($url, $date);
 

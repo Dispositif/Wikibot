@@ -59,7 +59,7 @@ $titles = ServiceFactory::getBotEditJournal(LienBriseArchiveWorker::ARTICLE_ANAL
 $list = new PageList($titles);
 echo sprintf(">%d dans liste (%d tirés, %d déjà analysés)\n", $list->count(), count($candidates), count($candidates) - $list->count());
 
-$fixer = new LienBriseArchiveFixer(ServiceFactory::getDeadLinkTransformer($logger));
+$fixer = new LienBriseArchiveFixer(ServiceFactory::getDeadLinkTransformer($logger), $logger);
 
 $dryRun = in_array('--dry-run', $argv, true);
 new LienBriseArchiveWorker($botConfig, $wiki, $list, $fixer, $dryRun);

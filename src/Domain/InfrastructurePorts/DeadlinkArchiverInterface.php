@@ -25,7 +25,14 @@ interface DeadlinkArchiverInterface
      * parked domain...) instead of accepting the first result unconditionally.
      * Archivers without a listing API (e.g. Wikiwix) may just wrap searchWebarchive().
      *
+     * $before : hard upper bound (candidates strictly at-or-before this date only), for
+     * a caller that already tried the closest-to-$date neighborhood and got only unusable
+     * snapshots back (soft-404/parking) -- typically because the domain was cybersquatted
+     * sometime after $date, so anything AFTER $date is suspect by construction and worth
+     * excluding outright rather than just ranked lower. Archivers with no listing API
+     * (Wikiwix keeps one snapshot per URL) accept but ignore it, same as $date.
+     *
      * @return WebarchiveDTO[]
      */
-    public function searchWebarchiveCandidates(string $url, ?DateTimeInterface $date = null, int $limit = 5): array;
+    public function searchWebarchiveCandidates(string $url, ?DateTimeInterface $date = null, int $limit = 5, ?DateTimeInterface $before = null): array;
 }

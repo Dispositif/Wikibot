@@ -47,9 +47,9 @@ class InternetArchiveAdapter implements DeadlinkArchiverInterface
     /**
      * @return WebarchiveDTO[] ordered closest-to-$date first (or most recent if $date is null)
      */
-    public function searchWebarchiveCandidates(string $url, ?DateTimeInterface $date = null, int $limit = 5): array
+    public function searchWebarchiveCandidates(string $url, ?DateTimeInterface $date = null, int $limit = 5, ?DateTimeInterface $before = null): array
     {
-        $rows = $this->requestCdxApi($url, $date, $limit);
+        $rows = $this->requestCdxApi($url, $date, $limit, $before);
 
         return array_map(
             fn(array $row) => new WebarchiveDTO(
@@ -65,21 +65,27 @@ class InternetArchiveAdapter implements DeadlinkArchiverInterface
     /**
      * @return array<int, array{timestamp: string, original: string}>
      */
-    protected function requestCdxApi(string $url, ?DateTimeInterface $date, int $limit): array
+    protected function requestCdxApi(string $url, ?DateTimeInterface $date, int $limit, ?DateTimeInterface $before = null): array
     {
         // CDX expects repeated "filter=" params (not the filter[]=... bracket form
         // http_build_query would produce for an array value), so build it by hand.
-        $queryString = implode(
-            '&',
-            [
-                'url=' . urlencode($url),
-                'output=json',
-                'filter=' . urlencode('statuscode:200'),
-                'filter=' . urlencode('!mimetype:warc/revisit'),
-                'collapse=digest', // avoid piling up many identical snapshots (e.g. a parked domain re-crawled for years)
-                'limit=' . (max(1, $limit) * 3), // over-fetch a bit : some rows get discarded below
-            ]
-        );
+        $params = [
+            'url=' . urlencode($url),
+            'output=json',
+            'filter=' . urlencode('statuscode:200'),
+            'filter=' . urlencode('!mimetype:warc/revisit'),
+            'collapse=digest', // avoid piling up many identical snapshots (e.g. a parked domain re-crawled for years)
+            'limit=' . (max(1, $limit) * 3), // over-fetch a bit : some rows get discarded below
+        ];
+        if ($before instanceof DateTimeInterface) {
+            // CDX's own "to=" filter, not just a lower rank : a caller passing this
+            // already knows the closest-to-$date neighborhood came back unusable
+            // (soft-404/parking, typically a cybersquat sometime after $date) and wants
+            // candidates genuinely excluded, not merely deprioritized -- see
+            // DeadlinkArchiverInterface::searchWebarchiveCandidates()'s docblock.
+            $params[] = 'to=' . $before->format('Ymd');
+        }
+        $queryString = implode('&', $params);
 
         $response = $this->client->get(
             self::CDX_URL . '?' . $queryString,

@@ -20,7 +20,6 @@ use App\Domain\Utils\TemplateParser;
 use App\Domain\WikiOptimizer\OptimizerFactory;
 use App\Domain\WikiTemplateFactory;
 use DateInterval;
-use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Throwable;
@@ -158,30 +157,13 @@ final class ExistingRefTransformer
     }
 
     /**
-     * 'consulté le' values seen in the wild : this bot's own "d-m-Y" (DeadLinkTransformer/
-     * mappers), plain ISO "Y-m-d" (common on machine-imported citations), "d/m/Y", and
-     * French long-form ("13 décembre 2023", via DateUtil). The round-trip
-     * format()===$value check guards against createFromFormat()'s lenient overflow
-     * (e.g. silently rolling "31-02-2023" into a different, valid date) -- same
-     * rationale as FrenchDate's own docblock.
+     * @see DateUtil::parseTemplateDate() -- extracted there (2026-08) so
+     * LienBriseArchiveFixer can reuse the exact same cascade to resolve a target date
+     * for its own web-archive candidate search.
      */
     private function parseConsulteLe(string $value): ?DateTimeImmutable
     {
-        $value = trim($value);
-        if ($value === '') {
-            return null;
-        }
-
-        foreach (['Y-m-d', 'd-m-Y', 'd/m/Y'] as $format) {
-            $date = DateTime::createFromFormat('!' . $format, $value);
-            if ($date instanceof DateTime && $date->format($format) === $value) {
-                return DateTimeImmutable::createFromMutable($date);
-            }
-        }
-
-        $french = DateUtil::simpleFrench2object($value);
-
-        return $french instanceof DateTime ? DateTimeImmutable::createFromMutable($french) : null;
+        return DateUtil::parseTemplateDate($value);
     }
 
     /**

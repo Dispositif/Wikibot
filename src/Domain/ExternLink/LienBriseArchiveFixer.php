@@ -12,9 +12,12 @@ namespace App\Domain\ExternLink;
 use App\Domain\Models\Summary;
 use App\Domain\Models\Wiki\AbstractWikiTemplate;
 use App\Domain\Models\Wiki\LienBriseTemplate;
+use App\Domain\Utils\DateUtil;
 use App\Domain\Utils\TemplateParser;
 use App\Domain\WikiTemplateFactory;
+use App\Infrastructure\Monitor\NullLogger;
 use DateTimeImmutable;
+use Psr\Log\LoggerInterface;
 use Throwable;
 
 /**
@@ -31,8 +34,27 @@ use Throwable;
  */
 class LienBriseArchiveFixer
 {
-    public function __construct(private readonly DeadLinkTransformer $deadLinkTransformer)
-    {
+    /**
+     * "pas plus de 2 retry" (2026-08-19) : bounds both the extra network cost (each
+     * retry re-tries every archiver, IA included over up to MAX_CANDIDATES_PER_ARCHIVER
+     * candidates) and the risk of chasing a date that just never had a good snapshot.
+     */
+    private const MAX_EARLIER_DATE_RETRIES = 2;
+
+    /**
+     * Arbitrary but documented : how far back each retry steps past the previous cutoff
+     * when the current one still turned up nothing usable. No principled way to derive
+     * this from the CDX candidates actually tried (their timestamps aren't returned up
+     * to this layer) -- a fixed jump large enough to likely land outside the same
+     * "already cybersquatted" window, small enough that two retries still cover useful
+     * ground, is the pragmatic middle ground.
+     */
+    private const RETRY_STEP_YEARS = 5;
+
+    public function __construct(
+        private readonly DeadLinkTransformer $deadLinkTransformer,
+        private readonly LoggerInterface     $log = new NullLogger()
+    ) {
     }
 
     public function fixText(string $text, Summary $summary): string
@@ -65,25 +87,74 @@ class LienBriseArchiveFixer
             return null;
         }
 
-        $result = $this->deadLinkTransformer->formatFromUrl(
-            $url,
-            new DateTimeImmutable(),
-            $summary,
-            $this->extractHttpStatus($tpl->getParam('note'))
-        );
+        $httpStatus = $this->extractHttpStatus($tpl->getParam('note'));
+        $targetDate = $this->resolveTargetDate($tpl);
+
+        $result = $this->deadLinkTransformer->formatFromUrl($url, $targetDate ?? new DateTimeImmutable(), $summary, $httpStatus);
+
+        // Retrying with an ever-earlier cutoff only makes sense when there's a real
+        // reference date to step back FROM (reported 2026-08-19 : the closest-to-"now"
+        // snapshot can land squarely on a domain that was cybersquatted years after the
+        // citation's own date -- ex: consulté le=2013, closest usable IA snapshot 2019,
+        // already squatted, when a genuine ~2007 snapshot existed). Without a target
+        // date there is no "earlier" to retreat to, so this loop is skipped entirely and
+        // behavior is unchanged from before this feature (closest-to-now, single try).
+        $before = $targetDate;
+        for ($retry = 1; $before !== null && $retry <= self::MAX_EARLIER_DATE_RETRIES && $this->isStillDead($result); $retry++) {
+            $before = $before->modify('-' . self::RETRY_STEP_YEARS . ' years');
+            $this->log->notice(
+                "Still dead near {$targetDate->format('Y-m-d')}, retrying before {$before->format('Y-m-d')} (attempt $retry)",
+                ['stats' => 'lienbrisearchive.retry.earlierDate']
+            );
+            $result = $this->deadLinkTransformer->formatFromUrl($url, $before, $summary, $httpStatus, $before);
+        }
 
         if (!str_starts_with(trim($result), '{{')) {
             return null; // isWebArchiveUrl() bailout : url= is itself an archive link, nothing to do
         }
-        if (TemplateParser::findAllTemplatesByName(LienBriseTemplate::WIKITEMPLATE_NAME, $result) !== []) {
-            // Still genuinely dead : formatFromUrl() found no usable archive and regenerated
-            // another {{Lien brisé}} (fresh "brisé le=" date) — not a fix, leave untouched
+        if ($this->isStillDead($result)) {
+            // Still genuinely dead after every attempt : not a fix, leave untouched
             // rather than edit the page just to bump a date. Same guard as
             // fixDeadLinkNetworkFailureBug.php.
             return null;
         }
 
         return $this->preserveCuratedTitre($result, $tpl->getParam('titre'), $url);
+    }
+
+    /**
+     * "'date' sinon 'consulté le'" (2026-08-19) : whichever the {{Lien brisé}} already
+     * carries from before it went dead -- both are inherited param names from
+     * LienWebTemplate (see LienBriseTemplate's docblock on why it extends it). Neither
+     * present, or unparseable (DateUtil::parseTemplateDate() returns null either way) :
+     * no target date, formatFromUrl() falls back to its own "now" default and the
+     * earlier-date retry loop is skipped (see fixOne()).
+     */
+    private function resolveTargetDate(LienBriseTemplate $tpl): ?DateTimeImmutable
+    {
+        $raw = $tpl->getParam('date');
+        if (empty($raw)) {
+            $raw = $tpl->getParam('consulté le');
+        }
+        if (empty($raw)) {
+            return null;
+        }
+
+        return DateUtil::parseTemplateDate($raw);
+    }
+
+    /**
+     * True only when formatFromUrl() regenerated another {{Lien brisé}} -- the one
+     * outcome worth retrying with an earlier cutoff. Any other outcome (a real citation,
+     * or the isWebArchiveUrl() bailout returning the bare url unchanged) stops the
+     * retry loop : the isWebArchiveUrl case in particular is a property of $url itself,
+     * not of which date was tried, so retrying it would just repeat the exact same
+     * no-op three times.
+     */
+    private function isStillDead(string $result): bool
+    {
+        return str_starts_with(trim($result), '{{')
+            && TemplateParser::findAllTemplatesByName(LienBriseTemplate::WIKITEMPLATE_NAME, $result) !== [];
     }
 
     /**
