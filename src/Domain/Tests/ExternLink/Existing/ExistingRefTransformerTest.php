@@ -13,6 +13,7 @@ use App\Domain\ExternLink\Existing\ExistingRefTransformer;
 use App\Domain\ExternLink\ExternRefTransformerInterface;
 use App\Domain\ExternLink\Raw\MergeConfidence;
 use App\Domain\Models\Summary;
+use App\Domain\Models\WebarchiveDTO;
 use App\Domain\WikiTemplateFactory;
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
@@ -447,5 +448,204 @@ class ExistingRefTransformerTest extends TestCase
             $summary,
             ['pageTitle' => 'Some Article']
         );
+    }
+
+    /**
+     * Captures the $options the crawl pipeline was actually handed, so the known-archive
+     * hint can be inspected (it's built inside process(), not passed in by the caller).
+     *
+     * @param array<string, mixed> $memoBumps counters the simulated crawl writes into
+     *      $summary->memo -- how ExistingRefTransformer tells "went dead" from "still
+     *      alive", and now also whether the known archive was rejected.
+     */
+    private function capturingTransformer(string $crawledResult, array $memoBumps, ?array &$capturedOptions): ExistingRefTransformer
+    {
+        $externRefTransformer = $this->createMock(ExternRefTransformerInterface::class);
+        $externRefTransformer->method('process')
+            ->willReturnCallback(
+                function (string $url, Summary $summary, array $options = []) use ($crawledResult, $memoBumps, &$capturedOptions) {
+                    $capturedOptions = $options;
+                    foreach ($memoBumps as $key => $count) {
+                        $summary->memo[$key] = $count + ($summary->memo[$key] ?? 0);
+                    }
+
+                    return $crawledResult;
+                }
+            );
+
+        return new ExistingRefTransformer($externRefTransformer);
+    }
+
+    /**
+     * 2026-08-20 incident ("April the Tapir dead") : the citation already carried a
+     * 2013-11-04 snapshot matching its own |date=1/11/2013, and the bot ignored it to
+     * search up an unrelated 2020-09-21 one. The existing archive-url must reach the crawl
+     * pipeline as DeadLinkTransformer's candidate #0.
+     */
+    public function testHandsExistingArchiveUrlToTheCrawlAsKnownArchive()
+    {
+        $capturedOptions = null;
+        $transformer = $this->capturingTransformer(
+            '{{lien web |titre=T |url=https://web.archive.org/web/20131104044228/http://c5.bz/a |site=c5.bz via [[Internet Archive]] |consulté le=' . date('d-m-Y') . '}}',
+            ['wayback' => 1],
+            $capturedOptions
+        );
+
+        $transformer->process(
+            '{{lien web |titre=T |url=http://c5.bz/a |site=c5.bz'
+            . ' |archive-url=https://web.archive.org/web/20131104044228/http://c5.bz/a |archive-date=2013-11-04}}'
+        );
+
+        self::assertInstanceOf(WebarchiveDTO::class, $capturedOptions['knownArchive'] ?? null);
+        self::assertSame(
+            'https://web.archive.org/web/20131104044228/http://c5.bz/a',
+            $capturedOptions['knownArchive']->getArchiveUrl()
+        );
+        self::assertSame('http://c5.bz/a', $capturedOptions['knownArchive']->getOriginalUrl(), 'the dead original, not the archive : drives the "via [[archiver]]" label');
+    }
+
+    public function testNoKnownArchiveOptionWhenCitationCarriesNone()
+    {
+        $capturedOptions = null;
+        $transformer = $this->capturingTransformer(
+            '{{lien web |titre=T |url=http://x.fr/a |consulté le=' . date('d-m-Y') . '}}',
+            [],
+            $capturedOptions
+        );
+
+        $transformer->process('{{lien web |titre=T |url=http://x.fr/a |site=x.fr}}');
+
+        self::assertArrayNotHasKey('knownArchive', (array) $capturedOptions);
+    }
+
+    /**
+     * The other half of the same incident, independent of the archive : converting to a
+     * dead-link replacement used to keep only 'titre' and take everything else from the
+     * crawl, silently dropping curated fields ('date', 'accès url'...).
+     */
+    public function testDeadLinkReplacementKeepsCuratedFieldsTheCrawlDoesNotCarry()
+    {
+        $transformer = $this->deadLinkTransformer(
+            '{{lien web |titre=T archive |url=https://web.archive.org/web/20131104044228/http://c5.bz/a'
+            . ' |site=c5.bz via [[Internet Archive]] |consulté le=' . date('d-m-Y') . '}}',
+            'wayback'
+        );
+
+        $fragment = '{{lien web |langue=en-US |titre=April the Tapir dead |url=http://c5.bz/a'
+            . ' |accès url=libre |site=c5.bz |date=1/11/2013 |consulté le=2025-06-07}}';
+        $result = $transformer->process($fragment);
+
+        $get = $this->paramFromSerialized('lien web', $result->refContent);
+        self::assertSame('1/11/2013', $get('date'), 'publication date survives the archive substitution');
+        self::assertSame('libre', $get('accès url'));
+        self::assertSame('en-US', $get('langue'));
+        self::assertSame('April the Tapir dead', $get('titre'));
+        // Crawl-owned on this path :
+        self::assertSame('https://web.archive.org/web/20131104044228/http://c5.bz/a', $get('url'));
+        self::assertSame('c5.bz via [[Internet Archive]]', $get('site'), 'existing plain site must not silently drop the "via"');
+    }
+
+    /**
+     * {{Lien brisé}} carries no |site= of its own, so the crawl has nothing to overwrite
+     * the existing one with : it must be inherited, not dropped as "crawl-owned".
+     */
+    public function testGenuineLienBriseInheritsExistingSiteTheCrawlDoesNotCarry()
+    {
+        $transformer = $this->deadLinkTransformer(
+            '{{Lien brisé |url=http://x.fr/a |titre=x.fr/a |brisé le=' . date('d-m-Y') . '}}'
+        );
+
+        $result = $transformer->process(
+            '{{lien web |titre=Titre |url=http://x.fr/a |site=[[Le Monde]] |date=2013-01-01}}'
+        );
+
+        $get = $this->paramFromSerialized('lien brisé', $result->refContent);
+        self::assertSame('[[Le Monde]]', $get('site'), 'existing site survives : {{Lien brisé}} has none to replace it');
+        self::assertSame('2013-01-01', $get('date'));
+    }
+
+    /**
+     * Mirror of the above : the crawl DOES carry a site here ("via [[archiver]]"), so it
+     * wins -- an existing plain site would misattribute archived content to the source.
+     */
+    public function testArchivedReplacementSiteWinsOverExistingOne()
+    {
+        $transformer = $this->deadLinkTransformer(
+            '{{lien web |titre=T |url=https://web.archive.org/web/20131104044228/http://x.fr/a'
+            . ' |site=x.fr via [[Internet Archive]] |consulté le=' . date('d-m-Y') . '}}',
+            'wayback'
+        );
+
+        $result = $transformer->process('{{lien web |titre=T |url=http://x.fr/a |site=x.fr}}');
+
+        $get = $this->paramFromSerialized('lien web', $result->refContent);
+        self::assertSame('x.fr via [[Internet Archive]]', $get('site'));
+        self::assertNull($get('brisé le'), 'still no brisé le on a working archived replacement');
+    }
+
+    /**
+     * The archive got promoted into |url= : leaving 'archive-url' pointing at that same
+     * snapshot is pure redundancy.
+     */
+    public function testDropsArchiveParamsOnceTheyBecameTheNewUrl()
+    {
+        $archive = 'https://web.archive.org/web/20131104044228/http://c5.bz/a';
+        $transformer = $this->deadLinkTransformer(
+            '{{lien web |titre=T |url=' . $archive . ' |site=c5.bz via [[Internet Archive]] |consulté le=' . date('d-m-Y') . '}}',
+            'wayback'
+        );
+
+        $result = $transformer->process(
+            '{{lien web |titre=T |url=http://c5.bz/a |site=c5.bz |archive-url=' . $archive . ' |archive-date=2013-11-04}}'
+        );
+
+        $get = $this->paramFromSerialized('lien web', $result->refContent);
+        self::assertNull($get('archive-url'));
+        self::assertNull($get('archive-date'));
+    }
+
+    /**
+     * A different, never-tried snapshot is still a second chance for a human : kept.
+     */
+    public function testKeepsAnUnrelatedArchiveUrlThatWasNeverTried()
+    {
+        $transformer = $this->deadLinkTransformer(
+            '{{lien web |titre=T |url=https://archive.wikiwix.com/cache/index2.php?url=http%3A%2F%2Fc5.bz%2Fa'
+            . ' |site=c5.bz via [[Wikiwix]] |consulté le=' . date('d-m-Y') . '}}',
+            'wikiwix'
+        );
+
+        $result = $transformer->process(
+            '{{lien web |titre=T |url=http://c5.bz/a |site=c5.bz |archive-url=https://someother.example/snap/1}}'
+        );
+
+        $get = $this->paramFromSerialized('lien web', $result->refContent);
+        self::assertSame('https://someother.example/snap/1', $get('archive-url'));
+    }
+
+    /**
+     * DeadLinkTransformer fetched the citation's own archive-url and found it unusable
+     * (blank/parked/soft-404) before searching. Keeping a snapshot just proven bad next to
+     * the working one it fell back to would hand the reader a dead fallback.
+     */
+    public function testDropsArchiveParamsWhenTheKnownArchiveWasProvenUnusable()
+    {
+        $capturedOptions = null;
+        $transformer = $this->capturingTransformer(
+            '{{lien web |titre=T |url=https://web.archive.org/web/20200921113200/http://c5.bz/a'
+            . ' |site=c5.bz via [[Internet Archive]] |consulté le=' . date('d-m-Y') . '}}',
+            ['wayback' => 1, 'archive known rejected' => 1],
+            $capturedOptions
+        );
+
+        $result = $transformer->process(
+            '{{lien web |titre=T |url=http://c5.bz/a |site=c5.bz'
+            . ' |archive-url=https://web.archive.org/web/20131104044228/http://c5.bz/a |archive-date=2013-11-04}}'
+        );
+
+        $get = $this->paramFromSerialized('lien web', $result->refContent);
+        self::assertNull($get('archive-url'), 'proven-unusable snapshot dropped, not kept as a fallback');
+        self::assertNull($get('archive-date'));
+        self::assertSame('https://web.archive.org/web/20200921113200/http://c5.bz/a', $get('url'));
     }
 }

@@ -11,6 +11,7 @@ namespace App\Domain\ExternLink;
 
 use App\Domain\InfrastructurePorts\ExternLinkCheckRepositoryInterface;
 use App\Domain\Models\Summary;
+use App\Domain\Models\WebarchiveDTO;
 use App\Infrastructure\Monitor\NullLogger;
 use App\Infrastructure\NullExternLinkCheckRepository;
 use Psr\Log\LoggerInterface;
@@ -79,12 +80,18 @@ class ExternHttpErrorLogic
      * isn't actionable later. $summary lets DeadLinkTransformer report which archiver
      * it actually used, so ExternRefWorker's edit summary doesn't have to re-derive it
      * by string-matching the result (see docs/audit-gestion-erreurs-crawl-2026-08.md §9.8).
+     *
+     * $knownArchive : forwarded verbatim to every dead-link branch below, so an existing
+     * citation's own 'archive-url' is reused instead of searched for (see
+     * DeadLinkTransformer::tryKnownArchive()). Only the branches that actually conclude
+     * "dead" get it — a 403/paywall or a transient 429/503 never reaches an archiver at all.
      */
     public function manageByFetchResult(
-        FetchResult $fetch,
-        ?string     $registrableDomain = null,
-        ?string     $pageTitle = null,
-        ?Summary    $summary = null
+        FetchResult    $fetch,
+        ?string        $registrableDomain = null,
+        ?string        $pageTitle = null,
+        ?Summary       $summary = null,
+        ?WebarchiveDTO $knownArchive = null
     ): string
     {
         $url = $fetch->requestedUrl;
@@ -92,17 +99,17 @@ class ExternHttpErrorLogic
         if ($fetch->httpStatus === 410) {
             $this->log->notice('410 Gone', ['stats' => 'externHttpErrorLogic.410']);
 
-            return ExternRefTransformer::REPLACE_410 ? $this->deadLinkTransformer->formatFromUrl($url, summary: $summary, httpStatus: $fetch->httpStatus) : $url;
+            return ExternRefTransformer::REPLACE_410 ? $this->deadLinkTransformer->formatFromUrl($url, summary: $summary, httpStatus: $fetch->httpStatus, knownArchive: $knownArchive) : $url;
         }
         if ($fetch->httpStatus === 404) {
             $this->log->notice('404 Not Found', ['stats' => 'externHttpErrorLogic.404']);
 
-            return ExternRefTransformer::REPLACE_404 ? $this->deadLinkTransformer->formatFromUrl($url, summary: $summary, httpStatus: $fetch->httpStatus) : $url;
+            return ExternRefTransformer::REPLACE_404 ? $this->deadLinkTransformer->formatFromUrl($url, summary: $summary, httpStatus: $fetch->httpStatus, knownArchive: $knownArchive) : $url;
         }
         if (in_array($fetch->httpStatus, self::IMMEDIATE_DEAD_STATUSES, true)) {
             $this->log->notice($fetch->httpStatus . ' : ' . $url, ['stats' => 'externHttpErrorLogic.' . $fetch->httpStatus]);
 
-            return $this->deadLinkTransformer->formatFromUrl($url, summary: $summary, httpStatus: $fetch->httpStatus);
+            return $this->deadLinkTransformer->formatFromUrl($url, summary: $summary, httpStatus: $fetch->httpStatus, knownArchive: $knownArchive);
         }
         if ($fetch->httpStatus === 403) {
             $this->log->warning('403 Forbidden : ' . $url, ['stats' => 'externHttpErrorLogic.403']);
@@ -170,7 +177,7 @@ class ExternHttpErrorLogic
                 ['stats' => 'externHttpErrorLogic.' . strtolower($fetch->errorKind->name)]
             );
 
-            return $this->deadLinkTransformer->formatFromUrl($url, summary: $summary);
+            return $this->deadLinkTransformer->formatFromUrl($url, summary: $summary, knownArchive: $knownArchive);
         }
 
         // DEFAULT (not filtered) : timeout, TLS error, too-many-redirects, ProxyFailure (SOCKS5)...

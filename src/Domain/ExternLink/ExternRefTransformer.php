@@ -121,6 +121,11 @@ class ExternRefTransformer implements ExternRefTransformerInterface
      */
     public function process(string $url, Summary $summary = new Summary(), array $options = []): string
     {
+        // Reset unconditionally : a caller reading getLastFetchResult() after THIS call
+        // must never see a stale fetch left over from a previous URL that bailed out
+        // before reaching the fetch step below (blacklist, robots.txt...).
+        $this->lastFetchResult = null;
+        // 'knownArchive' (a WebarchiveDTO) rides along here too : see knownArchiveOption().
         $this->options = $options; // used only to pass RegistrableDomain of archived deadlink, or pageTitle
         $url = $this->prepareWikiwixUrl($url);
         $this->url = $url;
@@ -160,7 +165,7 @@ class ExternRefTransformer implements ExternRefTransformerInterface
         $crawledUrl = $this->resolveCrawledUrl($url);
         $fetch = $this->fetchWithOptionalDirectRetry($crawledUrl);
         if (!$fetch->isSuccess()) {
-            return $this->externHttpErrorLogic->manageByFetchResult($fetch, $this->registrableDomain, $pageTitle, $summary);
+            return $this->externHttpErrorLogic->manageByFetchResult($fetch, $this->registrableDomain, $pageTitle, $summary, $this->knownArchiveOption());
         }
         $this->lastFetchResult = $fetch;
 
@@ -193,7 +198,7 @@ class ExternRefTransformer implements ExternRefTransformerInterface
             new SoftFailureDetector($fetch, $pageData['meta']['html-title'] ?? null, $this->log)
         );
         if ($softFailureVerdict === LinkVerdict::TreatAsDead) {
-            return $this->deadLinkTransformer->formatFromUrl($url, summary: $summary);
+            return $this->deadLinkTransformer->formatFromUrl($url, summary: $summary, knownArchive: $this->knownArchiveOption());
         }
 
         $mappedData = $this->mapper->process($pageData); // only json-ld or only meta, after postprocess
@@ -362,6 +367,25 @@ class ExternRefTransformer implements ExternRefTransformerInterface
         }
 
         return null;
+    }
+
+    /**
+     * The archive the CALLING citation already carried, if any : ExistingRefTransformer /
+     * LienBriseArchiveFixer build it with ArchiveUrlParser and pass it in $options, the
+     * same channel 'originalRegistrableDomain'/'pageTitle' already use. Read at each dead
+     * branch rather than stored in its own property, so it lives and dies with the current
+     * process() call like the rest of $this->options.
+     *
+     * Never set on the recursive archive-page crawl DeadLinkTransformer makes
+     * (externRefProcessOnArchive() builds its own $options from scratch) : that call is
+     * how a known archive gets validated in the first place, so re-offering it there
+     * would be circular.
+     */
+    private function knownArchiveOption(): ?WebarchiveDTO
+    {
+        $known = $this->options['knownArchive'] ?? null;
+
+        return $known instanceof WebarchiveDTO ? $known : null;
     }
 
     /**

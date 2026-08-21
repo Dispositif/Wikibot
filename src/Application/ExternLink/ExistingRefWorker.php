@@ -139,6 +139,17 @@ class ExistingRefWorker extends AbstractRefBotWorker
             $suffix .= ($this->summary->memo['wayback'] > 1) ? $this->summary->memo['wayback'] . 'x ' : '';
             $suffix .= 'InternetArchive🏛️';
         }
+        // Deliberately NOT "Wikiwix🥝"/"InternetArchive🏛️" like the two blocks above :
+        // those specifically mean "dead link replaced by an archive" (|url= itself
+        // changed). This is a DIFFERENT, gentler edit -- the link is still alive,
+        // archive-url/-date was only added as a fallback -- so it gets its own distinct
+        // marker rather than being folded into (and misread as) the dead-link count.
+        if (!empty($this->summary->memo['archive live'])) {
+            $suffix .= ' +archive';
+            if ($this->summary->memo['archive live'] > 1) {
+                $suffix .= ' x' . $this->summary->memo['archive live'];
+            }
+        }
 
         return $prefixSummary . $this->summary->taskName . $suffix;
     }

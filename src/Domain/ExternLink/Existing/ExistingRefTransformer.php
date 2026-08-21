@@ -41,9 +41,15 @@ use Throwable;
  * same counters ExternHttpErrorLogic/DeadLinkTransformer already write into during
  * ExternRefTransformer::process() -- see ExternRefWorker::processRefContent() for the
  * identical before/after snapshot technique) :
- * - Went dead (a {{Lien brisé}} or an archived replacement came back) : the existing
- *   'titre' is kept (a curated title beats a URL-derived placeholder or a re-crawled
- *   one), everything else comes from the crawl.
+ * - Went dead (a {{Lien brisé}} or an archived replacement came back) : existing curation
+ *   wins on every non-empty field, same as the live path -- only 'url', 'site' and the
+ *   check's own dates come from the crawl (see buildDeadLinkReplacement()). Before
+ *   2026-08-20 this path kept only 'titre' and took everything else from the crawl,
+ *   silently dropping curated fields on every conversion.
+ *   An 'archive-url' the citation already carried is handed to the crawl as the FIRST
+ *   archive candidate (ArchiveUrlParser + $options['knownArchive']), so the editor's own
+ *   snapshot -- contemporary with the citation by construction -- is reused instead of
+ *   the bot searching up an unrelated, usually much later one.
  * - Still alive : the EXISTING template wins on every non-empty field -- this is a
  *   completion pass, not a re-crawl-and-replace. Only 'consulté le' is always refreshed
  *   (the mapper stamps it with today's date on every successful crawl, live page or
@@ -72,6 +78,26 @@ final class ExistingRefTransformer
      * A citation confirmed recently doesn't need re-crawling yet.
      */
     private const SKIP_IF_CONSULTED_WITHIN = 'P1Y'; // 1 year
+
+    /**
+     * [urlParam, dateParam] per template : {{lien web}}'s own canonical names are
+     * hyphenated ('archive-url'/'archive-date', see LienWebTemplate::$parametersByOrder)
+     * but {{article}}'s are not ('archiveurl'/'archivedate', see ArticleTemplateParams) --
+     * neither template aliases the other's spelling, so writing the wrong one would be
+     * silently flagged as an unrecognized param instead of actually landing on the field.
+     */
+    private const ARCHIVE_PARAM_NAMES = [
+        'lien web' => ['archive-url', 'archive-date'],
+        'article' => ['archiveurl', 'archivedate'],
+    ];
+
+    /**
+     * On the dead-link path only, these describe the REPLACEMENT rather than the source,
+     * so the crawl wins over existing curation for them -- but only when it actually
+     * carries a value, see buildDeadLinkReplacement(). 'brisé le' is handled separately
+     * (never inherited at all).
+     */
+    private const CRAWL_OWNED_ON_DEAD_PATH = ['url', 'site', 'consulté le'];
 
     public function __construct(
         private readonly ExternRefTransformerInterface $externRefTransformer,
@@ -123,7 +149,10 @@ final class ExistingRefTransformer
             'count lien brisé' => $summary->memo['count lien brisé'] ?? 0,
             'wikiwix' => $summary->memo['wikiwix'] ?? 0,
             'wayback' => $summary->memo['wayback'] ?? 0,
+            'archive known rejected' => $summary->memo['archive known rejected'] ?? 0,
         ];
+
+        $options = $this->withKnownArchiveOption($options, $existingTemplateName, $existingData, $url);
 
         $crawled = trim($this->externRefTransformer->process($url, $summary, $options));
         // Captured right after process(), before any other URL could go through this
@@ -147,10 +176,12 @@ final class ExistingRefTransformer
             || ($summary->memo['wikiwix'] ?? 0) > $before['wikiwix']
             || ($summary->memo['wayback'] ?? 0) > $before['wayback'];
 
+        $knownArchiveRejected = ($summary->memo['archive known rejected'] ?? 0) > $before['archive known rejected'];
+
         try {
             $newTemplate = $wentDead
-                ? $this->buildDeadLinkReplacement($crawled, $crawledTemplateName, $existingData, $now)
-                : $this->buildCompletion($crawled, $crawledTemplateName, $existingTemplateName, $existingData);
+                ? $this->buildDeadLinkReplacement($crawled, $crawledTemplateName, $existingTemplateName, $existingData, $now, $knownArchiveRejected)
+                : $this->buildCompletion($crawled, $crawledTemplateName, $existingTemplateName, $existingData, $url, $summary, $liveFetch);
         } catch (Throwable) {
             // Malformed/unexpected template text (shouldn't happen -- $crawled came from
             // ExternRefTransformer itself) : fail safe, keep the existing citation.
@@ -211,30 +242,152 @@ final class ExistingRefTransformer
     }
 
     /**
-     * Titre : existing editorial titre always wins. 'brisé le' only on a genuine
-     * {{Lien brisé}} -- adding it on an archived replacement makes MediaWiki render a
-     * perfectly working {{lien web}}/{{article}} as broken (2026-08-14 bug report).
+     * Existing curation wins on every non-empty field, exactly like buildCompletion() --
+     * only the fields the replacement is ABOUT come from the crawl. Until 2026-08-20 this
+     * path did the opposite ("everything else comes from the crawl", titre excepted),
+     * silently dropping curated data on every dead-link conversion : the incident that
+     * exposed it ("April the Tapir dead") lost |date=1/11/2013 and |accès url=libre on a
+     * simple archive substitution. The asymmetry with the live path was never intentional.
+     *
+     * Crawl-owned here, and only here (CRAWL_OWNED_ON_DEAD_PATH) -- and only when the
+     * crawl actually carries a value, since {{Lien brisé}} has neither |site= nor
+     * |consulté le= of its own :
+     *  - 'url'   : the whole point of the replacement (it now points at the archive) ;
+     *  - 'site'  : must read "source via [[archiver]]", see
+     *              ExternRefTransformer::correctSiteViaWebarchiver() -- an existing plain
+     *              |site= would silently drop the "via" and misattribute the content ;
+     *  - 'consulté le' : a date about this very check.
+     *
+     * 'brisé le' is never inherited, and lands only on a genuine {{Lien brisé}} -- on an
+     * archived replacement it makes MediaWiki render a perfectly working {{lien web}}/
+     * {{article}} as broken (2026-08-14 bug report). On the {{Lien brisé}} branch it comes
+     * from the crawled template, which already stamps it
+     * (DeadLinkTransformer::generateLienBrise()), or is re-stamped below alongside a
+     * preserved 'consulté le'.
      */
-    private function buildDeadLinkReplacement(string $crawled, string $crawledTemplateName, array $existingData, DateTimeInterface $now): string
+    private function buildDeadLinkReplacement(
+        string            $crawled,
+        string            $crawledTemplateName,
+        string            $existingTemplateName,
+        array             $existingData,
+        DateTimeInterface $now,
+        bool              $knownArchiveRejected
+    ): string
     {
         $isLienBrise = in_array(mb_strtolower($crawledTemplateName), ['lien brisé', 'lien brise'], true);
-        $hasOldConsulteLe = $isLienBrise && !empty($existingData['consulté le']);
 
-        if (empty($existingData['titre']) && !$hasOldConsulteLe) {
-            return $crawled;
+        // Going to {{Lien brisé}} changes the citation's type by necessity ; an archived
+        // replacement does not, so the existing type is kept there -- same rule as
+        // buildCompletion() (never swap an established citation's category as a side effect).
+        $outputTemplateName = $isLienBrise ? $crawledTemplateName : $existingTemplateName;
+
+        $crawledData = $this->hydrateFromSerialized($crawledTemplateName, $crawled)->toArray();
+        $crawledData = $this->stripParamsNotSupportedByTemplate($crawledData, $outputTemplateName);
+        $crawledData = $this->stripRedundantAuthorFields($crawledData, $existingData);
+
+        // The EXISTING side is never stripped this way -- an editor-authored param this
+        // bot doesn't recognize must not be silently deleted (2026-08-14 regression, see
+        // buildCompletion()'s docblock for the full rationale).
+        $existingKept = array_filter($existingData, static fn ($v): bool => $v !== '');
+        foreach (self::CRAWL_OWNED_ON_DEAD_PATH as $param) {
+            // Conditional : {{Lien brisé}} carries no |site= and no |consulté le= of its
+            // own (see DeadLinkTransformer::generateLienBrise()), so an unconditional
+            // unset would drop the existing ones for nothing on that branch.
+            if (($crawledData[$param] ?? '') !== '') {
+                unset($existingKept[$param]);
+            }
         }
+        // Never carried over, even when the crawl has none : an existing 'brisé le'
+        // surviving onto a working archived replacement is the 2026-08-14 bug itself. It
+        // is re-added below only on a genuine {{Lien brisé}}.
+        unset($existingKept['brisé le']);
+        $existingKept = $this->dropSupersededArchiveParams(
+            $existingKept,
+            $existingTemplateName,
+            (string) ($crawledData['url'] ?? ''),
+            $knownArchiveRejected
+        );
 
-        $data = $this->hydrateFromSerialized($crawledTemplateName, $crawled)->toArray();
+        $data = array_merge($crawledData, $existingKept);
 
-        if (!empty($existingData['titre'])) {
-            $data['titre'] = $existingData['titre'];
-        }
-        if ($hasOldConsulteLe) {
+        if ($isLienBrise && !empty($existingData['consulté le'])) {
+            // {{Lien brisé}}'s own doc defines 'consulté le' as "la dernière date à
+            // laquelle le document a été constaté bien en ligne" : it predates the
+            // breakage by definition, so it is carried over untouched, never refreshed.
             $data['consulté le'] = $existingData['consulté le'];
             $data['brisé le'] = FrenchDate::toFrenchText((int) $now->format('j'), (int) $now->format('n'), (int) $now->format('Y'));
         }
 
-        return $this->freshTemplate($crawledTemplateName, $data)->serialize(true);
+        return $this->freshTemplate($outputTemplateName, $data)->serialize(true);
+    }
+
+    /**
+     * An 'archive-url' still describing the replacement is now redundant : |url= IS that
+     * archive, and its own timestamp carries the date. Two cases drop it :
+     *  - it is the very archive that got promoted into |url= (the nominal path) ;
+     *  - DeadLinkTransformer tried it and found it unusable ($knownArchiveRejected) --
+     *    keeping a snapshot just PROVEN blank/parked/soft-404 next to a working one would
+     *    hand the reader a dead fallback.
+     * Any other surviving archive-url is a genuinely different, untested snapshot : left
+     * alone, it is still a second chance for a human.
+     */
+    private function dropSupersededArchiveParams(array $existingKept, string $existingTemplateName, string $newUrl, bool $knownArchiveRejected): array
+    {
+        [$urlParam, $dateParam] = self::ARCHIVE_PARAM_NAMES[$existingTemplateName] ?? ['archive-url', 'archive-date'];
+        $archiveUrl = trim((string) ($existingKept[$urlParam] ?? ''));
+        if ($archiveUrl === '') {
+            return $existingKept;
+        }
+
+        if ($knownArchiveRejected || ($newUrl !== '' && $this->sameArchiveTarget($archiveUrl, $newUrl))) {
+            unset($existingKept[$urlParam], $existingKept[$dateParam]);
+        }
+
+        return $existingKept;
+    }
+
+    /**
+     * Scheme and trailing slash only : ArchiveUrlParser hands the DTO the archive-url
+     * verbatim (bar Wikiwix's HTTPS canonicalization), so the URL that comes back in
+     * |url= is the same string modulo those two.
+     */
+    private function sameArchiveTarget(string $a, string $b): bool
+    {
+        $normalize = static fn (string $url): string => rtrim(
+            (string) preg_replace('#^https?://#i', '', trim($url)),
+            '/'
+        );
+
+        return strcasecmp($normalize($a), $normalize($b)) === 0;
+    }
+
+    /**
+     * Piece 4 of the known-archive reuse (2026-08-20) : lift the citation's own
+     * 'archive-url'/'archive-date' into the $options channel ExternRefTransformer already
+     * forwards, so DeadLinkTransformer can try it before querying any archiver. A caller
+     * that already put one there wins -- this only fills a gap.
+     *
+     * ARCHIVE_PARAM_NAMES, not a literal : {{lien web}} spells them hyphenated and
+     * {{article}} does not, and neither aliases the other's spelling.
+     */
+    private function withKnownArchiveOption(array $options, string $existingTemplateName, array $existingData, string $url): array
+    {
+        if (isset($options['knownArchive'])) {
+            return $options;
+        }
+
+        [$urlParam, $dateParam] = self::ARCHIVE_PARAM_NAMES[$existingTemplateName] ?? ['archive-url', 'archive-date'];
+        $archiveUrl = (string) ($existingData[$urlParam] ?? '');
+        if (trim($archiveUrl) === '') {
+            return $options;
+        }
+
+        $known = ArchiveUrlParser::parse($archiveUrl, $url, (string) ($existingData[$dateParam] ?? ''));
+        if ($known !== null) {
+            $options['knownArchive'] = $known;
+        }
+
+        return $options;
     }
 
     /**

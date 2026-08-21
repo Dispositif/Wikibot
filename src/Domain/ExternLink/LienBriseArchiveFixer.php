@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace App\Domain\ExternLink;
 
 use App\Domain\Models\Summary;
+use App\Domain\Models\WebarchiveDTO;
 use App\Domain\Models\Wiki\AbstractWikiTemplate;
 use App\Domain\Models\Wiki\LienBriseTemplate;
 use App\Domain\Utils\DateUtil;
@@ -103,16 +104,27 @@ class LienBriseArchiveFixer
 
         $httpStatus = $this->extractHttpStatus($tpl->getParam('note'));
         $targetDate = $this->resolveTargetDate($tpl);
+        $knownArchive = $this->resolveKnownArchive($tpl, $url);
 
-        $result = $this->deadLinkTransformer->formatFromUrl($url, $targetDate ?? new DateTimeImmutable(), $summary, $httpStatus);
+        $result = $this->deadLinkTransformer->formatFromUrl($url, $targetDate ?? new DateTimeImmutable(), $summary, $httpStatus, knownArchive: $knownArchive);
 
-        // Retrying with an ever-earlier cutoff only makes sense when there's a real
-        // reference date to step back FROM (reported 2026-08-19 : the closest-to-"now"
-        // snapshot can land squarely on a domain that was cybersquatted years after the
-        // citation's own date -- ex: consulté le=2013, closest usable IA snapshot 2019,
-        // already squatted, when a genuine ~2007 snapshot existed). Without a target
-        // date there is no "earlier" to retreat to, so this loop is skipped entirely and
-        // behavior is unchanged from before this feature (closest-to-now, single try).
+        // Only the FIRST attempt offers the known archive : DeadLinkTransformer already
+        // fetched and rejected it if we got here, so re-offering it on every retry would
+        // just re-crawl a snapshot proven unusable (3s sleep + a full crawl each time).
+        if (self::RETRY_NOW_IF_DATE_FAILS && $targetDate !== null && $this->isStillDead($result)) {
+            $this->log->notice(
+                "Still dead near {$targetDate->format('Y-m-d')}, retrying near today",
+                ['stats' => 'lienbrisearchive.retry.now']
+            );
+            $result = $this->deadLinkTransformer->formatFromUrl($url, new DateTimeImmutable(), $summary, $httpStatus);
+        }
+
+        // Last resort, past the date/now pair above : keep retreating past the target
+        // date itself, for the case neither "near the citation's date" nor "near today"
+        // found anything (ex: consulté le=2013, closest usable IA snapshot 2019 already
+        // squatted, but a genuine ~2007 snapshot existed further back). Only makes sense
+        // with a real reference date to step back FROM ; without one this loop is
+        // skipped entirely.
         $before = $targetDate;
         for ($retry = 1; $before !== null && $retry <= self::MAX_EARLIER_DATE_RETRIES && $this->isStillDead($result); $retry++) {
             $before = $before->modify('-' . self::RETRY_STEP_YEARS . ' years');
@@ -134,6 +146,27 @@ class LienBriseArchiveFixer
         }
 
         return $this->preserveCuratedTitre($result, $tpl->getParam('titre'), $url);
+    }
+
+    /**
+     * {{Lien brisé}} supports 'archive-url'/'archive-date' (inherited from LienWebTemplate,
+     * and documented on the template itself) : when one is already there, it becomes
+     * DeadLinkTransformer's first candidate instead of being ignored while every archiver
+     * gets searched from scratch.
+     *
+     * Biggest win on this class specifically : a usable known archive returns on the very
+     * first call, so the whole date-retry ladder below (up to MAX_EARLIER_DATE_RETRIES
+     * extra rounds, each re-querying every archiver over MAX_CANDIDATES_PER_ARCHIVER
+     * snapshots) is skipped outright.
+     */
+    private function resolveKnownArchive(LienBriseTemplate $tpl, string $url): ?WebarchiveDTO
+    {
+        $archiveUrl = (string) $tpl->getParam('archive-url');
+        if (trim($archiveUrl) === '') {
+            return null;
+        }
+
+        return ArchiveUrlParser::parse($archiveUrl, $url, (string) $tpl->getParam('archive-date'));
     }
 
     /**
