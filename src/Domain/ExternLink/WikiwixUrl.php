@@ -42,6 +42,20 @@ final class WikiwixUrl
     }
 
     /**
+     * The (deterministic, no network call) reader-facing viewer URL for an original URL
+     * -- what WikiwixAdapter itself builds internally before its handshake. Exposed here
+     * (2026-08-20) so LiveLinkArchiveEnricher can construct a Wikiwix candidate directly
+     * instead of going through WikiwixAdapter::searchWebarchive(), which does its own
+     * internal resolve+fetch+validate cycle just to answer "does a snapshot exist" --
+     * redundant work when the caller is about to resolve+fetch+validate that same URL
+     * again anyway for content comparison.
+     */
+    public static function buildViewerUrl(string $originalUrl): string
+    {
+        return self::CANONICAL_QUERY_PREFIX . rawurlencode($originalUrl);
+    }
+
+    /**
      * The archived URL, verbatim (percent-encoded or not, trailing Wikiwix params such as
      * "&title=" kept) : it's an opaque value here, only meant to be handed back to Wikiwix.
      */

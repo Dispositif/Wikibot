@@ -17,6 +17,7 @@ use DateTime;
 use DateTimeInterface;
 use JsonException;
 use Psr\Log\LoggerInterface;
+use Throwable;
 
 /**
  * https://archive.org/help/wayback_api.php (availability API, kept as a fallback)
@@ -87,16 +88,29 @@ class InternetArchiveAdapter implements DeadlinkArchiverInterface
         }
         $queryString = implode('&', $params);
 
-        $response = $this->client->get(
-            self::CDX_URL . '?' . $queryString,
-            [
-                'timeout' => 20,
-                'allow_redirects' => true,
-                'headers' => ['User-Agent' => getenv('USER_AGENT')],
-                'http_errors' => false,
-                'verify' => false,
-            ]
-        );
+        // 'http_errors' => false only suppresses Guzzle's exception-on-4xx/5xx-status
+        // behavior, not a genuine transport failure (DNS, connection timeout...) -- a
+        // ConnectException there is a Throwable like any other and was propagating
+        // uncaught up through DeadLinkTransformer/LiveLinkArchiveEnricher, crashing a
+        // ref's whole processing over a single flaky CDX request (found live, 2026-08-20).
+        // Same fail-safe idiom as WikiwixAdapter::fetchBody() : no candidates found, not
+        // an exception, other archivers/candidates get a chance to still succeed.
+        try {
+            $response = $this->client->get(
+                self::CDX_URL . '?' . $queryString,
+                [
+                    'timeout' => 20,
+                    'allow_redirects' => true,
+                    'headers' => ['User-Agent' => getenv('USER_AGENT')],
+                    'http_errors' => false,
+                    'verify' => false,
+                ]
+            );
+        } catch (Throwable $e) {
+            $this->log->debug('InternetArchive CDX: request failed: ' . $e->getMessage(), ['url' => $url]);
+
+            return [];
+        }
 
         if ($response->getStatusCode() !== 200) {
             $this->log->debug('InternetArchive CDX: incorrect response', ['status' => $response->getStatusCode()]);

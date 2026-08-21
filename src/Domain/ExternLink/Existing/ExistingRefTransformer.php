@@ -9,8 +9,11 @@ declare(strict_types=1);
 
 namespace App\Domain\ExternLink\Existing;
 
+use App\Domain\ExternLink\ArchiveUrlParser;
 use App\Domain\ExternLink\DeadLinkTransformer;
 use App\Domain\ExternLink\ExternRefTransformerInterface;
+use App\Domain\ExternLink\FetchResult;
+use App\Domain\ExternLink\LiveLinkArchiveEnricher;
 use App\Domain\ExternLink\Raw\Hints\FrenchDate;
 use App\Domain\ExternLink\Raw\MergeConfidence;
 use App\Domain\Models\Summary;
@@ -19,9 +22,11 @@ use App\Domain\Utils\DateUtil;
 use App\Domain\Utils\TemplateParser;
 use App\Domain\WikiOptimizer\OptimizerFactory;
 use App\Domain\WikiTemplateFactory;
+use App\Infrastructure\Monitor\NullLogger;
 use DateInterval;
 use DateTimeImmutable;
 use DateTimeInterface;
+use Psr\Log\LoggerInterface;
 use Throwable;
 
 /**
@@ -49,6 +54,15 @@ use Throwable;
  * Any other outcome (ExternRefTransformer returned the bare URL unchanged : blacklist,
  * robots.txt, noindex, interstitial/paywall, empty metadata...) is a Skip -- it doesn't
  * prove the link is dead, so the existing citation is left untouched.
+ *
+ * "Still alive" completion also optionally attaches an archive-url/-date fallback on
+ * the existing citation (2026-08-20, opt-in via $archiveEnricher) : see
+ * LiveLinkArchiveEnricher and this class's attachLiveArchive(). Binary : either the
+ * archive candidate's content scored high enough to trust (archive-url/-date written,
+ * same as any other completed field) or nothing happens at all -- no comment, no
+ * partial state. An earlier version left an HTML review comment on an uncertain match ;
+ * explicitly rejected (2026-08-20) -- nothing about this feature was ever meant to add
+ * visible-in-source text outside the {{lien web}}/{{article}} template itself.
  */
 final class ExistingRefTransformer
 {
@@ -61,6 +75,10 @@ final class ExistingRefTransformer
 
     public function __construct(
         private readonly ExternRefTransformerInterface $externRefTransformer,
+        // Opt-in (see existingRefProcess.php's --add-archive flag) : null means the
+        // feature is off, "still alive" refs are completed exactly as before.
+        private readonly ?LiveLinkArchiveEnricher $archiveEnricher = null,
+        private readonly LoggerInterface $log = new NullLogger(),
     ) {
     }
 
@@ -108,6 +126,11 @@ final class ExistingRefTransformer
         ];
 
         $crawled = trim($this->externRefTransformer->process($url, $summary, $options));
+        // Captured right after process(), before any other URL could go through this
+        // same $externRefTransformer instance and overwrite it -- see
+        // ExternRefTransformerInterface::getLastFetchResult()'s docblock. Reused for the
+        // "still alive" archive-attach step below instead of a second fetch of $url.
+        $liveFetch = $this->externRefTransformer->getLastFetchResult();
 
         if (!str_starts_with($crawled, '{{')) {
             // Skipped or failed somewhere in the crawl pipeline itself -- can't tell
@@ -231,7 +254,7 @@ final class ExistingRefTransformer
      * PAS" comment for a human to check) exactly like every other bot pass already
      * treats an unrecognized param, never silently lost.
      */
-    private function buildCompletion(string $crawled, string $crawledTemplateName, string $existingTemplateName, array $existingData): string
+    private function buildCompletion(string $crawled, string $crawledTemplateName, string $existingTemplateName, array $existingData, string $url, Summary $summary, ?FetchResult $liveFetch): string
     {
         $crawledData = $this->hydrateFromSerialized($crawledTemplateName, $crawled)->toArray();
         $crawledData = $this->stripParamsNotSupportedByTemplate($crawledData, $existingTemplateName);
@@ -241,6 +264,11 @@ final class ExistingRefTransformer
         $merged['consulté le'] = $crawledData['consulté le']
             ?? FrenchDate::toFrenchText((int) date('j'), (int) date('n'), (int) date('Y'));
 
+        [$urlParam] = self::ARCHIVE_PARAM_NAMES[$existingTemplateName] ?? ['archive-url', 'archive-date'];
+        if ($this->archiveEnricher !== null && empty($merged[$urlParam]) && $liveFetch?->body !== null) {
+            $merged = $this->attachLiveArchive($merged, $url, $summary, $existingTemplateName, $liveFetch->body);
+        }
+
         $template = $this->freshTemplate($existingTemplateName, $merged);
         $optimizer = OptimizerFactory::fromTemplate($template);
         if ($optimizer !== null) {
@@ -249,6 +277,43 @@ final class ExistingRefTransformer
         }
 
         return $template->serialize(true);
+    }
+
+    /**
+     * Binary (see class docblock) : a match means the archive's content scored high
+     * enough to trust, so archive-url (+ archive-date when the archiver provided one --
+     * Wayback only, see LiveArchiveMatch) is written straight into the merged param set,
+     * same as any other completed field. No match (or any failure inside the enricher --
+     * network, unexpected exception, swallowed here) means $merged comes back unchanged :
+     * this is a value-add on top of a completion that's already valid without it, never
+     * worth failing the whole ref over, and never worth a partial/visible trace either.
+     */
+    private function attachLiveArchive(array $merged, string $url, Summary $summary, string $existingTemplateName, string $liveBody): array
+    {
+        try {
+            $match = $this->archiveEnricher->enrich($url, $liveBody);
+        } catch (Throwable $e) {
+            $this->log->debug('LiveLinkArchiveEnricher failed: ' . $e->getMessage(), ['url' => $url]);
+
+            return $merged;
+        }
+
+        if ($match === null) {
+            return $merged;
+        }
+
+        [$urlParam, $dateParam] = self::ARCHIVE_PARAM_NAMES[$existingTemplateName] ?? ['archive-url', 'archive-date'];
+        $merged[$urlParam] = $match->archiveUrl;
+        if ($match->archiveDate !== null) {
+            $merged[$dateParam] = FrenchDate::toFrenchText(
+                (int) $match->archiveDate->format('j'),
+                (int) $match->archiveDate->format('n'),
+                (int) $match->archiveDate->format('Y')
+            );
+        }
+        $summary->memo['archive live'] = 1 + ($summary->memo['archive live'] ?? 0);
+
+        return $merged;
     }
 
     /**

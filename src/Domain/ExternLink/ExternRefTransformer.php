@@ -18,6 +18,7 @@ use App\Domain\InfrastructurePorts\DeadlinkArchiverInterface;
 use App\Domain\InfrastructurePorts\ExternLinkCheckRepositoryInterface;
 use App\Domain\InfrastructurePorts\InternetDomainParserInterface;
 use App\Domain\Models\Summary;
+use App\Domain\Models\WebarchiveDTO;
 use App\Domain\Models\Wiki\AbstractWikiTemplate;
 use App\Domain\Models\Wiki\ArticleTemplate;
 use App\Domain\Models\Wiki\LienWebTemplate;
@@ -66,6 +67,8 @@ class ExternRefTransformer implements ExternRefTransformerInterface
     protected ?Summary $summary = null;
     protected ?string $originDomain = null;
     protected array $options = [];
+    /** @see getLastFetchResult() */
+    private ?FetchResult $lastFetchResult = null;
     private readonly ExternHttpErrorLogic $externHttpErrorLogic;
     private readonly CheckURL $urlChecker;
     private readonly DeadLinkTransformer $deadLinkTransformer;
@@ -159,6 +162,7 @@ class ExternRefTransformer implements ExternRefTransformerInterface
         if (!$fetch->isSuccess()) {
             return $this->externHttpErrorLogic->manageByFetchResult($fetch, $this->registrableDomain, $pageTitle, $summary);
         }
+        $this->lastFetchResult = $fetch;
 
         $this->externalPage = (new ExternPageFactory($this->httpClient, $this->log))->fromFetchResult($crawledUrl, $fetch, $this->domainParser);
         $pageData = $this->externalPage->getData();
@@ -222,6 +226,11 @@ class ExternRefTransformer implements ExternRefTransformerInterface
         }
 
         return $url; // error fallback
+    }
+
+    public function getLastFetchResult(): ?FetchResult
+    {
+        return $this->lastFetchResult;
     }
 
     protected function isSiteBlackListed(): bool

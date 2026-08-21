@@ -11,8 +11,11 @@ namespace App\Infrastructure;
 
 use App\Application\InfrastructurePorts\HttpClientInterface;
 use App\Application\WikiPageAction;
+use App\Domain\ExternLink\ContentSimilarityScorer;
 use App\Domain\ExternLink\DeadLinkTransformer;
+use App\Domain\ExternLink\ExternPageFactory;
 use App\Domain\ExternLink\ExternRefTransformer;
+use App\Domain\ExternLink\LiveLinkArchiveEnricher;
 use App\Domain\ExternLink\WikiwixContentResolver;
 use App\Domain\InfrastructurePorts\BotEditJournalInterface;
 use App\Domain\InfrastructurePorts\ExternLinkCheckRepositoryInterface;
@@ -201,6 +204,34 @@ class ServiceFactory
             [new InternetArchiveAdapter($directClient, $log), new WikiwixAdapter($directClient, $log)],
             new InternetDomainParser(),
             null,
+            $log
+        );
+    }
+
+    /**
+     * No live-page fetching here (2026-08-20 : an earlier version had its own $mainClient/
+     * $torEnabled for that, refetching the live URL independently and duplicating the
+     * fetch ExternRefTransformer::process() already made — found unacceptable, ~5s
+     * wasted per ref). LiveLinkArchiveEnricher::enrich() now takes that body as a
+     * parameter, reused from ExternRefTransformerInterface::getLastFetchResult(). Archive
+     * candidate bodies are still always fetched direct (never Tor), same reasoning as
+     * everywhere else archivers are wired (Wikiwix's handshake token is tied to the
+     * requesting IP, nothing to anonymize towards an archive service).
+     *
+     * Only InternetArchiveAdapter here, unlike getDeadLinkTransformer()'s Wayback+Wikiwix
+     * pair : LiveLinkArchiveEnricher builds its one Wikiwix candidate directly (see its
+     * class docblock) rather than through WikiwixAdapter, so wiring one in here would
+     * just reintroduce the double-fetch that design avoids.
+     */
+    public static function getLiveLinkArchiveEnricher(LoggerInterface $log): LiveLinkArchiveEnricher
+    {
+        $directClient = self::getHttpClient();
+
+        return new LiveLinkArchiveEnricher(
+            [new InternetArchiveAdapter($directClient, $log)],
+            new ExternPageFactory($directClient, $log),
+            new WikiwixContentResolver($directClient, $log),
+            new ContentSimilarityScorer(),
             $log
         );
     }

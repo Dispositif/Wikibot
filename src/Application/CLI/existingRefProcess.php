@@ -28,6 +28,11 @@ use App\Infrastructure\ServiceFactory;
  * wrapping a {{lien web}}/{{article}} usage -- ExistingRefTransformer::detectExistingTemplate()
  * only handles that shape anyway (MVP scope, see its docblock), so this narrows the query
  * to pages actually worth visiting rather than every citation on Wikipedia.
+ *
+ * --add-archive : opt-in, attach an archive-url/-date fallback to a still-alive citation
+ * when a web archive snapshot's content scores high enough to trust against the live
+ * page (see LiveLinkArchiveEnricher). Binary : below threshold, nothing is touched --
+ * no partial state, no comment.
  */
 
 include __DIR__.'/../myBootstrap.php';
@@ -84,7 +89,13 @@ $respectRobotsTxt = !in_array('--no-robots-check', $argv, true);
 
 $externRefTransformer = ServiceFactory::getExternRefTransformer($logger, $argv, true, $directRetryEnabled, $respectRobotsTxt);
 
-$transformer = new ExistingRefTransformer($externRefTransformer);
+// Opt-in : attach an archive-url/-date fallback to a citation whose link is still alive,
+// when a web archive snapshot's content plausibly matches the live page. Off by default --
+// see LiveLinkArchiveEnricher's docblock for the extra HTTP cost per ref this adds.
+$addArchiveToLive = in_array('--add-archive', $argv, true);
+$archiveEnricher = $addArchiveToLive ? ServiceFactory::getLiveLinkArchiveEnricher($logger) : null;
+
+$transformer = new ExistingRefTransformer($externRefTransformer, $archiveEnricher, $logger);
 
 $dryRun = in_array('--dry-run', $argv, true);
 new ExistingRefWorker($botConfig, $wiki, $list, $transformer, $dryRun);
