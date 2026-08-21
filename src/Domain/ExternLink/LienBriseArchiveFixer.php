@@ -51,6 +51,20 @@ class LienBriseArchiveFixer
      */
     private const RETRY_STEP_YEARS = 5;
 
+    /**
+     * 2026-08-19 : searching close to the citation's own date (see resolveTargetDate())
+     * fixes the cybersquat-date bug this whole date-aware search was built for, but it
+     * also means Internet Archive gets asked for snapshots from a narrower, often
+     * sparser/older neighbourhood -- less coverage there than near "today" -- so it
+     * fails outright more often than the pre-existing "always closest to now" behavior
+     * did, falling through to Wikiwix (uneven quality) more than before. This flag adds
+     * "closest to today" as a second attempt when the date-targeted one comes back dead,
+     * recovering most of that lost coverage without giving up the cybersquat fix (which
+     * still runs first). Toggle to false to go back to date-only (plus the earlier-date
+     * retry ladder below) if this second attempt doesn't pull its weight in practice.
+     */
+    private const RETRY_NOW_IF_DATE_FAILS = true;
+
     public function __construct(
         private readonly DeadLinkTransformer $deadLinkTransformer,
         private readonly LoggerInterface     $log = new NullLogger()
